@@ -21,8 +21,13 @@ in
     ./ai
 
     ./preservation.nix
-    ./secureboot.nix
   ];
+
+  # Temporarily use plain systemd-boot to avoid lanzaboote setup failures
+  # (e.g. missing PKI bundle at /etc/secureboot on a fresh machine).
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi.efiSysMountPoint = "/boot";
 
   # Zram consumes physical memory for compression, which can cause a deadlock and system hang if the model size approaches the physical memory limit.
   zramSwap.enable = lib.mkForce false;

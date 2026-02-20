@@ -8,177 +8,37 @@
   modulesPath,
   ...
 }:
+
 {
-  imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
-
-  # Use the EFI boot loader.
-  boot.loader.efi.canTouchEfiVariables = true;
-  # depending on how you configured your disk mounts, change this to /boot or /boot/efi.
-  boot.loader.efi.efiSysMountPoint = "/boot";
-  boot.loader.systemd-boot.enable = true;
-
-  # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/top-level/linux-kernels.nix
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  # boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
   boot.initrd.availableKernelModules = [
+    "nvme"
     "xhci_pci"
     "ahci"
-    "nvme"
     "usbhid"
     "usb_storage"
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ]; # kvm virtualization support
-  boot.extraModprobeConfig = "options kvm_intel nested=1"; # for intel cpu
+  boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
-  # clear /tmp on boot to get a stateless /tmp directory.
-  boot.tmp.cleanOnBoot = true;
 
-  # Enable binfmt emulation of aarch64-linux, this is required for cross compilation.
-  boot.binfmt.emulatedSystems = [
-    "aarch64-linux"
-    "riscv64-linux"
-  ];
-  # This enables the kernel to preload the emulator binaries when the binfmt registrations are added,
-  # obviating the need to make the emulator binaries available inside chroots and chroot-like sandboxes.
-  boot.binfmt.preferStaticEmulators = true; # required to work with podman
-
-  # supported file systems, so we can mount any removable disks with these filesystems
-  boot.supportedFilesystems = [
-    "ext4"
-    "btrfs"
-    "xfs"
-    "ntfs"
-    "fat"
-    "vfat"
-    "exfat"
-  ];
-
-  boot.initrd = {
-    # unlocked luks devices via a keyfile or prompt a passphrase.
-    luks.devices."crypted-nixos" = {
-      # NOTE: DO NOT use device name here(like /dev/sda, /dev/nvme0n1p2, etc), use UUID instead.
-      # https://github.com/ryan4yin/nix-config/issues/43
-      device = "/dev/disk/by-uuid/a21ca82a-9ee6-4e5c-9d3f-a93e84e4e0f4";
-      # the keyfile(or device partition) that should be used as the decryption key for the encrypted device.
-      # if not specified, you will be prompted for a passphrase instead.
-      #keyFile = "/root-part.key";
-
-      # whether to allow TRIM requests to the underlying device.
-      # it's less secure, but faster.
-      allowDiscards = true;
-      # Whether to bypass dm-crypt’s internal read and write workqueues.
-      # Enabling this should improve performance on SSDs;
-      # https://wiki.archlinux.org/index.php/Dm-crypt/Specialties#Disable_workqueue_for_increased_solid_state_drive_(SSD)_performance
-      bypassWorkqueues = true;
-    };
-  };
-
-  fileSystems."/btr_pool" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    # btrfs's top-level subvolume, internally has an id 5
-    # we can access all other subvolumes from this subvolume.
-    options = [ "subvolid=5" ];
-  };
-
-  # equal to `mount -t tmpfs tmpfs /`
   fileSystems."/" = {
-    device = "tmpfs";
-    fsType = "tmpfs";
-    # set mode to 755, otherwise systemd will set it to 777, which cause problems.
-    # relatime: Update inode access times relative to modify or change time.
-    options = [
-      "relatime"
-      "mode=755"
-    ];
-  };
-
-  fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    options = [
-      "subvol=@nix"
-      "noatime"
-      "compress-force=zstd:1"
-    ];
-  };
-
-  # for guix store, which use `/gnu/store` as its store directory.
-  fileSystems."/gnu" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    options = [
-      "subvol=@guix"
-      "noatime"
-      "compress-force=zstd:1"
-    ];
-  };
-
-  fileSystems."/persistent" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    options = [
-      "subvol=@persistent"
-      "compress-force=zstd:1"
-    ];
-    # preservation's data is required for booting.
-    neededForBoot = true;
-  };
-
-  fileSystems."/snapshots" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    options = [
-      "subvol=@snapshots"
-      "compress-force=zstd:1"
-    ];
-  };
-
-  fileSystems."/tmp" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    options = [
-      "subvol=@tmp"
-      "compress-force=zstd:1"
-    ];
-  };
-
-  # mount swap subvolume in readonly mode.
-  fileSystems."/swap" = {
-    device = "/dev/disk/by-uuid/1167076c-dee1-486c-83c1-4b1af37555cd";
-    fsType = "btrfs";
-    options = [
-      "subvol=@swap"
-      "ro"
-    ];
-  };
-
-  # remount swapfile in read-write mode
-  fileSystems."/swap/swapfile" = {
-    # the swapfile is located in /swap subvolume, so we need to mount /swap first.
-    depends = [ "/swap" ];
-
-    device = "/swap/swapfile";
-    fsType = "none";
-    options = [
-      "bind"
-      "rw"
-    ];
+    device = "/dev/disk/by-uuid/82f9578e-4775-4c3f-9820-2d876898199e";
+    fsType = "ext4";
   };
 
   fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/90FB-9F88";
+    device = "/dev/disk/by-uuid/D94B-A7E6";
     fsType = "vfat";
+    options = [
+      "fmask=0077"
+      "dmask=0077"
+    ];
   };
 
-  swapDevices = [
-    { device = "/swap/swapfile"; }
-  ];
+  swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
@@ -186,9 +46,8 @@
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

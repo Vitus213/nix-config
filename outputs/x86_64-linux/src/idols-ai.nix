@@ -18,7 +18,6 @@ let
     nixos-modules =
       (map mylib.relativeToRoot [
         # common
-        "secrets/nixos.nix"
         "modules/nixos/desktop.nix"
         # host specific
         "hosts/idols-${name}"
@@ -31,9 +30,7 @@ let
         {
           modules.desktop.fonts.enable = true;
           modules.desktop.wayland.enable = true;
-          modules.secrets.desktop.enable = true;
-          modules.secrets.preservation.enable = true;
-          modules.desktop.gaming.enable = true;
+          modules.desktop.gaming.enable = false;
         }
       ];
     home-modules =
@@ -45,7 +42,7 @@ let
       ])
       ++ [
         {
-          modules.desktop.gaming.enable = true;
+          modules.desktop.gaming.enable = false;
         }
       ];
   };

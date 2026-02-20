@@ -75,6 +75,7 @@ in
     # run anime games on Linux
     # https://github.com/an-anime-team/
     networking.mihoyo-telemetry.block = true;
+    aagl.enableNixpkgsReleaseBranchCheck = false;
     environment.systemPackages = with aagl.packages."x86_64-linux"; [
       anime-game-launcher # Genshin: Impact
       honkers-railway-launcher # Honkai: Star Rail

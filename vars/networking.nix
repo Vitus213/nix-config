@@ -1,5 +1,5 @@
 {lib}: rec {
-  mainGateway = "192.168.5.1"; # main router
+  mainGateway = "192.168.100.1"; # main router
   mainGateway6 = "fe80::5"; # main router's link-local address
   # use suzi as the default gateway
   # it's a subrouter with a transparent proxy
@@ -7,10 +7,10 @@
   proxyGateway6 = "fe80::8";
   nameservers = [
     # IPv4
-    "119.29.29.29" # DNSPod
+    "100.100.100.100" # local DNS from current network
     "223.5.5.5" # AliDNS
     # IPv6
-    "2400:3200::1" # Alidns
+    "2400:3200::1" # AliDNS
     "2606:4700:4700::1111" # Cloudflare
   ];
   prefixLength = 24;
@@ -38,8 +38,8 @@
     ai = {
       # Desktop PC
       iface = "enp5s0";
-      ipv4 = "192.168.5.100";
-      ipv6 = "fe80::10"; # Link-local Address
+      ipv4 = "192.168.100.149";
+      ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
     };
     aquamarine = {
       # VM

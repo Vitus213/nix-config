@@ -1,6 +1,5 @@
 {
   config,
-  mysecrets,
   ...
 }:
 {
@@ -18,13 +17,7 @@
     # If set `mutableKeys` to false, the path $GNUPGHOME/pubring.kbx will become an immutable link to the Nix store, denying modifications.
     # Thus we can only update pubring.kbx via home-manager
     mutableKeys = false;
-    publicKeys = [
-      # https://www.gnupg.org/gph/en/manual/x334.html
-      {
-        source = "${mysecrets}/public/ryan4yin-gpg-keys-2014-01-27.pub";
-        trust = 5;
-      } # ultimate trust, my own keys.
-    ];
+    publicKeys = [ ];
 
     # This configuration is based on the tutorial below, it allows for a robust setup
     # https://blog.eleven-labs.com/en/openpgp-almost-perfect-key-pair-part-1

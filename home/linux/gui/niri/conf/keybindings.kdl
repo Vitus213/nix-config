@@ -52,7 +52,7 @@ binds {
     // XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
     XF86AudioPlay        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media playPause"; }
     XF86AudioStop        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media pause"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "octalia-shell ipc call media previous"; }
+    XF86AudioPrev        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media previous"; }
     XF86AudioNext        allow-when-locked=true { spawn-sh "noctalia-shell ipc call media next"; }
 
     // Example brightness key mappings for brightnessctl.
