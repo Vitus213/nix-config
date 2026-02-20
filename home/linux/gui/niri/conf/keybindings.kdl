@@ -76,6 +76,8 @@ binds {
     Mod+Down { focus-window-down; }
     Mod+Up { focus-window-up; }
     Mod+Right { focus-column-right; }
+    Mod+WheelScrollUp cooldown-ms=120 { focus-column-left; }
+    Mod+WheelScrollDown cooldown-ms=120 { focus-column-right; }
     Mod+H { focus-column-left; }
     Mod+J { focus-window-down; }
     Mod+K { focus-window-up; }
@@ -126,9 +128,11 @@ binds {
     // And you can also move a whole workspace to another monitor:
     // Mod+Shift+Ctrl+Left  { move-workspace-to-monitor-left; }
     // ...
-
+shu
     "Mod+Page_Down"      { focus-workspace-down; }
     "Mod+Page_Up" { focus-workspace-up; }
+    Mod+Ctrl+WheelScrollDown cooldown-ms=120 { focus-workspace-down; }
+    Mod+Ctrl+WheelScrollUp cooldown-ms=120 { focus-workspace-up; }
     Mod+U { focus-workspace-down; }
     Mod+I { focus-workspace-up; }
     "Mod+Ctrl+Page_Down" { move-column-to-workspace-down; }
