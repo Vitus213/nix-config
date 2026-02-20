@@ -43,3 +43,6 @@ extend-ignore-re = [
   "f9e2af",
   "fab387",
 ]
+
+[default.extend-words]
+ist = "ist"
