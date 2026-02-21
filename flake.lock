@@ -547,11 +547,11 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1771696012,
-        "narHash": "sha256-NXrmkyoKGwDVbpA1bAxxj4plox6avVUYbOqajT1OhlA=",
+        "lastModified": 1771699994,
+        "narHash": "sha256-rToEInUH74p56OZpaysXgaoVYKGrEi0sei4BOrYCrl8=",
         "owner": "Vitus213",
         "repo": "my-secrets",
-        "rev": "2d7dab2735324eac6f81e673fbee409c82cdb90b",
+        "rev": "c476425d874f3f44d39885c1bc6274f155ac1dde",
         "type": "github"
       },
       "original": {
@@ -745,11 +745,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1771696919,
-        "narHash": "sha256-D2Q3nNCram7u3Krq4s2IVBGfebVjXWTr4DApoOq5K90=",
+        "lastModified": 1771698688,
+        "narHash": "sha256-0KqFySKxp5VGiCEys7+129stPmLl6K6CKtIm6+WEGZU=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "fe96650ccf51fcda83e4df82b321774f9c4eb041",
+        "rev": "7c49c8e4e9d23d7e0f0233c881fe311bcc9e3f98",
         "type": "github"
       },
       "original": {

@@ -4,14 +4,9 @@
 }:
 {
   programs.nushell = {
-    # load the alias file for work
-    # the file must exist, otherwise nushell will complain about it!
-    #
-    # currently, nushell does not support conditional sourcing of files
-    # https://github.com/nushell/nushell/issues/8214
+    # load work aliases/secrets into the current shell scope.
     extraConfig = ''
-      # Keep loading the rest of Nu config even if this secret file contains a syntax error.
-      do -i { source /etc/agenix/alias-for-work.nushell }
+      source /etc/agenix/alias-for-work.nushell
 
       # $env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
       # # using claude-code with kimi k2
@@ -35,9 +30,8 @@
       # # $env.ANTHROPIC_MODEL = "qwen-plus" # 千万别用 qwen-max, 超级无敌贵
       # # $env.ANTHROPIC_DEFAULT_HAIKU_MODEL = "qwen-turbo"
 
-      # # Directories in this constant are searched by the
-      # # `use` and `source` commands.
-      # const NU_LIB_DIRS = $NU_LIB_DIRS ++ ['${nu_scripts}']
+      # Directories in this constant are searched by `use` and `source`.
+      const NU_LIB_DIRS = $NU_LIB_DIRS ++ ['${nu_scripts}']
 
       # # -*- completion -*-
       # use custom-completions/cargo/cargo-completions.nu *
