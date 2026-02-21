@@ -188,8 +188,8 @@
             "horizontal": 16,
             "vertical": 12
           },
-          "middleClickExec": "",
-          "middleClickUpdateText": false,
+          "middleClickExec": "~/.config/noctalia/scripts/totp/totp-select-copy.sh",
+          "middleClickUpdateText": true,
           "parseJson": true,
           "rightClickExec": "~/.config/noctalia/scripts/totp/totp-switch.sh",
           "rightClickUpdateText": true,

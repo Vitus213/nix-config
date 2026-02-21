@@ -49,5 +49,5 @@ color=$(get_totp_color "$remaining")
 total_services=$(get_totp_services | wc -l)
 services_list=$(generate_services_list "$current_index")
 
-tooltip="${service_name} TOTP: ${totp_code}\\n剩余: ${remaining} 秒\\n\\n可用服务 (${current_index}/${total_services}):\\n${services_list}\\n左键: 复制验证码\\n右键: 切换服务"
+tooltip="${service_name} TOTP: ${totp_code}\\n剩余: ${remaining} 秒\\n\\n可用服务 (${current_index}/${total_services}):\\n${services_list}\\n左键: 复制验证码\\n中键: 列表选择并复制\\n右键: 切换服务"
 emit "${service_name} ${totp_code}" "lock" "$tooltip" "$color"

@@ -7,6 +7,7 @@
       joplin # joplin-cli
       # joplin-desktop
       obsidian
+      notion
       typora
     ]);
 }

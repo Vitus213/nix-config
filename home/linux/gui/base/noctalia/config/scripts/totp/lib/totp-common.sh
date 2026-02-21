@@ -44,6 +44,39 @@ get_totp_services() {
   grep -v '^#' "$TOTP_CONFIG_FILE" | grep ':'
 }
 
+list_totp_services_with_index() {
+  local services
+  services=$(get_totp_services || true)
+  if [[ -z "$services" ]]; then
+    return 1
+  fi
+
+  local i=1
+  while IFS= read -r line; do
+    local service_name
+    service_name=$(echo "$line" | cut -d':' -f1)
+    printf "%s\t%s\n" "$i" "$service_name"
+    i=$((i + 1))
+  done <<< "$services"
+}
+
+pick_from_menu() {
+  local prompt="$1"
+  local entries="$2"
+
+  if command -v fuzzel >/dev/null 2>&1; then
+    printf "%s" "$entries" | fuzzel --dmenu --prompt "${prompt}> "
+  elif command -v wofi >/dev/null 2>&1; then
+    printf "%s" "$entries" | wofi --dmenu -p "${prompt}> "
+  elif command -v rofi >/dev/null 2>&1; then
+    printf "%s" "$entries" | rofi -dmenu -p "${prompt}> "
+  elif command -v bemenu >/dev/null 2>&1; then
+    printf "%s" "$entries" | bemenu -p "${prompt}> "
+  else
+    return 127
+  fi
+}
+
 get_current_index() {
   local current_index=1
 

@@ -18,6 +18,7 @@
 
   home.packages = with pkgs; [
     swaybg # the wallpaper
+    fuzzel # dmenu-style launcher used by TOTP selector
     wl-clipboard # copying and pasting
     hyprpicker # color picker
     brightnessctl
