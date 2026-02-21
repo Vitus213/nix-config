@@ -33,6 +33,7 @@ in
       # https://github.com/noctalia-dev/noctalia-shell/blob/main/nix/home-module.nix#L211-L220
       "noctalia".source = mkSymlink "${confPath}/config";
       "qt6ct/qt6ct.conf".source = mkSymlink "${confPath}/qt6ct.conf";
+      "totp/secrets.conf".source = mkSymlink "/etc/agenix/totp-secrets.conf";
     };
 
   systemd.user.services.noctalia-shell = {

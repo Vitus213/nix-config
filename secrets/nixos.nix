@@ -78,6 +78,15 @@ in
         // user_readable;
       };
 
+      # place common secrets in /etc/
+      environment.etc = {
+        "agenix/nix-access-tokens" = {
+          source = config.age.secrets."nix-access-tokens".path;
+          mode = "0400";
+          user = myvars.username;
+        };
+      };
+
       assertions = [
         {
           # This expression should be true to pass the assertion
@@ -89,80 +98,98 @@ in
 
     (mkIf cfg.desktop.enable {
       age.secrets = {
-        # ---------------------------------------------
-        # no one can read/write this file, even root.
-        # ---------------------------------------------
-
-        # .age means the decrypted file is still encrypted by age(via a passphrase)
-        "ryan4yin-gpg-subkeys.priv.age" = {
-          file = "${mysecrets}/ryan4yin-gpg-subkeys-2024-01-27.priv.age.age";
-        }
-        // noaccess;
-
-        # ---------------------------------------------
-        # only root can read this file.
-        # ---------------------------------------------
-
-        "wg-business.conf" = {
-          file = "${mysecrets}/wg-business.conf.age";
-        }
-        // high_security;
-
-        # Used only by NixOS Modules
-        # smb-credentials is referenced in /etc/fstab, by ../hosts/ai/cifs-mount.nix
-        "smb-credentials" = {
-          file = "${mysecrets}/smb-credentials.age";
-        }
-        // high_security;
-
-        "rclone.conf" = {
-          file = "${mysecrets}/rclone.conf.age";
-        }
-        // high_security;
-
-        # ---------------------------------------------
-        # user can read this file.
-        # ---------------------------------------------
-
-        "ssh-key-romantic" = {
-          file = "${mysecrets}/ssh-key-romantic.age";
-        }
-        // user_readable;
+        # NOTE(vitus): bootstrap minimal desktop secrets first.
+        # Re-enable the following secrets after migration is complete.
+        #
+        # # ---------------------------------------------
+        # # no one can read/write this file, even root.
+        # # ---------------------------------------------
+        #
+        # # .age means the decrypted file is still encrypted by age(via a passphrase)
+        # "ryan4yin-gpg-subkeys.priv.age" = {
+        #   file = "${mysecrets}/ryan4yin-gpg-subkeys-2024-01-27.priv.age.age";
+        # }
+        # // noaccess;
+        #
+        # # ---------------------------------------------
+        # # only root can read this file.
+        # # ---------------------------------------------
+        #
+        # "wg-business.conf" = {
+        #   file = "${mysecrets}/wg-business.conf.age";
+        # }
+        # // high_security;
+        #
+        # # Used only by NixOS Modules
+        # # smb-credentials is referenced in /etc/fstab, by ../hosts/ai/cifs-mount.nix
+        # "smb-credentials" = {
+        #   file = "${mysecrets}/smb-credentials.age";
+        # }
+        # // high_security;
+        #
+        # "rclone.conf" = {
+        #   file = "${mysecrets}/rclone.conf.age";
+        # }
+        # // high_security;
+        #
+        # # ---------------------------------------------
+        # # user can read this file.
+        # # ---------------------------------------------
+        #
+        # "ssh-key-romantic" = {
+        #   file = "${mysecrets}/ssh-key-romantic.age";
+        # }
+        # // user_readable;
 
         # alias-for-work
         "alias-for-work.nushell" = {
           file = "${mysecrets}/alias-for-work.nushell.age";
         }
         // user_readable;
+
+        "totp-secrets.conf" = {
+          file = "${mysecrets}/totp-secrets.conf.age";
+        }
+        // user_readable;
       };
 
       # place secrets in /etc/
       environment.etc = {
-        # wireguard config used with `wg-quick up wg-business`
-        "wireguard/wg-business.conf" = {
-          source = config.age.secrets."wg-business.conf".path;
-        };
-
-        "agenix/rclone.conf" = {
-          source = config.age.secrets."rclone.conf".path;
-        };
-
-        "agenix/ssh-key-romantic" = {
-          source = config.age.secrets."ssh-key-romantic".path;
-          mode = "0600";
-          user = myvars.username;
-        };
-
-        "agenix/ryan4yin-gpg-subkeys.priv.age" = {
-          source = config.age.secrets."ryan4yin-gpg-subkeys.priv.age".path;
-          mode = "0000";
-        };
+        # NOTE(vitus): bootstrap minimal desktop secrets first.
+        # Re-enable the following mappings after migration is complete.
+        #
+        # # wireguard config used with `wg-quick up wg-business`
+        # "wireguard/wg-business.conf" = {
+        #   source = config.age.secrets."wg-business.conf".path;
+        # };
+        #
+        # "agenix/rclone.conf" = {
+        #   source = config.age.secrets."rclone.conf".path;
+        # };
+        #
+        # "agenix/ssh-key-romantic" = {
+        #   source = config.age.secrets."ssh-key-romantic".path;
+        #   mode = "0600";
+        #   user = myvars.username;
+        # };
+        #
+        # "agenix/ryan4yin-gpg-subkeys.priv.age" = {
+        #   source = config.age.secrets."ryan4yin-gpg-subkeys.priv.age".path;
+        #   mode = "0000";
+        # };
 
         # The following secrets are used by home-manager modules
         # So we need to make then readable by the user
         "agenix/alias-for-work.nushell" = {
           source = config.age.secrets."alias-for-work.nushell".path;
           mode = "0644"; # both the original file and the symlink should be readable and executable by the user
+        };
+
+        # Used by noctalia TOTP scripts via ~/.config/totp/secrets.conf symlink.
+        "agenix/totp-secrets.conf" = {
+          source = config.age.secrets."totp-secrets.conf".path;
+          mode = "0400";
+          user = myvars.username;
         };
       };
     })

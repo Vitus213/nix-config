@@ -23,7 +23,7 @@
     "sortByMostUsed": true,
     "terminalCommand": "xterm -e",
     "useApp2Unit": true,
-    "viewMode": "list"
+    "viewMode": "grid"
   },
   "audio": {
     "cavaFrameRate": 30,

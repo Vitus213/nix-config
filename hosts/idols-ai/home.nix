@@ -3,7 +3,8 @@ let
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 in
 {
-  programs.ssh.matchBlocks."github.com".identityFile = "${config.home.homeDirectory}/.ssh/idols-ai";
+  programs.ssh.matchBlocks."github.com".identityFile =
+    "${config.home.homeDirectory}/.ssh/vitus-apollo";
 
   modules.desktop.nvidia.enable = true;
 

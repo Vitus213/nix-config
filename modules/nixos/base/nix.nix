@@ -27,11 +27,7 @@
 
   nix.channel.enable = false; # remove nix-channel related tools & configs, we use flakes instead.
 
-  nix.extraOptions =
-    if builtins.pathExists "/etc/agenix/nix-access-tokens" then
-      ''
-        !include /etc/agenix/nix-access-tokens
-      ''
-    else
-      "";
+  nix.extraOptions = ''
+    !include /etc/agenix/nix-access-tokens
+  '';
 }

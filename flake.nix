@@ -161,17 +161,17 @@
 
     ########################  My own repositories  #########################################
 
-    # my private secrets, it's a private repository, you need to replace it with your own.
-    # use ssh protocol to authenticate via ssh-agent/ssh-key, and shallow clone to save time
+    # my private secrets repository(local path for bootstrap/migration).
+    # switch back to git+ssh after migration is finished.
     mysecrets = {
-      url = "git+ssh://git@github.com/ryan4yin/nix-secrets.git?shallow=1";
+      url = "github:Vitus213/my-secrets";
       flake = false;
     };
 
-    my-asahi-firmware = {
-      url = "git+ssh://git@github.com/ryan4yin/asahi-firmware.git?shallow=1";
-      flake = false;
-    };
+    # my-asahi-firmware = {
+    #   url = "git+ssh://git@github.com/ryan4yin/asahi-firmware.git?shallow=1";
+    #   flake = false;
+    # };
 
     # my wallpapers
     wallpapers = {
@@ -179,10 +179,10 @@
       flake = false;
     };
 
-    nur-ryan4yin = {
-      url = "github:ryan4yin/nur-packages";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # nur-ryan4yin = {
+    #   url = "github:ryan4yin/nur-packages";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     # for waydroid
     # nur-ataraxiasjel.url = "github:AtaraxiaSjel/nur";

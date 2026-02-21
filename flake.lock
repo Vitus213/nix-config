@@ -7,11 +7,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1771029880,
-        "narHash": "sha256-bjCsiDZJ4U1uenmcggg3ZgbHyuhyjw1bOwgN1qvbCD0=",
+        "lastModified": 1771170367,
+        "narHash": "sha256-g0K/3H/iaA5zPa/YPxEmDeyokQ5AMVsPZafJHmvw3pA=",
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "39dba583302d48ca22c96bfe63c1414b71e04de4",
+        "rev": "6e30cf8981981bbfc4e8ed6696a3c21b690e60e2",
         "type": "github"
       },
       "original": {
@@ -74,11 +74,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770551880,
-        "narHash": "sha256-+cS5yXWsSLiK36+PP/+dcQdxpXSclx2d65p7l6Dis+A=",
+        "lastModified": 1771587924,
+        "narHash": "sha256-eVYOGmF8nQBhudJyU6lHdgJI87kvGz8JyCq5/Vi9Mjk=",
         "owner": "catppuccin",
         "repo": "nix",
-        "rev": "db4dfe3f2a80e9c33492d839accd49f75c7324c2",
+        "rev": "b0c65edbf31c2ad3d84438d82c2310f2c28373f3",
         "type": "github"
       },
       "original": {
@@ -330,11 +330,11 @@
         "zon2nix": "zon2nix"
       },
       "locked": {
-        "lastModified": 1771086270,
-        "narHash": "sha256-mTCQuab0I2B/Naq0wveN9U9zWD/Hfu9SwsaKF0DSm4k=",
+        "lastModified": 1771694308,
+        "narHash": "sha256-jPxFDCVP6M6Pc0d1YfQUil/UTrrbV+Gkakp7O9qdH4A=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "61e347a2c278263dd1392c324feaee5fb9712ee5",
+        "rev": "2e172eeb60b0096f2946eb631b2e8bc294e45c62",
         "type": "github"
       },
       "original": {
@@ -416,11 +416,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1771121283,
-        "narHash": "sha256-hXxc3JqZ+xF2VjTOczmYHVttRIWlxGh5RmYZ9OcMPD8=",
+        "lastModified": 1771207600,
+        "narHash": "sha256-sCytET1N+eOs9bTTlDtV3hRc/g4eclwYWDBRu8uue/8=",
         "owner": "mattwparas",
         "repo": "helix",
-        "rev": "908d48c5dd9700ddff65bcfce8850eea74af0360",
+        "rev": "df8f82a548fd018e9d040ff7b379ed177ff8809c",
         "type": "github"
       },
       "original": {
@@ -504,11 +504,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771132481,
-        "narHash": "sha256-Tc+YqZ/Q1K35vJK4ji4RbLB/qKGcEq6yh7p4CKoZF60=",
+        "lastModified": 1771683283,
+        "narHash": "sha256-WxAEkAbo8dP7qiyPM6VN4ZGAxfuBVlNBNPkrqkrXVEc=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "1e53254671f36cb7d0e2dcca08730f066d5e69b4",
+        "rev": "c6ed3eab64d23520bcbb858aa53fe2b533725d4a",
         "type": "github"
       },
       "original": {
@@ -544,38 +544,20 @@
         "type": "github"
       }
     },
-    "my-asahi-firmware": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1752336609,
-        "narHash": "sha256-PeJXDQgKwmu6PEjEA+68I7nIOTTpwUUyO1b5PpQg4gc=",
-        "ref": "refs/heads/main",
-        "rev": "981583c8e101967ef6a66388ade54cab751f3a02",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/ryan4yin/asahi-firmware.git"
-      },
-      "original": {
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/ryan4yin/asahi-firmware.git"
-      }
-    },
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1766070008,
-        "narHash": "sha256-DU5ATFeUY5S5Z1ZZAkJLwqDCJXRk15qMp/nLP3Tmoew=",
-        "ref": "refs/heads/main",
-        "rev": "cfe34c222cf7ee4290438c97e6cc734aa7792346",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/ryan4yin/nix-secrets.git"
+        "lastModified": 1771696012,
+        "narHash": "sha256-NXrmkyoKGwDVbpA1bAxxj4plox6avVUYbOqajT1OhlA=",
+        "owner": "Vitus213",
+        "repo": "my-secrets",
+        "rev": "2d7dab2735324eac6f81e673fbee409c82cdb90b",
+        "type": "github"
       },
       "original": {
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/ryan4yin/nix-secrets.git"
+        "owner": "Vitus213",
+        "repo": "my-secrets",
+        "type": "github"
       }
     },
     "nix-darwin": {
@@ -585,11 +567,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1770922915,
-        "narHash": "sha256-6J/JoK9iL7sHvKJcGW2KId2agaKv1OGypsa7kN+ZBD4=",
+        "lastModified": 1771520882,
+        "narHash": "sha256-9SeTZ4Pwr730YfT7V8Azb8GFbwk1ZwiQDAwft3qAD+o=",
         "owner": "lnl7",
         "repo": "nix-darwin",
-        "rev": "6c5a56295d2a24e43bcd8af838def1b9a95746b2",
+        "rev": "6a7fdcd5839ec8b135821179eea3b58092171bcf",
         "type": "github"
       },
       "original": {
@@ -606,11 +588,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771123156,
-        "narHash": "sha256-Px1IFFTw3zdP8RNram2g41EvUTjIZRDLCgZyXgpBty0=",
+        "lastModified": 1771640944,
+        "narHash": "sha256-4SdEn6CeRGBw1BBohqC60hJ+0T7jTQQYsbemS0i2mrw=",
         "owner": "fufexan",
         "repo": "nix-gaming",
-        "rev": "0c4bf3ac4eaf5b693e5d7ae75f3caba8fcf15d8f",
+        "rev": "4c4bebc4b7e4b02d4f81d78c6e7b5c01f6a03d90",
         "type": "github"
       },
       "original": {
@@ -642,11 +624,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771054135,
-        "narHash": "sha256-0RYmnOk40U4ZGbW/+3rHlNndrsuHCz9h+xequKWgwHQ=",
+        "lastModified": 1771511514,
+        "narHash": "sha256-qhtonMK07BCVC/wZ+pZ9/MKhcTric7YUaCpW6pOg8IM=",
         "owner": "nix-community",
         "repo": "nixos-apple-silicon",
-        "rev": "357186cca0f4c7801ff16970e4b6a05e74fd88e0",
+        "rev": "2b92d495204be0b10845c66361444dbc8441c68d",
         "type": "github"
       },
       "original": {
@@ -732,11 +714,11 @@
     },
     "nixpkgs-darwin": {
       "locked": {
-        "lastModified": 1770843696,
-        "narHash": "sha256-LovWTGDwXhkfCOmbgLVA10bvsi/P8eDDpRudgk68HA8=",
+        "lastModified": 1771207753,
+        "narHash": "sha256-b9uG8yN50DRQ6A7JdZBfzq718ryYrlmGgqkRm9OOwCE=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "2343bbb58f99267223bc2aac4fc9ea301a155a16",
+        "rev": "d1c15b7d5806069da59e819999d70e1cec0760bf",
         "type": "github"
       },
       "original": {
@@ -763,11 +745,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1771147547,
-        "narHash": "sha256-WRiWxJm5SFDkeJyAMIWEEjuFSVFy1GC+9b06k661KuQ=",
+        "lastModified": 1771696919,
+        "narHash": "sha256-D2Q3nNCram7u3Krq4s2IVBGfebVjXWTr4DApoOq5K90=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "d5643dce7d83ac50d5a483566f9b1e6ce65214a9",
+        "rev": "fe96650ccf51fcda83e4df82b321774f9c4eb041",
         "type": "github"
       },
       "original": {
@@ -795,11 +777,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1771043024,
-        "narHash": "sha256-O1XDr7EWbRp+kHrNNgLWgIrB0/US5wvw9K6RERWAj6I=",
+        "lastModified": 1771574726,
+        "narHash": "sha256-D1PA3xQv/s4W3lnR9yJFSld8UOLr0a/cBWMQMXS+1Qg=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "3aadb7ca9eac2891d52a9dec199d9580a6e2bf44",
+        "rev": "c217913993d6c6f6805c3b1a3bda5e639adfde6d",
         "type": "github"
       },
       "original": {
@@ -840,11 +822,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1771008912,
-        "narHash": "sha256-gf2AmWVTs8lEq7z/3ZAsgnZDhWIckkb+ZnAo5RzSxJg=",
+        "lastModified": 1771369470,
+        "narHash": "sha256-0NBlEBKkN3lufyvFegY4TYv5mCNHbi5OmBDrzihbBMQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "a82ccc39b39b621151d6732718e3e250109076fa",
+        "rev": "0182a361324364ae3f436a63005877674cf45efb",
         "type": "github"
       },
       "original": {
@@ -888,26 +870,6 @@
       "original": {
         "owner": "DeterminateSystems",
         "repo": "nuenv",
-        "type": "github"
-      }
-    },
-    "nur-ryan4yin": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1765716208,
-        "narHash": "sha256-23X12PirpI3HhJZVm2Z/9BTbEHlXjJxizB6Mot7qeLU=",
-        "owner": "ryan4yin",
-        "repo": "nur-packages",
-        "rev": "420e007374a83784ce915f0d0bffd670f302ee1b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ryan4yin",
-        "repo": "nur-packages",
         "type": "github"
       }
     },
@@ -986,7 +948,6 @@
         "helix": "helix",
         "home-manager": "home-manager_3",
         "lanzaboote": "lanzaboote",
-        "my-asahi-firmware": "my-asahi-firmware",
         "mysecrets": "mysecrets",
         "nix-darwin": "nix-darwin",
         "nix-gaming": "nix-gaming",
@@ -1001,7 +962,6 @@
         "nixpkgs-stable": "nixpkgs-stable",
         "nu_scripts": "nu_scripts",
         "nuenv": "nuenv",
-        "nur-ryan4yin": "nur-ryan4yin",
         "pre-commit-hooks": "pre-commit-hooks",
         "preservation": "preservation",
         "wallpapers": "wallpapers"
