@@ -14,8 +14,8 @@
     defaultApplications =
       let
         browser = [
-          "google-chrome.desktop"
           "firefox.desktop"
+          "google-chrome.desktop"
         ];
         editor = [
           "nvim.desktop"
