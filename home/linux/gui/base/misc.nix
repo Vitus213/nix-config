@@ -18,6 +18,7 @@
     nixpaks.telegram-desktop
     # qqmusic
     bwraps.wechat
+    feishu
     # discord # update too frequently, use the web version instead
   ];
 

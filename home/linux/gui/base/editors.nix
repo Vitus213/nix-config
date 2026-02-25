@@ -25,5 +25,8 @@ in
     package = pkgs-master.vscode.override {
       commandLineArgs = vscodeCliArgs;
     };
+    profiles.default.userSettings = {
+      "files.autoSave" = "afterDelay";
+    };
   };
 }
