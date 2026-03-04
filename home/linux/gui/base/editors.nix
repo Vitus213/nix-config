@@ -9,7 +9,7 @@ let
   vscodeCliArgs = [
     # Temporary stability workaround under niri:
     # keep VSCode on X11 backend to avoid Wayland event-buffer crashes.
-    "--ozone-platform=x11" # 强制为x11输入法能正常显示
+    "--ozone-platform=x11" # 强制为x11输入法能正常显示输入法候选框，不会出现偏移
 
     # https://code.visualstudio.com/docs/configure/settings-sync#_recommended-configure-the-keyring-to-use-with-vs-code
     # For use with any package that implements the Secret Service API
