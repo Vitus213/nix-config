@@ -1,6 +1,6 @@
 { lib }:
 rec {
-  mainGateway = "192.168.100.1"; # main router
+  mainGateway = "192.168.111.1"; # main router
   mainGateway6 = "fe80::5"; # main router's link-local address
   # use suzi as the default gateway
   # it's a subrouter with a transparent proxy
@@ -39,7 +39,7 @@ rec {
     ai = {
       # Desktop PC
       iface = "enp5s0";
-      ipv4 = "192.168.100.149";
+      ipv4 = "192.168.111.100";
       ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
     };
     aquamarine = {
