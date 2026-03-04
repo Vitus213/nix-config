@@ -45,9 +45,9 @@ just nvim-test
 just nvim-clear
 ```
 
-## Cheetsheet
+## Cheatsheet
 
-Here is the cheetsheet related to my Neovim configs. Please read vim's common cheetsheet at
+Here is the cheatsheet related to my Neovim configs. Please read vim's common cheatsheet at
 [../README.md](../README.md) before reading the following.
 
 ### Incremental Selection

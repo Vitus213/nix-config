@@ -11,7 +11,7 @@
   ...
 }@args:
 let
-  name = "fern";
+  name = "artemis";
 
   modules = {
     darwin-modules =
@@ -20,7 +20,7 @@ let
         "secrets/darwin.nix"
         "modules/darwin"
         # host specific
-        "hosts/darwin-${name}"
+        "hosts/olympians-${name}"
       ])
       ++ [
         {
@@ -29,7 +29,7 @@ let
       ];
 
     home-modules = map mylib.relativeToRoot [
-      "hosts/darwin-${name}/home.nix"
+      "hosts/olympians-${name}/home.nix"
       "home/darwin"
     ];
   };

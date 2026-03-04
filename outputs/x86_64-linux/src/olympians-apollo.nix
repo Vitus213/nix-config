@@ -12,8 +12,8 @@
   ...
 }@args:
 let
-  # 星野 アイ, Hoshino Ai
-  name = "ai";
+  # 阿波罗, Apollo
+  name = "apollo";
   base-modules = {
     nixos-modules =
       (map mylib.relativeToRoot [
@@ -21,7 +21,7 @@ let
         "secrets/nixos.nix"
         "modules/nixos/desktop.nix"
         # host specific
-        "hosts/idols-${name}"
+        "hosts/olympians-${name}"
         # nixos hardening
         # "hardening/profiles/default.nix"
         "hardening/nixpaks"
@@ -40,7 +40,7 @@ let
         # common
         "home/linux/gui.nix"
         # host specific
-        "hosts/idols-${name}/home.nix"
+        "hosts/olympians-${name}/home.nix"
       ])
       ++ [
         {

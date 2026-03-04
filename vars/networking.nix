@@ -36,11 +36,17 @@ rec {
     # ============================================
     # Other VMs and Physical Machines
     # ============================================
-    ai = {
+    apollo = {
       # Desktop PC
       iface = "enp5s0";
       ipv4 = "192.168.111.100";
       ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
+    };
+    athena = {
+      # Desktop PC (placeholder values)
+      iface = "enp0s0";
+      ipv4 = "192.168.111.101";
+      ipv6 = "fe80::101"; # Link-local Address
     };
     aquamarine = {
       # VM

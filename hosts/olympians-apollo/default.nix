@@ -1,11 +1,11 @@
 { myvars, lib, ... }:
 #############################################################
 #
-#  Ai - my main computer, with NixOS + I5-13600KF + RTX 4090 GPU, for gaming & daily use.
+#  Apollo - my main computer, with NixOS + I5-13600KF + RTX 4090 GPU, for gaming & daily use.
 #
 #############################################################
 let
-  hostName = "ai"; # Define your hostname.
+  hostName = "apollo"; # Define your hostname.
 
   inherit (myvars.networking) mainGateway mainGateway6 nameservers;
   inherit (myvars.networking.hostsAddr.${hostName}) iface ipv4 ipv6;
@@ -18,7 +18,7 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./nvidia.nix
-    ./ai
+    ./apollo
 
     ./preservation.nix
   ];

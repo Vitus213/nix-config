@@ -127,6 +127,11 @@ in
     map (it: it.darwinConfigurations or { }) darwinSystemValues
   );
 
+  # home-manager standalone Hosts
+  homeConfigurations = lib.attrsets.mergeAttrsList (
+    map (it: it.homeConfigurations or { }) allSystemValues
+  );
+
   # Packages
   packages = forAllSystems (system: allSystems.${system}.packages or { });
 

@@ -77,7 +77,7 @@ All the outputs of this flake are defined here.
 │   ├── default.nix
 │   └── src           # every host has its own file in this directory
 │       ├── frieren.nix
-│       └── fern.nix
+│       └── olympians-artemis.nix
 ├── aarch64-linux     # All outputs for Linux ARM64
 │   ├── default.nix
 │   ├── src           # every host has its own file in this directory
@@ -87,7 +87,9 @@ All the outputs of this flake are defined here.
     ├── default.nix
     ├── nixos-tests
     ├── src           # every host has its own file in this directory
-    │   ├── idols-ai.nix
+    │   ├── olympians-apollo.nix
+    │   ├── olympians-athena.nix
+    │   ├── olympians-hermes.nix
     │   ├── idols-aquamarine.nix
     │   ├── idols-kana.nix
     │   ├── idols-ruby.nix
@@ -101,6 +103,9 @@ All the outputs of this flake are defined here.
     │   ├── kubevirt-shushou.nix
     │   └── kubevirt-youko.nix
     └── tests         # eval tests
+        ├── home-configurations
+        │   ├── expected.nix
+        │   └── expr.nix
         ├── home-manager
         │   ├── expected.nix
         │   └── expr.nix

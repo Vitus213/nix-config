@@ -1,11 +1,11 @@
 _:
 #############################################################
 #
-#  Fern - MacBook Pro 2022 13-inch M2 16G.
+#  Artemis - MacBook Pro 2022 13-inch M2 16G.
 #
 #############################################################
 let
-  hostname = "fern";
+  hostname = "artemis";
 in
 {
   networking.hostName = hostname;

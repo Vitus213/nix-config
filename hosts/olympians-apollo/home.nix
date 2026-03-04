@@ -9,5 +9,5 @@ in
   modules.desktop.nvidia.enable = true;
 
   xdg.configFile."niri/niri-hardware.kdl".source =
-    mkSymlink "${config.home.homeDirectory}/nix-config/hosts/idols-ai/niri-hardware.kdl";
+    mkSymlink "${config.home.homeDirectory}/nix-config/hosts/olympians-apollo/niri-hardware.kdl";
 }

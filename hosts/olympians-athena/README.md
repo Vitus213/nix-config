@@ -1,4 +1,4 @@
-# Host - AI
+# Host - Athena
 
 Related:
 
@@ -6,7 +6,7 @@ Related:
 
 ## TODOs
 
-1. Install DCGM-Exporter on `ai` to monitor the GPU status.
+1. Install DCGM-Exporter on `athena` to monitor the GPU status.
 
 ## Info
 

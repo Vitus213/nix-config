@@ -5,7 +5,7 @@
 let
   username = myvars.username;
   hosts = [
-    "fern"
+    "artemis"
     "frieren"
   ];
 in

@@ -14,7 +14,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    ../idols-ai/preservation.nix
+    ../olympians-apollo/preservation.nix
   ];
 
   # disable sunshine for securrity

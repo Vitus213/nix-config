@@ -19,6 +19,9 @@ let
     nixosConfigurations = lib.attrsets.mergeAttrsList (
       map (it: it.nixosConfigurations or { }) dataWithoutPaths
     );
+    homeConfigurations = lib.attrsets.mergeAttrsList (
+      map (it: it.homeConfigurations or { }) dataWithoutPaths
+    );
     packages = lib.attrsets.mergeAttrsList (map (it: it.packages or { }) dataWithoutPaths);
     # colmena contains some meta info, which need to be merged carefully.
     colmenaMeta = {

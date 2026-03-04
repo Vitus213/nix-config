@@ -273,7 +273,7 @@ mv /etc/ssh /persistent/etc/
 
 # delete the generated configuration after editing
 rm -f /mnt/etc/nixos
-rm ~/nix-config/hosts/idols_ai/hardware-configuration-new.nix
+rm ~/nix-config/hosts/12kingdoms-shoukei/hardware-configuration-new.nix
 
 # NOTE: `cat shoukei.md | grep git-1 > git-1.sh` to generate this script
 # commit the changes after installing nixos successfully
@@ -325,4 +325,4 @@ just s-hypr
 Finally, to enable secure boot, follow the instructions in
 [lanzaboote - Quick Start](https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md)
 and
-[nix-config/ai/secure-boot.nix](https://github.com/ryan4yin/nix-config/blob/main/hosts/idols_ai/secureboot.nix)
+[nix-config/olympians-apollo/secure-boot.nix](https://github.com/ryan4yin/nix-config/blob/main/hosts/olympians-apollo/secureboot.nix)

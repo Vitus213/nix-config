@@ -6,13 +6,14 @@ This directory contains all host-specific configurations for my NixOS and macOS 
 
 ### Physical Machines
 
-#### `idols` - Main Workstations
+#### `desktops` - Main Workstations
 
-Named after characters from "Oshi no Ko":
+Named after Greek mythology:
 
 | Host         | Platform    | Hardware              | Purpose               | Status      |
 | ------------ | ----------- | --------------------- | --------------------- | ----------- |
-| `ai`         | NixOS       | i5-13600KF + RTX 4090 | Gaming & Daily Use    | ✅ Active   |
+| `apollo`     | NixOS       | i5-13600KF + RTX 4090 | Gaming & Daily Use    | ✅ Active   |
+| `athena`     | NixOS       | TBD                   | Secondary Desktop     | 🛠️ Planned  |
 | `aquamarine` | KubeVirt VM | Virtual               | Monitoring & Services | ✅ Active   |
 | `kana`       | NixOS       | Virtual               | Reserved              | ⚪ Not Used |
 | `ruby`       | NixOS       | Virtual               | Reserved              | ⚪ Not Used |
@@ -23,7 +24,7 @@ Named after characters from "Frieren: Beyond Journey's End":
 
 | Host      | Platform | Hardware                   | Purpose      | Status    |
 | --------- | -------- | -------------------------- | ------------ | --------- |
-| `fern`    | macOS    | MacBook Pro M2 13" 16GB    | Personal Use | ✅ Active |
+| `artemis` | macOS    | MacBook Pro M2 13" 16GB    | Personal Use | ✅ Active |
 | `frieren` | macOS    | MacBook Pro M4Pro 14" 48GB | Work Use     | ✅ Active |
 
 #### `12kingdoms` - Homelab Servers & Apple Silicon Linux
@@ -49,6 +50,7 @@ Named after "Twelve Kingdoms":
 
 - **SBCs**: aarch64/riscv64 single-board computers managed in
   [ryan4yin/nixos-config-sbc](https://github.com/ryan4yin/nixos-config-sbc)
+- **Ubuntu servers (HM-only)**: `hermes` managed through standalone home-manager output
 
 All my riscv64 hosts:
 
@@ -56,7 +58,8 @@ All my riscv64 hosts:
 
 ## Naming Conventions
 
-- **idols**: Characters from "Oshi no Ko" anime/manga
+- **olympians**: Greek mythology hosts use the `olympians-` path prefix
+- **desktops**: `apollo` / `athena` use Greek mythology names
 - **12kingdoms**: Characters from "Twelve Kingdoms" anime/novel series
 - **darwin**: Characters from "Frieren: Beyond Journey's End" anime/manga
 - **k8s**: Kubernetes-related systems follow standard naming patterns
@@ -103,15 +106,15 @@ Use existing hosts as templates. The key files typically include:
 
 ### Examples to Reference
 
-- **Desktop systems**: See `idols-ai/` for gaming/workstation setup
+- **Desktop systems**: See `olympians-apollo/` for gaming/workstation setup
 - **Server systems**: See `kubevirt-shoryu/` for K8s/KubeVirt hosts
-- **macOS systems**: See `darwin-fern/` for macOS configurations
+- **macOS systems**: See `olympians-artemis/` for macOS configurations
 - **Apple Silicon**: See `12kingdoms-shoukei/` for ARM Linux setup
 
 ## Distributed Building
 
-I usually run the build command on `Ai` and nix will distribute the build to other NixOS machines,
-which is convenient and fast.
+I usually run the build command on `Apollo` and nix will distribute the build to other NixOS
+machines, which is convenient and fast.
 
 When building some packages for riscv64 or aarch64, I often have no cache available because of
 various changes under the hood, so I need to build much more packages than usual, which is one of

@@ -32,14 +32,14 @@
     in
     {
       nixosConfigurations = {
-        ai = nixpkgs.lib.nixosSystem {
+        apollo = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = inputs // {
             inherit mylib myvars;
           };
 
           modules = [
-            { networking.hostName = "ai"; }
+            { networking.hostName = "apollo"; }
 
             ./configuration.nix
 
@@ -48,8 +48,8 @@
             ../modules/nixos/base/user-group.nix
             ../modules/nixos/base/ssh.nix
 
-            ../hosts/idols-ai/hardware-configuration.nix
-            ../hosts/idols-ai/preservation.nix
+            ../hosts/olympians-apollo/hardware-configuration.nix
+            ../hosts/olympians-apollo/preservation.nix
           ];
         };
 
@@ -70,7 +70,7 @@
             ../modules/nixos/base/ssh.nix
 
             ../hosts/12kingdoms-shoukei/hardware-configuration.nix
-            ../hosts/idols-ai/preservation.nix
+            ../hosts/olympians-apollo/preservation.nix
           ];
         };
       };
