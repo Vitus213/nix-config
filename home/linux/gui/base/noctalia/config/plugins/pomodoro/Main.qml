@@ -105,6 +105,7 @@ Item {
   property int pomodoroCompletedSessions: 0
   property int pomodoroTotalCompleted: 0
   property bool pomodoroSoundPlaying: false
+  property bool restoringPersistedState: false
 
   property int settingsVersion: 0
   
@@ -123,6 +124,28 @@ Item {
   function _computeAutoStartBreaks() { return pluginApi?.pluginSettings?.autoStartBreaks ?? false; }
   function _computeAutoStartWork() { return pluginApi?.pluginSettings?.autoStartWork ?? false; }
   function _computeCompactMode() { return pluginApi?.pluginSettings?.compactMode ?? false; }
+
+  function loadPersistedCounters() {
+    if (!pluginApi || !pluginApi.pluginSettings)
+      return;
+
+    const persistedTotal = Number(pluginApi.pluginSettings.totalCompleted);
+    restoringPersistedState = true;
+    if (Number.isFinite(persistedTotal) && persistedTotal >= 0) {
+      root.pomodoroTotalCompleted = Math.floor(persistedTotal);
+    } else {
+      root.pomodoroTotalCompleted = 0;
+    }
+    restoringPersistedState = false;
+  }
+
+  function persistCounters() {
+    if (!pluginApi || !pluginApi.pluginSettings || restoringPersistedState)
+      return;
+
+    pluginApi.pluginSettings.totalCompleted = root.pomodoroTotalCompleted;
+    pluginApi.saveSettings();
+  }
   
   onSettingsVersionChanged: {
     workDuration = _computeWorkDuration()
@@ -132,7 +155,12 @@ Item {
     autoStartBreaks = _computeAutoStartBreaks()
     autoStartWork = _computeAutoStartWork()
     compactMode = _computeCompactMode()
+    loadPersistedCounters()
     Logger.i("Pomodoro", "Settings updated: autoStartBreaks=" + autoStartBreaks + ", autoStartWork=" + autoStartWork + ", compactMode=" + compactMode)
+  }
+
+  onPomodoroTotalCompletedChanged: {
+    persistCounters()
   }
 
   function getDurationForMode(mode) {

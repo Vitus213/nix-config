@@ -24,7 +24,8 @@
       "longBreakDuration": 15,
       "sessionsBeforeLongBreak": 4,
       "autoStartBreaks": false,
-      "autoStartWork": false
+      "autoStartWork": false,
+      "totalCompleted": 0
     }
   }
 }
