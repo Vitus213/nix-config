@@ -13,11 +13,11 @@
     # nixpaks
     "${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop"
     "${pkgs.nixpaks.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
-  ]
-  ++ (
-    if pkgs.stdenv.isx86_64 then
-      [ "${pkgs.google-chrome}/share/applications/google-chrome.desktop" ]
-    else
-      [ "${pkgs.chromium}/share/applications/chromium-browser.desktop" ]
-  );
+  ];
+  # ++ (
+  #   if pkgs.stdenv.isx86_64 then
+  #     [ "${pkgs.google-chrome}/share/applications/google-chrome.desktop" ]
+  #   else
+  #     [ "${pkgs.chromium}/share/applications/chromium-browser.desktop" ]
+  # );
 }
