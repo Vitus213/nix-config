@@ -13,6 +13,19 @@
 let
   inherit (inputs) nixpkgs home-manager;
   name = "hermes";
+  base-modules = {
+    home-modules =
+      (map mylib.relativeToRoot [
+        "secrets/home.nix"
+        "home/linux/tui.nix"
+        "hosts/olympians-${name}/home.nix"
+      ])
+      ++ [
+        {
+          modules.secrets.home.enable = true;
+        }
+      ];
+  };
 in
 {
   homeConfigurations.${name} = home-manager.lib.homeManagerConfiguration {
@@ -22,9 +35,6 @@ in
       config.allowUnfree = true;
     };
     extraSpecialArgs = genSpecialArgs system;
-    modules = map mylib.relativeToRoot [
-      "home/linux/tui.nix"
-      "hosts/olympians-${name}/home.nix"
-    ];
+    modules = base-modules.home-modules;
   };
 }
