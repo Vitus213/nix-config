@@ -8,13 +8,10 @@
 {
   # wayland related
   home.sessionVariables = {
-    # Temporary stability workaround:
-    # force Chromium/Electron to X11 to avoid niri Wayland buffer overflow crashes
-    # and IME candidate misplacement on 4K fractional scaling.
-    "NIXOS_OZONE_WL" = "0";
+    # Keep Firefox on Wayland.
+    # Electron backend is no longer forced globally; set per app instead.
     "MOZ_ENABLE_WAYLAND" = "1"; # for firefox to run on wayland
     "MOZ_WEBRENDER" = "1";
-    "ELECTRON_OZONE_PLATFORM_HINT" = "x11";
     # misc
     "_JAVA_AWT_WM_NONREPARENTING" = "1";
     "QT_WAYLAND_DISABLE_WINDOWDECORATION" = "1";
