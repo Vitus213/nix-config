@@ -8,26 +8,51 @@
 }:
 with lib;
 let
-  cfg = config.modules.secrets.home;
+  cfg = config.modules.secrets;
+
+  # Home-Manager agenix module does not support owner/group options.
+  # Decrypted files are created by the current user, so `mode` is enough.
+  user_readable = {
+    mode = "0400";
+  };
 in
 {
   imports = [
     agenix.homeManagerModules.default
   ];
 
-  options.modules.secrets.home = {
-    enable = mkEnableOption "Home Manager secrets via agenix";
+  options.modules.secrets = {
+    home.enable = mkEnableOption "Home Manager secrets via agenix";
   };
 
-  config = mkIf cfg.enable {
-    home.packages = [
-      agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
-    ];
+  config = mkIf cfg.home.enable (mkMerge [
+    {
+      home.packages = [
+        agenix.packages."${pkgs.stdenv.hostPlatform.system}".default
+      ];
 
-    age.secrets = {
-      "alias-for-work.nushell" = {
-        file = "${mysecrets}/alias-for-work.nushell.age";
+      # If you changed keys here, secrets in `mysecrets` need to be re-encrypted.
+      age.identityPaths = [
+        "${config.home.homeDirectory}/.ssh/hermes"
+        "${config.home.homeDirectory}/.ssh/id_ed25519"
+        "${config.home.homeDirectory}/.ssh/id_rsa"
+      ];
+
+      assertions = [
+        {
+          assertion = config.age.identityPaths != [ ];
+          message = "modules.secrets.home.enable is true, but age.identityPaths is empty.";
+        }
+      ];
+    }
+
+    {
+      age.secrets = {
+        "alias-for-work.nushell" = {
+          file = "${mysecrets}/alias-for-work.nushell.age";
+        }
+        // user_readable;
       };
-    };
-  };
+    }
+  ]);
 }
