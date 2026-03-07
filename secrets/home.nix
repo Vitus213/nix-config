@@ -9,6 +9,7 @@
 with lib;
 let
   cfg = config.modules.secrets;
+  mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 
   # Home-Manager agenix module does not support owner/group options.
   # Decrypted files are created by the current user, so `mode` is enough.
@@ -54,13 +55,12 @@ in
         // user_readable;
 
         "github_token" = {
-          file = "${mysecrets}/github_token.age";
+          file = "${mysecrets}/nix-access-tokens.age";
         }
         // user_readable;
       };
 
-      # place secrets in ~/.config/agenix for Home Manager modules
-      xdg.configFile."agenix/github_token".source = config.age.secrets."github_token".path;
+      xdg.configFile."agenix/github_token".source = mkSymlink config.age.secrets."github_token".path;
     }
   ]);
 }

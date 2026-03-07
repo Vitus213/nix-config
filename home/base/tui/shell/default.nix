@@ -2,13 +2,14 @@
   nu_scripts,
   ...
 }:
+let
+  aliasForWork = "/etc/agenix/alias-for-work.nushell";
+in
 {
   programs.nushell = {
     # load work aliases/secrets into the current shell scope.
     extraConfig = ''
-      if ("/etc/agenix/alias-for-work.nushell" | path exists) {
-        source /etc/agenix/alias-for-work.nushell
-      }
+      source ${aliasForWork}
 
       # $env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
       # # using claude-code with kimi k2
