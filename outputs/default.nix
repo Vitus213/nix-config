@@ -138,38 +138,51 @@ in
   # Eval Tests for all NixOS & darwin systems.
   evalTests = lib.lists.all (it: it.evalTests == { }) allSystemValues;
 
-  checks = forAllSystems (system: {
-    # eval-tests per system
-    eval-tests = allSystems.${system}.evalTests == { };
+  checks = forAllSystems (
+    system:
+    let
+      pkgs = nixpkgs.legacyPackages.${system};
+      evalTestsPassed = allSystems.${system}.evalTests == { };
+    in
+    {
+      # eval-tests per system
+      eval-tests = pkgs.runCommand "eval-tests" { } ''
+        if [ "${if evalTestsPassed then "true" else "false"}" != "true" ]; then
+          echo "eval tests failed for ${system}" >&2
+          exit 1
+        fi
+        touch "$out"
+      '';
 
-    pre-commit-check = pre-commit-hooks.lib.${system}.run {
-      src = mylib.relativeToRoot ".";
-      hooks = {
-        nixfmt-rfc-style = {
-          enable = true;
-          settings.width = 100;
-        };
-        # Source code spell checker
-        typos = {
-          enable = true;
-          settings = {
-            write = true; # Automatically fix typos
-            configPath = ".typos.toml"; # relative to the flake root
-            exclude = "rime-data/";
+      pre-commit-check = pre-commit-hooks.lib.${system}.run {
+        src = mylib.relativeToRoot ".";
+        hooks = {
+          nixfmt = {
+            enable = true;
+            settings.width = 100;
           };
-        };
-        prettier = {
-          enable = true;
-          settings = {
-            write = true; # Automatically format files
-            configPath = ".prettierrc.yaml"; # relative to the flake root
+          # Source code spell checker
+          typos = {
+            enable = true;
+            settings = {
+              write = true; # Automatically fix typos
+              configPath = ".typos.toml"; # relative to the flake root
+              exclude = "rime-data/";
+            };
           };
+          prettier = {
+            enable = true;
+            settings = {
+              write = true; # Automatically format files
+              configPath = ".prettierrc.yaml"; # relative to the flake root
+            };
+          };
+          # deadnix.enable = true; # detect unused variable bindings in `*.nix`
+          # statix.enable = true; # lints and suggestions for Nix code(auto suggestions)
         };
-        # deadnix.enable = true; # detect unused variable bindings in `*.nix`
-        # statix.enable = true; # lints and suggestions for Nix code(auto suggestions)
       };
-    };
-  });
+    }
+  );
 
   # Development Shells
   devShells = forAllSystems (

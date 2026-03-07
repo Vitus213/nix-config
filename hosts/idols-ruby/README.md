@@ -1,3 +1,0 @@
-# Idols - Ruby
-
-TODO

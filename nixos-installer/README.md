@@ -7,11 +7,6 @@
 This flake prepares a Nix environment for setting my desktop
 [/hosts/olympians-apollo](/hosts/olympians-apollo/)(in main flake) up on a new machine.
 
-Other docs:
-
-- README for [/hosts/12kingdoms_shoukei](/hosts/12kingdoms_shoukei):
-  [./README.shoukei.md](./README.shoukei.md)
-
 TODOs:
 
 - [ ] declarative disk partitioning with [disko](https://github.com/nix-community/disko)
@@ -90,7 +85,7 @@ lsblk
 # show cryptsetup's compiled in defaults
 cryptsetup --help
 
-# NOTE: `cat shoukei.md | grep luks > luks.sh` to generate this script
+# NOTE: `cat README.md | grep luks > luks.sh` to generate this script
 # encrypt the root partition with luks2 and argon2id, will prompt for a passphrase, which will be used to unlock the partition.
 cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --hash sha512 --iter-time 5000 --key-size 256 --pbkdf argon2id --use-random --verify-passphrase /dev/nvme0n1p2
 
@@ -107,7 +102,7 @@ lsblk
 Formatting the root partition:
 
 ```bash
-# NOTE: `cat shoukei.md | grep create-btrfs > btrfs.sh` to generate this script
+# NOTE: `cat README.md | grep create-btrfs > btrfs.sh` to generate this script
 mkfs.fat -F 32 -n ESP /dev/nvme0n1p1  # create-btrfs
 # format the root partition with btrfs and label it
 mkfs.btrfs -L crypted-nixos /dev/mapper/crypted-nixos   # create-btrfs
@@ -122,7 +117,7 @@ btrfs subvolume create /mnt/@persistent  # create-btrfs
 btrfs subvolume create /mnt/@snapshots  # create-btrfs
 umount /mnt  # create-btrfs
 
-# NOTE: `cat shoukei.md | grep mount-1 > mount-1.sh` to generate this script
+# NOTE: `cat README.md | grep mount-1 > mount-1.sh` to generate this script
 # Remount the root partition with the subvolumes you just created
 #
 # Enable zstd compression to:
@@ -211,7 +206,7 @@ nixos-install --root /mnt --flake .#apollo --no-root-password --show-trace --ver
 
 # if you want to use a cache mirror, run this command instead
 # replace the mirror url with your own
-nixos-install --root /mnt --flake .#shoukei --no-root-password --show-trace --verbose --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store  https://cache.nixos.org/" # install-2
+nixos-install --root /mnt --flake .#apollo --no-root-password --show-trace --verbose --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store  https://cache.nixos.org/" # install-2
 
 # enter into the installed system, check password & users
 # `su ryan` => `sudo -i` => enter ryan's password => successfully login
@@ -231,7 +226,7 @@ mv /etc/ssh /persistent/etc/
 rm -f /mnt/etc/nixos
 rm ~/nix-config/hosts/olympians-apollo/hardware-configuration-new.nix
 
-# NOTE: `cat shoukei.md | grep git-1 > git-1.sh` to generate this script
+# NOTE: `cat README.md | grep git-1 > git-1.sh` to generate this script
 # commit the changes after installing nixos successfully
 git config --global user.email "ryan4yin@linux.com"   # git-1
 git config --global user.name "Ryan Yin"              # git-1

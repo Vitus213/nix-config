@@ -61,7 +61,7 @@ How to run NixOS tests for every host:
 ```bash
 # Format: nix build .#<name>-nixos-tests
 
-nix build .#ruby-nixos-tests
+nix build .#<name>-nixos-tests
 ```
 
 ## Overview
@@ -76,32 +76,17 @@ All the outputs of this flake are defined here.
 ├── aarch64-darwin    # All outputs for macOS Apple Silicon
 │   ├── default.nix
 │   └── src           # every host has its own file in this directory
-│       ├── frieren.nix
 │       └── olympians-artemis.nix
 ├── aarch64-linux     # All outputs for Linux ARM64
 │   ├── default.nix
-│   ├── src           # every host has its own file in this directory
-│   │   ├── 12kingdoms-shoukei.nix
+│   ├── src
 │   └── tests         # eval tests
 └── x86_64-linux      # All outputs for Linux x86_64
     ├── default.nix
-    ├── nixos-tests
     ├── src           # every host has its own file in this directory
     │   ├── olympians-apollo.nix
     │   ├── olympians-athena.nix
-    │   ├── olympians-hermes.nix
-    │   ├── idols-aquamarine.nix
-    │   ├── idols-kana.nix
-    │   ├── idols-ruby.nix
-    │   ├── k3s-prod-1-master-1.nix
-    │   ├── k3s-prod-1-master-2.nix
-    │   ├── k3s-prod-1-master-3.nix
-    │   ├── k3s-prod-1-worker-1.nix
-    │   ├── k3s-prod-1-worker-2.nix
-    │   ├── k3s-prod-1-worker-3.nix
-    │   ├── kubevirt-shoryu.nix
-    │   ├── kubevirt-shushou.nix
-    │   └── kubevirt-youko.nix
+    │   └── olympians-hermes.nix
     └── tests         # eval tests
         ├── home-configurations
         │   ├── expected.nix

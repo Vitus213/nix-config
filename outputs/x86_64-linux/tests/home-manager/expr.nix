@@ -8,8 +8,6 @@ let
   hosts = [
     "apollo-niri"
     "athena-niri"
-    "ruby"
-    "k3s-prod-1-master-1"
   ];
 in
 lib.genAttrs hosts (
