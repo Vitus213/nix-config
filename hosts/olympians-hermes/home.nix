@@ -9,8 +9,6 @@ in
     "${config.home.homeDirectory}/.ssh/${hostName}";
 
   programs.nushell.extraConfig = lib.mkBefore ''
-    if ("${config.age.secrets."alias-for-work.nushell".path}" | path exists) {
-      source ${config.age.secrets."alias-for-work.nushell".path}
-    }
+    source /run/user/1000/agenix/alias-for-work.nushell
   '';
 }

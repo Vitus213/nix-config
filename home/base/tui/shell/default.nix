@@ -2,15 +2,10 @@
   nu_scripts,
   ...
 }:
-let
-  aliasForWork = "/etc/agenix/alias-for-work.nushell";
-in
 {
   programs.nushell = {
     # load work aliases/secrets into the current shell scope.
     extraConfig = ''
-      source ${aliasForWork}
-
       # $env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
       # # using claude-code with kimi k2
       # # https://platform.moonshot.cn/docs/guide/agent-support
