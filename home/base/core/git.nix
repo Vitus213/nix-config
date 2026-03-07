@@ -5,6 +5,9 @@
   myvars,
   ...
 }:
+let
+  ghUser = myvars.githubUsername or myvars.username;
+in
 {
   # `programs.git` will generate the config file: ~/.config/git/config
   # to make git use this config file, `~/.gitconfig` should not exist!
@@ -26,15 +29,29 @@
         pv = "pr view";
       };
     };
-    hosts = {
-      "github.com" = {
-        "users" = {
-          "ryan4yin" = null;
-        };
-        "user" = "ryan4yin";
-      };
-    };
   };
+
+  # Generate gh auth config from an agenix secret at activation time.
+  # This avoids embedding the token into the Nix store.
+  home.activation.configureGhAuth = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        token_file="${config.xdg.configHome}/agenix/github_token"
+        hosts_file="${config.xdg.configHome}/gh/hosts.yml"
+
+        if [ -r "$token_file" ]; then
+          token="$(${pkgs.coreutils}/bin/cat "$token_file")"
+          ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$hosts_file")"
+          if [ -e "$hosts_file" ] || [ -L "$hosts_file" ]; then
+            ${pkgs.coreutils}/bin/rm -f "$hosts_file"
+          fi
+          cat > "$hosts_file" <<EOF
+    github.com:
+        user: ${ghUser}
+        oauth_token: $token
+        git_protocol: ssh
+    EOF
+          ${pkgs.coreutils}/bin/chmod 0600 "$hosts_file"
+        fi
+  '';
 
   programs.git = {
     enable = true;
@@ -69,8 +86,8 @@
 
       # replace https with ssh
       url = {
-        "ssh://git@github.com/ryan4yin" = {
-          insteadOf = "https://github.com/ryan4yin";
+        "ssh://git@github.com/${ghUser}" = {
+          insteadOf = "https://github.com/${ghUser}";
         };
         # "ssh://git@bitbucket.com/ryan4yin" = {
         #   insteadOf = "https://bitbucket.com/ryan4yin";

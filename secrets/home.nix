@@ -52,7 +52,15 @@ in
           file = "${mysecrets}/alias-for-work.nushell.age";
         }
         // user_readable;
+
+        "github_token" = {
+          file = "${mysecrets}/github_token.age";
+        }
+        // user_readable;
       };
+
+      # place secrets in ~/.config/agenix for Home Manager modules
+      xdg.configFile."agenix/github_token".source = config.age.secrets."github_token".path;
     }
   ]);
 }

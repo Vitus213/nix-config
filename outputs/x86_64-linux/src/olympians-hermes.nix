@@ -10,6 +10,7 @@
   genSpecialArgs,
   ...
 }:
+
 let
   inherit (inputs) nixpkgs home-manager;
   name = "hermes";

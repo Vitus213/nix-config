@@ -1,6 +1,7 @@
 { lib }:
 {
   username = "vitus";
+  githubUsername = "Vitus213";
   userfullname = "Vitus Apollo";
   useremail = "zhzvitus@gmail.com";
   networking = import ./networking.nix { inherit lib; };
