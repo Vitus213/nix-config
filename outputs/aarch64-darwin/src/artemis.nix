@@ -11,7 +11,7 @@
   ...
 }@args:
 let
-  name = "fern";
+  name = "artemis";
 
   modules = {
     darwin-modules =
@@ -27,7 +27,6 @@ let
           modules.desktop.fonts.enable = true;
         }
       ];
-
     home-modules = map mylib.relativeToRoot [
       "hosts/darwin-${name}/home.nix"
       "home/darwin"

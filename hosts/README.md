@@ -23,8 +23,7 @@ Named after characters from "Frieren: Beyond Journey's End":
 
 | Host      | Platform | Hardware                   | Purpose      | Status    |
 | --------- | -------- | -------------------------- | ------------ | --------- |
-| `fern`    | macOS    | MacBook Pro M2 13" 16GB    | Personal Use | ✅ Active |
-| `frieren` | macOS    | MacBook Pro M4Pro 14" 48GB | Work Use     | ✅ Active |
+| `artemis` | macOS    | MacBook Pro M4Pro 14" 48GB | Work Use     | ✅ Active |
 
 #### `12kingdoms` - Homelab Servers & Apple Silicon Linux
 
@@ -105,7 +104,7 @@ Use existing hosts as templates. The key files typically include:
 
 - **Desktop systems**: See `idols-ai/` for gaming/workstation setup
 - **Server systems**: See `kubevirt-shoryu/` for K8s/KubeVirt hosts
-- **macOS systems**: See `darwin-fern/` for macOS configurations
+- **macOS systems**: See `darwin-artemis/` for macOS configurations
 - **Apple Silicon**: See `12kingdoms-shoukei/` for ARM Linux setup
 
 ## Distributed Building

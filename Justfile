@@ -148,14 +148,23 @@ darwin-rollback:
   use {{utils_nu}} *;
   darwin-rollback
 
-# Deploy the darwinConfiguration by hostname match
+# Deploy the default darwinConfiguration for this Mac
 [macos]
 [group('desktop')]
 local mode="default": 
   #!/usr/bin/env nu
   use {{utils_nu}} *;
-  darwin-build (hostname) {{mode}};
-  darwin-switch (hostname) {{mode}}
+  darwin-build artemis {{mode}};
+  darwin-switch artemis {{mode}}
+
+# Deploy a specific darwinConfiguration explicitly
+[macos]
+[group('desktop')]
+local-host host mode="default":
+  #!/usr/bin/env nu
+  use {{utils_nu}} *;
+  darwin-build {{host}} {{mode}};
+  darwin-switch {{host}} {{mode}}
 
 
 # Reset launchpad to force it to reindex Applications

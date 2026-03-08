@@ -34,13 +34,29 @@ export def make-editable [
 
 # ================= macOS related =========================
 
+def darwin-config-names [] {
+    nix eval path:.#darwinConfigurations --apply builtins.attrNames --json --extra-experimental-features "nix-command flakes" | from json
+}
+
+def require-darwin-config [name: string] {
+    let available = (darwin-config-names)
+    if ($name in $available) {
+        $name
+    } else {
+        error make {
+            msg: $"Unknown darwinConfiguration '($name)'. Available: ($available | str join ', ')"
+        }
+    }
+}
+
 export def darwin-build [
     name: string
     mode: string
 ] {
-    print $"darwin-build '($name)' in '($mode)' mode..."
+    let resolved = (require-darwin-config $name)
+    print $"darwin-build '($resolved)' in '($mode)' mode..."
     print (repeat-str "=" 50)
-    let target = $".#darwinConfigurations.($name).system"
+    let target = $"path:.#darwinConfigurations.($resolved).system"
     if "debug" == $mode {
         nom build $target --extra-experimental-features "nix-command flakes"  --show-trace --verbose
     } else {
@@ -52,12 +68,13 @@ export def darwin-switch [
     name: string
     mode: string
 ] {
-    print $"darwin-switch '($name)' in '($mode)' mode..."
+    let resolved = (require-darwin-config $name)
+    print $"darwin-switch '($resolved)' in '($mode)' mode..."
     print (repeat-str "=" 50)
     if "debug" == $mode {
-        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $".#($name)" --show-trace --verbose
+        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $"path:.#($resolved)" --show-trace --verbose
     } else {
-        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $".#($name)"
+        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $"path:.#($resolved)"
     }
 }
 
@@ -84,4 +101,3 @@ export def upload-vm [
     let remote = $"ryan@rakushun:/data/caddy/fileserver/vms/kubevirt-($name).qcow2"
     rsync -avz --progress --copy-links --checksum result $remote
 }
-

@@ -76,8 +76,7 @@ All the outputs of this flake are defined here.
 ├── aarch64-darwin    # All outputs for macOS Apple Silicon
 │   ├── default.nix
 │   └── src           # every host has its own file in this directory
-│       ├── frieren.nix
-│       └── fern.nix
+│       └── artemis.nix
 ├── aarch64-linux     # All outputs for Linux ARM64
 │   ├── default.nix
 │   ├── src           # every host has its own file in this directory
