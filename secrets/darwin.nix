@@ -43,29 +43,32 @@
       };
     in
     {
-      # ---------------------------------------------
-      # no one can read/write this file, even root.
-      # ---------------------------------------------
-
-      # .age means the decrypted file is still encrypted by age(via a passphrase)
-      "ryan4yin-gpg-subkeys.priv.age" = {
-        file = "${mysecrets}/ryan4yin-gpg-subkeys-2024-01-27.priv.age.age";
-      }
-      // noaccess;
-
-      # ---------------------------------------------
-      # only root can read this file.
-      # ---------------------------------------------
-
-      "wg-business.conf" = {
-        file = "${mysecrets}/wg-business.conf.age";
-      }
-      // high_security;
-
-      "rclone.conf" = {
-        file = "${mysecrets}/rclone.conf.age";
-      }
-      // high_security;
+      # NOTE(vitus): bootstrap minimal desktop secrets first.
+      # Re-enable the following secrets after the darwin migration is complete.
+      #
+      # # ---------------------------------------------
+      # # no one can read/write this file, even root.
+      # # ---------------------------------------------
+      #
+      # # .age means the decrypted file is still encrypted by age(via a passphrase)
+      # "ryan4yin-gpg-subkeys.priv.age" = {
+      #   file = "${mysecrets}/ryan4yin-gpg-subkeys-2024-01-27.priv.age.age";
+      # }
+      # // noaccess;
+      #
+      # # ---------------------------------------------
+      # # only root can read this file.
+      # # ---------------------------------------------
+      #
+      # "wg-business.conf" = {
+      #   file = "${mysecrets}/wg-business.conf.age";
+      # }
+      # // high_security;
+      #
+      # "rclone.conf" = {
+      #   file = "${mysecrets}/rclone.conf.age";
+      # }
+      # // high_security;
 
       "nix-access-tokens" = {
         file = "${mysecrets}/nix-access-tokens.age";
@@ -77,10 +80,10 @@
       # user can read this file.
       # ---------------------------------------------
 
-      "ssh-key-romantic" = {
-        file = "${mysecrets}/ssh-key-romantic.age";
-      }
-      // user_readable;
+      # "ssh-key-romantic" = {
+      #   file = "${mysecrets}/ssh-key-romantic.age";
+      # }
+      # // user_readable;
 
       # alias-for-work
       "alias-for-work.nushell" = {
@@ -92,23 +95,29 @@
   # place secrets in /etc/
   # NOTE: this will fail for the first time. cause it's running before "activate-agenix"
   environment.etc = {
-    # wireguard config used with `wg-quick up wg-business`
-    # Fix DNS for WireGuard on macOS: https://github.com/ryan4yin/nix-config/issues/5
-    "wireguard/wg-business.conf" = {
-      source = config.age.secrets."wg-business.conf".path;
-    };
-
-    "agenix/rclone.conf" = {
-      source = config.age.secrets."rclone.conf".path;
-    };
-
-    "agenix/ssh-key-romantic" = {
-      source = config.age.secrets."ssh-key-romantic".path;
-    };
-
-    "agenix/ryan4yin-gpg-subkeys.priv.age" = {
-      source = config.age.secrets."ryan4yin-gpg-subkeys.priv.age".path;
-    };
+    # NOTE(vitus): bootstrap minimal desktop secrets first.
+    # Re-enable the following mappings after the darwin migration is complete.
+    #
+    # # wireguard config used with `wg-quick up wg-business`
+    # # Fix DNS for WireGuard on macOS: https://github.com/ryan4yin/nix-config/issues/5
+    # "wireguard/wg-business.conf" = {
+    #   source = config.age.secrets."wg-business.conf".path;
+    # };
+    #
+    # "agenix/rclone.conf" = {
+    #   source = config.age.secrets."rclone.conf".path;
+    # };
+    #
+    # "agenix/ssh-key-romantic" = {
+    #   source = config.age.secrets."ssh-key-romantic".path;
+    # };
+    #
+    # "agenix/ryan4yin-gpg-subkeys.priv.age" = {
+    #   source = config.age.secrets."ryan4yin-gpg-subkeys.priv.age".path;
+    # };
+    #
+    # nix-access-tokens is consumed directly by modules/darwin/nix-core.nix via
+    # `config.age.secrets.nix-access-tokens.path`, so it does not need an /etc mount.
 
     # The following secrets are used by home-manager modules
     # But nix-darwin doesn't support environment.etc.<name>.mode
@@ -123,8 +132,9 @@
   # activationScripts are executed every time you run `nixos-rebuild` / `darwin-rebuild` or boot your system
   system.activationScripts.postActivation.text = ''
     ${pkgs.nushell}/bin/nu -c '
-      if (ls /etc/agenix/ | length) > 0 {
-        sudo chown ${myvars.username} /etc/agenix/*
+      let aliasPath = "/etc/agenix/alias-for-work.nushell"
+      if ($aliasPath | path exists) {
+        sudo chown ${myvars.username} $aliasPath
       }
     '
   '';
