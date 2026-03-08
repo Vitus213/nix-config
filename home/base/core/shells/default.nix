@@ -31,11 +31,9 @@ in
   # NOTE: nushell will be launched in bash, so it can inherit all the eenvironment variables.
   programs.nushell = {
     enable = true;
-    configDir =
-      if pkgs.stdenv.isDarwin then
-        "${config.home.homeDirectory}/Library/Application Support/nushell"
-      else
-        "${config.xdg.configHome}/nushell";
+    # Nushell follows XDG on this host, so keep the generated config where `nu`
+    # actually resolves `$nu.config-path`.
+    configDir = "${config.xdg.configHome}/nushell";
     configFile.source = ./config.nu;
     envFile.text = "";
     inherit shellAliases;

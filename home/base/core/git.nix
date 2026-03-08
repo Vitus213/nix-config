@@ -28,7 +28,7 @@ in
   programs.gh = {
     enable = true;
     settings = {
-      git_protocol = "ssh";
+      git_protocol = "https";
       prompt = "enabled";
       aliases = {
         co = "pr checkout";
@@ -56,7 +56,7 @@ in
     github.com:
         user: ${ghUser}
         oauth_token: $token
-        git_protocol: ssh
+        git_protocol: https
     EOF
           ${pkgs.coreutils}/bin/chmod 0600 "$hosts_file"
         fi
@@ -93,15 +93,16 @@ in
       pull.rebase = true;
       log.date = "iso"; # use iso format for date
 
-      # replace https with ssh
-      url = {
-        "ssh://git@github.com/${ghUser}" = {
-          insteadOf = "https://github.com/${ghUser}";
-        };
-        # "ssh://git@bitbucket.com/ryan4yin" = {
-        #   insteadOf = "https://bitbucket.com/ryan4yin";
-        # };
-      };
+      # Keep GitHub remotes on HTTPS so `gh` token auth is used instead of SSH.
+      #
+      # url = {
+      #   "ssh://git@github.com/${ghUser}" = {
+      #     insteadOf = "https://github.com/${ghUser}";
+      #   };
+      #   # "ssh://git@bitbucket.com/ryan4yin" = {
+      #   #   insteadOf = "https://bitbucket.com/ryan4yin";
+      #   # };
+      # };
 
       alias = {
         # common aliases
