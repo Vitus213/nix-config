@@ -104,6 +104,18 @@ in
       #   # };
       # };
 
+      credential = {
+        # Clear any inherited helpers and force GitHub HTTPS auth through `gh`.
+        "https://github.com".helper = [
+          ""
+          "${pkgs.gh}/bin/gh auth git-credential"
+        ];
+        "https://gist.github.com".helper = [
+          ""
+          "${pkgs.gh}/bin/gh auth git-credential"
+        ];
+      };
+
       alias = {
         # common aliases
         br = "branch";
