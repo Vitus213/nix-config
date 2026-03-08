@@ -6,18 +6,29 @@
 }:
 let
   passwordStoreDir = "${config.xdg.dataHome}/password-store";
+  passExtensions =
+    exts:
+    [
+      # an easy flow for updating passwords
+      exts.pass-update
+    ]
+    ++ lib.optionals (!pkgs.stdenv.isDarwin) [
+      # pass-import currently pulls a Python dependency chain that fails on Darwin.
+      exts.pass-import
+    ];
 in
 {
   programs.password-store = {
     enable = true;
-    package = pkgs.pass.withExtensions (exts: [
-      # support for one-time-password (OTP) tokens
-      # NOTE: Saving the password and OTP together runs counter to the purpose of secondary verification!
-      # exts.pass-otp
-
-      exts.pass-import # a generic importer tool from other password managers
-      exts.pass-update # an easy flow for updating passwords
-    ]);
+    package = pkgs.pass.withExtensions (
+      exts:
+      [
+        # support for one-time-password (OTP) tokens
+        # NOTE: Saving the password and OTP together runs counter to the purpose of secondary verification!
+        # exts.pass-otp
+      ]
+      ++ passExtensions exts
+    );
     # See the “Environment variables” section of pass(1) and the extension man pages for more information about the available keys.
     settings = {
       PASSWORD_STORE_DIR = passwordStoreDir;

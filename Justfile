@@ -148,14 +148,14 @@ darwin-rollback:
   use {{utils_nu}} *;
   darwin-rollback
 
-# Deploy the default darwinConfiguration for this Mac
+# Deploy the darwinConfiguration by hostname match
 [macos]
 [group('desktop')]
 local mode="default": 
   #!/usr/bin/env nu
   use {{utils_nu}} *;
-  darwin-build artemis {{mode}};
-  darwin-switch artemis {{mode}}
+  darwin-build (hostname) {{mode}};
+  darwin-switch (hostname) {{mode}}
 
 # Deploy a specific darwinConfiguration explicitly
 [macos]

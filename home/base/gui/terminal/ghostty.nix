@@ -1,6 +1,7 @@
 {
+  config,
+  lib,
   pkgs,
-  ghostty,
   ...
 }:
 ###########################################################
@@ -8,15 +9,33 @@
 # Ghostty Configuration
 #
 ###########################################################
+let
+  formatValue =
+    value:
+    if builtins.isBool value then
+      lib.boolToString value
+    else if builtins.isFloat value || builtins.isInt value then
+      toString value
+    else if builtins.isString value then
+      value
+    else
+      throw "Unsupported Ghostty setting value: ${builtins.typeOf value}";
+
+  renderSettings =
+    settings:
+    lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (
+        name: value:
+        lib.concatStringsSep "\n" (
+          map (item: "${name} = ${formatValue item}") (if builtins.isList value then value else [ value ])
+        )
+      ) settings
+    )
+    + "\n";
+in
 {
   programs.ghostty = {
-    enable = true;
-    package =
-      if pkgs.stdenv.isDarwin then
-        pkgs.hello # pkgs.ghostty is currently broken on darwin
-      else
-        pkgs.ghostty; # the stable version
-    # package = ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default; # the latest version
+    enable = !pkgs.stdenv.isDarwin;
     enableBashIntegration = false;
     installBatSyntax = false;
     # installVimSyntax = true;
@@ -36,5 +55,14 @@
       #  Spawn a nushell in login mode via `bash`
       command = "${pkgs.bash}/bin/bash --login -c 'nu --login --interactive'";
     };
+  }
+  // lib.optionalAttrs (!pkgs.stdenv.isDarwin) {
+    package = pkgs.ghostty; # the stable version
+  };
+
+  # Home Manager's Ghostty module validates configs by executing the package.
+  # On Darwin we install Ghostty via Homebrew cask, so manage the config file directly.
+  xdg.configFile."ghostty/config" = lib.mkIf pkgs.stdenv.isDarwin {
+    text = renderSettings config.programs.ghostty.settings;
   };
 }

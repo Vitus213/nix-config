@@ -44,7 +44,10 @@ in
         hosts_file="${config.xdg.configHome}/gh/hosts.yml"
 
         if [ -r "$token_file" ]; then
-          token="$(${pkgs.coreutils}/bin/cat "$token_file")"
+          token="$(${pkgs.coreutils}/bin/head -n 1 "$token_file" | ${pkgs.gnused}/bin/sed 's/[[:space:]]*$//')"
+          if [ -z "$token" ]; then
+            exit 0
+          fi
           ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$hosts_file")"
           if [ -e "$hosts_file" ] || [ -L "$hosts_file" ]; then
             ${pkgs.coreutils}/bin/rm -f "$hosts_file"

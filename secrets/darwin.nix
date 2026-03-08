@@ -76,6 +76,11 @@
       # access-token needs to be readable by the user running the `nix` command
       // user_readable;
 
+      "github_token" = {
+        file = "${mysecrets}/github_token.age";
+      }
+      // user_readable;
+
       # ---------------------------------------------
       # user can read this file.
       # ---------------------------------------------
@@ -137,5 +142,11 @@
         sudo chown ${myvars.username} $aliasPath
       }
     '
+
+    agenix_dir="/Users/${myvars.username}/.config/agenix"
+    /bin/mkdir -p "$agenix_dir"
+    /bin/ln -snf /run/agenix/github_token "$agenix_dir/github_token"
+    /usr/sbin/chown ${myvars.username} "$agenix_dir"
+    /usr/sbin/chown -h ${myvars.username} "$agenix_dir/github_token" || true
   '';
 }

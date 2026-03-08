@@ -72,7 +72,7 @@ in
     gnutar # replacee macos's tar
 
     # darwin only apps
-    utm # virtual machine
+    # utm # virtual machine
   ];
   environment.variables = {
     # Fix https://github.com/LnL7/nix-darwin/wiki/Terminfo-issues
@@ -105,8 +105,9 @@ in
     onActivation = {
       autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
       upgrade = true; # Upgrade outdated casks, formulae, and App Store apps
-      # 'zap': uninstalls all formulae(and related files) not listed in the generated Brewfile
-      cleanup = "zap";
+      # Leave unmanaged Homebrew packages alone during darwin activation.
+      # This avoids activation failures on manually installed formulae like `steipete/tap/bird`.
+      cleanup = "none";
     };
 
     # Applications to install from Mac App Store using mas.
@@ -115,13 +116,14 @@ in
     # For details, see https://github.com/mas-cli/mas
     masApps = {
       # Xcode = 497799835;
+      # NOTE(vitus): MAS installs are fragile during darwin activation and currently fail on low disk space.
+      # Install manually when needed.
       Wechat = 836500024;
     };
 
     taps = [
-      "hashicorp/tap"
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
-      "FelixKratz/formulae" # janky borders - highlight active window borders
+      # "netbirdio/tap" # netbird gui app
     ];
 
     brews = [
@@ -148,7 +150,7 @@ in
       # misc that nix do not have cache for.
       "git-trim"
       "terraform"
-      "terraformer"
+      # "terraformer"
     ];
 
     # `brew install --cask`
@@ -162,22 +164,26 @@ in
       # "zed"
       "cursor" # cursor ai editor
 
-      "aerospace" # an i3-like tiling window manager for macOS
+      "nikitabobko/tap/aerospace" # an i3-like tiling window manager for macOS
       "ghostty" # terminal emulator
 
       # https://joplinapp.org/help/
       "joplin" # note taking app
 
       "tailscale-app" # tailscale macos app (with gui)
-      "netbirdio/tap/netbird-ui" # netbird gui app
+      # "netbirdio/tap/netbird-ui" # netbird gui app
 
       # AI
-      "lm-studio"
+      # "lm-studio"
 
       # IM & audio & remote desktop & meeting
       "telegram"
-      "qq"
-      "qqmusic"
+      # NOTE(vitus): Upstream QQ DMG downloads are flaky and often break darwin activation.
+      # Install manually when needed.
+      # "qq"
+      # NOTE(vitus): Upstream QQMusic DMG downloads are flaky and often break darwin activation.
+      # Install manually when needed.
+      # "qqmusic"
       # "discord" # update too frequently, use the web version instead
       "microsoft-remote-desktop"
       # "moonlight" # remote desktop client
@@ -187,7 +193,7 @@ in
 
       # Misc
       # "shadowsocksx-ng" # proxy tool
-      "iina" # video player
+      # "iina" # video player
       # "raycast" # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
       "stats" # beautiful system status monitor in menu bar
       "jordanbaird-ice" # Powerful menu bar manager for macOS
@@ -195,17 +201,19 @@ in
       # "reaper"  # audio editor
       # "sonic-pi" # music programming
       # "tencent-lemon" # macOS cleaner
-      "neteasemusic" # music
-      "blender@lts" # 3D creation suite
+      # NOTE(vitus): Upstream NetEase Cloud Music DMG downloads are flaky and often break darwin activation.
+      # Install manually when needed.
+      # "neteasemusic" # music
       "clash-verge-rev" # the same as mihomo-party
 
       # Development
       "mitmproxy" # HTTP/HTTPS traffic inspector
-      "insomnia" # REST client
-      "wireshark-app" # network analyzer
+      # "insomnia" # REST client
+      # NOTE(vitus): Homebrew cask install is currently failing when it tries to run the bundled pkg installers.
+      # Install manually when needed.
+      # "wireshark-app" # network analyzer
       # "jdk-mission-control" # Java Mission Control
       # "google-cloud-sdk" # Google Cloud SDK
-      "miniforge" # Miniconda's community-driven distribution
 
       # Setup macfuse: https://github.com/macfuse/macfuse/wiki/Getting-Started
       "macfuse" # for rclone to mount a fuse filesystem
