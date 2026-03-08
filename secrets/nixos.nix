@@ -74,7 +74,11 @@ in
         "nix-access-tokens" = {
           file = "${mysecrets}/nix-access-tokens.age";
         }
-        # access-token needs to be readable by the user running the `nix` command
+        // user_readable;
+
+        "github_token" = {
+          file = "${mysecrets}/github_token.age";
+        }
         // user_readable;
       };
 
@@ -82,6 +86,12 @@ in
       environment.etc = {
         "agenix/nix-access-tokens" = {
           source = config.age.secrets."nix-access-tokens".path;
+          mode = "0400";
+          user = myvars.username;
+        };
+
+        "agenix/github_token" = {
+          source = config.age.secrets."github_token".path;
           mode = "0400";
           user = myvars.username;
         };

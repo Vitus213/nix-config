@@ -55,7 +55,7 @@ in
         // user_readable;
 
         "github_token" = {
-          file = "${mysecrets}/nix-access-tokens.age";
+          file = "${mysecrets}/github_token.age";
         }
         // user_readable;
       };

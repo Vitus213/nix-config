@@ -7,8 +7,14 @@
 }:
 let
   ghUser = myvars.githubUsername or myvars.username;
+  mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 in
 {
+  # Unified token path for gh auth generation.
+  # On NixOS this points to /etc/agenix/github_token by default.
+  # HM-only hosts can override this in `secrets/home.nix`.
+  xdg.configFile."agenix/github_token".source = lib.mkDefault (mkSymlink "/etc/agenix/github_token");
+
   # `programs.git` will generate the config file: ~/.config/git/config
   # to make git use this config file, `~/.gitconfig` should not exist!
   #

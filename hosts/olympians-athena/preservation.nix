@@ -13,6 +13,7 @@ in
   ];
 
   preservation.enable = true;
+  modules.secrets.preservation.enable = true;
   # pverservation required initrd using systemd.
   boot.initrd.systemd.enable = true;
 
