@@ -1,16 +1,11 @@
-# Nix Environment Setup for Host: Idols - Ai
+# Nix Environment Setup for Host: Apollo
 
 > :red_circle: **IMPORTANT**: **Once again, you should NOT deploy this flake directly on your
 > machine :exclamation: Please write your own configuration from scratch, and use my configuration
 > and documentation for reference only.**
 
-This flake prepares a Nix environment for setting my desktop [/hosts/idols_ai](/hosts/idols_ai/)(in
-main flake) up on a new machine.
-
-Other docs:
-
-- README for [/hosts/12kingdoms_shoukei](/hosts/12kingdoms_shoukei):
-  [./README.shoukei.md](./README.shoukei.md)
+This flake prepares a Nix environment for setting my desktop
+[/hosts/olympians-apollo](/hosts/olympians-apollo/)(in main flake) up on a new machine.
 
 TODOs:
 
@@ -90,7 +85,7 @@ lsblk
 # show cryptsetup's compiled in defaults
 cryptsetup --help
 
-# NOTE: `cat shoukei.md | grep luks > luks.sh` to generate this script
+# NOTE: `cat README.md | grep luks > luks.sh` to generate this script
 # encrypt the root partition with luks2 and argon2id, will prompt for a passphrase, which will be used to unlock the partition.
 cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --hash sha512 --iter-time 5000 --key-size 256 --pbkdf argon2id --use-random --verify-passphrase /dev/nvme0n1p2
 
@@ -107,7 +102,7 @@ lsblk
 Formatting the root partition:
 
 ```bash
-# NOTE: `cat shoukei.md | grep create-btrfs > btrfs.sh` to generate this script
+# NOTE: `cat README.md | grep create-btrfs > btrfs.sh` to generate this script
 mkfs.fat -F 32 -n ESP /dev/nvme0n1p1  # create-btrfs
 # format the root partition with btrfs and label it
 mkfs.btrfs -L crypted-nixos /dev/mapper/crypted-nixos   # create-btrfs
@@ -122,7 +117,7 @@ btrfs subvolume create /mnt/@persistent  # create-btrfs
 btrfs subvolume create /mnt/@snapshots  # create-btrfs
 umount /mnt  # create-btrfs
 
-# NOTE: `cat shoukei.md | grep mount-1 > mount-1.sh` to generate this script
+# NOTE: `cat README.md | grep mount-1 > mount-1.sh` to generate this script
 # Remount the root partition with the subvolumes you just created
 #
 # Enable zstd compression to:
@@ -193,25 +188,25 @@ Then, generate the NixOS configuration:
 nixos-generate-config --root /mnt
 
 # we need to update our filesystem configs in old hardware-configuration.nix according to the generated one.
-cp /etc/nixos/hardware-configuration.nix ./nix-config/hosts/idols_ai/hardware-configuration-new.nix
+cp /etc/nixos/hardware-configuration.nix ./nix-config/hosts/olympians-apollo/hardware-configuration-new.nix
 vim .
 ```
 
 Then, Install NixOS:
 
 ```bash
-cd ~/nix-config/hosts/idols_ai/nixos-installer
+cd ~/nix-config/nixos-installer
 
 # run this command if you're retrying to run nixos-install
 rm -rf /mnt/etc
 
 # install nixos
 # NOTE: the root password you set here will be discarded when reboot
-nixos-install --root /mnt --flake .#ai --no-root-password --show-trace --verbose # instlall-1
+nixos-install --root /mnt --flake .#apollo --no-root-password --show-trace --verbose # instlall-1
 
 # if you want to use a cache mirror, run this command instead
 # replace the mirror url with your own
-nixos-install --root /mnt --flake .#shoukei --no-root-password --show-trace --verbose --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store  https://cache.nixos.org/" # install-2
+nixos-install --root /mnt --flake .#apollo --no-root-password --show-trace --verbose --option substituters "https://mirrors.ustc.edu.cn/nix-channels/store  https://cache.nixos.org/" # install-2
 
 # enter into the installed system, check password & users
 # `su ryan` => `sudo -i` => enter ryan's password => successfully login
@@ -229,9 +224,9 @@ mv /etc/ssh /persistent/etc/
 
 # delete the generated configuration after editing
 rm -f /mnt/etc/nixos
-rm ~/nix-config/hosts/idols_ai/hardware-configuration-new.nix
+rm ~/nix-config/hosts/olympians-apollo/hardware-configuration-new.nix
 
-# NOTE: `cat shoukei.md | grep git-1 > git-1.sh` to generate this script
+# NOTE: `cat README.md | grep git-1 > git-1.sh` to generate this script
 # commit the changes after installing nixos successfully
 git config --global user.email "ryan4yin@linux.com"   # git-1
 git config --global user.name "Ryan Yin"              # git-1
@@ -257,9 +252,9 @@ that the new machine can pull my private secrets repo:
 
 ```bash
 # 1. Generate a new SSH key with a strong passphrase
-ssh-keygen -t ed25519 -a 256 -C "ryan@idols-ai" -f ~/.ssh/idols_ai
+ssh-keygen -t ed25519 -a 256 -C "vitus@apollo" -f ~/.ssh/apollo
 # 2. Add the ssh key to the ssh-agent, so that nixos-rebuild can use it to pull my private secrets repo.
-ssh-add ~/.ssh/idols_ai
+ssh-add ~/.ssh/apollo
 ```
 
 Then follow the instructions in [../secrets/README.md](../secrets/README.md) to rekey all my secrets
@@ -281,7 +276,7 @@ just hypr
 Finally, to enable secure boot, follow the instructions in
 [lanzaboote - Quick Start](https://github.com/nix-community/lanzaboote/blob/master/docs/QUICK_START.md)
 and
-[nix-config/ai/secure-boot.nix](https://github.com/ryan4yin/nix-config/blob/main/hosts/idols_ai/secureboot.nix)
+[nix-config/olympians-apollo/secure-boot.nix](https://github.com/ryan4yin/nix-config/blob/main/hosts/olympians-apollo/secureboot.nix)
 
 ## Change LUKS2's passphrase
 

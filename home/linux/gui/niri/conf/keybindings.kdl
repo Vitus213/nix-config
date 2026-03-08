@@ -70,7 +70,7 @@ binds {
     // Open/close the Overview: a zoomed-out view of workspaces and windows.
     // You can also move the mouse into the top-left hot corner,
     // or do a four-finger swipe up on a touchpad.
-    // Mod+O repeat=false { toggle-overview; }
+    Mod+O repeat=false { toggle-overview; }
 
     Mod+Left { focus-column-left; }
     Mod+Down { focus-workspace-down; }
@@ -259,7 +259,7 @@ binds {
 
     // Utility shortcuts
     Mod+Shift+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
-    Mod+C { spawn "noctalia-shell" "ipc" "call" "launcher" "calculator"; }
+    Mod+C { spawn "noctalia-shell" "ipc" "callx" "launcher" "calculator"; }
 
     Mod+S { spawn "noctalia-shell" "ipc" "call" "controlCenter" "toggle"; }
     Mod+E { spawn "noctalia-shell" "ipc" "call" "sessionMenu" "toggle"; }

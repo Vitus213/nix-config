@@ -1,12 +1,17 @@
-{ mylib, pkgs, ... }:
+{
+  mylib,
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 {
   # wayland related
   home.sessionVariables = {
-    "NIXOS_OZONE_WL" = "1"; # for any ozone-based browser & electron apps to run on wayland
+    # Keep Firefox on Wayland.
+    # Electron backend is no longer forced globally; set per app instead.
     "MOZ_ENABLE_WAYLAND" = "1"; # for firefox to run on wayland
     "MOZ_WEBRENDER" = "1";
-    # enable native Wayland support for most Electron apps
-    "ELECTRON_OZONE_PLATFORM_HINT" = "auto";
     # misc
     "_JAVA_AWT_WM_NONREPARENTING" = "1";
     "QT_WAYLAND_DISABLE_WINDOWDECORATION" = "1";
@@ -36,4 +41,19 @@
 
   # Logout Menu
   programs.wlogout.enable = true;
+
+  # Home Manager switched wlogout handling from directory-level links to
+  # file-level links in newer versions. Remove old managed symlink before
+  # linking to avoid "mkdir ... File exists" activation failures.
+  home.activation.migrateWlogoutConfig = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+    wlogout_cfg_dir="${config.xdg.configHome}/wlogout"
+    if [ -L "$wlogout_cfg_dir" ]; then
+      target="$(readlink "$wlogout_cfg_dir" || true)"
+      case "$target" in
+        /nix/store/*-home-manager-files/.config/wlogout)
+          rm "$wlogout_cfg_dir"
+          ;;
+      esac
+    fi
+  '';
 }

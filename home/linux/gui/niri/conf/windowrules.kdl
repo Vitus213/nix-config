@@ -43,6 +43,10 @@ window-rule {
     open-on-workspace "3chat"
 }
 window-rule {
+    match title="^Feishu"
+    open-on-workspace "3chat"
+}
+window-rule {
     match app-id="wechat"
     open-on-workspace "3chat"
 }

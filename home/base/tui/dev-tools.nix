@@ -20,7 +20,10 @@
     tokei # count lines of code, alternative to cloc
 
     # db related
-    mycli
+    # Broken in current nixpkgs snapshot:
+    # mycli requires sqlglot==27.*, but resolver provides 28.x.
+    # Re-enable after nixpkgs fixes the dependency set.
+    # mycli
     pgcli
     mongosh
     sqlite

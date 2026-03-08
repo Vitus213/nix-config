@@ -1,6 +1,7 @@
 { lib }:
 {
   username = "vitus";
+  githubUsername = "Vitus213";
   userfullname = "Vitus Apollo";
   useremail = "zhzvitus@gmail.com";
   networking = import ./networking.nix { inherit lib; };
@@ -21,9 +22,8 @@
   # 2. Or just use hardware security keys like Yubikey/CanoKey.
   mainSshAuthorizedKeys = [
     # The main ssh keys for daily usage
-    # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIKlN+Q/GxvwxDX/OAjJHaNFEznEN4Tw4E4TwqQu/eD6 ryan@idols-ai"
-    # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJwoI5MAogEa726jwwHL5EgM1X/i2A5d2pgV7i7t8fzB ryan@shoukei"
-    # "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDc1PNTXzzvd93E+e9LXvnEzqgUI5gMTEF/IitvzgmL+ ryan@frieren"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFq9nvgrkiT+OQeyxeIgEOBHEE0y3OS4yxbV6OsdYlR5 vitus@5600"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDaKzP+PbGAhundgHlKsJ75420SAfXCGQdEUA8XWBU7mUV+aoXYSiYy8eAf0thrNF61hojw6WZ4agIRIM4bF2gH75Kjc2v4jwPNsVtC9VAQM6WXoikmpSFWDRL7R0T//Y7eQRP/sfPH4jGedakeHqucp3DKn1Vw6KnsgpLWfgY6MEQDgplj33JyiR3gYpiGVT082nGMOHSWqIf5cpkHFNa9zF0Nae3U3MNwoFyYtNjWxj/lGnn4AU6gdSW40UiBs6e2T2Lhb0tT2EANRab8p3r2X5EIMTeGCIr2yyhmBbILhGnkYI80sXMq53sXHrnteWnxnhpXTZ4UpHBUp+Ab2yk7ZmZU7671YiIe50UzbH3GR1JFLclvOJvxiOvTfCA3o15VSNGFKehwVBR0EoOiLY3nmBzrZNZ0tRDR/CeBePLU3HsPWPPeZmmGEUj1fO8CsHTHL9JdqFhV94IY5+yfycR7EHNEFh66SprV0n0YoHOUogyBjrUclUTcGef4yfe0XR0= VitusWsl"
   ];
   secondaryAuthorizedKeys = [
     # the backup ssh keys for disaster recovery

@@ -74,7 +74,8 @@ in
       # search all the plugins using https://search.nixos.org/packages
       telescope-fzf-native-nvim
 
-      nvim-treesitter.withAllGrammars
+      # Avoid pulling every parser source; one upstream grammar currently 404s.
+      nvim-treesitter
     ];
   };
 }

@@ -6,48 +6,28 @@ This directory contains all host-specific configurations for my NixOS and macOS 
 
 ### Physical Machines
 
-#### `idols` - Main Workstations
+#### `desktops` - Main Workstations
 
-Named after characters from "Oshi no Ko":
+Named after Greek mythology:
 
-| Host         | Platform    | Hardware              | Purpose               | Status      |
-| ------------ | ----------- | --------------------- | --------------------- | ----------- |
-| `ai`         | NixOS       | i5-13600KF + RTX 4090 | Gaming & Daily Use    | ✅ Active   |
-| `aquamarine` | KubeVirt VM | Virtual               | Monitoring & Services | ✅ Active   |
-| `kana`       | NixOS       | Virtual               | Reserved              | ⚪ Not Used |
-| `ruby`       | NixOS       | Virtual               | Reserved              | ⚪ Not Used |
+| Host     | Platform | Hardware              | Purpose            | Status     |
+| -------- | -------- | --------------------- | ------------------ | ---------- |
+| `apollo` | NixOS    | i5-13600KF + RTX 4090 | Gaming & Daily Use | ✅ Active  |
+| `athena` | NixOS    | TBD                   | Secondary Desktop  | 🛠️ Planned |
 
 #### `darwin` - macOS Systems
 
-Named after characters from "Frieren: Beyond Journey's End":
+Named after Greek mythology:
 
 | Host      | Platform | Hardware                   | Purpose      | Status    |
 | --------- | -------- | -------------------------- | ------------ | --------- |
 | `artemis` | macOS    | MacBook Pro M4Pro 14" 48GB | Work Use     | ✅ Active |
 
-#### `12kingdoms` - Homelab Servers & Apple Silicon Linux
-
-Named after "Twelve Kingdoms":
-
-| Host      | Platform | Hardware                               | Purpose                    | Status    |
-| --------- | -------- | -------------------------------------- | -------------------------- | --------- |
-| `shoukei` | NixOS    | MacBook Pro M2                         | NixOS on Apple Silicon     | ✅ Active |
-| `shoryu`  | NixOS    | MoreFine S500Plus (AMD Ryzen 9 5900HX) | KubeVirt Host & K3s Master | ✅ Active |
-| `shushou` | NixOS    | MinisForum UM560 (AMD Ryzen 5 5625U)   | KubeVirt Host & K3s Master | ✅ Active |
-| `youko`   | NixOS    | MinisForum HX99G (AMD Ryzen 9 6900HX)  | KubeVirt Host & K3s Master | ✅ Active |
-
-### Virtual Machines & Clusters
-
-#### `k8s` - Kubernetes Infrastructure
-
-- **KubeVirt Cluster**: 3 physical mini PCs (shoryu, shushou, youko) running all VMs
-- **K3s Production**: 3 masters + 3 workers for production workloads
-- **K3s Testing**: 3 masters for testing and development
-
 ### External Systems
 
 - **SBCs**: aarch64/riscv64 single-board computers managed in
   [ryan4yin/nixos-config-sbc](https://github.com/ryan4yin/nixos-config-sbc)
+- **Ubuntu servers (HM-only)**: `hermes` managed through standalone home-manager output
 
 All my riscv64 hosts:
 
@@ -55,10 +35,9 @@ All my riscv64 hosts:
 
 ## Naming Conventions
 
-- **idols**: Characters from "Oshi no Ko" anime/manga
-- **12kingdoms**: Characters from "Twelve Kingdoms" anime/novel series
-- **darwin**: Characters from "Frieren: Beyond Journey's End" anime/manga
-- **k8s**: Kubernetes-related systems follow standard naming patterns
+- **olympians**: Greek mythology hosts use the `olympians-` path prefix
+- **desktops**: `apollo` / `athena` use Greek mythology names
+- **darwin**: `artemis` uses Greek mythology naming
 
 ## How to Add a New Host
 
@@ -102,15 +81,13 @@ Use existing hosts as templates. The key files typically include:
 
 ### Examples to Reference
 
-- **Desktop systems**: See `idols-ai/` for gaming/workstation setup
-- **Server systems**: See `kubevirt-shoryu/` for K8s/KubeVirt hosts
+- **Desktop systems**: See `olympians-apollo/` for gaming/workstation setup
 - **macOS systems**: See `darwin-artemis/` for macOS configurations
-- **Apple Silicon**: See `12kingdoms-shoukei/` for ARM Linux setup
 
 ## Distributed Building
 
-I usually run the build command on `Ai` and nix will distribute the build to other NixOS machines,
-which is convenient and fast.
+I usually run the build command on `Apollo` and nix will distribute the build to other NixOS
+machines, which is convenient and fast.
 
 When building some packages for riscv64 or aarch64, I often have no cache available because of
 various changes under the hood, so I need to build much more packages than usual, which is one of
@@ -134,5 +111,3 @@ cool!
 [List of Twelve Kingdoms characters](https://en.wikipedia.org/wiki/List_of_Twelve_Kingdoms_characters)
 
 ![](/_img/12kingdoms-1.webp) ![](/_img/12kingdoms-Youko-Rakushun.webp)
-
-[List of Frieren characters](https://en.wikipedia.org/wiki/List_of_Frieren_characters)

@@ -31,7 +31,7 @@ Use `:tutor` in helix to start the tutorial.
 1. Neovim have a very activate plugin ecosystem, and it's easy to find plugins for almost
    everything.
    1. Helix is still new, and it even don't have a stable plugin system yet. A PR to add a plugin
-      system is still envolving: <https://github.com/helix-editor/helix/pull/8675>
+      system is still evolving: <https://github.com/helix-editor/helix/pull/8675>
 1. Neovim has integrated terminal, and it's very powerful. It's quite similar to VSCode's integrated
    terminal. I use it a lot.
    1. Helix doesn't have a integrated terminal yet, as it's complicated to implement. Users are
