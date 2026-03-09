@@ -47,7 +47,27 @@ window-rule {
     open-on-workspace "3chat"
 }
 window-rule {
+    match app-id="feishu"
+    open-on-workspace "3chat"
+}
+window-rule {
+    match title="^飞书"
+    open-on-workspace "3chat"
+}
+window-rule {
     match app-id="wechat"
+    open-on-workspace "3chat"
+}
+window-rule {
+    match app-id="com.tencent.WeChat"
+    open-on-workspace "3chat"
+}
+window-rule {
+    match title="^WeChat"
+    open-on-workspace "3chat"
+}
+window-rule {
+    match title="^微信"
     open-on-workspace "3chat"
 }
 window-rule {
