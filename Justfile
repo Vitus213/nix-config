@@ -119,7 +119,7 @@ override-pkgs hash:
 local mode="default":
   #!/usr/bin/env nu
   use {{utils_nu}} *;
-  nixos-switch (hostname) {{mode}}
+  local-switch (current-local-host) {{mode}}
 
 # Deploy the niri nixosConfiguration by hostname match
 [linux]

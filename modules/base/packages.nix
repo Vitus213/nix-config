@@ -10,7 +10,6 @@
     fastfetch
     neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     gnumake # Makefile
-    just # a command runner like gnumake, but simpler
     git # used by nix flakes
     git-lfs # used by huggingface models
 

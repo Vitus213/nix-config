@@ -1,9 +1,29 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   hostName = "hermes";
 in
 {
   targets.genericLinux.enable = true;
+
+  home.sessionVariables = {
+    NIXCFG_HOSTNAME = hostName;
+  };
+
+  nix.package = pkgs.nix;
+
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  nix.extraOptions = ''
+    !include ${config.age.secrets."nix-access-tokens".path}
+  '';
 
   # programs.ssh.matchBlocks."github.com".identityFile =
   #   "${config.home.homeDirectory}/.ssh/${hostName}";

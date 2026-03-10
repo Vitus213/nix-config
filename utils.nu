@@ -2,7 +2,15 @@ def repeat-str [s: string, n: int] {
   (1..$n | each { $s } | str join)
 }
 
+def nix-extra-flags [] {
+    [--extra-experimental-features "nix-command flakes"]
+}
+
 # ================= NixOS related =========================
+
+def nixos-config-names [] {
+    nix eval path:.#nixosConfigurations --apply builtins.attrNames --json ...(nix-extra-flags) | from json
+}
 
 export def nixos-switch [
     name: string
@@ -16,6 +24,54 @@ export def nixos-switch [
         nixos-rebuild switch --sudo --flake $".#($name)" --show-trace --verbose
     } else {
         nixos-rebuild switch --sudo --flake $".#($name)"
+    }
+}
+
+def home-config-names [] {
+    nix eval path:.#homeConfigurations --apply builtins.attrNames --json ...(nix-extra-flags) | from json
+}
+
+export def current-local-host [] {
+    if "NIXCFG_HOSTNAME" in $env {
+        $env.NIXCFG_HOSTNAME
+    } else {
+        (hostname)
+    }
+}
+
+export def home-manager-switch [
+    name: string
+    mode: string
+] {
+    print $"home-manager switch '($name)' in '($mode)' mode..."
+    print (repeat-str "=" 50)
+    let flake = $"path:.#($name)"
+    if "debug" == $mode {
+        nom build $"path:.#homeConfigurations.($name).activationPackage" ...(nix-extra-flags) --show-trace --verbose
+        nix shell nixpkgs#home-manager ...(nix-extra-flags) -c home-manager switch --flake $flake --show-trace --verbose
+    } else {
+        nix shell nixpkgs#home-manager ...(nix-extra-flags) -c home-manager switch --flake $flake
+    }
+}
+
+export def local-switch [
+    name: string
+    mode: string
+] {
+    let nixosConfigs = (nixos-config-names)
+    if ($name in $nixosConfigs) {
+        nixos-switch $name $mode
+        return
+    }
+
+    let homeConfigs = (home-config-names)
+    if ($name in $homeConfigs) {
+        home-manager-switch $name $mode
+        return
+    }
+
+    error make {
+        msg: $"Unknown local host '($name)'. nixosConfigurations: ($nixosConfigs | str join ', '); homeConfigurations: ($homeConfigs | str join ', ')"
     }
 }
 

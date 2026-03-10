@@ -58,6 +58,10 @@ in
           file = "${mysecrets}/github_token.age";
         }
         // user_readable;
+        "nix-access-tokens" = {
+          file = "${mysecrets}/nix-access-tokens.age";
+        }
+        // user_readable;
       };
 
       xdg.configFile."agenix/github_token".source = mkSymlink config.age.secrets."github_token".path;

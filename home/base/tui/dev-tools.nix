@@ -15,6 +15,7 @@
   #############################################################
 
   home.packages = with pkgs; [
+    just
     colmena # nixos's remote deployment tool
 
     tokei # count lines of code, alternative to cloc
