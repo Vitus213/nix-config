@@ -64,7 +64,9 @@ in
         // user_readable;
       };
 
-      xdg.configFile."agenix/github_token".source = mkSymlink config.age.secrets."github_token".path;
+      # HM agenix exposes runtime secrets under /run/user/<uid>/agenix.
+      # Use the concrete runtime path here instead of a store symlink to `${XDG_RUNTIME_DIR}`.
+      xdg.configFile."agenix/github_token".source = mkSymlink "/run/user/1000/agenix/github_token";
     }
   ]);
 }
