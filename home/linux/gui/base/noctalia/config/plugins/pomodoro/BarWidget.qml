@@ -19,7 +19,36 @@ Item {
   readonly property bool pillDirection: BarService.getPillDirection(root)
 
   readonly property var mainInstance: pluginApi?.mainInstance
-  readonly property bool isActive: mainInstance && (mainInstance.pomodoroRunning || mainInstance.pomodoroRemainingSeconds > 0 || mainInstance.pomodoroTotalSeconds > 0)
+  readonly property int timerPomodoro: mainInstance ? mainInstance.timerPomodoro : 0
+  readonly property int timerCountUp: mainInstance ? mainInstance.timerCountUp : 1
+  readonly property int timerCountDown: mainInstance ? mainInstance.timerCountDown : 2
+  readonly property int activeTimerType: mainInstance ? mainInstance.activeTimerType : timerPomodoro
+  readonly property bool isPomodoroTimer: activeTimerType === timerPomodoro
+  readonly property bool isCountUpTimer: activeTimerType === timerCountUp
+  readonly property bool isCountDownTimer: activeTimerType === timerCountDown
+  readonly property bool timerRunning: {
+    if (!mainInstance)
+      return false
+    return isPomodoroTimer ? mainInstance.pomodoroRunning : mainInstance.customRunning
+  }
+  readonly property int displayedSeconds: {
+    if (!mainInstance)
+      return 0
+    if (isPomodoroTimer)
+      return mainInstance.pomodoroRemainingSeconds
+    if (isCountDownTimer)
+      return mainInstance.customRemainingSeconds
+    return mainInstance.customElapsedSeconds
+  }
+  readonly property bool isActive: {
+    if (!mainInstance)
+      return false
+    if (isPomodoroTimer)
+      return mainInstance.pomodoroRunning || mainInstance.pomodoroRemainingSeconds > 0 || mainInstance.pomodoroTotalSeconds > 0
+    if (isCountDownTimer)
+      return mainInstance.customRunning || mainInstance.customElapsedSeconds > 0 || mainInstance.customRemainingSeconds < mainInstance.customTargetSeconds
+    return mainInstance.customRunning || mainInstance.customElapsedSeconds > 0
+  }
 
   readonly property int modeWork: 0
   readonly property int modeShortBreak: 1
@@ -52,6 +81,8 @@ Item {
   function getModeIcon() {
     if (!mainInstance) return "clock"
     if (mainInstance.pomodoroSoundPlaying) return "bell-ringing"
+    if (isCountUpTimer) return "clock"
+    if (isCountDownTimer) return "hourglass"
     if (mainInstance.pomodoroMode === modeWork) return "brain"
     if (mainInstance.pomodoroMode === modeShortBreak) return "coffee"
     if (mainInstance.pomodoroMode === modeLongBreak) return "bed"
@@ -90,12 +121,12 @@ Item {
       }
 
       NText {
-        visible: !barIsVertical && mainInstance && (mainInstance.pomodoroRunning || mainInstance.pomodoroRemainingSeconds > 0 || mainInstance.pomodoroTotalSeconds > 0)
+        visible: !barIsVertical && isActive
         family: Settings.data.ui.fontFixed
         pointSize: Style.barFontSize
         text: {
           if (!mainInstance) return ""
-          return formatTime(mainInstance.pomodoroRemainingSeconds)
+          return formatTime(displayedSeconds)
         }
         color: {
           if (mainInstance && (mainInstance.pomodoroRunning || mainInstance.pomodoroSoundPlaying)) {
@@ -114,7 +145,7 @@ Item {
       var items = [];
 
       if (mainInstance) {
-        if (mainInstance.pomodoroRunning || mainInstance.pomodoroRemainingSeconds > 0 || mainInstance.pomodoroTotalSeconds > 0) {
+        if (isPomodoroTimer && (mainInstance.pomodoroRunning || mainInstance.pomodoroRemainingSeconds > 0 || mainInstance.pomodoroTotalSeconds > 0)) {
           items.push({
             "label": mainInstance.pomodoroRunning ? pluginApi.tr("panel.pause") : pluginApi.tr("panel.resume"),
             "action": "toggle",
@@ -138,6 +169,24 @@ Item {
             "action": "reset-all",
             "icon": "rotate"
           });
+        } else if (!isPomodoroTimer && isActive) {
+          items.push({
+            "label": timerRunning ? pluginApi.tr("panel.pause") : pluginApi.tr("panel.resume"),
+            "action": "toggle",
+            "icon": timerRunning ? "media-pause" : "media-play"
+          });
+
+          items.push({
+            "label": pluginApi.tr("panel.finish") || "Finish",
+            "action": "finish",
+            "icon": "player-stop"
+          });
+
+          items.push({
+            "label": pluginApi.tr("panel.abandon") || "Abandon",
+            "action": "abandon",
+            "icon": "x"
+          });
         }
       }
 
@@ -158,17 +207,21 @@ Item {
         BarService.openPluginSettings(screen, pluginApi.manifest);
       } else if (mainInstance) {
         if (action === "toggle") {
-          if (mainInstance.pomodoroRunning) {
-            mainInstance.pomodoroPause();
+          if (timerRunning) {
+            mainInstance.pauseActiveTimer();
           } else {
-            mainInstance.pomodoroStart();
+            mainInstance.startActiveTimer();
           }
         } else if (action === "reset") {
           mainInstance.pomodoroResetSession();
         } else if (action === "reset-all") {
-          mainInstance.pomodoroResetAll();
+          mainInstance.resetAllTimers();
         } else if (action === "skip") {
           mainInstance.pomodoroSkip();
+        } else if (action === "finish") {
+          mainInstance.customFinish();
+        } else if (action === "abandon") {
+          mainInstance.customAbandon();
         }
       }
     }
@@ -191,9 +244,9 @@ Item {
       } else if (mouse.button === Qt.MiddleButton) {
         if (!mainInstance)
           return
-        mainInstance.pomodoroRunning
-          ? mainInstance.pomodoroPause()
-          : mainInstance.pomodoroStart()
+        timerRunning
+          ? mainInstance.pauseActiveTimer()
+          : mainInstance.startActiveTimer()
       }
     }
   }

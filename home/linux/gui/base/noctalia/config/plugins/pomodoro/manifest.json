@@ -25,7 +25,8 @@
       "sessionsBeforeLongBreak": 4,
       "autoStartBreaks": false,
       "autoStartWork": false,
-      "totalCompleted": 0
+      "countdownDurationMinutes": 25,
+      "totalTrackedSeconds": 0
     }
   }
 }

@@ -10,6 +10,7 @@ ColumnLayout {
   property int editWorkDuration: 25
   property int editShortBreakDuration: 5
   property int editLongBreakDuration: 15
+  property int editCountdownDuration: 25
   property int editSessionsBeforeLongBreak: 4
 
   property bool editAutoStartBreaks: false
@@ -41,6 +42,7 @@ ColumnLayout {
     root.editWorkDuration = settings?.workDuration ?? defaults?.workDuration ?? 25
     root.editShortBreakDuration = settings?.shortBreakDuration ?? defaults?.shortBreakDuration ?? 5
     root.editLongBreakDuration = settings?.longBreakDuration ?? defaults?.longBreakDuration ?? 15
+    root.editCountdownDuration = settings?.countdownDurationMinutes ?? defaults?.countdownDurationMinutes ?? 25
     root.editSessionsBeforeLongBreak = settings?.sessionsBeforeLongBreak ?? defaults?.sessionsBeforeLongBreak ?? 4
     root.editAutoStartBreaks = settings?.autoStartBreaks ?? defaults?.autoStartBreaks ?? false
     root.editAutoStartWork = settings?.autoStartWork ?? defaults?.autoStartWork ?? false
@@ -74,6 +76,25 @@ ColumnLayout {
       stepSize: 5
       value: root.editWorkDuration
       onValueChanged: if (value !== root.editWorkDuration) root.editWorkDuration = value
+    }
+  }
+
+  ColumnLayout {
+    Layout.fillWidth: true
+    spacing: Style.marginS
+
+    NLabel {
+      label: pluginApi?.tr("settings.countdown-duration") || "Count-down Duration"
+      description: pluginApi?.tr("settings.countdown-duration-desc") || "Default duration for custom count-down timer in minutes"
+    }
+
+    NSpinBox {
+      id: countdownDurationSpinBox
+      from: 1
+      to: 720
+      stepSize: 1
+      value: root.editCountdownDuration
+      onValueChanged: if (value !== root.editCountdownDuration) root.editCountdownDuration = value
     }
   }
 
@@ -238,6 +259,7 @@ ColumnLayout {
     pluginApi.pluginSettings.workDuration = root.editWorkDuration
     pluginApi.pluginSettings.shortBreakDuration = root.editShortBreakDuration
     pluginApi.pluginSettings.longBreakDuration = root.editLongBreakDuration
+    pluginApi.pluginSettings.countdownDurationMinutes = root.editCountdownDuration
     pluginApi.pluginSettings.sessionsBeforeLongBreak = root.editSessionsBeforeLongBreak
     pluginApi.pluginSettings.autoStartBreaks = root.editAutoStartBreaks
     pluginApi.pluginSettings.autoStartWork = root.editAutoStartWork

@@ -14,9 +14,13 @@ the future.
 - **Session Tracking**: Tracks completed sessions in a cycle.
 - **Auto-start**: Optionally auto-start breaks and/or work sessions.
 - **Compact Mode**: Shorter and more minimal panel view without the progress ring.
+- **Custom Timers**: Supports both count-up and count-down timers with start, pause, finish, and
+  abandon actions.
 - **Bar Widget**: Shows current mode based on the icon and remaining time with respect to the
   session.
 - **Notifications**: Sound and toast notification when sessions finish.
+- **Time Tracking**: Tracks cumulative focused time and stores it as total seconds (displayed as
+  hours).
 
 ## Work in Progress
 
@@ -37,15 +41,19 @@ qs -c noctalia-shell ipc call plugin:pomodoro <command>
 
 ### Available Commands
 
-| Command     | Description                                              | Example                                                   |
-| ----------- | -------------------------------------------------------- | --------------------------------------------------------- |
-| `toggle`    | Opens or closes the pomodoro panel on the current screen | `qs -c noctalia-shell ipc call plugin:pomodoro toggle`    |
-| `start`     | Starts/resumes the pomodoro timer                        | `qs -c noctalia-shell ipc call plugin:pomodoro start`     |
-| `pause`     | Pauses the running timer                                 | `qs -c noctalia-shell ipc call plugin:pomodoro pause`     |
-| `reset`     | Resets the current session                               | `qs -c noctalia-shell ipc call plugin:pomodoro reset`     |
-| `resetAll`  | Resets all sessions and returns to work mode             | `qs -c noctalia-shell ipc call plugin:pomodoro resetAll`  |
-| `skip`      | Skips to the next phase (work → break or break → work)   | `qs -c noctalia-shell ipc call plugin:pomodoro skip`      |
-| `stopAlarm` | Stops the alarm sound when ringing                       | `qs -c noctalia-shell ipc call plugin:pomodoro stopAlarm` |
+| Command               | Description                                                         | Example                                                                |
+| --------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `toggle`              | Opens or closes the pomodoro panel on the current screen            | `qs -c noctalia-shell ipc call plugin:pomodoro toggle`                 |
+| `start`               | Starts/resumes the pomodoro timer                                   | `qs -c noctalia-shell ipc call plugin:pomodoro start`                  |
+| `pause`               | Pauses the running timer                                            | `qs -c noctalia-shell ipc call plugin:pomodoro pause`                  |
+| `reset`               | Resets the current session                                          | `qs -c noctalia-shell ipc call plugin:pomodoro reset`                  |
+| `resetAll`            | Resets all sessions and returns to work mode                        | `qs -c noctalia-shell ipc call plugin:pomodoro resetAll`               |
+| `skip`                | Skips to the next phase (work → break or break → work)              | `qs -c noctalia-shell ipc call plugin:pomodoro skip`                   |
+| `stopAlarm`           | Stops the alarm sound when ringing                                  | `qs -c noctalia-shell ipc call plugin:pomodoro stopAlarm`              |
+| `finish`              | Finishes active custom timer and accumulates time                   | `qs -c noctalia-shell ipc call plugin:pomodoro finish`                 |
+| `abandon`             | Abandons active custom timer without accumulating                   | `qs -c noctalia-shell ipc call plugin:pomodoro abandon`                |
+| `setTimerType`        | Sets active timer type (`0` pomodoro, `1` count-up, `2` count-down) | `qs -c noctalia-shell ipc call plugin:pomodoro setTimerType 2`         |
+| `setCountdownMinutes` | Sets count-down target minutes                                      | `qs -c noctalia-shell ipc call plugin:pomodoro setCountdownMinutes 45` |
 
 ### Examples
 
@@ -72,15 +80,17 @@ qs -c noctalia-shell ipc call plugin:pomodoro resetAll
 **_Note:_** These settings are stored in the settings.json file and can be changed by opening the
 widget settings.
 
-| Setting                   | Default | Description                                 |
-| ------------------------- | ------- | ------------------------------------------- |
-| `workDuration`            | 25 min  | Duration of each work session               |
-| `shortBreakDuration`      | 5 min   | Duration of short breaks                    |
-| `longBreakDuration`       | 15 min  | Duration of long breaks                     |
-| `sessionsBeforeLongBreak` | 4       | Number of work sessions before a long break |
-| `autoStartBreaks`         | false   | Automatically start break timer after work  |
-| `autoStartWork`           | false   | Automatically start work timer after break  |
-| `compactMode`             | false   | Hide the circular progress bar              |
+| Setting                    | Default | Description                                  |
+| -------------------------- | ------- | -------------------------------------------- |
+| `workDuration`             | 25 min  | Duration of each work session                |
+| `shortBreakDuration`       | 5 min   | Duration of short breaks                     |
+| `longBreakDuration`        | 15 min  | Duration of long breaks                      |
+| `sessionsBeforeLongBreak`  | 4       | Number of work sessions before a long break  |
+| `autoStartBreaks`          | false   | Automatically start break timer after work   |
+| `autoStartWork`            | false   | Automatically start work timer after break   |
+| `compactMode`              | false   | Hide the circular progress bar               |
+| `countdownDurationMinutes` | 25 min  | Default duration for count-down timer        |
+| `totalTrackedSeconds`      | 0       | Persisted cumulative tracked time in seconds |
 
 ## Credits
 

@@ -107,6 +107,22 @@ window-rule {
     open-on-workspace "4gaming"
 }
 
+// Knowledge / notes applications - open in workspace 5
+window-rule {
+    match app-id="obsidian"
+    open-on-workspace "5music"
+    open-maximized true
+}
+window-rule {
+    match app-id="md.obsidian.Obsidian"
+    open-on-workspace "5music"
+    open-maximized true
+}
+window-rule {
+    match title="^Obsidian"
+    open-on-workspace "5music"
+}
+
 // File management applications - open in workspace 6
 window-rule {
     match app-id="com.github.johnfactotum.Foliate"

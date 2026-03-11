@@ -1,6 +1,10 @@
 {
   "panel": {
     "long-break": "长时间休息",
+    "count-down": "倒计时",
+    "count-up": "正向计时",
+    "abandon": "放弃",
+    "finish": "结束",
     "pause": "暂停",
     "reset": "重置",
     "reset-all": "全部重置",
@@ -10,6 +14,10 @@
     "short-break": "短暂休息",
     "skip": "跳过",
     "start": "开始",
+    "timer-count-down": "倒计时",
+    "timer-count-up": "正向计时",
+    "timer-pomodoro": "番茄钟",
+    "total-hours": "累计小时",
     "title": "番茄工作法",
     "work": "工作"
   },
@@ -20,6 +28,8 @@
     "auto-start-work-desc": "休息后自动开始工作计时器",
     "compact-mode": "紧凑模式",
     "compact-mode-desc": "更短更简洁的 Widget 外观",
+    "countdown-duration": "倒计时时长",
+    "countdown-duration-desc": "自定义倒计时的默认分钟数",
     "long-break-duration": "长时间休息时长",
     "long-break-duration-desc": "长时间休息的持续时间（分钟）",
     "sessions-before-long-break": "长时间休息前的会话",
@@ -31,6 +41,7 @@
   },
   "toast": {
     "break-finished": "休息结束！准备好专注了吗？",
+    "custom-finished": "自定义计时已结束。",
     "long-break-finished": "休息够了吗！准备好迎接新的循环了吗？",
     "title": "番茄工作法",
     "work-finished": "工作会话已完成！休息一下吧。"

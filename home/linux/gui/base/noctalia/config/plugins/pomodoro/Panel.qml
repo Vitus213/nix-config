@@ -41,16 +41,57 @@ Item {
   readonly property int totalSeconds: mainInstance ? mainInstance.pomodoroTotalSeconds : 0
   readonly property int originalTotal: mainInstance ? mainInstance.pomodoroOriginalTotal : 0
   readonly property int completedSessions: mainInstance ? mainInstance.pomodoroCompletedSessions : 0
-  readonly property int totalCompleted: mainInstance ? mainInstance.pomodoroTotalCompleted : 0
+  readonly property int activeTimerType: mainInstance ? mainInstance.activeTimerType : 0
+  readonly property int timerPomodoro: mainInstance ? mainInstance.timerPomodoro : 0
+  readonly property int timerCountUp: mainInstance ? mainInstance.timerCountUp : 1
+  readonly property int timerCountDown: mainInstance ? mainInstance.timerCountDown : 2
+  readonly property bool isPomodoroTimer: activeTimerType === timerPomodoro
+  readonly property bool isCountUpTimer: activeTimerType === timerCountUp
+  readonly property bool isCountDownTimer: activeTimerType === timerCountDown
+  readonly property bool customRunning: mainInstance ? mainInstance.customRunning : false
+  readonly property int customElapsedSeconds: mainInstance ? mainInstance.customElapsedSeconds : 0
+  readonly property int customRemainingSeconds: mainInstance ? mainInstance.customRemainingSeconds : 0
+  readonly property int customOriginalTargetSeconds: mainInstance ? mainInstance.customOriginalTargetSeconds : 0
+  readonly property int customTargetSeconds: mainInstance ? mainInstance.customTargetSeconds : 0
+  readonly property int trackedTotalSeconds: mainInstance ? mainInstance.trackedTotalSeconds : 0
+  readonly property int trackedTotalHours: Math.floor(trackedTotalSeconds / 3600)
+  readonly property int trackedTotalMinutes: Math.floor((trackedTotalSeconds % 3600) / 60)
   readonly property bool soundPlaying: mainInstance ? mainInstance.pomodoroSoundPlaying : false
   readonly property int sessionsBeforeLongBreak: mainInstance ? mainInstance.sessionsBeforeLongBreak : 4
+  readonly property bool timerRunning: isPomodoroTimer ? isRunning : customRunning
+  readonly property int displayedSeconds: {
+    if (isPomodoroTimer)
+      return remainingSeconds;
+    if (isCountDownTimer)
+      return customRemainingSeconds;
+    return customElapsedSeconds;
+  }
+  readonly property int displayTotalSeconds: {
+    if (isPomodoroTimer)
+      return totalSeconds;
+    if (isCountDownTimer)
+      return customOriginalTargetSeconds;
+    return 0;
+  }
+  readonly property bool timerHasProgress: {
+    return isPomodoroTimer && originalTotal > 0;
+  }
   
-  function startTimer() { if (mainInstance) mainInstance.pomodoroStart(); }
-  function pauseTimer() { if (mainInstance) mainInstance.pomodoroPause(); }
-  function resetSession() { if (mainInstance) mainInstance.pomodoroResetSession(); }
-  function resetAll() { if (mainInstance) mainInstance.pomodoroResetAll(); }
+  function startTimer() { if (mainInstance) mainInstance.startActiveTimer(); }
+  function pauseTimer() { if (mainInstance) mainInstance.pauseActiveTimer(); }
+  function resetSession() { if (mainInstance) mainInstance.resetActiveTimer(); }
+  function resetAll() { if (mainInstance) mainInstance.resetAllTimers(); }
   function skipTimer() { if (mainInstance) mainInstance.pomodoroSkip(); }
   function stopAlarm() { if (mainInstance) mainInstance.pomodoroStopAlarm(); }
+  function finishTimer() { if (mainInstance) mainInstance.customFinish(); }
+  function abandonTimer() { if (mainInstance) mainInstance.customAbandon(); }
+  function setTimerType(type) { if (mainInstance) mainInstance.setActiveTimerType(type); }
+  function setCountdownDuration(hours, minutes) {
+    if (!mainInstance)
+      return;
+    const totalMinutes = Math.max(1, Math.floor(Number(hours)) * 60 + Math.floor(Number(minutes)));
+    mainInstance.customSetCountdownDurationMinutes(totalMinutes);
+  }
 
   function formatTime(seconds, totalTimeSeconds) {
     const hours = Math.floor(seconds / 3600);
@@ -71,6 +112,8 @@ Item {
   }
   
   function getModeIcon() {
+    if (isCountUpTimer) return "clock-up"
+    if (isCountDownTimer) return "hourglass"
     if (currentMode === modeWork) return "brain"
     if (currentMode === modeShortBreak) return "coffee"
     if (currentMode === modeLongBreak) return "bed"
@@ -78,6 +121,8 @@ Item {
   }
   
   function getModeName() {
+    if (isCountUpTimer) return pluginApi?.tr("panel.count-up") || "Count Up"
+    if (isCountDownTimer) return pluginApi?.tr("panel.count-down") || "Count Down"
     if (currentMode === modeWork) return pluginApi?.tr("panel.work") || "Work"
     if (currentMode === modeShortBreak) return pluginApi?.tr("panel.short-break") || "Short Break"
     if (currentMode === modeLongBreak) return pluginApi?.tr("panel.long-break") || "Long Break"
@@ -161,15 +206,73 @@ Item {
             }
             
             NText {
+              visible: isPomodoroTimer
               text: (pluginApi?.tr("panel.session") || "Session") + " " + (completedSessions + 1) + "/" + sessionsBeforeLongBreak
               pointSize: Style.fontSizeS
               color: Color.mOnSurfaceVariant
             }
 
             NText {
-              text: "Completed: " + totalCompleted
+              text: (pluginApi?.tr("panel.total-hours") || "Total") + ": " + trackedTotalHours + "h " + trackedTotalMinutes + "m"
               pointSize: Style.fontSizeS
               color: Color.mOnSurfaceVariant
+            }
+          }
+
+          RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.marginS
+
+            NButton {
+              Layout.fillWidth: true
+              text: pluginApi?.tr("panel.timer-pomodoro") || "Pomodoro"
+              icon: "brain"
+              enabled: !timerRunning || isPomodoroTimer
+              onClicked: setTimerType(timerPomodoro)
+            }
+
+            NButton {
+              Layout.fillWidth: true
+              text: pluginApi?.tr("panel.timer-count-up") || "Count Up"
+              icon: "clock-up"
+              enabled: !timerRunning || isCountUpTimer
+              onClicked: setTimerType(timerCountUp)
+            }
+
+            NButton {
+              Layout.fillWidth: true
+              text: pluginApi?.tr("panel.timer-count-down") || "Count Down"
+              icon: "hourglass"
+              enabled: !timerRunning || isCountDownTimer
+              onClicked: setTimerType(timerCountDown)
+            }
+          }
+
+          RowLayout {
+            visible: isCountDownTimer
+            Layout.fillWidth: true
+            spacing: Style.marginS
+
+            SpinBox {
+              id: countdownHours
+              Layout.fillWidth: true
+              from: 0
+              to: 23
+              editable: true
+              enabled: !customRunning && customElapsedSeconds === 0
+              value: Math.floor(customTargetSeconds / 3600)
+              onValueModified: setCountdownDuration(value, countdownMinutes.value)
+            }
+
+            SpinBox {
+              id: countdownMinutes
+              Layout.fillWidth: true
+              from: 0
+              to: 59
+              editable: true
+              enabled: !customRunning && customElapsedSeconds === 0
+              value: Math.floor((customTargetSeconds % 3600) / 60)
+              onValueModified: setCountdownDuration(countdownHours.value, value)
             }
           }
 
@@ -185,13 +288,16 @@ Item {
           anchors.centerIn: parent
           width: Math.min(parent.width, parent.height) * 0.9
           height: width
-          visible: originalTotal > 0 && !compactMode && (isRunning || remainingSeconds > 0)
+          visible: timerHasProgress && !compactMode && (timerRunning || displayedSeconds > 0)
           z: -1
 
           property real progressRatio: {
-            if (originalTotal <= 0)
+            if (!timerHasProgress)
               return 0;
-            const ratio = remainingSeconds / originalTotal;
+            const denominator = isPomodoroTimer ? originalTotal : customOriginalTargetSeconds;
+            if (denominator <= 0)
+              return 0;
+            const ratio = displayedSeconds / denominator;
             return Math.max(0, Math.min(1, ratio));
           }
 
@@ -248,7 +354,7 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             font.family: Settings.data.ui.fontFixed
 
-            readonly property bool showingHours: totalSeconds >= 3600 || remainingSeconds >= 3600
+            readonly property bool showingHours: displayTotalSeconds >= 3600 || displayedSeconds >= 3600
 
             font.pointSize: {
               const scale = compactMode ? 0.8 : 1.0;
@@ -258,12 +364,13 @@ Item {
             font.weight: Style.fontWeightBold
             color: Color.mPrimary
 
-            text: formatTime(remainingSeconds, totalSeconds)
+            text: formatTime(displayedSeconds, displayTotalSeconds)
           }
         }
       }
 
       GridLayout {
+        visible: isPomodoroTimer
         id: buttonGrid
         Layout.fillWidth: true
         columns: 2
@@ -275,10 +382,10 @@ Item {
           id: startButton
           Layout.fillWidth: true
           Layout.preferredWidth: 1
-          text: isRunning ? (pluginApi?.tr("panel.pause") || "Pause") : (totalSeconds > 0 ? (pluginApi?.tr("panel.resume") || "Resume") : (pluginApi?.tr("panel.start") || "Start"))
-          icon: isRunning ? "player-pause" : "player-play"
+          text: timerRunning ? (pluginApi?.tr("panel.pause") || "Pause") : (displayTotalSeconds > 0 ? (pluginApi?.tr("panel.resume") || "Resume") : (pluginApi?.tr("panel.start") || "Start"))
+          icon: timerRunning ? "player-pause" : "player-play"
           onClicked: {
-            if (isRunning) {
+            if (timerRunning) {
               pauseTimer();
             } else {
               startTimer();
@@ -320,6 +427,45 @@ Item {
           onClicked: {
             resetAll();
           }
+        }
+      }
+
+      GridLayout {
+        visible: !isPomodoroTimer
+        Layout.fillWidth: true
+        columns: 2
+        rowSpacing: Style.marginS
+        columnSpacing: Style.marginS
+        uniformCellWidths: true
+
+        NButton {
+          Layout.fillWidth: true
+          text: customRunning ? (pluginApi?.tr("panel.pause") || "Pause") : ((customElapsedSeconds > 0 || (isCountDownTimer && customRemainingSeconds < customTargetSeconds)) ? (pluginApi?.tr("panel.resume") || "Resume") : (pluginApi?.tr("panel.start") || "Start"))
+          icon: customRunning ? "player-pause" : "player-play"
+          onClicked: {
+            if (customRunning) {
+              pauseTimer();
+            } else {
+              startTimer();
+            }
+          }
+        }
+
+        NButton {
+          Layout.fillWidth: true
+          text: pluginApi?.tr("panel.finish") || "Finish"
+          icon: "flag"
+          enabled: customRunning || customElapsedSeconds > 0
+          onClicked: finishTimer()
+        }
+
+        NButton {
+          Layout.fillWidth: true
+          Layout.columnSpan: 2
+          text: pluginApi?.tr("panel.abandon") || "Abandon"
+          icon: "x"
+          enabled: customRunning || customElapsedSeconds > 0 || (isCountDownTimer && customRemainingSeconds < customTargetSeconds)
+          onClicked: abandonTimer()
         }
       }
         }
