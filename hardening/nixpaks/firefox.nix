@@ -5,15 +5,24 @@
 # - Firefox's flatpak manifest: https://hg.mozilla.org/mozilla-central/file/tip/taskcluster/docker/firefox-flatpak/runme.sh#l151
 {
   lib,
+  pkgs,
   firefox,
   mkNixPak,
   buildEnv,
   makeDesktopItem,
+  runCommandLocal,
   ...
 }:
 
 let
   appId = "org.mozilla.firefox";
+  flatpakArch =
+    {
+      "x86_64-linux" = "x86_64";
+      "aarch64-linux" = "aarch64";
+      "i686-linux" = "i386";
+    }
+    .${pkgs.stdenv.hostPlatform.system} or "unknown-arch-${pkgs.stdenv.hostPlatform.system}";
   wrapped = mkNixPak {
     config =
       {
@@ -74,12 +83,30 @@ let
         };
       };
   };
-  exePath = lib.getExe wrapped.config.script;
+  # Work around xdg-document-portal rejecting the nixpak app identity with
+  # "*unspecified*/*unspecified*" when Firefox requests document access.
+  flatpakInfoFile = runCommandLocal "firefox-flatpak-shim-info" { } ''
+        cat ${wrapped.config.flatpak.infoFile} > "$out"
+        cat >> "$out" <<EOF
+
+    [Instance]
+    arch=${flatpakArch}
+    branch=stable
+    EOF
+  '';
+  patchedScript = runCommandLocal "firefox-launcher" { } ''
+    mkdir -p "$out/bin"
+    cp ${lib.getExe wrapped.config.script} "$out/bin/firefox"
+    chmod +x "$out/bin/firefox"
+    substituteInPlace "$out/bin/firefox" \
+      --replace-fail ${wrapped.config.flatpak.infoFile} ${flatpakInfoFile}
+  '';
+  exePath = lib.getExe' patchedScript "firefox";
 in
 buildEnv {
   inherit (wrapped.config.script) name meta passthru;
   paths = [
-    wrapped.config.script
+    patchedScript
     (makeDesktopItem {
       name = appId;
       desktopName = "Firefox";
