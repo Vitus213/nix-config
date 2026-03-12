@@ -62,11 +62,11 @@ let
 in
 {
   nixosConfigurations = {
-    "${name}-niri" = mylib.nixosSystem (modules-niri // args);
+    "${name}" = mylib.nixosSystem (modules-niri // args);
   };
 
   # generate iso image for hosts with desktop environment
   packages = {
-    "${name}-niri" = inputs.self.nixosConfigurations."${name}-niri".config.formats.iso;
+    "${name}" = inputs.self.nixosConfigurations."${name}".config.formats.iso;
   };
 }

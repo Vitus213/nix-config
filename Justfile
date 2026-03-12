@@ -121,14 +121,6 @@ local mode="default":
   use {{utils_nu}} *;
   local-switch (current-local-host) {{mode}}
 
-# Deploy the niri nixosConfiguration by hostname match
-[linux]
-[group('desktop')]
-niri mode="default":
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  nixos-switch $"(hostname)-niri" {{mode}}
-
 ############################################################################
 #
 #  Darwin related commands

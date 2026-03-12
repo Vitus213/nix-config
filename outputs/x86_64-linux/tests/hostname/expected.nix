@@ -4,8 +4,8 @@
 }:
 let
   specialExpected = {
-    "apollo-niri" = "apollo";
-    "athena-niri" = "athena";
+    "apollo" = "apollo";
+    "athena" = "athena";
   };
   specialHostNames = builtins.attrNames specialExpected;
 

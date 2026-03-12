@@ -111,13 +111,13 @@ For NixOS:
 
 ```bash
 # deploy one of the configuration based on the hostname
-sudo nixos-rebuild switch --flake .#apollo-niri
+sudo nixos-rebuild switch --flake .#apollo
 
-# Deploy the niri nixosConfiguration by hostname match
-just niri
+# Deploy nixosConfiguration by local hostname match
+just local
 
 # or we can deploy with details
-just niri debug
+just local debug
 ```
 
 For macOS:

@@ -73,7 +73,6 @@ in
 
       # network
       "/var/lib/tailscale"
-      "/var/lib/netbird-homelab" # netbird's homelab client
       "/var/lib/bluetooth"
       "/var/lib/NetworkManager"
       "/var/lib/iwd"

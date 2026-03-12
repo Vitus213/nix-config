@@ -10,7 +10,7 @@ in
     source /etc/agenix/alias-for-work.nushell
   '';
 
-  modules.desktop.nvidia.enable = true;
+  modules.desktop.nvidia.enable = false;
 
   xdg.configFile."niri/niri-hardware.kdl".source =
     mkSymlink "${config.home.homeDirectory}/nix-config/hosts/olympians-athena/niri-hardware.kdl";
