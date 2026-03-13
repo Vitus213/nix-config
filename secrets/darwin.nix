@@ -132,21 +132,11 @@
     };
   };
 
-  # both the original file and the symlink should be readable and executable by the user
-  #
   # activationScripts are executed every time you run `nixos-rebuild` / `darwin-rebuild` or boot your system
   system.activationScripts.postActivation.text = ''
-    ${pkgs.nushell}/bin/nu -c '
-      let aliasPath = "/etc/agenix/alias-for-work.nushell"
-      if ($aliasPath | path exists) {
-        sudo chown ${myvars.username} $aliasPath
-      }
-    '
-
-    agenix_dir="/Users/${myvars.username}/.config/agenix"
-    /bin/mkdir -p "$agenix_dir"
-    /bin/ln -snf /run/agenix/github_token "$agenix_dir/github_token"
-    /usr/sbin/chown ${myvars.username} "$agenix_dir"
-    /usr/sbin/chown -h ${myvars.username} "$agenix_dir/github_token" || true
+    alias_path="/etc/agenix/alias-for-work.nushell"
+    if [ -e "$alias_path" ] || [ -L "$alias_path" ]; then
+      /usr/sbin/chown ${myvars.username} "$alias_path" || true
+    fi
   '';
 }

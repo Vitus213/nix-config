@@ -8,12 +8,16 @@
 let
   ghUser = myvars.githubUsername or myvars.username;
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
+  githubTokenPath =
+    if pkgs.stdenv.isDarwin then "/run/agenix/github_token" else "/etc/agenix/github_token";
 in
 {
   # Unified token path for gh auth generation.
-  # On NixOS this points to /etc/agenix/github_token by default.
+  # On macOS this points to /run/agenix/github_token because the secret is provided by nix-darwin agenix.
   # HM-only hosts can override this in `secrets/home.nix`.
-  xdg.configFile."agenix/github_token".source = lib.mkDefault (mkSymlink "/etc/agenix/github_token");
+  xdg.configFile = {
+    "agenix/github_token".source = lib.mkDefault (mkSymlink githubTokenPath);
+  };
 
   # `programs.git` will generate the config file: ~/.config/git/config
   # to make git use this config file, `~/.gitconfig` should not exist!
@@ -21,6 +25,24 @@ in
   #    https://git-scm.com/docs/git-config#Documentation/git-config.txt---global
   home.activation.removeExistingGitconfig = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
     rm -f ${config.home.homeDirectory}/.gitconfig
+  '';
+
+  # Migrate pre-existing github_token files or legacy symlinks into HM management.
+  home.activation.backupExistingGithubToken = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+    target="${config.xdg.configHome}/agenix/github_token"
+    expected="${githubTokenPath}"
+
+    if [ -L "$target" ] && [ "$(${pkgs.coreutils}/bin/readlink "$target")" = "$expected" ]; then
+      exit 0
+    fi
+
+    if [ -e "$target" ] || [ -L "$target" ]; then
+      backup="$target.home-manager.backup"
+      if [ -e "$backup" ] || [ -L "$backup" ]; then
+        backup="$backup.$(${pkgs.coreutils}/bin/date +%s)"
+      fi
+      ${pkgs.coreutils}/bin/mv "$target" "$backup"
+    fi
   '';
 
   # GitHub CLI tool

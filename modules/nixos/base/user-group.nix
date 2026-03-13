@@ -7,6 +7,19 @@
   # Don't allow mutation of users outside the config.
   users.mutableUsers = false;
 
+  # security.sudo.extraRules = [
+  #   {
+  #     # Allow the primary user to run sudo non-interactively for tools that invoke it internally.
+  #     users = [ myvars.username ];
+  #     commands = [
+  #       {
+  #         command = "ALL";
+  #         options = [ "NOPASSWD" ];
+  #       }
+  #     ];
+  #   }
+  # ];
+
   users.groups = {
     "${myvars.username}" = { };
     podman = { };
