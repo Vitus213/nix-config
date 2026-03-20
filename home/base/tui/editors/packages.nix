@@ -126,7 +126,7 @@
         ]
       #-*- Web Development -*-#
       ++ [
-        nodePackages.nodejs
+        nodejs_22
         nodePackages.typescript
         nodePackages.typescript-language-server
         # HTML/CSS/JSON/ESLint language servers extracted from vscode
