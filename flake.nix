@@ -64,11 +64,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-openclaw = {
-      url = "github:openclaw/nix-openclaw";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # https://github.com/catppuccin/nix
     catppuccin = {
       url = "github:catppuccin/nix";

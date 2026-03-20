@@ -162,8 +162,7 @@ in
       # code editor
       "visual-studio-code"
       # "zed"
-      "cursor" # cursor ai editor
-
+      # "cursor" # cursor ai editor
       "nikitabobko/tap/aerospace" # an i3-like tiling window manager for macOS
       "ghostty" # terminal emulator
 

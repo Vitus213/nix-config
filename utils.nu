@@ -9,7 +9,7 @@ def nix-extra-flags [] {
 # ================= NixOS related =========================
 
 def nixos-config-names [] {
-    nix eval path:.#nixosConfigurations --apply builtins.attrNames --json ...(nix-extra-flags) | from json
+    nix eval .#nixosConfigurations --apply builtins.attrNames --json ...(nix-extra-flags) | from json
 }
 
 export def nixos-switch [
@@ -28,7 +28,7 @@ export def nixos-switch [
 }
 
 def home-config-names [] {
-    nix eval path:.#homeConfigurations --apply builtins.attrNames --json ...(nix-extra-flags) | from json
+    nix eval .#homeConfigurations --apply builtins.attrNames --json ...(nix-extra-flags) | from json
 }
 
 export def current-local-host [] {
@@ -45,9 +45,9 @@ export def home-manager-switch [
 ] {
     print $"home-manager switch '($name)' in '($mode)' mode..."
     print (repeat-str "=" 50)
-    let flake = $"path:.#($name)"
+    let flake = $".#($name)"
     if "debug" == $mode {
-        nom build $"path:.#homeConfigurations.($name).activationPackage" ...(nix-extra-flags) --show-trace --verbose
+        nom build $".#homeConfigurations.($name).activationPackage" ...(nix-extra-flags) --show-trace --verbose
         nix shell nixpkgs#home-manager ...(nix-extra-flags) -c home-manager switch --flake $flake --show-trace --verbose
     } else {
         nix shell nixpkgs#home-manager ...(nix-extra-flags) -c home-manager switch --flake $flake
@@ -91,7 +91,7 @@ export def make-editable [
 # ================= macOS related =========================
 
 def darwin-config-names [] {
-    nix eval path:.#darwinConfigurations --apply builtins.attrNames --json --extra-experimental-features "nix-command flakes" | from json
+    nix eval .#darwinConfigurations --apply builtins.attrNames --json --extra-experimental-features "nix-command flakes" | from json
 }
 
 def require-darwin-config [name: string] {
@@ -112,7 +112,7 @@ export def darwin-build [
     let resolved = (require-darwin-config $name)
     print $"darwin-build '($resolved)' in '($mode)' mode..."
     print (repeat-str "=" 50)
-    let target = $"path:.#darwinConfigurations.($resolved).system"
+    let target = $".#darwinConfigurations.($resolved).system"
     if "debug" == $mode {
         nom build $target --extra-experimental-features "nix-command flakes"  --show-trace --verbose
     } else {
@@ -128,9 +128,9 @@ export def darwin-switch [
     print $"darwin-switch '($resolved)' in '($mode)' mode..."
     print (repeat-str "=" 50)
     if "debug" == $mode {
-        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $"path:.#($resolved)" --show-trace --verbose
+        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $".#($resolved)" --show-trace --verbose
     } else {
-        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $"path:.#($resolved)"
+        sudo -E ./result/sw/bin/darwin-rebuild switch --flake $".#($resolved)"
     }
 }
 
