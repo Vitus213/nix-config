@@ -7,8 +7,8 @@
 let
   hostName = "apollo"; # Define your hostname.
 
-  inherit (myvars.networking) mainGateway mainGateway6 nameservers;
-  inherit (myvars.networking.hostsAddr.${hostName}) iface ipv4 ipv6;
+  inherit (myvars.networking) nameservers;
+  inherit (myvars.networking.hostsAddr.${hostName}) iface ipv4 ipv6 gateway gateway6;
   ipv4WithMask = "${ipv4}/24";
   ipv6WithMask = "${ipv6}/64";
 in
@@ -61,11 +61,11 @@ in
     routes = [
       {
         Destination = "0.0.0.0/0";
-        Gateway = mainGateway;
+        Gateway = gateway;
       }
       {
         Destination = "::/0";
-        Gateway = mainGateway6;
+        Gateway = gateway6;
         GatewayOnLink = true; # it's a gateway on local link.
       }
     ];

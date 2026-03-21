@@ -1,6 +1,6 @@
 { lib }:
 rec {
-  mainGateway = "192.168.111.1"; # main router
+  mainGateway = "192.168.199.1"; # main router
   mainGateway6 = "fe80::5"; # main router's link-local address
   # use suzi as the default gateway
   # it's a subrouter with a transparent proxy
@@ -25,12 +25,16 @@ rec {
       iface = "enp5s0";
       ipv4 = "192.168.111.100";
       ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
+      gateway = "192.168.111.1";
+      gateway6 = "fe80::5";
     };
     athena = {
       # Desktop PC (placeholder values)
-      iface = "enp0s0";
-      ipv4 = "192.168.111.101";
+      iface = "eno1";
+      ipv4 = "192.168.199.178";
       ipv6 = "fe80::101"; # Link-local Address
+      gateway = "192.168.199.1";
+      gateway6 = "fe80::5";
     };
   };
 

@@ -8,7 +8,10 @@
       # so we need to force replace it in every rebuild to avoid file conflict.
       force = true;
     };
-    "fcitx5/conf/classicui.conf".source = ./classicui.conf;
+    "fcitx5/conf/classicui.conf" = {
+      source = ./classicui.conf;
+      force = true;
+    };
     "mozc/config1.db".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/linux/gui/base/fcitx5/mozc-config1.db";
   };
