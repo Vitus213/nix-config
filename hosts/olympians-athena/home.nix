@@ -11,6 +11,7 @@ in
   '';
 
   modules.desktop.nvidia.enable = false;
+  modules.desktop.forceX11Compat.enable = false;
 
   xdg.configFile."niri/niri-hardware.kdl".source =
     mkSymlink "${config.home.homeDirectory}/nix-config/hosts/olympians-athena/niri-hardware.kdl";

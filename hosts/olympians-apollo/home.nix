@@ -11,6 +11,7 @@ in
   '';
 
   modules.desktop.nvidia.enable = true;
+  modules.desktop.forceX11Compat.enable = true;
 
   xdg.configFile."niri/niri-hardware.kdl".source =
     mkSymlink "${config.home.homeDirectory}/nix-config/hosts/olympians-apollo/niri-hardware.kdl";
