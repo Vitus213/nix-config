@@ -9,7 +9,7 @@
       X11Forwarding = true;
       # root user is used for remote deployment, so we need to allow it
       PermitRootLogin = "prohibit-password";
-      PasswordAuthentication = false; # disable password login
+      PasswordAuthentication = true; # enable password login
     };
     openFirewall = true;
   };
