@@ -43,6 +43,20 @@
         identityFile = "/etc/agenix/ssh-key-romantic";
         identitiesOnly = true;
       };
+      "apollo" = {
+        hostname = "100.108.175.44";
+        user = "vitus";
+      };
+
+      "artemis" = {
+        hostname = "100.83.91.107";
+        user = "vitus";
+      };
+
+      "athena" = {
+        hostname = "100.104.233.76";
+        user = "vitus";
+      };
     };
   };
 }
