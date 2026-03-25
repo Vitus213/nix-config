@@ -281,11 +281,11 @@ run = ['layout floating', 'move-node-to-workspace 9File']
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
-run = ['layout tiling', 'move-node-to-workspace 7Work']
+run = ['layout tiling', 'move-node-to-workspace 3Work']
 
 [[on-window-detected]]
 if.app-id = 'com.todesktop.230313mzl4w4u92' # Cursor AI Editor
-run = ['layout tiling', 'move-node-to-workspace 7Work']
+run = ['layout tiling', 'move-node-to-workspace 3Work']
 
 [[on-window-detected]]
 if.app-id = 'org.wireshark.Wireshark'
