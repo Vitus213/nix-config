@@ -96,12 +96,7 @@ outer.right = 3
 # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
 # You can uncomment the following lines to open up terminal with alt + enter shortcut
 # (like in i3)
-alt-enter = '''exec-and-forget osascript -e '
-    tell application "kitty"
-        do script
-        activate
-    end tell'
-    '''
+alt-enter = 'exec-and-forget open -na Ghostty'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 alt-slash = 'layout tiles horizontal vertical'
@@ -124,7 +119,7 @@ alt-shift-minus = 'resize smart -50'
 alt-shift-equal = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-alt-1 = 'workspace 1Kitty'
+alt-1 = 'workspace 1Term'
 alt-2 = 'workspace 2Alacritty'
 alt-3 = 'workspace 3Work'
 alt-4 = 'workspace 4Firefox'
@@ -140,7 +135,7 @@ alt-b = 'workspace B'
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-alt-shift-1 = 'move-node-to-workspace 1Kitty'
+alt-shift-1 = 'move-node-to-workspace 1Term'
 alt-shift-2 = 'move-node-to-workspace 2Alacritty'
 alt-shift-3 = 'move-node-to-workspace 3Work'
 alt-shift-4 = 'move-node-to-workspace 4Firefox'
@@ -211,7 +206,11 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
-run = 'move-node-to-workspace 1Kitty'
+run = 'move-node-to-workspace 1Term'
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = ['layout tiling', 'move-node-to-workspace 1Term']
 
 [[on-window-detected]]
 if.app-id = 'org.alacritty'
@@ -282,11 +281,11 @@ run = ['layout floating', 'move-node-to-workspace 9File']
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.VSCode'
-run = ['layout floating', 'move-node-to-workspace 9File']
+run = ['layout tiling', 'move-node-to-workspace 7Work']
 
 [[on-window-detected]]
 if.app-id = 'com.todesktop.230313mzl4w4u92' # Cursor AI Editor
-run = ['layout floating', 'move-node-to-workspace 9File']
+run = ['layout tiling', 'move-node-to-workspace 7Work']
 
 [[on-window-detected]]
 if.app-id = 'org.wireshark.Wireshark'
@@ -321,17 +320,17 @@ check-further-callbacks = true
 run = ['layout floating']
 
 # =================================================================
-# Multiple monitor configuration
+# Single monitor configuration
 # =================================================================
 
 [workspace-to-monitor-force-assignment]
-1Kitty = ['main']                # Non-main monitor in case when there are only two monitors'
-2Alacritty = ['main']            # "Main" monitor ("main" as in System Settings → Displays → Use as)
-3Work = ['built-in']
+1Term = ['main']                 # "Main" monitor ("main" as in System Settings → Displays → Use as)
+2Alacritty = ['main']
+3Work = ['main']
 4Firefox = ['main']
 5Chrome = ['main']
-6Chat = ['built-in']
+6Chat = ['main']
 7Work = ['main']
-8Music = ['built-in']
+8Music = ['main']
 9File = ['main']
 0Other = ['main']
