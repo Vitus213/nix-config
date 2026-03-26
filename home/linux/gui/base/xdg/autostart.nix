@@ -8,7 +8,7 @@
     "${pkgs.alacritty}/share/applications/Alacritty.desktop"
     "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop"
 
-    "${pkgs.clash-verge-rev}/share/applications/clash-verge.desktop"
+    # "${pkgs.clash-verge-rev}/share/applications/clash-verge.desktop"
 
     # nixpaks
     "${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop"
