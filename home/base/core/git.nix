@@ -110,6 +110,7 @@ in
       user.name = myvars.userfullname;
 
       init.defaultBranch = "main";
+      core.quotePath = false; # 显示中文文件名而不是转义序列
       trim.bases = "develop,master,main"; # for git-trim
       push.autoSetupRemote = true;
       pull.rebase = true;

@@ -36,91 +36,64 @@ window-rule {
     open-maximized true
 }
 
-// Chat applications - open in workspace 3
+// Chat applications - open in workspace 4
 window-rule {
     // match app-id="org.telegram.desktop"
     match title="^Telegram"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match title="^Feishu"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match app-id="feishu"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match title="^飞书"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match app-id="wechat"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match app-id="com.tencent.WeChat"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match title="^WeChat"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match title="^微信"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 window-rule {
     match app-id="QQ"
-    open-on-workspace "3chat"
+    open-on-workspace "4chat"
 }
 
-// Gaming applications - open in workspace 4
-window-rule {
-    match app-id="steam"
-    open-on-workspace "4gaming"
-}
-window-rule {
-    match app-id="steam_app_default"
-    open-on-workspace "4gaming"
-}
-window-rule {
-    match app-id="heroic"
-    open-on-workspace "4gaming"
-}
-window-rule {
-    match app-id="net.lutris.Lutris"
-    open-on-workspace "4gaming"
-}
-window-rule {
-    match app-id="com.vysp3r.ProtonPlus"
-    open-on-workspace "4gaming"
-}
-window-rule {
-    // Run anime games on Linux
-    match app-id="^moe.launcher"
-    open-on-workspace "4gaming"
-}
-window-rule {
-    // All *.exe (Windows applications)
-    match app-id=".exe$"
-    open-on-workspace "4gaming"
-}
-
-// Knowledge / notes applications - open in workspace 5
+// Docs / notes applications - open in workspace 3
 window-rule {
     match app-id="obsidian"
-    open-on-workspace "5music"
+    open-on-workspace "3docs"
     open-maximized true
 }
 window-rule {
     match app-id="md.obsidian.Obsidian"
-    open-on-workspace "5music"
+    open-on-workspace "3docs"
     open-maximized true
 }
 window-rule {
     match title="^Obsidian"
-    open-on-workspace "5music"
+    open-on-workspace "3docs"
+}
+window-rule {
+    match title="^Typora"
+    open-on-workspace "3docs"
+    open-maximized true
 }
 
 // File management applications - open in workspace 6

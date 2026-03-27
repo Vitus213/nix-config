@@ -41,10 +41,10 @@ output "DP-2" {
 // ============= Named Workspaces =============
 workspace "1terminal" { open-on-output "DP-1"; }
 workspace "2browser" { open-on-output "DP-1"; }
-workspace "4gaming" { open-on-output "DP-1"; }
 workspace "5music" { open-on-output "DP-2"; }
 
-workspace "3chat" { open-on-output "DP-2"; }
+workspace "3docs" { open-on-output "DP-2"; }
+workspace "4chat" { open-on-output "DP-2"; }
 workspace "6file" { open-on-output "DP-2"; }
 workspace "0other" { open-on-output "DP-2"; }
 
