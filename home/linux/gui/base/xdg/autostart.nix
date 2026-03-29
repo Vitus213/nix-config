@@ -13,6 +13,10 @@
     # nixpaks
     "${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop"
     "${pkgs.nixpaks.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
+  ]
+  ++ lib.optionals pkgs.stdenv.isx86_64 [
+    "${pkgs.obsidian}/share/applications/obsidian.desktop"
+    "${pkgs.typora}/share/applications/typora.desktop"
   ];
   # ++ (
   #   if pkgs.stdenv.isx86_64 then
