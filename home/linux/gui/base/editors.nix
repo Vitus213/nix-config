@@ -2,6 +2,7 @@
   lib,
   pkgs,
   pkgs-master,
+  pkgs-stable,
   config,
   ...
 }:
@@ -28,6 +29,7 @@ in
     pkgs-master.code-cursor
     # pkgs-master.zed-editor
     # pkgs-master.antigravity-fhs
+    pkgs-stable.wpsoffice-cn
   ];
 
   programs.vscode = {
