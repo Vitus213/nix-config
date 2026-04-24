@@ -1,6 +1,8 @@
 {
   mylib,
   myvars,
+  lib,
+  osConfig,
   ...
 }:
 {
@@ -14,4 +16,13 @@
 
   # enable management of XDG base directories on macOS.
   xdg.enable = true;
+
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  nix.extraOptions = lib.mkAfter ''
+    !include ${osConfig.age.secrets.nix-access-tokens.path}
+  '';
 }

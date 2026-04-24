@@ -120,12 +120,12 @@ alt-shift-equal = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 alt-1 = 'workspace 1Term'
-alt-2 = 'workspace 2Alacritty'
-alt-3 = 'workspace 3Work'
-alt-4 = 'workspace 4Firefox'
-alt-5 = 'workspace 5Chrome'
-alt-6 = 'workspace 6Chat'
-alt-7 = 'workspace 7Work'
+alt-2 = 'workspace 2Firefox'
+alt-3 = 'workspace 3Docs'
+alt-4 = 'workspace 4Chat'
+alt-5 = 'workspace 5Work'
+alt-6 = 'workspace 6Chrome'
+alt-7 = 'workspace 7Mail'
 alt-8 = 'workspace 8Music'
 alt-9 = 'workspace 9File'
 alt-0 = 'workspace 0Other'
@@ -136,12 +136,12 @@ alt-b = 'workspace B'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1Term'
-alt-shift-2 = 'move-node-to-workspace 2Alacritty'
-alt-shift-3 = 'move-node-to-workspace 3Work'
-alt-shift-4 = 'move-node-to-workspace 4Firefox'
-alt-shift-5 = 'move-node-to-workspace 5Chrome'
-alt-shift-6 = 'move-node-to-workspace 6Chat'
-alt-shift-7 = 'move-node-to-workspace 7Work'
+alt-shift-2 = 'move-node-to-workspace 2Firefox'
+alt-shift-3 = 'move-node-to-workspace 3Docs'
+alt-shift-4 = 'move-node-to-workspace 4Chat'
+alt-shift-5 = 'move-node-to-workspace 5Work'
+alt-shift-6 = 'move-node-to-workspace 6Chrome'
+alt-shift-7 = 'move-node-to-workspace 7Mail'
 alt-shift-8 = 'move-node-to-workspace 8Music'
 alt-shift-9 = 'move-node-to-workspace 9File'
 alt-shift-0 = 'move-node-to-workspace 0Other'
@@ -214,45 +214,69 @@ run = ['layout tiling', 'move-node-to-workspace 1Term']
 
 [[on-window-detected]]
 if.app-id = 'org.alacritty'
-run = 'move-node-to-workspace 2Alacritty'
+run = 'move-node-to-workspace 1Term'
+
+[[on-window-detected]]
+if.app-id = 'org.mozilla.firefox'
+run = 'move-node-to-workspace 2Firefox'
+
+[[on-window-detected]]
+if.app-id = 'notion.id'
+run = 'move-node-to-workspace 3Docs'
+
+[[on-window-detected]]
+if.app-id = 'abnerworks.Typora'
+run = 'move-node-to-workspace 3Docs'
+
+[[on-window-detected]]
+if.app-id = 'md.obsidian'
+run = 'move-node-to-workspace 3Docs'
+
+[[on-window-detected]]
+if.app-id = 'ru.keepcoder.Telegram'
+run = 'move-node-to-workspace 4Chat'
+
+[[on-window-detected]]
+if.app-id = 'com.tencent.xinWeChat'
+run = 'move-node-to-workspace 4Chat'
+
+[[on-window-detected]]
+if.app-id = 'com.electron.lark'
+run = 'move-node-to-workspace 4Chat'
+
+[[on-window-detected]]
+if.app-id = 'com.tencent.qq'
+run = 'move-node-to-workspace 4Chat'
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.WeWorkMac'
-run = 'move-node-to-workspace 3Work'
+run = 'move-node-to-workspace 5Work'
 
 [[on-window-detected]]
 # if.app-id = 'com.tencent.WeWorkMac'
 if.app-id = 'com.tinyspeck.slackmacgap'
-run = 'move-node-to-workspace 3Work'
+run = 'move-node-to-workspace 5Work'
 
 [[on-window-detected]]
-if.app-id = 'org.mozilla.firefox'
-run = 'move-node-to-workspace 4Firefox'
+if.app-id = 'com.microsoft.VSCode'
+run = ['layout tiling', 'move-node-to-workspace 5Work']
+
+[[on-window-detected]]
+if.app-id = 'com.todesktop.230313mzl4w4u92' # Cursor AI Editor
+run = ['layout tiling', 'move-node-to-workspace 5Work']
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-run = 'move-node-to-workspace 5Chrome'
-
-[[on-window-detected]]
-if.app-id = 'ru.keepcoder.Telegram'
-run = 'move-node-to-workspace 6Chat'
-
-[[on-window-detected]]
-if.app-id = 'com.tencent.xinWeChat'
-run = 'move-node-to-workspace 6Chat'
-
-[[on-window-detected]]
-if.app-id = 'com.tencent.qq'
-run = 'move-node-to-workspace 6Chat'
+run = 'move-node-to-workspace 6Chrome'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
-run = 'move-node-to-workspace 7Work'
+run = 'move-node-to-workspace 7Mail'
 
 # calendar
 [[on-window-detected]]
 if.app-id = 'com.apple.iCal'
-run = 'move-node-to-workspace 7Work'
+run = 'move-node-to-workspace 7Mail'
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.QQMusicMac'
@@ -280,14 +304,6 @@ if.app-id = 'com.apple.Preview'
 run = ['layout floating', 'move-node-to-workspace 9File']
 
 [[on-window-detected]]
-if.app-id = 'com.microsoft.VSCode'
-run = ['layout tiling', 'move-node-to-workspace 3Work']
-
-[[on-window-detected]]
-if.app-id = 'com.todesktop.230313mzl4w4u92' # Cursor AI Editor
-run = ['layout tiling', 'move-node-to-workspace 3Work']
-
-[[on-window-detected]]
 if.app-id = 'org.wireshark.Wireshark'
 run = ['layout floating', 'move-node-to-workspace 0Other']
 
@@ -303,6 +319,7 @@ run = ['move-node-to-workspace 0Other']
 [[on-window-detected]]
 if.app-id = 'us.zoom.xos'
 run = 'move-node-to-workspace 0Other'
+
 
 # Auth UI - do not move it
 [[on-window-detected]]
@@ -325,12 +342,12 @@ run = ['layout floating']
 
 [workspace-to-monitor-force-assignment]
 1Term = ['main']                 # "Main" monitor ("main" as in System Settings → Displays → Use as)
-2Alacritty = ['main']
-3Work = ['main']
-4Firefox = ['main']
-5Chrome = ['main']
-6Chat = ['main']
-7Work = ['main']
+2Firefox = ['main']
+3Docs = ['main']
+4Chat = ['main']
+5Work = ['main']
+6Chrome = ['main']
+7Mail = ['main']
 8Music = ['main']
 9File = ['main']
 0Other = ['main']
