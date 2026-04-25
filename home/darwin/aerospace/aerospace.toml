@@ -1,5 +1,4 @@
-# Place a copy of this config to ~/.aerospace.toml
-# After that, you can edit ~/.aerospace.toml to your liking
+# use aerospace list-monitors to detect monitors
 
 # You can use it to add commands that run after login to macOS user session.
 # 'start-at-login' needs to be 'true' for 'after-login-command' to work
@@ -337,17 +336,26 @@ check-further-callbacks = true
 run = ['layout floating']
 
 # =================================================================
-# Single monitor configuration
+# Dual monitor configuration
+# =================================================================
+# Use `aerospace list-monitors` to detect monitor names
+#
+# Current setup:
+#   - U32V5N            -> external monitor (primary)
+#   - Built-in Retina Display -> built-in display (secondary)
 # =================================================================
 
 [workspace-to-monitor-force-assignment]
-1Term = ['main']                 # "Main" monitor ("main" as in System Settings → Displays → Use as)
-2Firefox = ['main']
-3Docs = ['main']
-4Chat = ['main']
-5Work = ['main']
-6Chrome = ['main']
-7Mail = ['main']
-8Music = ['main']
-9File = ['main']
-0Other = ['main']
+1Term = ['U32V5N']
+2Firefox = ['U32V5N']
+3Docs = ['U32V5N']
+5Work = ['U32V5N']
+6Chrome = ['U32V5N']
+7Mail = ['U32V5N']
+A = ['U32V5N']
+B = ['U32V5N']
+
+4Chat = ['Built-in Retina Display']
+8Music = ['Built-in Retina Display']
+9File = ['Built-in Retina Display']
+0Other = ['Built-in Retina Display']

@@ -118,7 +118,7 @@ in
       # Xcode = 497799835;
       # NOTE(vitus): MAS installs are fragile during darwin activation and currently fail on low disk space.
       # Install manually when needed.
-      Wechat = 836500024;
+      # Wechat = 836500024;
     };
 
     taps = [

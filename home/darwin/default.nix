@@ -3,6 +3,7 @@
   myvars,
   lib,
   osConfig,
+  pkgs,
   ...
 }:
 {
@@ -17,6 +18,7 @@
   # enable management of XDG base directories on macOS.
   xdg.enable = true;
 
+  nix.package = pkgs.nix;
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"

@@ -281,20 +281,20 @@ Shift + 方向键下    静音
 
 下面这张表是你这套配置的核心。
 
-| 工作区       | 语义           | 自动进入的应用                          | 显示器绑定 |
-| ------------ | -------------- | --------------------------------------- | ---------- |
-| `1Term`      | 终端区 1       | `Ghostty`、`Kitty`                      | `main`     |
-| `2Alacritty` | 终端区 2       | `Alacritty`                             | `main`     |
-| `3Work`      | 工作沟通       | 企业微信、Slack                         | `main`     |
-| `4Firefox`   | Firefox 浏览   | Firefox                                 | `main`     |
-| `5Chrome`    | Chrome 浏览    | Chrome                                  | `main`     |
-| `6Chat`      | 聊天沟通       | Telegram、微信、QQ                      | `main`     |
-| `7Work`      | 工作/开发      | Mail、Calendar、VSCode、Cursor          | `main`     |
-| `8Music`     | 音乐           | QQ 音乐、网易云音乐                     | `main`     |
-| `9File`      | 文件/阅读/编辑 | Finder、Books、Joplin、Preview          | `main`     |
-| `0Other`     | 其他工具       | Wireshark、LM Studio、Clash Verge、Zoom | `main`     |
-| `A`          | 备用           | 无                                      | 无         |
-| `B`          | 备用           | 无                                      | 无         |
+| 工作区     | 语义           | 自动进入的应用                                  | 显示器绑定 |
+| ---------- | -------------- | ----------------------------------------------- | ---------- |
+| `1Term`    | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                 | `U32V5N`   |
+| `2Firefox` | Firefox 浏览   | `Firefox`                                       | `U32V5N`   |
+| `3Docs`    | 文档笔记       | `Notion`、`Typora`、`Obsidian`                  | `U32V5N`   |
+| `4Chat`    | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`                | `Built-in` |
+| `5Work`    | 工作/开发      | `企业微信`、`Slack`、`VSCode`、`Cursor`         | `U32V5N`   |
+| `6Chrome`  | Chrome 浏览    | `Chrome`                                        | `U32V5N`   |
+| `7Mail`    | 邮件日历       | `Mail`、`Calendar`                              | `U32V5N`   |
+| `8Music`   | 音乐           | QQ 音乐、网易云音乐                             | `Built-in` |
+| `9File`    | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`          | `Built-in` |
+| `0Other`   | 其他工具       | `Wireshark`、`LM Studio`、`Clash Verge`、`Zoom` | `Built-in` |
+| `A`        | 备用           | 无                                              | `U32V5N`   |
+| `B`        | 备用           | 无                                              | `U32V5N`   |
 
 这里有几个重要细节:
 
@@ -325,13 +325,12 @@ Shift + 方向键下    静音
 
 ## 7. 现在的显示器策略
 
-当前配置把主要工作区都绑定到 `main`。
+当前配置按双显示器设计：
 
-可以把它理解成:
+- 外接显示器 `U32V5N` 为主力屏，放置主要工作区
+- 内置 `Built-in Retina Display` 为辅助屏，放置聊天、音乐、文件和其他工具
 
-- 这套工作流按单显示器使用来设计
-- 如果你只有一块显示器，它自然就是 `main`
-- 如果你接了多块显示器，AeroSpace 也会优先把这些工作区放在主显示器上
+如果只接一块显示器，AeroSpace 会自动把所有工作区集中到当前可用的显示器上。
 
 ## 8. 推荐的日常使用姿势
 

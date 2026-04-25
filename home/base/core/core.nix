@@ -19,8 +19,6 @@
       cowsay
       gnupg
       caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
-      uv # Python package manager (includes uvx)
-      # other core cli tools are installed at system-level
     ])
     ++ lib.optionals (!pkgs.stdenv.isDarwin) (
       with pkgs;
