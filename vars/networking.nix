@@ -23,9 +23,9 @@ rec {
     apollo = {
       # Desktop PC
       iface = "enp5s0";
-      ipv4 = "192.168.111.100";
+      ipv4 = "192.168.100.100";
       ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
-      gateway = "192.168.111.1";
+      gateway = "192.168.100.1";
       gateway6 = "fe80::5";
     };
     athena = {
