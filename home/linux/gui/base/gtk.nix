@@ -30,6 +30,7 @@
   #   3. ~/.config/gtk-4.0/settings.ini
   gtk = {
     enable = true;
+    gtk4.theme = null;
 
     font = {
       name = "Noto Sans";
