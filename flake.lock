@@ -590,11 +590,11 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1777171841,
-        "narHash": "sha256-sU9yIvBYuf2wKFnqf+YJhQGnMLMpiGUO4DJxOhxx608=",
+        "lastModified": 1777223168,
+        "narHash": "sha256-DZnAzERw4XEizxupzyHR7KRZhBVrAOJDW6aTRNIsXwY=",
         "owner": "Vitus213",
         "repo": "my-secrets",
-        "rev": "8fae0c19e3ba96aceefd463ede5a54f8cb656369",
+        "rev": "a0f00c94c30bd4f72ff325cc718dc3bfedc88953",
         "type": "github"
       },
       "original": {
