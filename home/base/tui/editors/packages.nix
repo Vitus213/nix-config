@@ -16,14 +16,6 @@
         deadnix # Find and remove unused code in .nix source files
         nixfmt # Nix Code Formatter
 
-        #-- nickel lang
-        nickel
-
-        #-- json like
-        # terraform  # install via brew on macOS
-        terraform-ls
-        jsonnet
-        jsonnet-language-server
         taplo # TOML language server / formatter / validator
         nodePackages.yaml-language-server
         actionlint # GitHub Actions linter
@@ -36,13 +28,6 @@
         marksman # language server for markdown
         glow # markdown previewer
         pandoc # document converter
-        pkgs-master.hugo # static site generator
-
-        #-- sql
-        sqlfluff
-
-        #-- protocol buffer
-        buf # linting and formatting
       ]
       ++
         #-*- General Purpose Languages -*-#
@@ -96,29 +81,6 @@
           pkgs-master.rustfmt
           pkgs-master.clippy # rust linter
 
-          #-- golang
-          go
-          gomodifytags
-          iferr # generate error handling code for go
-          impl # generate function implementation for go
-          gotools # contains tools like: godoc, goimports, etc.
-          gopls # go language server
-          delve # go debugger
-
-          # -- java
-          jdk17
-          gradle
-          maven
-          spring-boot-cli
-          jdt-language-server
-
-          #-- zig
-          zls
-
-          #-- lua
-          stylua
-          lua-language-server
-
           #-- bash
           nodePackages.bash-language-server
           shellcheck
@@ -131,8 +93,6 @@
         nodePackages.typescript-language-server
         # HTML/CSS/JSON/ESLint language servers extracted from vscode
         nodePackages.vscode-langservers-extracted
-        nodePackages."@tailwindcss/language-server"
-        emmet-ls
       ]
       # -*- Lisp like Languages -*-#
       # ++ [
@@ -146,11 +106,6 @@
       #   )
       # ]
       ++ [
-        proselint # English prose linter
-
-        #-- verilog / systemverilog
-        verible
-
         #-- Optional Requirements:
         nodePackages.prettier # common code formatter
         fzf

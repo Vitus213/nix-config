@@ -15,8 +15,6 @@
       # https://github.com/utdemir/nix-tree
       nix-tree # A TUI to visualize the dependency graph of a nix derivation
 
-      # misc
-      cowsay
       gnupg
       caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
     ])

@@ -131,8 +131,6 @@ in
       "wget" # download tool
       "curl" # no not install curl via nixpkgs, it's not working well on macOS!
       "aria2" # download tool
-      "wireguard-tools" # wireguard
-
       # Usage:
       #  https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
       # 1. `sudo tailscaled install-system-daemon`
@@ -141,16 +139,10 @@ in
 
       # https://github.com/rgcr/m-cli
       "m-cli" #  Swiss Army Knife for macOS
-      "proxychains-ng"
-
       # commands like `gsed` `gtar` are required by some tools
       "gnu-sed"
       "gnu-tar"
 
-      # misc that nix do not have cache for.
-      "git-trim"
-      "terraform"
-      # "terraformer"
     ];
 
     # `brew install --cask`
@@ -184,7 +176,6 @@ in
       # Install manually when needed.
       # "qqmusic"
       # "discord" # update too frequently, use the web version instead
-      "microsoft-remote-desktop"
       # "moonlight" # remote desktop client
       # "rustdesk" # meeting
       # "tencent-meeting"
@@ -205,8 +196,6 @@ in
       # "neteasemusic" # music
       "clash-verge-rev" # the same as mihomo-party
 
-      # Development
-      "mitmproxy" # HTTP/HTTPS traffic inspector
       # "insomnia" # REST client
       # NOTE(vitus): Homebrew cask install is currently failing when it tries to run the bundled pkg installers.
       # Install manually when needed.
@@ -214,8 +203,6 @@ in
       # "jdk-mission-control" # Java Mission Control
       # "google-cloud-sdk" # Google Cloud SDK
 
-      # Setup macfuse: https://github.com/macfuse/macfuse/wiki/Getting-Started
-      "macfuse" # for rclone to mount a fuse filesystem
     ];
   };
 }
