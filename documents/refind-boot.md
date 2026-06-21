@@ -107,6 +107,7 @@ sudo umount /tmp/zhitai-esp
 nix eval .#nixosConfigurations.apollo.config.boot.loader.refind.enable
 nix eval .#nixosConfigurations.apollo.config.boot.loader.systemd-boot.enable
 nix eval .#nixosConfigurations.apollo.config.boot.loader.refind.maxGenerations
+nix eval --raw .#nixosConfigurations.apollo.config.boot.kernelPackages.kernel.version
 nix flake check --no-build
 ```
 

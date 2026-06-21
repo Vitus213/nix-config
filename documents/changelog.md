@@ -25,6 +25,22 @@
   `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace`。
 - 关联文档：[Neovim](../home/base/tui/editors/neovim/README.md)。
 
+### 将 apollo 固定到 Linux 7.0 内核系列
+
+- 影响范围：`apollo` 主机 NixOS 内核、rEFInd 回滚入口、主 `nixpkgs` 与 `home-manager` 输入、NixOS
+  desktop 字体控制台配置、编辑器工具包、devShell。
+- 配置入口：`hosts/olympians-apollo/default.nix`、`modules/nixos/desktop/fonts.nix`、`home/base/tui/editors/packages.nix`、`outputs/default.nix`、`flake.lock`。
+- 变更内容：更新主 `nixpkgs` 到 `2026-06-16` 的 `nixos-unstable`；将 `apollo` 的
+  `boot.kernelPackages` 固定为 `pkgs.linuxPackages_7_0`，当前求值内核为 `7.0.12`；同步更新
+  `home-manager` 到 `2026-06-20` 的 master，避免 Home Manager 模块与新 nixpkgs 不匹配；将已移除的
+  `services.kmscon.fonts`/`extraConfig` 迁移到 `services.kmscon.config`；将已移除的 `nodePackages.*`
+  引用迁移到顶层包名；记录 rEFInd 当前只保留最新 1 个 NixOS
+  generation，内核测试需要回滚入口时再临时调高。
+- 验证方式：执行 `nix eval` 检查内核版本与 rEFInd generation 保留数；执行
+  `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --dry-run --show-trace`；执行
+  `nix flake check --no-build`。
+- 关联文档：[NixOS 内核策略](./nixos-kernel.md)、[rEFInd 引导方案](./refind-boot.md)。
+
 ### 优化 rEFInd 菜单项、默认启动与 NixOS 图标
 
 - 影响范围：`apollo` 主机 rEFInd 启动菜单。

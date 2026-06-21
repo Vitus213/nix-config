@@ -1,5 +1,6 @@
 {
   lib,
+  pkgs,
   refind-minimal,
   ...
 }:
@@ -35,6 +36,8 @@ in
 
     ./preservation.nix
   ];
+
+  boot.kernelPackages = pkgs.linuxPackages_7_0;
 
   boot.loader = {
     grub.enable = false;

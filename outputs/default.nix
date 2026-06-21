@@ -172,6 +172,7 @@ in
           };
           prettier = {
             enable = true;
+            package = pkgs.prettier;
             settings = {
               write = true; # Automatically format files
               configPath = ".prettierrc.yaml"; # relative to the flake root
@@ -204,7 +205,7 @@ in
           # spell checker
           typos
           # code formatter
-          nodePackages.prettier
+          prettier
         ];
         name = "dots";
         inherit (self.checks.${system}.pre-commit-check) shellHook;

@@ -17,7 +17,7 @@
         nixfmt # Nix Code Formatter
 
         taplo # TOML language server / formatter / validator
-        nodePackages.yaml-language-server
+        yaml-language-server
         actionlint # GitHub Actions linter
 
         #-- dockerfile
@@ -82,17 +82,17 @@
           pkgs-master.clippy # rust linter
 
           #-- bash
-          nodePackages.bash-language-server
+          bash-language-server
           shellcheck
           shfmt
         ]
       #-*- Web Development -*-#
       ++ [
         nodejs_22
-        nodePackages.typescript
-        nodePackages.typescript-language-server
+        typescript
+        typescript-language-server
         # HTML/CSS/JSON/ESLint language servers extracted from vscode
-        nodePackages.vscode-langservers-extracted
+        vscode-langservers-extracted
       ]
       # -*- Lisp like Languages -*-#
       # ++ [
@@ -107,7 +107,7 @@
       # ]
       ++ [
         #-- Optional Requirements:
-        nodePackages.prettier # common code formatter
+        prettier # common code formatter
         fzf
         gdu # disk usage analyzer, required by AstroNvim
         (ripgrep.override { withPCRE2 = true; }) # recursively searches directories for a regex pattern
