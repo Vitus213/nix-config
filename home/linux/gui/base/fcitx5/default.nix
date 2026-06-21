@@ -25,7 +25,7 @@
       fcitx5-gtk # gtk im module
 
       # Chinese
-      fcitx5-rime # for flypy chinese input method
+      fcitx5-rime # for Rime Ice chinese input method
       # fcitx5-chinese-addons # we use rime instead
 
       # Japanese

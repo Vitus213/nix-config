@@ -161,10 +161,9 @@
 
     ########################  My own repositories  #########################################
 
-    # my private secrets repository(local path for bootstrap/migration).
-    # switch back to git+ssh after migration is finished.
+    # my private secrets repository.
     mysecrets = {
-      url = "github:Vitus213/my-secrets";
+      url = "git+ssh://git@github.com/Vitus213/my-secrets.git";
       flake = false;
     };
 

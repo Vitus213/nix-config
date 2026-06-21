@@ -1,83 +1,72 @@
-<h2 align="center">:snowflake: Ryan4Yin's Nix Config :snowflake:</h2>
+<h2 align="center">Ryan4Yin 的 Nix 配置</h2>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" width="400" />
 </p>
 
 <p align="center">
-	<a href="https://github.com/ryan4yin/nix-config/stargazers">
-		<img alt="Stargazers" src="https://img.shields.io/github/stars/ryan4yin/nix-config?style=for-the-badge&logo=starship&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41"></a>
-    <a href="https://nixos.org/">
-        <img src="https://img.shields.io/badge/NixOS-25.11-informational.svg?style=for-the-badge&logo=nixos&color=F2CDCD&logoColor=D9E0EE&labelColor=302D41"></a>
-    <a href="https://github.com/ryan4yin/nixos-and-flakes-book">
-        <img src="https://img.shields.io/badge/Nix%20Flakes-learning-informational.svg?style=for-the-badge&logo=nixos&color=F2CDCD&logoColor=D9E0EE&labelColor=302D41"></a>
+  <a href="https://github.com/ryan4yin/nix-config/stargazers">
+    <img alt="Stargazers" src="https://img.shields.io/github/stars/ryan4yin/nix-config?style=for-the-badge&logo=starship&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41">
+  </a>
+  <a href="https://nixos.org/">
+    <img src="https://img.shields.io/badge/NixOS-25.11-informational.svg?style=for-the-badge&logo=nixos&color=F2CDCD&logoColor=D9E0EE&labelColor=302D41">
+  </a>
+  <a href="https://github.com/ryan4yin/nixos-and-flakes-book">
+    <img src="https://img.shields.io/badge/Nix%20Flakes-learning-informational.svg?style=for-the-badge&logo=nixos&color=F2CDCD&logoColor=D9E0EE&labelColor=302D41">
   </a>
 </p>
 
-> My configuration is becoming more and more complex, and **it will be difficult for beginners to
-> read**. If you are new to NixOS and want to know how I use NixOS, I would recommend you to take a
-> look at the [ryan4yin/nix-config/releases](https://github.com/ryan4yin/nix-config/releases) first,
-> **check out to some simpler older versions, such as
-> [i3-kickstarter](https://github.com/ryan4yin/nix-config/tree/i3-kickstarter), which will be much
-> easier to understand**.
+> 这套配置已经比较复杂，不适合刚接触 NixOS 的人直接照抄。如果你只是想学习 NixOS，可以先看
+> [ryan4yin/nix-config/releases](https://github.com/ryan4yin/nix-config/releases) 里的早期版本，例如
+> [i3-kickstarter](https://github.com/ryan4yin/nix-config/tree/i3-kickstarter)。
 
-This repository is home to the nix code that builds my systems:
+这个仓库用于构建和维护我的系统配置:
 
-1. NixOS Desktops: NixOS with home-manager, niri, agenix, etc.
-2. macOS Desktops: nix-darwin with home-manager, share the same home-manager configuration with
-   NixOS Desktops.
-3. NixOS Servers: virtual machines running on Proxmox/KubeVirt, with various services, such as
-   kubernetes, homepage, prometheus, grafana, etc.
+1. NixOS 桌面: NixOS、home-manager、niri、agenix 等
+2. macOS 桌面: nix-darwin、home-manager，并复用一部分 Linux home-manager 配置
+3. NixOS 服务器: Proxmox/KubeVirt 上的虚拟机，以及 Kubernetes、监控、存储等服务
 
-See [./hosts](./hosts) for details of each host.
+主机清单见 [hosts](./hosts)。密钥管理见 [secrets](./secrets)。全新 NixOS + preservation 部署流程见
+[documents/fresh-nixos-preservation-deploy.md](./documents/fresh-nixos-preservation-deploy.md)。
 
-See [./Virtual-Machine.md](./Virtual-Machine.md) for details of how to create & manage KubeVirt's
-Virtual Machine from this flake.
+## 为什么使用 NixOS 和 Flakes
 
-## Why NixOS & Flakes?
+Nix 的核心价值是可复现、可回滚、可组合。系统配置、用户配置和部署入口都能以代码形式维护，配置一旦稳定，后续迁移和重装会轻很多。
 
-Nix allows for easy-to-manage, collaborative, reproducible deployments. This means that once
-something is setup and configured once, it works (almost) forever. If someone else shares their
-configuration, anyone else can just use it (if you really understand what you're copying/referring
-now).
+Flakes 用来固定输入版本、组织多平台输出，并让 `nixos-rebuild`、`darwin-rebuild`、`home-manager`
+都通过同一个仓库入口工作。
 
-As for Flakes, refer to
-[Introduction to Flakes - NixOS & Nix Flakes Book](https://nixos-and-flakes.thiscute.world/nixos-with-flakes/introduction-to-flakes)
+学习资料:
 
-**Want to know NixOS & Flakes in detail? Looking for a beginner-friendly tutorial or best practices?
-You don't have to go through the pain I've experienced again! Check out my
-[NixOS & Nix Flakes Book - 🛠️ ❤️ An unofficial & opinionated :book: for beginners](https://github.com/ryan4yin/nixos-and-flakes-book)!**
+- [NixOS & Nix Flakes Book](https://github.com/ryan4yin/nixos-and-flakes-book)
+- [nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter)
 
-> If you're using macOS, check out
-> [ryan4yin/nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter) for a quick
-> start.
+## 组件
 
-## Components
+| 类别                       | 当前选择                                                                                       |
+| -------------------------- | ---------------------------------------------------------------------------------------------- |
+| 窗口管理器                 | [Niri][Niri]                                                                                   |
+| 终端                       | [Zellij][Zellij] + [foot][foot] / [Kitty][Kitty] / [Alacritty][Alacritty] / [Ghostty][Ghostty] |
+| 状态栏、通知、启动器、锁屏 | [noctalia-shell][noctalia-shell]                                                               |
+| 登录管理器                 | [tuigreet][tuigreet]                                                                           |
+| 配色                       | [catppuccin-nix][catppuccin-nix]                                                               |
+| 网络管理                   | [NetworkManager][NetworkManager]                                                               |
+| 输入法                     | [Fcitx5][Fcitx5] + [Rime][rime] + [雾凇拼音 Rime Ice][rime-ice]                                |
+| 系统监控                   | [Btop][Btop]                                                                                   |
+| 文件管理                   | [Yazi][Yazi] + [thunar][thunar]                                                                |
+| Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                      |
+| 媒体播放器                 | [mpv][mpv]                                                                                     |
+| 编辑器                     | [Neovim][Neovim]                                                                               |
+| 字体                       | [Nerd Fonts][Nerd fonts]                                                                       |
+| 图片查看                   | [imv][imv]                                                                                     |
+| 截图                       | Niri 内置截图                                                                                  |
+| 录屏                       | [OBS][OBS]                                                                                     |
+| 文件系统和加密             | tmpfs `/`、Btrfs 子卷、LUKS 加密、`/persistent` 持久化                                         |
+| Secure Boot                | [lanzaboote][lanzaboote]                                                                       |
 
-|                                                                | NixOS(Wayland)                                                                                                      |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Window Manager**                                             | [Niri][Niri]                                                                                                        |
-| **Terminal Emulator**                                          | [Zellij][Zellij] + [foot][foot]/[Kitty][Kitty]/[Alacritty][Alacritty]/[Ghostty][Ghostty]                            |
-| **Status Bar** / **Notifier** / **Launcher** / **lockscreens** | [noctalia-shell][noctalia-shell]                                                                                    |
-| **Display Manager**                                            | [tuigreet][tuigreet]                                                                                                |
-| **Color Scheme**                                               | [catppuccin-nix][catppuccin-nix]                                                                                    |
-| **network management tool**                                    | [NetworkManager][NetworkManager]                                                                                    |
-| **Input method framework**                                     | [Fcitx5][Fcitx5] + [rime][rime] + [小鹤音形 flypy][flypy]                                                           |
-| **System resource monitor**                                    | [Btop][Btop]                                                                                                        |
-| **File Manager**                                               | [Yazi][Yazi] + [thunar][thunar]                                                                                     |
-| **Shell**                                                      | [Nushell][Nushell] + [Starship][Starship]                                                                           |
-| **Media Player**                                               | [mpv][mpv]                                                                                                          |
-| **Text Editor**                                                | [Neovim][Neovim]                                                                                                    |
-| **Fonts**                                                      | [Nerd fonts][Nerd fonts]                                                                                            |
-| **Image Viewer**                                               | [imv][imv]                                                                                                          |
-| **Screenshot Software**                                        | Niri's builtin function                                                                                             |
-| **Screen Recording**                                           | [OBS][OBS]                                                                                                          |
-| **Filesystem & Encryption**                                    | tmpfs as `/`, [Btrfs][Btrfs] subvolumes on a [LUKS][LUKS] encrypted partition for persistent, unlock via passphrase |
-| **Secure Boot**                                                | [lanzaboote][lanzaboote]                                                                                            |
+壁纸仓库: https://github.com/ryan4yin/wallpapers
 
-Wallpapers: https://github.com/ryan4yin/wallpapers
-
-## Screenshots
+## 截图
 
 ![desktop](./_img/2026-01-05_niri-noctalia_desktop.webp)
 
@@ -85,87 +74,61 @@ Wallpapers: https://github.com/ryan4yin/wallpapers
 
 ![nvim](./_img/2026-01-04_niri-noctalia_nvim.webp)
 
-## Neovim
+## 部署
 
-See [./home/base/tui/editors/neovim/](./home/base/tui/editors/neovim/) for details.
+> 不要直接把这套配置部署到陌生机器上。这里包含我的硬件配置、私有 secrets
+> input 和个人路径。新机器要先按文档适配硬件配置和 secrets。
 
-## Secrets Management
-
-See [./secrets](./secrets) for details.
-
-## How to Deploy this Flake?
-
-<!-- prettier-ignore -->
-> :red_circle: **IMPORTANT**: **You should NOT deploy this flake directly on your machine :exclamation:
-> It will not succeed.** This flake contains my hardware configuration(such as
-> [hardware-configuration.nix](hosts/olympians-apollo/hardware-configuration.nix),
-> [Nvidia Support](https://github.com/ryan4yin/nix-config/blob/v0.1.1/hosts/olympians-apollo/default.nix#L77-L91),
-> etc.) which is not suitable for your hardware, and requires my private secrets repository
-> [ryan4yin/nix-secrets](https://github.com/ryan4yin/nix-config/tree/main/secrets) to deploy. You
-> may use this repo as a reference to build your own configuration.
-
-For NixOS:
-
-> To deploy this flake from NixOS's official ISO image (purest installation method), please refer to
-> [./nixos-installer/](./nixos-installer/)
+NixOS:
 
 ```bash
-# deploy one of the configuration based on the hostname
+# 显式部署某个 NixOS 配置
 sudo nixos-rebuild switch --flake .#apollo
 
-# Deploy nixosConfiguration by local hostname match
+# 按当前 hostname 匹配 nixosConfigurations
 just local
 
-# or we can deploy with details
+# 带更多构建和 trace 输出
 just local debug
 ```
 
-For macOS:
+相关文档:
+
+- [nixos-installer](./nixos-installer/): 旧版 ISO 安装流程
+- [fresh-nixos-preservation-deploy.md](./documents/fresh-nixos-preservation-deploy.md): 全新 NixOS 机器启用 preservation 的当前流程
+
+macOS:
 
 ```bash
-# If you are deploying for the first time,
-# 1. install nix & homebrew manually.
-# 2. prepare the deployment environment with essential packages available
+# 首次部署前需要手动安装 Nix 和 Homebrew
 nix-shell -p just nushell
-# 3. comment home-manager's code in lib/macosSystem.nix to speed up the first deployment.
-# 4. comment out the proxy settings in scripts/darwin_set_proxy.py if the proxy is not ready yet.
 
-# Deploy the default darwinConfiguration for this Mac (`artemis`)
+# 按当前 hostname 部署默认 darwinConfiguration
 just local
 
-# Deploy the Darwin host explicitly
+# 显式部署 Darwin 主机
 just local-host artemis
 
-# deploy with details
+# 带详细输出
 just local debug
 ```
 
-> [What y'all will need when Nix drives you to drink.](https://www.youtube.com/watch?v=Eni9PPPPBpg)
-> (copy from hlissner's dotfiles, it really matches my feelings when I first started using NixOS...)
+## 参考仓库
 
-## References
-
-Other dotfiles that inspired me:
-
-- Nix Flakes
-  - [NixOS-CN/NixOS-CN-telegram](https://github.com/NixOS-CN/NixOS-CN-telegram)
-  - [notusknot/dotfiles-nix](https://github.com/notusknot/dotfiles-nix)
-  - [xddxdd/nixos-config](https://github.com/xddxdd/nixos-config)
-  - [bobbbay/dotfiles](https://github.com/bobbbay/dotfiles)
-  - [gytis-ivaskevicius/nixfiles](https://github.com/gytis-ivaskevicius/nixfiles)
-  - [davidtwco/veritas](https://github.com/davidtwco/veritas)
-  - [gvolpe/nix-config](https://github.com/gvolpe/nix-config)
-  - [Ruixi-rebirth/flakes](https://github.com/Ruixi-rebirth/flakes)
-  - [fufexan/dotfiles](https://github.com/fufexan/dotfiles): gtk theme, xdg, git, media, etc.
-  - [nix-community/srvos](https://github.com/nix-community/srvos): a collection of opinionated and
-    sharable NixOS configurations for servers
-- Modularized NixOS Configuration
-  - [hlissner/dotfiles](https://github.com/hlissner/dotfiles)
-  - [viperML/dotfiles](https://github.com/viperML/dotfiles)
-- Neovim/AstroNvim
-  - [maxbrunet/dotfiles](https://github.com/maxbrunet/dotfiles): astronvim with nix flakes.
-- Misc
-  - [1amSimp1e/dots](https://github.com/1amSimp1e/dots)
+- [NixOS-CN/NixOS-CN-telegram](https://github.com/NixOS-CN/NixOS-CN-telegram)
+- [notusknot/dotfiles-nix](https://github.com/notusknot/dotfiles-nix)
+- [xddxdd/nixos-config](https://github.com/xddxdd/nixos-config)
+- [bobbbay/dotfiles](https://github.com/bobbbay/dotfiles)
+- [gytis-ivaskevicius/nixfiles](https://github.com/gytis-ivaskevicius/nixfiles)
+- [davidtwco/veritas](https://github.com/davidtwco/veritas)
+- [gvolpe/nix-config](https://github.com/gvolpe/nix-config)
+- [Ruixi-rebirth/flakes](https://github.com/Ruixi-rebirth/flakes)
+- [fufexan/dotfiles](https://github.com/fufexan/dotfiles)
+- [nix-community/srvos](https://github.com/nix-community/srvos)
+- [hlissner/dotfiles](https://github.com/hlissner/dotfiles)
+- [viperML/dotfiles](https://github.com/viperML/dotfiles)
+- [maxbrunet/dotfiles](https://github.com/maxbrunet/dotfiles)
+- [1amSimp1e/dots](https://github.com/1amSimp1e/dots)
 
 [Niri]: https://github.com/YaLTeR/niri
 [Kitty]: https://github.com/kovidgoyal/kitty
@@ -176,22 +139,19 @@ Other dotfiles that inspired me:
 [Starship]: https://github.com/starship/starship
 [Fcitx5]: https://github.com/fcitx/fcitx5
 [rime]: https://wiki.archlinux.org/title/Rime
-[flypy]: https://flypy.cc/
+[rime-ice]: https://github.com/iDvel/rime-ice
 [Btop]: https://github.com/aristocratos/btop
 [mpv]: https://github.com/mpv-player/mpv
 [Zellij]: https://github.com/zellij-org/zellij
 [Neovim]: https://github.com/neovim/neovim
-[AstroNvim]: https://github.com/AstroNvim/AstroNvim
 [imv]: https://sr.ht/~exec64/imv/
 [OBS]: https://obsproject.com
 [Nerd fonts]: https://github.com/ryanoasis/nerd-fonts
 [catppuccin-nix]: https://github.com/catppuccin/nix
 [NetworkManager]: https://wiki.gnome.org/Projects/NetworkManager
-[wl-clipboard]: https://github.com/bugaevc/wl-clipboard
 [tuigreet]: https://github.com/apognu/tuigreet
 [thunar]: https://gitlab.xfce.org/xfce/thunar
 [Yazi]: https://github.com/sxyazi/yazi
-[Catppuccin]: https://github.com/catppuccin/catppuccin
 [Btrfs]: https://btrfs.readthedocs.io
 [LUKS]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system
 [lanzaboote]: https://github.com/nix-community/lanzaboote

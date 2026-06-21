@@ -1,6 +1,17 @@
-# Nix-Darwin's Modules
+# Darwin 系统模块
 
-This directory contains the modules for [Nix-Darwin](https://github.com/LnL7/nix-darwin).
+这个目录存放 nix-darwin 的系统级模块。
 
-See [ryan4yin/nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter) for a more
-detailed explanation.
+## 主要文件
+
+- `default.nix`: Darwin 模块入口
+- `apps.nix`: macOS 应用
+- `nix-core.nix`: Nix 基础配置
+- `security.nix`: 安全设置
+- `ssh.nix`: SSH 配置
+- `system.nix`: 系统设置
+- `users.nix`: 用户设置
+- `broken-packages.nix`: 临时处理不兼容包
+
+更完整的 nix-darwin 入门说明可参考
+[nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter)。

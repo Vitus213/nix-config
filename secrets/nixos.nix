@@ -60,9 +60,7 @@ in
       age.identityPaths =
         if cfg.preservation.enable then
           [
-            # To decrypt secrets on boot, this key should exists when the system is booting,
-            # so we should use the real key file path(prefixed by `/persistent/`) here, instead of the path mounted by preservation.
-            "/persistent/etc/ssh/ssh_host_ed25519_key" # Linux
+            "/home/${myvars.username}/.ssh/id_ed25519"
           ]
         else
           [

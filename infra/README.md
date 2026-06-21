@@ -1,65 +1,45 @@
-# Infrastructure as Code
+# 基础设施代码
 
-This directory contains Infrastructure as Code (IaC) configurations using Terraform, primarily for
-managing storage and backend services.
+这个目录存放 Terraform 等基础设施配置，目前主要用于管理 MinIO 上的存储桶和 Terraform backend。
 
-## Current Structure
+## 结构
 
-```
+```text
 infra/
-├── README.md
-└── minio/                    # MinIO S3-compatible storage configurations
-    ├── loki/                 # Loki log storage buckets
-    │   ├── README.md
-    │   ├── loki.tf          # Loki-specific bucket configuration
-    │   ├── main.tf          # Main Terraform configuration
-    │   └── run.sh           # Deployment script
-    └── tf-s3-backend/        # Terraform S3 backend setup
-        ├── README.md
-        ├── main.tf          # Main configuration
-        ├── run.sh           # Deployment script
-        └── tf-s3-backend.tf # Backend bucket configuration
+└── minio/
+    ├── loki/           # Grafana Loki 日志桶
+    └── tf-s3-backend/  # Terraform S3 backend 桶
 ```
 
-## Services Overview
+## 使用方式
 
-### MinIO Storage
+进入具体 workspace:
 
-- **Loki Buckets**: Dedicated storage for Grafana Loki log aggregation
-- **Terraform Backend**: Centralized state management for all Terraform configurations
+```bash
+cd infra/minio/loki
+```
 
-### External Resources
+使用脚本部署:
 
-- **Kubernetes YAML**: Managed in separate repository
-  [ryan4yin/k8s-gitops](https://github.com/ryan4yin/k8s-gitops)
-- **Secrets Management**: Handled via agenix in [../secrets](../secrets/)
+```bash
+./run.sh
+```
 
-## Usage
+或者手动执行:
 
-Each subdirectory contains its own Terraform configuration:
+```bash
+terraform init
+terraform plan
+terraform apply
+```
 
-1. **Navigate to specific service**:
+## 相关配置
 
-   ```bash
-   cd infra/minio/loki
-   ```
+- Kubernetes YAML 在单独仓库 [ryan4yin/k8s-gitops](https://github.com/ryan4yin/k8s-gitops) 中维护
+- secrets 由 [secrets](../secrets/) 和 agenix 管理
 
-2. **Deploy configuration**:
+## 安全约定
 
-   ```bash
-   ./run.sh
-   ```
-
-3. **Manual deployment**:
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
-   ```
-
-## Security Considerations
-
-- All storage buckets are configured with appropriate access policies
-- State files are encrypted at rest
-- Access credentials are managed through environment variables
-- Network access is restricted to necessary hosts only
+- 凭据通过环境变量或 secrets 注入
+- Terraform state 放在 MinIO backend
+- 不要把 access key、secret key 或 token 写进仓库

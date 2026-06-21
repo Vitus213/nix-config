@@ -1,12 +1,43 @@
-# 为了不使用默认的 rime-data，改用我自定义的小鹤音形数据，这里需要 override
+# 为了不使用默认的 rime-data，改用雾凇拼音数据，这里需要 override
 # 参考 https://github.com/NixOS/nixpkgs/blob/e4246ae1e7f78b7087dce9c9da10d28d3725025f/pkgs/tools/inputmethods/fcitx5/fcitx5-rime.nix
 _:
-(_: super: {
-  # 小鹤音形配置，配置来自 flypy.com 官方网盘的鼠须管配置压缩包「小鹤音形“鼠须管”for macOS.zip」
-  # 我仅修改了 default.yaml 文件，将其中的半角括号改为了直角括号「 与 」。
-  rime-data = ./rime-data-flypy;
-  fcitx5-rime = super.fcitx5-rime.override { rimeDataPkgs = [ ./rime-data-flypy ]; };
+(
+  _: super:
+  let
+    rimeIce = super.stdenvNoCC.mkDerivation {
+      pname = "rime-ice";
+      version = "2026-06-21-3ec476e";
 
-  # used by macOS Squirrel
-  flypy-squirrel = ./rime-data-flypy;
-})
+      src = super.fetchFromGitHub {
+        owner = "iDvel";
+        repo = "rime-ice";
+        rev = "3ec476e9ca7f236d405481b6db6bb613754bc72d";
+        hash = "sha256-YftR6KfbWZ4zpXLvO7V4Mo6GXeSJzTRioPf1sUxm6Lk=";
+      };
+
+      dontConfigure = true;
+      dontBuild = true;
+
+      installPhase = ''
+        runHook preInstall
+        mkdir -p "$out/share/rime-data"
+        cp -r . "$out/share/rime-data"
+        runHook postInstall
+      '';
+
+      meta = {
+        description = "Rime Ice, a Simplified Chinese input schema collection for Rime";
+        homepage = "https://github.com/iDvel/rime-ice";
+        license = super.lib.licenses.gpl3Only;
+      };
+    };
+  in
+  {
+    rime-data = rimeIce;
+    rime-ice = rimeIce;
+    fcitx5-rime = super.fcitx5-rime.override { rimeDataPkgs = [ rimeIce ]; };
+
+    # used by macOS Squirrel
+    rime-ice-squirrel = rimeIce;
+  }
+)

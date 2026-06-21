@@ -1,46 +1,48 @@
-# Password Manager
+# Password Store
 
-- https://www.passwordstore.org/
+这个目录配置基于 `pass` 的密码管理。
+
+参考:
+
+- <https://www.passwordstore.org/>
 - [awesome-password-store](https://github.com/tijn/awesome-password-store)
-- <https://github.com/gopasspw/gopass>: reimplement in go, with more features.
-- Clients
-  - Android: <https://github.com/android-password-store/Android-Password-Store>
-  - Brosers(Chrome/Firefox): <https://github.com/browserpass/browserpass-extension>
+- [gopass](https://github.com/gopasspw/gopass)
+- [Android Password Store](https://github.com/android-password-store/Android-Password-Store)
+- [browserpass](https://github.com/browserpass/browserpass-extension)
 
-## How to change the gpg key of the pass password store?
+## 更换 password-store 的 GPG key
 
-To ensure security, we should change the GPG key every two or three years. Here is how to do this.
+建议每隔几年轮换一次 GPG key。流程如下:
 
-1. Create a new GPG key pair and backup it to a safe place.
-2. Ensure you can access both the old and new GPG keys.
-3. Update `./default.nix` to use the new GPG sub keys.
-4. Check which Key `pass` currently uses:
+1. 创建新的 GPG key pair，并安全备份
+2. 确认旧 key 和新 key 都可用
+3. 更新 `default.nix`，切换到新的 GPG subkey
+4. 检查当前 password-store 使用的 key:
 
    ```bash
    cd ~/.local/share/password-store/
-   # check which key is used by pass
    cat .gpg-id
-   # check which key is really used to encrypt the password
    gpg --list-packets path/to/any/password.gpg
    ```
 
-5. Change the key used by `pass`:
+5. 重新初始化 password-store:
+
    ```bash
-   # change the key used by pass, see `man pass` for more details
-   # you will be asked to enter the password of both the new and old keys
-   # then pass will re-encrypt all the passwords with the new key
    pass init <new-key-id>
    ```
-6. Check if the key is changed:
+
+   这一步会要求解锁新旧 key，然后重新加密所有密码。
+
+6. 再次检查:
+
    ```bash
-   # check which key is used by pass
    cat .gpg-id
-   # check which key is really used to encrypt the password
    gpg --list-packets path/to/any/password.gpg
    ```
-7. Delete the old GPG key pair:
+
+7. 确认无误后删除旧 key:
+
    ```bash
-   # delete the old key pair
    gpg --delete-secret-keys <old-key-id>
    gpg --delete-keys <old-key-id>
    ```

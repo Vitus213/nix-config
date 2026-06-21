@@ -1,46 +1,24 @@
-# Desktop Environment Configurations
+# Linux 图形桌面配置
 
-This directory contains desktop environment and window manager configurations managed by Home
-Manager.
+这个目录存放由 Home Manager 管理的 Linux 桌面配置。
 
-## Available Configurations
+## 主要模块
 
-### Window Managers
+- `niri/`: Niri compositor 配置、快捷键、窗口规则和自启动
+- `base/`: 桌面通用应用和服务
 
-- **niri**: Niri compositor configuration with custom settings, keybindings, spawn-at-startup rules,
-  and window rules
+`base/` 中包含:
 
-### Base Desktop Environment
+- Noctalia Shell
+- Fcitx5 输入法
+- GTK 和 XDG 配置
+- Wayland 桌面工具
+- 媒体、创作、笔记和开发工具
+- 游戏相关工具
 
-- **base**: Common desktop configurations shared across all environments, including:
-  - **Noctalia Shell**: All-in-one Wayland desktop shell (replaces gammastep, swaylock, anyrun,
-    mako, waybar, wallpaper-switcher, wlogout, and other desktop tools)
-  - Creative tools and media applications
-  - Development tools
-  - Fcitx5 input method framework
-  - Games and gaming utilities
-  - GTK theme configurations
-  - Immutable file handling
-  - Note-taking applications
-  - Wayland applications
-  - XDG desktop configurations
+## 为什么桌面配置主要放 Home Manager
 
-### Editor Configurations
+桌面配置多数位于 `~/.config`，并且很多服务是用户级 systemd
+service，例如 noctalia-shell、fcitx5、hypridle。
 
-- **editors**: Text editor configurations and integrations
-
-## Why install Desktop Environments in Home Manager instead of NixOS Module?
-
-1. **Configuration Location**: Desktop environment configuration files are located in `~/.config`,
-   which can be easily managed by Home Manager.
-
-2. **User-specific Services**: User-specific systemd services (noctalia-shell, fcitx5, hypridle,
-   etc.) can be easily managed by Home Manager. If desktop environments were configured via NixOS
-   Module, these user-level services might fail to start automatically. With Home Manager modules,
-   we can control systemd service dependency order more effectively.
-
-3. **System Benefits**: By minimizing package installation through NixOS Module:
-   - Makes the NixOS system more secure and stable
-   - Increases portability to non-NixOS systems, as Home Manager can be installed on any Linux
-     system
-   - Allows for easier switching between different window managers without system-level changes
+用 Home Manager 管理这些内容更容易控制用户服务的启动顺序，也更方便在非 NixOS Linux 环境复用。

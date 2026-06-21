@@ -1,98 +1,84 @@
-# Pomodoro Plugin
+# Pomodoro 插件
 
-A Pomodoro timer plugin for Noctalia for productivity. Happy Coding :)
+这是 Noctalia Shell 的番茄钟插件，用于管理专注、短休息和长休息。
 
-**_Note:_** The only translation available right now is english, more translations will be added in
-the future.
+## 功能
 
-## Features
+- session: 支持工作、短休息、长休息
+- cycle: 可配置进入长休息前的工作轮数
+- session tracking: 记录当前 cycle 内已完成的 session
+- auto-start: 可选自动开始休息或工作 session
+- compact mode: 更紧凑的面板视图
+- custom timer: 支持正计时和倒计时
+- bar widget: 显示当前模式和剩余时间
+- notifications: session 结束时播放声音并发通知
+- time tracking: 记录累计专注时间，内部以秒存储
 
-- **Sessions**: There are configurable sessions for the pomodoro plugin based on the standard format
-  (work - short break - long break), all of them can be configured in the settings.
-- **Cycles**: Cycles are also configurable such that the user can set the number of cycles before a
-  long break.
-- **Session Tracking**: Tracks completed sessions in a cycle.
-- **Auto-start**: Optionally auto-start breaks and/or work sessions.
-- **Compact Mode**: Shorter and more minimal panel view without the progress ring.
-- **Custom Timers**: Supports both count-up and count-down timers with start, pause, finish, and
-  abandon actions.
-- **Bar Widget**: Shows current mode based on the icon and remaining time with respect to the
-  session.
-- **Notifications**: Sound and toast notification when sessions finish.
-- **Time Tracking**: Tracks cumulative focused time and stores it as total seconds (displayed as
-  hours).
+## 待做
 
-## Work in Progress
+- custom presets: 用户可创建和选择本地 preset
+- custom sounds: 用户可选择或添加提示音
 
-- **Custom Presets**: Presets that user can create and store locally and select them while starting
-  a pomodoro session.
-- **Custom Sounds**: Custom sounds that user can select or add themselves that will be used to
-  notify when a work/break session ends.
+## IPC 命令
 
-## IPC Commands
-
-You can control the pomodoro plugin via the command line using the Noctalia IPC interface.
-
-### General Usage
+可以通过 Noctalia IPC 控制插件:
 
 ```bash
 qs -c noctalia-shell ipc call plugin:pomodoro <command>
 ```
 
-### Available Commands
+## 可用命令
 
-| Command               | Description                                                         | Example                                                                |
-| --------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `toggle`              | Opens or closes the pomodoro panel on the current screen            | `qs -c noctalia-shell ipc call plugin:pomodoro toggle`                 |
-| `start`               | Starts/resumes the pomodoro timer                                   | `qs -c noctalia-shell ipc call plugin:pomodoro start`                  |
-| `pause`               | Pauses the running timer                                            | `qs -c noctalia-shell ipc call plugin:pomodoro pause`                  |
-| `reset`               | Resets the current session                                          | `qs -c noctalia-shell ipc call plugin:pomodoro reset`                  |
-| `resetAll`            | Resets all sessions and returns to work mode                        | `qs -c noctalia-shell ipc call plugin:pomodoro resetAll`               |
-| `skip`                | Skips to the next phase (work → break or break → work)              | `qs -c noctalia-shell ipc call plugin:pomodoro skip`                   |
-| `stopAlarm`           | Stops the alarm sound when ringing                                  | `qs -c noctalia-shell ipc call plugin:pomodoro stopAlarm`              |
-| `finish`              | Finishes active custom timer and accumulates time                   | `qs -c noctalia-shell ipc call plugin:pomodoro finish`                 |
-| `abandon`             | Abandons active custom timer without accumulating                   | `qs -c noctalia-shell ipc call plugin:pomodoro abandon`                |
-| `setTimerType`        | Sets active timer type (`0` pomodoro, `1` count-up, `2` count-down) | `qs -c noctalia-shell ipc call plugin:pomodoro setTimerType 2`         |
-| `setCountdownMinutes` | Sets count-down target minutes                                      | `qs -c noctalia-shell ipc call plugin:pomodoro setCountdownMinutes 45` |
+| 命令                  | 说明                                             | 示例                                                                   |
+| --------------------- | ------------------------------------------------ | ---------------------------------------------------------------------- |
+| `toggle`              | 打开或关闭当前屏幕上的番茄钟面板                 | `qs -c noctalia-shell ipc call plugin:pomodoro toggle`                 |
+| `start`               | 开始或继续计时                                   | `qs -c noctalia-shell ipc call plugin:pomodoro start`                  |
+| `pause`               | 暂停当前计时                                     | `qs -c noctalia-shell ipc call plugin:pomodoro pause`                  |
+| `reset`               | 重置当前 session                                 | `qs -c noctalia-shell ipc call plugin:pomodoro reset`                  |
+| `resetAll`            | 重置所有 session 并回到工作模式                  | `qs -c noctalia-shell ipc call plugin:pomodoro resetAll`               |
+| `skip`                | 跳到下一个阶段                                   | `qs -c noctalia-shell ipc call plugin:pomodoro skip`                   |
+| `stopAlarm`           | 停止正在播放的提示音                             | `qs -c noctalia-shell ipc call plugin:pomodoro stopAlarm`              |
+| `finish`              | 完成当前 custom timer 并累计时间                 | `qs -c noctalia-shell ipc call plugin:pomodoro finish`                 |
+| `abandon`             | 放弃当前 custom timer，不累计时间                | `qs -c noctalia-shell ipc call plugin:pomodoro abandon`                |
+| `setTimerType`        | 设置计时类型，`0` 番茄钟，`1` 正计时，`2` 倒计时 | `qs -c noctalia-shell ipc call plugin:pomodoro setTimerType 2`         |
+| `setCountdownMinutes` | 设置倒计时分钟数                                 | `qs -c noctalia-shell ipc call plugin:pomodoro setCountdownMinutes 45` |
 
-### Examples
+## 示例
 
-**Start a pomodoro session:**
+开始番茄钟:
 
 ```bash
 qs -c noctalia-shell ipc call plugin:pomodoro start
 ```
 
-**Skip to break after finishing work early:**
+提前进入休息:
 
 ```bash
 qs -c noctalia-shell ipc call plugin:pomodoro skip
 ```
 
-**Reset everything and start fresh:**
+重置所有状态:
 
 ```bash
 qs -c noctalia-shell ipc call plugin:pomodoro resetAll
 ```
 
-## Settings
+## 设置项
 
-**_Note:_** These settings are stored in the settings.json file and can be changed by opening the
-widget settings.
+这些设置存储在 `settings.json` 中，也可以通过 widget settings 修改。
 
-| Setting                    | Default | Description                                  |
-| -------------------------- | ------- | -------------------------------------------- |
-| `workDuration`             | 25 min  | Duration of each work session                |
-| `shortBreakDuration`       | 5 min   | Duration of short breaks                     |
-| `longBreakDuration`        | 15 min  | Duration of long breaks                      |
-| `sessionsBeforeLongBreak`  | 4       | Number of work sessions before a long break  |
-| `autoStartBreaks`          | false   | Automatically start break timer after work   |
-| `autoStartWork`            | false   | Automatically start work timer after break   |
-| `compactMode`              | false   | Hide the circular progress bar               |
-| `countdownDurationMinutes` | 25 min  | Default duration for count-down timer        |
-| `totalTrackedSeconds`      | 0       | Persisted cumulative tracked time in seconds |
+| 设置项                     | 默认值 | 说明                          |
+| -------------------------- | ------ | ----------------------------- |
+| `workDuration`             | 25 min | 每个工作 session 时长         |
+| `shortBreakDuration`       | 5 min  | 短休息时长                    |
+| `longBreakDuration`        | 15 min | 长休息时长                    |
+| `sessionsBeforeLongBreak`  | 4      | 进入长休息前的工作 session 数 |
+| `autoStartBreaks`          | false  | 工作结束后自动开始休息        |
+| `autoStartWork`            | false  | 休息结束后自动开始工作        |
+| `compactMode`              | false  | 隐藏圆形进度条                |
+| `countdownDurationMinutes` | 25 min | 倒计时默认时长                |
+| `totalTrackedSeconds`      | 0      | 持久化累计专注时间，单位为秒  |
 
-## Credits
+## 致谢
 
-- **Alarm Sound**: `alarm.mp3` - Sourced from [Pixabay](https://pixabay.com/) (Royalty-free,
-  [Pixabay Content License](https://pixabay.com/service/license-summary/))
+`alarm.mp3` 来自 [Pixabay](https://pixabay.com/)，使用 Pixabay Content License。

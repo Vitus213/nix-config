@@ -1,23 +1,25 @@
-# Structured Editing
+# 结构化编辑
 
-## S-expression data(Lisp)
+## S-expression / Lisp
 
-- paredit/[lispy](https://github.com/doomemacs/doomemacs/tree/master/modules/editor/lispy): too
-  complex.
-- [evil-cleverparens](https://github.com/emacs-evil/evil-cleverparens): simple and useful.
-- [parinfer(par-in-fer)](https://shaunlebron.github.io/parinfer/): modern, simple, elegant and
-  useful, but works not well with some other completion plugins...
-  - to make parinfer works, you should disable sexp & smartparens in any lisp mode.
+可选方案:
 
-Some plugins:
+- paredit /
+  [lispy](https://github.com/doomemacs/doomemacs/tree/master/modules/editor/lispy): 能力强，但复杂度高
+- [evil-cleverparens](https://github.com/emacs-evil/evil-cleverparens): 简单实用
+- [parinfer](https://shaunlebron.github.io/parinfer/): 现代、简洁，但可能和部分补全插件冲突
 
-- Neovim
-  - [parinfer-rust](https://github.com/eraserhd/parinfer-rust)
-  - <https://github.com/Olical/conjure>
-- Helix
-  - [parinfer #4090 - Helix](https://github.com/helix-editor/helix/discussions/4090)
+如果启用 parinfer，建议在 Lisp mode 中关闭 sexp / smartparens 一类插件，避免行为互相覆盖。
 
-## Other Languages
+## Neovim
 
-1. treesitter
-1. ...
+- [parinfer-rust](https://github.com/eraserhd/parinfer-rust)
+- [conjure](https://github.com/Olical/conjure)
+
+## Helix
+
+- [parinfer #4090](https://github.com/helix-editor/helix/discussions/4090)
+
+## 其他语言
+
+非 Lisp 语言主要依赖 Tree-sitter 提供结构化选择、缩进和一部分结构化编辑能力。

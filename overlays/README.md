@@ -1,50 +1,20 @@
 # Overlays
 
-Overlays for both NixOS and Nix-Darwin.
+这个目录存放 NixOS 和 nix-darwin 共享的 nixpkgs overlays。
 
-If you don't know much about overlays, it is recommended to learn the function and usage of overlays
-through [Overlays - NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world/nixpkgs/overlays).
+## 结构
 
-## Current Structure
-
-```
+```text
 overlays/
-├── README.md
-├── default.nix          # Entrypoint for all overlays
-└── fcitx5/              # Chinese input method configuration
-    ├── README.md
-    ├── default.nix      # fcitx5 overlay definition
-    └── rime-data-flypy/ # Custom rime data for 小鹤音形输入法
-        └── share/
-            └── rime-data/
-                ├── build/
-                ├── default.custom.yaml
-                ├── default.yaml
-                ├── flypy.schema.yaml
-                ├── flypy_full全码字.txt
-                ├── flypy_sys.txt
-                ├── flypy_top.txt
-                ├── flypy_user.txt
-                ├── lua/
-                │   └── calculator_translator.lua
-                ├── rime.lua
-                ├── squirrel.custom.yaml
-                └── squirrel.yaml
+├── default.nix
+└── fcitx5/
 ```
 
-## Components
+## 当前 overlay
 
-### 1. `default.nix`
+- `default.nix`: overlays 入口，导入当前目录下的 overlay
+- `fcitx5/`: 为 Rime 提供雾凇拼音 Rime Ice 数据，供 Linux 的 `fcitx5-rime` 和 macOS 的 Squirrel 使用
 
-The entrypoint of overlays, it execute and import all overlay files in the current directory with
-the given args.
+## 参考
 
-### 2. `fcitx5`
-
-fcitx5's overlay, add my customized Chinese input method - [小鹤音形输入法](https://flypy.com/)
-
-This overlay provides:
-
-- Custom rime data for 小鹤音形输入法 (Flypy input method)
-- Cross-platform support for both Linux (fcitx5-rime) and macOS (squirrel)
-- Pre-configured input method settings
+- [Overlays - NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world/nixpkgs/overlays)

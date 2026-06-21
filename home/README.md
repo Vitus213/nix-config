@@ -1,48 +1,25 @@
-# Home Manager's Submodules
+# Home Manager 配置
 
-This directory contains all Home Manager configurations organized by platform and functionality.
+这个目录存放所有用户级配置，按共享层和平台层拆分。
 
-## Current Structure
+## 目录结构
 
-```
+```text
 home/
-├── base/              # Cross-platform home manager configurations
-│   ├── core/          # Essential applications and settings
-│   │   ├── editors/   # Editor configurations (Neovim, Helix)
-│   │   ├── shells/    # Shell configurations (Nushell, Zellij)
-│   │   └── ...
-│   ├── gui/           # GUI applications and desktop settings
-│   │   ├── terminal/  # Terminal emulators (Kitty, Alacritty, etc.)
-│   │   └── ...
-│   ├── tui/           # Terminal/TUI applications
-│   │   ├── editors/   # TUI editors and related tools
-│   │   ├── encryption/ # GPG, password-store, etc.
-│   │   └── ...
-│   └── home.nix       # Main home manager entry point
-├── linux/             # Linux-specific home manager configurations
-│   ├── base/          # Linux base configurations
-│   ├── gui/           # Linux GUI applications
-│   │   ├── niri/      # Niri window manager
-│   │   └── ...
-│   ├── editors/       # Linux-specific editors
-│   └── ...
-└── darwin/            # macOS-specific home manager configurations
-    ├── aerospace/     # macOS window manager
-    ├── proxy/         # Proxy configurations
-    └── ...
+├── base/      # Linux 和 macOS 共享的 home-manager 配置
+├── linux/     # Linux 专用配置
+└── darwin/    # macOS 专用配置
 ```
 
-## Module Overview
+## 分层说明
 
-1. **base**: The base module suitable for both Linux and macOS
-   - Cross-platform applications and settings
-   - Shared configurations for editors, shells, and essential tools
+- `base/`: shell、git、编辑器、终端工具、跨平台 GUI 配置
+- `linux/`: Linux 桌面、niri、Noctalia Shell、Fcitx5、Wayland 相关配置
+- `darwin/`: macOS、AeroSpace、Squirrel、代理和终端配置
 
-2. **linux**: Linux-specific configuration
-   - Desktop environments (Noctalia Shell, Niri compositor)
-   - Linux-specific GUI applications
-   - System integration tools
+## 使用原则
 
-3. **darwin**: macOS-specific configuration
-   - macOS applications and services
-   - Platform-specific integrations (Aerospace, Squirrel, etc.)
+- 用户级 dotfiles 优先放在 `home/`
+- 系统服务、内核、用户组和硬件配置放在 `modules/` 或 `hosts/`
+- 与单个主机强绑定的 home-manager 配置放在 `hosts/<host>/home.nix`
+- secrets 通过 agenix 暴露路径，不要把明文写进 home-manager 文件

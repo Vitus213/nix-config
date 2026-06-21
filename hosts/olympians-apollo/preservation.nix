@@ -40,7 +40,6 @@ in
   preservation.preserveAt."/persistent" = {
     directories = [
       "/etc/NetworkManager/system-connections"
-      "/etc/ssh"
       "/etc/nix/inputs"
       "/etc/secureboot" # lanzaboote - secure boot
       # my secrets
@@ -83,6 +82,16 @@ in
         file = "/etc/machine-id";
         inInitrd = true;
       }
+      {
+        file = "/etc/ssh/ssh_host_ed25519_key";
+        mode = "0600";
+      }
+      "/etc/ssh/ssh_host_ed25519_key.pub"
+      {
+        file = "/etc/ssh/ssh_host_rsa_key";
+        mode = "0600";
+      }
+      "/etc/ssh/ssh_host_rsa_key.pub"
     ];
 
     # the following directories will be passed to /persistent/home/$USER

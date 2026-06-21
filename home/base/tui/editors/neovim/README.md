@@ -1,190 +1,153 @@
-# Neovim Editor
+# Neovim
 
-My Neovim config based on [AstroNvim](https://github.com/AstroNvim/AstroNvim). For more details,
-visit the [AstroNvim website](https://astronvim.com/).
+当前 Neovim 配置基于 [AstroNvim](https://github.com/AstroNvim/AstroNvim)。更多基础用法见
+[AstroNvim 文档](https://astronvim.com/)。
 
-This document outlines neovim's configuration structure and various shortcuts/commands for efficient
-usage.
+## 截图
 
-## Screenshots
+![](/_img/astronvim_2023-07-13_00-39.webp)
 
-![](/_img/astronvim_2023-07-13_00-39.webp) ![](/_img/hyprland_2023-07-29_2.webp)
+## 配置结构
 
-## Configuration Structure
+| 内容                        | 标准位置                    | 当前方式                |
+| --------------------------- | --------------------------- | ----------------------- |
+| Neovim 配置                 | `~/.config/nvim`            | 本目录下的 `nvim/`      |
+| 插件目录                    | `~/.local/share/nvim`       | 由 lazy.nvim 生成和管理 |
+| LSP、DAP、linter、formatter | `~/.local/share/nvim/mason` | 由 `default.nix` 安装   |
 
-| Description                                       | Standard Location                           | My Location                                                               |
-| ------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------- |
-| Neovim's config                                   | `~/.config/nvim`                            | AstroNvim's github repository, referenced as a flake input in this flake. |
-| AstroNvim's user configuration                    | `$XDG_CONFIG_HOME/astronvim/lua/user`       | [./astronvim_user/](./astronvim_user/)                                    |
-| Plugins installation directory (lazy.nvim)        | `~/.local/share/nvim/`                      | The same as standard location, generated and managed by lazy.nvim.        |
-| LSP servers, DAP servers, linters, and formatters | `~/.local/share/nvim/mason/`(by mason.nvim) | [./default.nix](./default.nix), installed by nix.                         |
+## 插件更新
 
-## Update/Clean Plugins
+lazy.nvim 不会自动更新插件，需要手动执行:
 
-Note that lazy.nvim will not automatically update plugins, so you need to update them manually.
-
-```bash
+```vim
 :Lazy update
 ```
 
-Remove all unused plugins:
+清理无用插件:
 
-```bash
+```vim
 :Lazy clean
 ```
 
-## Testing
+## 常用快捷键
 
-> via `Justfile` located at the root of this repo.
+### Tree-sitter 增量选择
 
-```bash
-# testing
-just nvim-test
-
-# clear test data
-just nvim-clear
-```
-
-## Cheatsheet
-
-Here is the cheatsheet related to my Neovim configs. Please read vim's common cheatsheet at
-[../README.md](../README.md) before reading the following.
-
-### Incremental Selection
-
-Provided by nvim-treesitter.
-
-| Action            | Shortcut       |
+| 动作              | 快捷键         |
 | ----------------- | -------------- |
-| init selection    | `<Ctrl-space>` |
-| node incremental  | `<Ctrl-space>` |
-| scope incremental | `<Alt-Space>`  |
-| node decremental  | `Backspace`    |
+| 开始选择          | `<Ctrl-space>` |
+| 扩大到下一个 node | `<Ctrl-space>` |
+| 扩大到 scope      | `<Alt-Space>`  |
+| 缩小选择          | `Backspace`    |
 
-### Search and Jump
+### 搜索和跳转
 
-Provided by [flash.nvim](https://github.com/folke/flash.nvim), it's a intelligent search and jump
-plugin.
+由 [flash.nvim](https://github.com/folke/flash.nvim) 提供增强搜索。
 
-1. It enhances the default search and jump behavior of neovim.(search with prefix `/`)
+| 动作            | 快捷键                    |
+| --------------- | ------------------------- |
+| 普通搜索        | `/`                       |
+| Flash 搜索      | `s`                       |
+| Treesitter 搜索 | `yR` / `dR` / `cR` / `vR` |
+| Remote Flash    | `yr` / `dr` / `cr`        |
 
-| Action            | Shortcut                                                                                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| Search            | `/`(normal search), `s`(disable all code highlight, only highlight matches)                                  |
-| Treesitter Search | `yR`,`dR`, `cR`, `vR`, `ctrl+v+R`(around your matches, all the surrounding Treesitter nodes will be labeled) |
-| Remote Flash      | `yr`, `dr`, `cr`, (around your matches, all the surrounding Treesitter nodes will be labeled)                |
+### 文件和 LSP
 
-### Commands & Shortcuts
+| 动作           | 快捷键         |
+| -------------- | -------------- |
+| 打开文件树     | `<Space> + e`  |
+| 定位当前文件   | `<Space> + o`  |
+| 切换自动换行   | `<Space> + uw` |
+| 显示当前行诊断 | `gl`           |
+| 显示符号信息   | `K`            |
+| 查找引用       | `gr`           |
+| 下一个 buffer  | `]b`           |
+| 上一个 buffer  | `[b`           |
 
-| Action                        | Shortcut       |
-| ----------------------------- | -------------- |
-| Open file explorer            | `<Space> + e`  |
-| Focus Neotree to current file | `<Space> + o`  |
-| Toggle line wrap              | `<Space> + uw` |
-| Show line diagnostics         | `gl`           |
-| Show function/variable info   | `K`            |
-| References of a symbol        | `gr`           |
-| Next tab                      | `]b`           |
-| Previous tab                  | `[b`           |
+### 窗口和 buffer
 
-### Window Navigation
+| 动作         | 快捷键                        |
+| ------------ | ----------------------------- |
+| 水平分屏     | `\`                           |
+| 垂直分屏     | `\|`                          |
+| 关闭 buffer  | `<Space> + c`                 |
+| 窗口间移动   | `<Ctrl> + h/j/k/l`            |
+| 调整窗口大小 | `<Ctrl> + Up/Down/Left/Right` |
 
-- Switch between windows: `<Ctrl> + h/j/k/l`
-- Resize windows: `<Ctrl> + Up/Down/Left/Right` (`<Ctrl-w> + -/+/</>`)
-  - Note: On macOS, conflicts with system shortcuts
-  - Disable in System Preferences -> Keyboard -> Shortcuts -> Mission Control
+macOS 上这些快捷键可能和 Mission Control 冲突，需要在系统设置里关闭对应快捷键。
 
-### Splitting and Buffers
+### 编辑和格式化
 
-| Action           | Shortcut      |
-| ---------------- | ------------- |
-| Horizontal Split | `\`           |
-| Vertical Split   | `\|`          |
-| Close Buffer     | `<Space> + c` |
-
-### Editing and Formatting
-
-| Action                                                | Shortcut       |
-| ----------------------------------------------------- | -------------- |
-| Toggle buffer auto formatting                         | `<Space> + uf` |
-| Format Document                                       | `<Space> + lf` |
-| Code Actions                                          | `<Space> + la` |
-| Rename                                                | `<Space> + lr` |
-| Opening LSP symbols                                   | `<Space> + lS` |
-| Comment Line(support multiple lines)                  | `<Space> + /`  |
-| Open filepath/URL at cursor(neovim's builtin command) | `gx`           |
-| Find files by name (fzf)                              | `<Space> + ff` |
-| Find files by name (include hidden files)             | `<Space> + fF` |
-| Grep string in files (ripgrep)                        | `<Space> + fw` |
-| Grep string in files (include hidden files)           | `<Space> + fW` |
+| 动作                           | 快捷键         |
+| ------------------------------ | -------------- |
+| 切换当前 buffer 自动格式化     | `<Space> + uf` |
+| 格式化文档                     | `<Space> + lf` |
+| Code action                    | `<Space> + la` |
+| 重命名                         | `<Space> + lr` |
+| 打开 LSP symbols               | `<Space> + lS` |
+| 注释当前行或选区               | `<Space> + /`  |
+| 打开光标处路径或 URL           | `gx`           |
+| 按文件名查找                   | `<Space> + ff` |
+| 按文件名查找，包含隐藏文件     | `<Space> + fF` |
+| ripgrep 搜索内容               | `<Space> + fw` |
+| ripgrep 搜索内容，包含隐藏文件 | `<Space> + fW` |
 
 ### Git
 
-| Action                     | Shortcut        |
-| -------------------------- | --------------- |
-| Git Commits (repository)   | `:<Space> + gc` |
-| Git Commits (current file) | `:<Space> + gC` |
-| Git Branches               | `:<Space> + gb` |
-| Git Status                 | `:<Space> + gt` |
+| 动作             | 快捷键         |
+| ---------------- | -------------- |
+| 仓库 commits     | `<Space> + gc` |
+| 当前文件 commits | `<Space> + gC` |
+| branches         | `<Space> + gb` |
+| status           | `<Space> + gt` |
 
-### Sessions
+### Session
 
-| Action                         | Shortcut       |
-| ------------------------------ | -------------- |
-| Save Session                   | `<Space> + Ss` |
-| Last Session                   | `<Space> + Sl` |
-| Delete Session                 | `<Space> + Sd` |
-| Search Session                 | `<Space> + Sf` |
-| Load Current Directory Session | `<Space> + S.` |
+| 动作                 | 快捷键         |
+| -------------------- | -------------- |
+| 保存 session         | `<Space> + Ss` |
+| 加载上次 session     | `<Space> + Sl` |
+| 删除 session         | `<Space> + Sd` |
+| 搜索 session         | `<Space> + Sf` |
+| 加载当前目录 session | `<Space> + S.` |
 
-### Debugging
+### 全局查找替换
 
-Press `<Space> + D` to view available bindings and options.
+打开 spectre.nvim:
 
-### Search and Replace Globally
+```text
+<Space> + ss
+```
 
-| Description                                | Shortcut       |
-| ------------------------------------------ | -------------- |
-| Open spectre.nvim search and replace panel | `<Space> + ss` |
-
-Search and replace via cli(fd + sad + delta):
+命令行方案:
 
 ```bash
 fd "\\.nix$" . | sad '<pattern>' '<replacement>' | delta
 ```
 
-### Surrounding Characters
+### Surround
 
-Provided by mini.surround plugin.
+由 mini.surround 提供，前缀是 `gz`。
 
-- Prefix `gz`
+| 动作               | 示例     |
+| ------------------ | -------- |
+| 给当前 word 加引号 | `gzaiw'` |
+| 删除外层引号       | `gzd'`   |
+| 把单引号换成双引号 | `gzr'"`  |
+| 高亮外层引号       | `gzh'`   |
 
-| Action                         | Shortcut | Description                                     |
-| ------------------------------ | -------- | ----------------------------------------------- |
-| Add surrounding characters     | `gzaiw'` | Add `'` around the word under cursor            |
-| Delete surrounding characters  | `gzd'`   | Delete `'` around the word under cursor         |
-| Replace surrounding characters | `gzr'"`  | Replace `'` by `"` around the word under cursor |
-| Highlight surrounding          | `gzh'`   | Highlight `'` around the word under cursor      |
+### 其他
 
-### Text Manipulation
+| 动作            | 快捷键         |
+| --------------- | -------------- |
+| treesj 智能合并 | `<Space> + j`  |
+| treesj 智能拆分 | `<Space> + s`  |
+| Yank 历史       | `<Space> + yh` |
+| Undo 历史       | `<Space> + uh` |
+| 当前文件路径    | `:!echo $%`    |
 
-| Action                                 |               |
-| -------------------------------------- | ------------- |
-| Join with LSP intelligence(treesj)     | `<Space> + j` |
-| Split Line into Multiple Lines(treesj) | `<Space> + s` |
+## 参考
 
-### Miscellaneous
-
-| Action                            |                 |
-| --------------------------------- | --------------- |
-| Show all Yank History             | `:<Space> + yh` |
-| Show undo history                 | `:<Space> + uh` |
-| Show the path of the current file | `:!echo $%`     |
-
-## Additional Resources
-
-For more detailed information and advanced usage, refer to:
-
-1. [AstroNvim walkthrough](https://astronvim.com/Basic%20Usage/walkthrough)
-2. [./astronvim_user/mapping.lua](./astronvim_user/mappings.lua)
-3. All the plugins' documentations
+- [AstroNvim walkthrough](https://astronvim.com/Basic%20Usage/walkthrough)
+- `nvim/lua/plugins/`
+- 各插件自己的文档

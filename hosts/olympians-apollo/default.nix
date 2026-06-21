@@ -1,16 +1,11 @@
-{ myvars, lib, ... }:
+{ lib, ... }:
 #############################################################
 #
-#  Apollo - my main computer, with NixOS + I5-13600KF + RTX 4090 GPU, for gaming & daily use.
+#  Apollo - my main computer, with NixOS + AMD Ryzen 5 5600 + RTX 3070 LHR GPU, for gaming & daily use.
 #
 #############################################################
 let
   hostName = "apollo"; # Define your hostname.
-
-  inherit (myvars.networking) nameservers;
-  inherit (myvars.networking.hostsAddr.${hostName}) iface ipv4 ipv6 gateway gateway6;
-  ipv4WithMask = "${ipv4}/24";
-  ipv6WithMask = "${ipv6}/64";
 in
 {
   imports = [
@@ -38,39 +33,11 @@ in
   networking = {
     inherit hostName;
 
-    # we use networkd instead
-    networkmanager.enable = false; # provides nmcli/nmtui for wifi adjustment
-    useDHCP = false;
+    networkmanager.enable = true; # provides nmcli/nmtui for wifi adjustment
+    useDHCP = lib.mkDefault true;
   };
 
-  networking.useNetworkd = true;
-  systemd.network.enable = true;
-
-  systemd.network.networks."10-${iface}" = {
-    matchConfig.Name = [ iface ];
-    networkConfig = {
-      Address = [
-        ipv4WithMask
-        ipv6WithMask
-      ];
-      DNS = nameservers;
-      DHCP = "ipv6"; # enable DHCPv6 only, so we can get a GUA.
-      IPv6AcceptRA = true; # for Stateless IPv6 Autoconfiguraton (SLAAC)
-      LinkLocalAddressing = "ipv6";
-    };
-    routes = [
-      {
-        Destination = "0.0.0.0/0";
-        Gateway = gateway;
-      }
-      {
-        Destination = "::/0";
-        Gateway = gateway6;
-        GatewayOnLink = true; # it's a gateway on local link.
-      }
-    ];
-    linkConfig.RequiredForOnline = "routable";
-  };
+  networking.useNetworkd = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

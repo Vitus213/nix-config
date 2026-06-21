@@ -1,113 +1,68 @@
-# Hosts
+# 主机配置
 
-This directory contains all host-specific configurations for my NixOS and macOS systems.
+这个目录存放所有主机相关配置，包括 NixOS、nix-darwin 和独立 home-manager 主机。
 
-## Current Host Inventory
+## 当前主机
 
-### Physical Machines
+### 物理机
 
-#### `desktops` - Main Workstations
+| 主机      | 平台  | 硬件                        | 用途                     | 状态   |
+| --------- | ----- | --------------------------- | ------------------------ | ------ |
+| `apollo`  | NixOS | Ryzen 5 5600 + RTX 3070 LHR | 主力桌面、游戏、日常使用 | 使用中 |
+| `athena`  | NixOS | 待补充                      | 第二台桌面               | 规划中 |
+| `artemis` | macOS | MacBook Pro M4Pro 14" 48GB  | 工作机                   | 使用中 |
 
-Named after Greek mythology:
+### 外部系统
 
-| Host     | Platform | Hardware              | Purpose            | Status     |
-| -------- | -------- | --------------------- | ------------------ | ---------- |
-| `apollo` | NixOS    | i5-13600KF + RTX 4090 | Gaming & Daily Use | ✅ Active  |
-| `athena` | NixOS    | TBD                   | Secondary Desktop  | 🛠️ Planned |
+- SBC 主机在 [ryan4yin/nixos-config-sbc](https://github.com/ryan4yin/nixos-config-sbc) 中维护
+- `hermes` 是 Ubuntu 上的独立 home-manager 配置
 
-#### `darwin` - macOS Systems
-
-Named after Greek mythology:
-
-| Host      | Platform | Hardware                   | Purpose      | Status    |
-| --------- | -------- | -------------------------- | ------------ | --------- |
-| `artemis` | macOS    | MacBook Pro M4Pro 14" 48GB | Work Use     | ✅ Active |
-
-### External Systems
-
-- **SBCs**: aarch64/riscv64 single-board computers managed in
-  [ryan4yin/nixos-config-sbc](https://github.com/ryan4yin/nixos-config-sbc)
-- **Ubuntu servers (HM-only)**: `hermes` managed through standalone home-manager output
-
-All my riscv64 hosts:
+RISC-V 集群:
 
 ![](/_img/nixos-riscv-cluster.webp)
 
-## Naming Conventions
+## 命名规则
 
-- **olympians**: Greek mythology hosts use the `olympians-` path prefix
-- **desktops**: `apollo` / `athena` use Greek mythology names
-- **darwin**: `artemis` uses Greek mythology naming
+- `olympians-*`: 希腊神话命名的 NixOS 桌面主机
+- `darwin-*`: macOS 主机
+- `apollo` / `athena` / `artemis`: 当前主要物理机
 
-## How to Add a New Host
+## 添加新主机
 
-The easiest way to add a new host is to copy and adapt an existing similar configuration. All host
-configurations follow similar patterns but are customized for specific hardware and use cases.
+最稳妥的方式是复制一个相近主机目录，再逐项调整。不要只改 hostname 后直接部署。
 
-### General Process
+### 基本步骤
 
-1. **Identify a similar existing host** from the directory structure above
-2. **Copy the entire directory** and rename it for your new host
-3. **Adapt the configuration files** for your specific hardware and requirements
-4. **Update references** in the flake outputs and networking configuration
+1. 在 `hosts/` 下创建新目录，例如 `hosts/olympians-<name>/`
+2. 放入当前机器生成的 `hardware-configuration.nix`
+3. 编写 `default.nix`，导入硬件配置、主机专用模块和可选的 `preservation.nix`
+4. 如果需要 home-manager，添加 `home.nix`
+5. 在 `outputs/<system>/src/<name>.nix` 中添加 flake output
+6. 如需固定网络信息，在 `vars/networking.nix` 中补充主机地址
 
-### Essential Steps
+### 常用模板
 
-1. Under `hosts/`
-   1. Create a new folder under `hosts/` with the name of the new host.
-   2. Create & add the new host's `hardware-configuration.nix` to the new folder, and add the new
-      host's `configuration.nix` to `hosts/<name>/default.nix`.
-   3. If the new host need to use home-manager, add its custom config into `hosts/<name>/home.nix`.
-1. Under `outputs/`
-   1. Add a new nix file named `outputs/<system-architecture>/src/<name>.nix`.
-   2. Copy the content from one of the existing similar host, and modify it to fit the new host.
-      1. Usually, you only need to modify the `name` and `tags` fields.
-   3. [Optional] Add a new unit test file under `outputs/<system-architecture>/tests/<name>.nix` to
-      test the new host's nix file.
-   4. [Optional] Add a new integration test file under
-      `outputs/<system-architecture>/integration-tests/<name>.nix` to test whether the new host's
-      nix config can be built and deployed correctly.
-1. Under `vars/networking.nix`
-   1. Add the new host's static IP address.
-   1. Skip this step if the new host is not in the local network or is a mobile device.
+- 桌面 NixOS: 参考 `olympians-apollo/`
+- macOS: 参考 `darwin-artemis/`
+- preservation: 参考 `olympians-apollo/preservation.nix`
 
-### File Templates
+## 分布式构建
 
-Use existing hosts as templates. The key files typically include:
-
-- `default.nix` - Main host configuration
-- `hardware-configuration.nix` - Auto-generated hardware settings
-- Platform-specific files (e.g., `nvidia.nix`, `apple-silicon.nix`, etc.)
-
-### Examples to Reference
-
-- **Desktop systems**: See `olympians-apollo/` for gaming/workstation setup
-- **macOS systems**: See `darwin-artemis/` for macOS configurations
-
-## Distributed Building
-
-I usually run the build command on `Apollo` and nix will distribute the build to other NixOS
-machines, which is convenient and fast.
-
-When building some packages for riscv64 or aarch64, I often have no cache available because of
-various changes under the hood, so I need to build much more packages than usual, which is one of
-the reasons why the cluster was originally built, and another reason is distributed building is
-cool!
+我通常在 `apollo`
+上发起构建，再由 Nix 分发到其他 NixOS 机器。对 riscv64、aarch64 或缓存缺失的包，这能减少主力机负担。
 
 ![](/_img/nix-distributed-building.webp)
 
 ![](/_img/nix-distributed-building-log.webp)
 
-## References
+## 参考
 
-[Oshi no Ko 【推しの子】 - Wikipedia](https://en.wikipedia.org/wiki/Oshi_no_Ko):
+- [Oshi no Ko 【推しの子】](https://en.wikipedia.org/wiki/Oshi_no_Ko)
+- [The Rolling Girls 【ローリング☆ガールズ】](https://en.wikipedia.org/wiki/The_Rolling_Girls)
+- [List of Twelve Kingdoms characters](https://en.wikipedia.org/wiki/List_of_Twelve_Kingdoms_characters)
 
 ![](/_img/idols-famaily.webp) ![](/_img/idols-ai.webp)
 
-[The Rolling Girls【ローリング☆ガールズ】 - Wikipedia](https://en.wikipedia.org/wiki/The_Rolling_Girls):
-
 ![](/_img/rolling_girls.webp)
-
-[List of Twelve Kingdoms characters](https://en.wikipedia.org/wiki/List_of_Twelve_Kingdoms_characters)
 
 ![](/_img/12kingdoms-1.webp) ![](/_img/12kingdoms-Youko-Rakushun.webp)

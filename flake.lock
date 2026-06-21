@@ -590,17 +590,17 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1777223168,
-        "narHash": "sha256-DZnAzERw4XEizxupzyHR7KRZhBVrAOJDW6aTRNIsXwY=",
-        "owner": "Vitus213",
-        "repo": "my-secrets",
-        "rev": "a0f00c94c30bd4f72ff325cc718dc3bfedc88953",
-        "type": "github"
+        "lastModified": 1782031317,
+        "narHash": "sha256-J0emxuYRZZbArwAGB+c2l2aIMgh7bLF5OeuuMTTfW7A=",
+        "ref": "refs/heads/main",
+        "rev": "f1ed2a63f97d30f6001b0a714f260d184a3bbfdd",
+        "revCount": 24,
+        "type": "git",
+        "url": "ssh://git@github.com/Vitus213/my-secrets.git"
       },
       "original": {
-        "owner": "Vitus213",
-        "repo": "my-secrets",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/Vitus213/my-secrets.git"
       }
     },
     "nix-darwin": {

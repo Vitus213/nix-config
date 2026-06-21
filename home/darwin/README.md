@@ -1,33 +1,23 @@
-# Home Manager's Darwin Submodules
+# Darwin Home Manager 配置
 
-This directory contains macOS-specific Home Manager configurations for Darwin systems.
+这个目录存放 macOS 专用的 Home Manager 配置。
 
-## Configuration Modules
+## 主要模块
 
-### Core Configurations
+- `default.nix`: Darwin home-manager 入口
+- `shell.nix`: shell 环境和别名
+- `terminal.nix`: 终端相关配置
+- `rime-squirrel.nix`: Rime Squirrel 输入法配置
+- `aerospace/`: AeroSpace 平铺窗口管理器配置
+- `proxy/`: 代理和 proxychains 配置
 
-- **default.nix**: Entry point that imports all Darwin configurations
-- **shell.nix**: Shell configurations and environment settings
-- **rime-squirrel.nix**: [Rime Squirrel](https://github.com/rime/squirrel) input method
-  configuration
+## 相关文档
 
-### Window Management
+- [AeroSpace 使用指南](../../documents/aerospace-usage.md)
+- [modules/darwin](../../modules/darwin/README.md)
 
-- **aerospace/**: [Aerospace](https://github.com/nikitabobko/AeroSpace) tiling window manager
-  configuration
-  - Custom keybindings and workspace management
-  - Application-specific window rules
+## 使用原则
 
-### Network Configuration
-
-- **proxy/**: Network proxy configurations
-  - `proxychains.conf`: Proxy chains configuration for network routing
-  - Proxy settings for development tools and applications
-
-## Features
-
-- macOS-specific package installations and configurations
-- Native macOS applications and utilities
-- Touch ID and system integration
-- Homebrew integration for additional packages
-- macOS-specific shell configurations and aliases
+- macOS 用户级配置放在这里
+- 系统级 nix-darwin 配置放在 `modules/darwin/`
+- 与 `artemis` 强绑定的配置放在 `hosts/darwin-artemis/`

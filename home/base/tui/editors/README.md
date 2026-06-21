@@ -1,212 +1,188 @@
-# Editors
+# 终端编辑器
 
-My editors:
+当前主要使用:
 
 1. Neovim
 2. Helix
+3. Zellij 作为稳定的终端工作区
 
-And `Zellij` for a smooth and stable terminal experience.
+## 使用原则
 
-## Tips
+1. 很多能力 Vim / Neovim 已经内置，新增插件前先查官方文档
+2. 终端 pane、滚动、复制和远程会话优先交给 Zellij
+3. 编辑器负责编辑，终端模拟器只负责显示字符
+4. 大项目中优先按路径或内容搜索，不要过度依赖 tree view
 
-1. Many useful keys are already provided by vim, check vim/neovim's docs before you install a new
-   plugin / reinvent the wheel.
-1. After using Emacs/Neovim more skillfully, I strongly recommend that you read the official
-   documentation of Neovim/vim:
-   1. <https://vimhelp.org/>: The official vim documentation.
-   1. <https://neovim.io/doc/user/>: Neovim's official user documentation.
-1. Use Zellij for terminal related operations, and use Neovim/Helix for editing.
-1. As for Emacs, Use its GUI version & terminal emulator `vterm` for terminal related operations.
-1. Two powerful file search & jump tools:
-1. Tree-view plugins are beginner-friendly and intuitive, but they're not very efficient.
-1. **Search by the file path**: Useful when you're familiar with the project structure, especially
-   on a large project.
-1. **Search by the content**: Useful when you're familiar with the code.
+官方文档:
 
-## Tutorial
+- <https://vimhelp.org/>
+- <https://neovim.io/doc/user/>
 
-Type `:tutor`(`:Tutor` in Neovim) to learn the basics usage of vim/neovim.
+## 入门
 
-## VIM's Cheatsheet
+Vim:
 
-> Here only record my commonly used keys, to see **a more comprehensive cheatsheet**:
-> <https://vimhelp.org/quickref.txt.html>
+```vim
+:tutor
+```
 
-Both Emacs-Evil & Neovim are compatible with vim, sothe key-bindings described here are common in
-both Emacs-Evil, Neovim & vim.
+Neovim:
 
-### Terminal Related
+```vim
+:Tutor
+```
 
-I mainly use Zellij for terminal related operations, here is its terminal shortcuts I use frequently
-now:
+## Zellij 常用终端操作
 
-| Action                    | Zellij's Shortcut |
-| ------------------------- | ----------------- |
-| Floating Terminal         | `Ctrl + p + w`    |
-| Horizontal Split Terminal | `Ctrl + p + d`    |
-| Vertical Split Terminal   | `Ctrl + p + n`    |
-| Execute a command         | `!xxx`            |
+| 动作     | 快捷键         |
+| -------- | -------------- |
+| 浮动终端 | `Ctrl + p + w` |
+| 水平分屏 | `Ctrl + p + d` |
+| 垂直分屏 | `Ctrl + p + n` |
+| 执行命令 | `!xxx`         |
 
-### File Management
+## 文件操作
 
-> <https://neovim.io/doc/user/usr_22.html>
+| 动作                   | 命令            |
+| ---------------------- | --------------- |
+| 保存选中文本到文件     | `:w filename`   |
+| 保存并关闭当前 buffer  | `:wq`           |
+| 保存所有 buffer        | `:wa`           |
+| 保存并关闭所有 buffer  | `:wqa`          |
+| 编辑文件               | `:e filename`   |
+| 浏览文件列表           | `:Ex` 或 `:e .` |
+| 放弃修改并重新读取文件 | `:e!`           |
 
-> <https://vimhelp.org/editing.txt.html>
+## 移动
 
-| Action                              |                                                  |
-| ----------------------------------- | ------------------------------------------------ |
-| Save selected text to a file        | `:w filename` (Will show `:'<,'>w filename`)     |
-| Save and close the current buffer   | `:wq`                                            |
-| Save all buffers                    | `:wa`                                            |
-| Save and close all buffers          | `:wqa`                                           |
-| Edit a file                         | `:e filename`(or `:e <TAB>` to show a file list) |
-| Browse the file list                | `:Ex` or `:e .`                                  |
-| Discard changes and reread the file | `:e!`                                            |
+| 动作                  | 命令                  |
+| --------------------- | --------------------- |
+| 到 buffer 开头 / 结尾 | `gg` / `G`            |
+| 到第 5 行             | `5gg` / `5G`          |
+| 左下上右移动          | `h` / `j` / `k` / `l` |
+| 移动到匹配括号        | `%`                   |
+| 到行首 / 行尾         | `0` / `$`             |
+| 前后句子              | `(` / `)`             |
+| 前后段落              | `{` / `}`             |
+| 前后 section          | `[[` / `]]`           |
+| 跳到 mark             | `'` + mark            |
 
-### Motion
+文本对象:
 
-> https://vimhelp.org/motion.txt.html
+- sentence: 以 `.`, `!`, `?` 结束并跟随空白或行尾的文本
+- paragraph: 以空行分隔的文本
+- section: 从 section header 到下一个 section header 的文本
 
-| Action                                              | Command                                            |
-| --------------------------------------------------- | -------------------------------------------------- |
-| Move to the start/end of the buffer                 | `gg`/`G`                                           |
-| Move the line number 5                              | `5gg` / `5G`                                       |
-| Move left/down/up/right                             | h/j/k/l or `5h`/`5j`/`5k`/`5l` or `Ctr-n`/`Ctrl-p` |
-| Move to the matchpairs, default to `()`, `{}`, `[]` | `%`                                                |
-| Move to the start/end of the line                   | `0` / `$`                                          |
-| Move a sentence forward/backward                    | `(` / `)`                                          |
-| Move a paragraph forward/backward                   | `{` / `}`                                          |
-| Move a section forward/backward                     | `[[` / `]]`                                        |
-| Jump to various positions                           | `'` + some other keys(neovim has prompt)           |
+## 基础编辑
 
-Text Objects:
+| 动作                    | 命令                           |
+| ----------------------- | ------------------------------ |
+| 删除当前字符            | `x`                            |
+| 粘贴                    | `p`                            |
+| 删除选区                | `d`                            |
+| 插入模式撤销上一个 word | `CTRL-w`                       |
+| 插入模式撤销当前行      | `CTRL-u`                       |
+| 撤销                    | `u`                            |
+| 重做                    | `Ctrl + r`                     |
+| 重复上次命令            | `.`                            |
+| 切换大小写              | `~`                            |
+| visual 选区转大写       | `U`                            |
+| visual 选区转小写       | `u`                            |
+| 居中 / 左对齐 / 右对齐  | `:center` / `:left` / `:right` |
 
-- **sentence**: text ending at a '.', '!' or '?' followed by either the end of a line, or by a space
-  or tab.
-- **paragraph**: text ending at a blank line.
-- **section**: text starting with a section header and ending at the start of the next section
-  header (or at the end of the file). - The "`]]`" and "`[[`" commands stop at the '`{`' in the
-  first column. This is useful to find the start of a function in a C/Go/Java/... program.
+## Visual 模式和代码操作
 
-### Text Manipulation
+| 动作                     | 命令           |
+| ------------------------ | -------------- |
+| visual mode              | `v`            |
+| 选择当前行               | `V`            |
+| visual block mode        | `<Ctrl> + v`   |
+| 折叠当前代码块           | `zc`           |
+| 展开当前代码块           | `zo`           |
+| 跳转定义                 | `gd`           |
+| 跳转引用                 | `gD`           |
+| 注释当前行               | `gcc`          |
+| 排序选中行               | `:sort`        |
+| 合并行并插入空格         | `:join` 或 `J` |
+| 合并行但不插入空格       | `:join!`       |
+| 行首 / 行尾进入插入模式  | `I` / `A`      |
+| 删除到行尾               | `D`            |
+| 删除到行尾并进入插入模式 | `C`            |
 
-Basics:
+## 批量编辑技巧
 
-| Action                                  |                            |
-| --------------------------------------- | -------------------------- |
-| Delete the current character            | `x`                        |
-| Paste the copied text                   | `p`                        |
-| Delete the selection                    | `d`                        |
-| Undo the last word                      | `CTRL-w`(in insert mode)   |
-| Undo the last line                      | `CTRL-u`(in insert mode)   |
-| Undo the last change                    | `u`                        |
-| Redo the last change                    | `Ctrl + r`                 |
-| Inserts the text of the previous insert | `Ctrl + a`                 |
-| Repeat the last command                 | `.`                        |
-| Toggle text's case                      | `~`                        |
-| Convert to uppercase                    | `U` (visual mode)          |
-| Convert to lowercase                    | `u` (visual mode)          |
-| Align the selected content              | `:center`/`:left`/`:right` |
+在多行末尾追加文本:
 
-Misc:
+```vim
+:normal A<text>
+```
 
-| Action                        | Shortcut                                 |
-| ----------------------------- | ---------------------------------------- |
-| Toggle visual mode            | `v` (lower case v)                       |
-| Select the current line       | `V` (upper case v)                       |
-| Toggle visual block mode      | `<Ctrl> + v` (select a block vertically) |
-| Fold the current code block   | `zc`                                     |
-| Unfold the current code block | `zo`                                     |
-| Jump to Definition            | `gd`                                     |
-| Jump to References            | `gD`                                     |
-| (Un)Comment the current line  | `gcc`                                    |
+删除多行最后一个字符:
 
-| Action                                                                    |                |
-| ------------------------------------------------------------------------- | -------------- |
-| Sort the selected lines                                                   | `:sort`        |
-| Join Selection of Lines With Space                                        | `:join` or `J` |
-| Join without spaces                                                       | `:join!`       |
-| Enter Insert mode at the start/end of the line                            | `I` / `A`      |
-| Delete from the cursor to the end of the line                             | `D`            |
-| Delete from the cursor to the end of the line, and then enter insert mode | `C`            |
+```vim
+:normal $x
+```
 
-Advance Techs:
+删除多行最后一个 word:
 
-- Add at the end of multiple lines: `:normal A<text>`
-  - Execublock: `:A<text>`
-  - visual block mode(ctrl + v)
-  - Append text at the end of each line in the selected block
-  - If position exceeds line end, neovim adds spaces automatically
+```vim
+:normal $bD
+```
 
-- Delete the last char of multivle lines: `:normal $x`
-  - Execute `$x` on each line
-  - visual mode(v)
-  - `$` moves cursor to the end of line
-  - `x` deletes the character under the cursor
+也可以使用 visual block mode，也就是 `Ctrl + v`。
 
-- Delete the last word of multiple lines: `:normal $bD`
-  - Execute `$bD` on each line
-  - visual mode(v)
-  - `$` moves cursor to the end of line
-  - `b` moves cursor to the beginning of the last word
+## 搜索
 
-### Search
+| 动作                    | 命令      |
+| ----------------------- | --------- |
+| 向前 / 向后搜索         | `/` / `?` |
+| 同方向 / 反方向重复搜索 | `n` / `N` |
 
-| Action                                                | Command   |
-| ----------------------------------------------------- | --------- |
-| Search forward/backword for a pattern                 | `/` / `?` |
-| Repeat the last search in the same/opposite direction | `n` / `N` |
+## 查找替换
 
-### Find and Replace
+| 动作             | 命令                               |
+| ---------------- | ---------------------------------- |
+| 当前行替换       | `:s/old/new/g`                     |
+| 全文件替换       | `:%s/old/new/g`                    |
+| 带确认的正则替换 | `:%s@\vhttp://(\w+)@https://\1@gc` |
 
-| Action                           | Command                             |
-| -------------------------------- | ----------------------------------- |
-| Replace in selected area         | `:s/old/new/g`                      |
-| Replace in current line          | Same as above                       |
-| Replace all the lines            | `:% s/old/new/g`                    |
-| Replace all the lines with regex | `:% s@\vhttp://(\w+)@https://\1@gc` |
+说明:
 
-1. `\v` means means that in the regex pattern after it can be used without backslash
-   escaping(similar to python's raw string).
-2. `\1` means the first matched group in the pattern.
+- `\v`: very magic，减少正则中的反斜杠
+- `\1`: 第一个捕获组
+- `g`: 替换当前行中所有匹配
+- `c`: 替换前确认
+- `i`: 忽略大小写
 
-### Replace in the specific lines
+## 指定行替换
 
-| Action                                    | Command                                |
-| ----------------------------------------- | -------------------------------------- |
-| From the 10th line to the end of the file | `:10,$ s/old/new/g` or `:10,$ s@^@#@g` |
-| From the 10th line to the 20th line       | `:10,20 s/old/new/g`                   |
-| Remove the trailing spaces                | `:% s/\s\+$//g`                        |
+| 动作               | 命令                |
+| ------------------ | ------------------- |
+| 第 10 行到文件末尾 | `:10,$s/old/new/g`  |
+| 第 10 行到第 20 行 | `:10,20s/old/new/g` |
+| 删除行尾空格       | `:%s/\s\+$//g`      |
 
-The postfix(flags) in the above commands:
+## Buffer、Window、Tab
 
-1. `g` means replace all the matched strings in the current line/file.
-2. `c` means ask for confirmation before replacing.
-3. `i` means ignore case.
+概念:
 
-### Buffers, Windows and Tabs
+- buffer: 文件在内存中的文本
+- window: buffer 的一个视图
+- tab page: 一组 window
 
-> <https://neovim.io/doc/user/usr_08.html>
+| 动作                   | 命令                               |
+| ---------------------- | ---------------------------------- |
+| 水平分屏               | `:sp` 或 `:sp filename`            |
+| 垂直分屏               | `:vs` 或 `:vs filename`            |
+| 切换 window            | `Ctrl-w + w` 或 `Ctrl-w + h/j/k/l` |
+| 显示所有 buffer        | `:ls`                              |
+| 下一个 / 上一个 buffer | `]b` / `[b` 或 `:bn` / `:bp`       |
+| 新建 tab               | `:tabnew`                          |
+| 下一个 / 上一个 tab    | `gt` / `gT`                        |
 
-> <https://vimhelp.org/windows.txt.html>
+## 历史
 
-- A buffer is the in-memory text of a file.
-- A window is a viewport on a buffer.
-- A tab page is a collection of windows.
-
-| Action                              | Command                             |
-| ----------------------------------- | ----------------------------------- |
-| Split the window horizontally       | `:sp[lit]` or `:sp filename`        |
-| Split the window horizontally       | `:vs[plit]` or `:vs filename`       |
-| Switch to the next/previous window  | `Ctrl-w + w` or `Ctrl-w + h/j/k/l`  |
-| Show all buffers                    | `:ls`                               |
-| show next/previous buffer           | `]b`/`[b` or `:bn[ext]` / `bp[rev]` |
-| New Tab(New Workspace in DoomEmacs) | `:tabnew`                           |
-| Next/Previews Tab                   | `gt`/`gy`                           |
-
-### History
-
-| Action                   | Command |
-| ------------------------ | ------- |
-| Show the command history | `q:`    |
-| Show the search history  | `q/`    |
+| 动作     | 命令 |
+| -------- | ---- |
+| 命令历史 | `q:` |
+| 搜索历史 | `q/` |

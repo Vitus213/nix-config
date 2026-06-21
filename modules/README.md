@@ -1,108 +1,65 @@
-# NixOS / Nix-Darwin's Submodules
+# 系统模块
 
-This directory contains modular NixOS and Nix-Darwin configurations organized by platform and
-functionality.
+这个目录存放 NixOS 和 nix-darwin 的系统级模块。模块按平台和功能拆分，主机入口只负责组合需要的模块。
 
-## Current Structure
+## 目录结构
 
-```
+```text
 modules/
-├── README.md
-├── base/                    # Common configuration for all platforms
-│   ├── default.nix
-│   ├── fonts.nix           # System font configuration
-│   ├── nix.nix            # Nix package manager settings
-│   ├── overlays.nix       # Package overlays
-│   ├── security.nix       # Basic security settings
-│   ├── system-packages.nix # Essential system packages
-│   └── users.nix          # User management
-├── darwin/                  # macOS-specific modules
-│   ├── README.md
-│   ├── apps.nix           # macOS applications
-│   ├── broken-packages.nix # Package compatibility fixes
-│   ├── default.nix
-│   ├── nix-core.nix       # Core Nix configuration
-│   ├── security.nix       # macOS security settings
-│   ├── ssh.nix           # SSH configuration
-│   ├── system.nix        # System-level settings
-│   └── users.nix         # macOS user management
-└── nixos/                   # NixOS-specific modules
-    ├── base/               # Base NixOS configuration
-    │   ├── btrbk.nix      # Backup configuration
-    │   ├── core.nix       # Core system settings
-    │   ├── default.nix
-    │   ├── i18n.nix       # Internationalization
-    │   ├── monitoring.nix # System monitoring
-    │   ├── networking.nix # Network configuration
-    │   ├── nix.nix        # Nix settings
-    │   ├── packages.nix   # System packages
-    │   ├── remote-building.nix # Remote build setup
-    │   ├── ssh.nix        # SSH daemon configuration
-    │   ├── user-group.nix # User and group management
-    │   └── zram.nix       # ZRAM swap configuration
-    ├── desktop.nix         # Desktop environment configuration
-    ├── desktop/            # Desktop-specific modules
-    │   ├── default.nix
-    │   ├── fhs.nix        # FHS environment
-    │   ├── fonts.nix      # Desktop fonts
-    │   ├── guix.nix       # GNU Guix integration
-    │   ├── misc.nix       # Miscellaneous desktop settings
-    │   ├── networking/    # Network-related desktop configs
-    │   │   ├── clash-verge.nix
-    │   │   ├── default.nix
-    │   │   ├── remote-desktop.nix
-    │   │   └── tailscale.nix
-    │   ├── peripherals.nix # Peripheral device configuration
-    │   ├── security.nix   # Desktop security settings
-    │   ├── virtualisation.nix # Virtualization support
-    │   └── xdg.nix       # XDG base directory settings
-    └── server/             # Server-specific modules
-        ├── kubevirt-hardware-configuration.nix
-        ├── server-aarch64.nix
-        ├── server-riscv64.nix
-        └── server.nix
+├── base/      # NixOS 和 macOS 共享的基础配置
+├── darwin/    # macOS / nix-darwin 专用模块
+└── nixos/     # NixOS 专用模块
 ```
 
-## Module Categories
+## `base/`
 
-### 1. **Base Modules** (`base/`)
+跨平台共享配置，主要包括:
 
-Common configuration shared between NixOS and macOS:
+- 字体
+- Nix 基础设置
+- overlays
+- 安全基线
+- 常用系统包
+- 用户基础信息
 
-- System fonts and localization
-- Essential packages and tools
-- Basic security settings
-- User management
-- Package overlays
+这些模块应避免引用明显的平台专属选项。需要平台判断时优先使用 `pkgs.stdenv.isLinux` 或
+`pkgs.stdenv.isDarwin`。
 
-### 2. **macOS Modules** (`darwin/`)
+## `darwin/`
 
-macOS-specific configuration:
+macOS 专用配置，主要包括:
 
-- macOS applications and system settings
-- Security configurations tailored for macOS
-- SSH and system-level settings
-- Package compatibility fixes
+- macOS 应用
+- nix-darwin 系统设置
+- Nix core 配置
+- SSH
+- 用户
+- 安全设置
+- 临时处理不兼容包的模块
 
-### 3. **NixOS Modules** (`nixos/`)
+入口说明见 [modules/darwin/README.md](./darwin/README.md)。
 
-Platform-specific NixOS configuration:
+## `nixos/`
 
-- **Base**: Core system settings and services
-- **Desktop**: Desktop environment and GUI applications
-- **Server**: Server-specific optimizations and services
+NixOS 专用配置分三类:
 
-## Usage
+- `base/`: 核心系统服务、网络、SSH、用户组、Nix、监控、zram 等
+- `desktop/`: Wayland 桌面、字体、XDG、虚拟化、外设、桌面网络工具等
+- `server/`: 服务器、KubeVirt、不同架构服务器基础配置
 
-Modules are imported based on platform detection:
+`modules/nixos/desktop.nix` 是桌面配置的组合入口。
 
-- **NixOS Systems**: Import `nixos/` modules
-- **macOS Systems**: Import `darwin/` modules
-- **All Systems**: Import `base/` modules for shared configuration
+## 使用原则
 
-## Architecture Support
+- 主机差异放在 `hosts/<host>/`
+- 多台机器共享的系统能力放在 `modules/`
+- 用户级配置放在 `home/`
+- secrets 通过 `secrets/` 模块和 agenix 暴露，不要写进普通模块
+- 新模块优先做成可开关选项，避免导入即生效
 
-- **x86_64-linux**: Desktop and server configurations
-- **aarch64-linux**: ARM64 Linux systems
-- **aarch64-darwin**: Apple Silicon macOS systems
-- **server-riscv64**: RISC-V server configurations
+## 支持平台
+
+- `x86_64-linux`: NixOS 桌面和服务器
+- `aarch64-linux`: ARM64 Linux
+- `aarch64-darwin`: Apple Silicon macOS
+- `riscv64-linux`: 服务器和实验环境

@@ -1,75 +1,54 @@
-# Editors Glossary
+# 编辑器术语
 
-### LSP - Language Server Protocol
+## LSP
 
-> https://en.wikipedia.org/wiki/Language_Server_Protocol
+LSP 是 Language Server Protocol，用于让编辑器和语言服务器之间用统一协议通信。
 
-> https://langserver.org/
+常见能力:
 
-The Language Server Protocol (LSP) is an open, JSON-RPC-based protocol for use between source code
-editors or integrated development environments (IDEs) and servers that provide programming
-language-specific features like:
+- 跳转定义
+- 查找引用
+- hover 信息
+- 代码补全
+- 错误和警告
+- 重构
+- 格式化入口
 
-- motions such as go-to-definition, find-references, hover.
-- **code completion**
-- **marking of warnings and errors**
-- **refactoring routines**
-- syntax highlighting (use Tree-sitter instead)
-- code formatting (use a dedicated formatter instead)
+LSP 的目标是把语言智能从编辑器中拆出来，让同一个语言服务器可以服务多个编辑器。
 
-The goal of the protocol is to allow programming language support to be implemented and distributed
-independently of any given editor or IDE.
+参考:
 
-LSP was originally developed for Microsoft Visual Studio Code and is now an open standard. In the
-early 2020s LSP quickly became a "norm" for language intelligence tools providers.
+- <https://en.wikipedia.org/wiki/Language_Server_Protocol>
+- <https://langserver.org/>
 
-### Tree-sitter
+## Tree-sitter
 
-> https://tree-sitter.github.io/tree-sitter/
+Tree-sitter 是 parser generator 和增量解析库。它能为源文件生成语法树，并在文件编辑时高效更新。
 
-> https://www.reddit.com/r/neovim/comments/1109wgr/treesitter_vs_lsp_differences_ans_overlap/
+常见用途:
 
-Tree-sitter is a parser generator tool and an **incremental parsing** library. It can build a
-concrete syntax tree for a source file and efficiently update the syntax tree as the source file is
-edited.
+- 语法高亮
+- 缩进
+- 折叠
+- 增量选择
+- 单文件内的结构化编辑
 
-It is used by many editors and IDEs to provide:
+Tree-sitter 通常只理解单个文件的语法结构，不理解整个项目的语义。函数是否真实存在、变量类型是什么、跨文件引用是否正确，这些通常交给 LSP。
 
-- **syntax highlighting**
-- **indentation**
-- **creating foldable code regions**
-- **Incremental selection**
-- **simple refactoring in a single file**
-  - such as join/split lines, structural editing, cursor motion, etc.
+参考:
 
-**Treesitter process each file independently**, and it is not aware of the semantics of your code.
-For example, it does not know does a function/variable really exist, or what is the type/return-type
-of a variable. This is where LSP comes in.
+- <https://tree-sitter.github.io/tree-sitter/>
+- <https://www.reddit.com/r/neovim/comments/1109wgr/treesitter_vs_lsp_differences_ans_overlap/>
 
-The LSP server parses the code much more deeply and it **not only parses a single file but your
-whole project**. So, the LSP server will know whether a function/variable does exist with the same
-type/return-type. If it does not, it will mark it as an error.
+## LSP 和 Tree-sitter 的区别
 
-**LSP does understand the code semantically, while Treesitter only cares about correct syntax**.
+- Tree-sitter: 轻量、快速，适合语法高亮、缩进、折叠、结构化选择
+- LSP: 更重，理解整个项目语义，适合补全、诊断、跨文件跳转和重构
 
-#### LSP vs Tree-sitter
+## Formatter 和 Linter
 
-- Tree-sitter: lightweight, fast, but limited knowledge of your code. mainly used for **syntax
-  highlighting, indentation, and folding/refactoring in a single file**.
-- LSP: heavy and slow on large projects, but it has a deep understanding of your code. mainly used
-  for **code completion, refactoring in the projects, errors/warnings, and other semantic-aware
-  features**.
+Formatter 只关心代码展示形式，例如缩进、换行和空格。`prettier` 是典型 formatter。
 
-### Formatter vs Linter
+Linter 会分析代码并报告潜在错误或风格问题，例如建议把 `var` 改成 `let` / `const`。
 
-Linting is distinct from Formatting because:
-
-1. **formatting** only restructures how code appears.
-   1. `prettier` is a popular formatter.
-1. **linting** analyzes how the code runs and detects errors, it may also suggest improvements such
-   as replace `var` with `let` or `const`.
-
-Formatters and Linters process each file independently, they do not need to know about other files
-in the project.
-
-- [ ]
+多数 formatter 和 linter 都按文件处理，不一定需要理解整个项目。

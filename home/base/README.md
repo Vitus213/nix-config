@@ -1,66 +1,18 @@
-# Home Manager's Base Submodules
+# Home Manager 共享层
 
-This directory contains cross-platform base configurations that are shared between Linux and Darwin
-systems.
+`home/base/` 存放 Linux 和 macOS 都能复用的用户级配置。
 
-## Configuration Structure
+## 主要目录
 
-### Core System
+| 路径       | 用途                                          |
+| ---------- | --------------------------------------------- |
+| `core/`    | shell、git、编辑器、主题、包管理器等基础配置  |
+| `gui/`     | 跨平台 GUI 应用和终端模拟器                   |
+| `tui/`     | 终端应用、GPG、password-store、SSH、Zellij 等 |
+| `home.nix` | 共享层入口                                    |
 
-- **core/**: Essential cross-platform configurations
-  - **core.nix**: Minimal home-manager configuration
-  - **shells/**: Shell configurations (bash, zsh, fish, nu)
-  - **editors/**: Text editor configurations
-    - **neovim/**: Neovim with custom plugins and settings
-    - **helix/**: Helix editor configuration
-  - **btop.nix**: System monitoring tools
-  - **git.nix**: Git configuration and aliases
-  - **npm.nix**: Node.js package management
-  - **pip.nix**: Python package management
-  - **starship.nix**: Cross-shell prompt configuration
-  - **theme.nix**: Color schemes and theming
-  - **yazi.nix**: Terminal file manager configuration
-  - **zellij/**: Terminal multiplexer with custom layouts
+## 使用原则
 
-### Desktop Environment
-
-- **gui/**: Cross-platform GUI applications and configurations
-  - **dev-tools.nix**: Development tools and IDEs
-  - **media.nix**: Media players and utilities
-  - **terminal/**: Terminal emulator configurations
-    - **alacritty/**: Alacritty terminal
-    - **kitty/**: Kitty terminal
-    - **foot/**: Foot terminal (Linux)
-    - **ghostty/**: Ghostty terminal
-
-### Terminal Interface
-
-- **tui/**: Terminal-based interface configurations
-  - **cloud/**: Cloud development tools (Terraform, etc.)
-  - **container.nix**: Container tools (Docker, Podman)
-  - **dev-tools.nix**: Terminal-based development tools
-  - **editors/**: Terminal editor configurations
-  - **encryption/**: Encryption and security tools
-  - **gpg/**: GPG key management
-  - **password-store/**: Password management with pass
-  - **shell.nix**: Shell environment configurations
-  - **ssh/**: SSH configuration and management
-  - **zellij/**: Terminal workspace management
-
-### System Management
-
-- **home.nix**: Main home manager configuration file
-
-## Platform Compatibility
-
-All configurations in this directory are designed to work across:
-
-- **Linux**: All distributions with Nix and Home Manager
-- **macOS**: Darwin systems with Home Manager
-- **WSL**: Windows Subsystem for Linux
-
-## Usage
-
-These base configurations provide the foundation for both Linux and Darwin systems, ensuring
-consistent environments across different platforms while allowing for platform-specific
-customizations.
+- 能跨平台工作的配置优先放这里
+- 平台专属逻辑放到 `home/linux/` 或 `home/darwin/`
+- 只有一个主机使用的配置先放主机目录，确认复用后再提升到共享层

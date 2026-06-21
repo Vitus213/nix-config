@@ -1,47 +1,18 @@
-# Zellij - A workspace lives in your terminal
+# Zellij
 
-Zellij is a terminal workspace with batteries included. At its core, it is a terminal multiplexer
-(similar to tmux and screen), but this is merely its infrastructure layer.
+Zellij 是当前默认的终端工作区工具。它类似 tmux / screen，但交互提示更完整，适合作为统一的终端层。
 
-Zellij is very user-friendly and easy to use, with a step-by-step hint system that will help you get
-to know the keybindings, which is very like the Neovim or helix.
+## 为什么默认进入 Zellij
 
-> By contrast, tmux's key design is counterintuitive, there is no prompt system, and the plug-in
-> performance is rubbish. It's really a pain to use. tmux's initial release was in 2007, it's too
-> old, I would recommend any users that do not have a experience with multiplexer to use zellij
-> instead of tmux.
+终端模拟器只负责显示字符，标签页、搜索、复制、滚动历史和 pane 管理交给 Zellij。这样可以在 kitty、foot、alacritty、ghostty 之间切换，而不丢失主要工作流。
 
-## Why use zellij as the default terminal environment?
+Zellij 也适合远程服务器。熟悉一套快捷键后，本地和远程都能保持一致。
 
-By auto start zellij on shell login, and exit the shell session on zellij exit, we can use zellij as
-the default terminal environment.
+## Passthrough / Lock Mode
 
-By this way, We will only use the most basic features of the terminal
-emulator(kitty/alacritty/wezterm/...), while most of the functions of terminal are provided by
-zellij. Thus we can easily switch to any terminal emulator without losing any key functions, and do
-not need to take care of the differences between different terminal emulators.
+按 `Ctrl + g` 进入 lock mode 后，按键会直接发送给当前 pane 中的程序。
 
-And Zellij can be used not only locally, but also on any remote server, which is very convenient.
-Learn once and use everywhere!
+常见场景:
 
-> Yeah, you didn't misread it, zellij is very suitable for not only remotely, but also locally!
-
-Some features such as search/copy/scrollback in different terminal emulators are implemented in
-different ways, and has different user experience. For example, Wezterm's default search function is
-very basic, and it's not easy to use. Kitty's scrollback search/copy is really tricky to use. As for
-some Editor such as Neovim, its integrated terminal is really useful, but zellij is more powerful
-and useful than it, and more stable! Zellij overcomes these problems, and provides a unified user
-experience for all terminal emulators!
-
-Terminal emulators should only be responsible for displaying characters.
-
-## Passthrough mode(Lock Mode)
-
-`Ctrl + g` lock the outer zellij interface, and all keys will be sent to the focused pane.
-
-It's extremely useful when you want to:
-
-1. Use zellij locally for daily work, and use a remote zellij via ssh to do some work on the remote
-   server.
-1. To avoid the key conflicts between zellij and the program running in the terminal, such as vim,
-   tmux, etc.
+1. 本地 Zellij 里 SSH 到远程机器，远程也开了 Zellij
+2. 当前程序和 Zellij 快捷键冲突，例如 Vim、tmux 或某些 TUI 程序

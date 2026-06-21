@@ -1,103 +1,63 @@
-# Flake Outputs
+# Flake 输出
 
-## Is such a complex and fine-grained structure necessary?
+这个目录定义仓库对外暴露的 flake outputs，包括 NixOS、nix-darwin、home-manager、包和测试。
 
-There is no need to do this when you have a small number of machines.
+## 为什么拆得这么细
 
-But when you have a large number of machines, it is necessary to manage them in a fine-grained way,
-otherwise, it will be difficult to manage and maintain them.
+机器数量少时，把所有 output 写在一个文件里也能工作。机器数量增加后，如果继续集中维护，主机差异、平台差异和测试入口会很快混在一起。
 
-The number of my machines has grown to more than 20, and the increase in scale has shown signs of
-getting out of control of complexity, so it is a natural and reasonable choice to use this
-fine-grained architecture to manage.
+当前结构按平台拆分，再在 `src/` 里为每台主机单独建文件。这样新增或删除主机时，影响范围更小。
 
-## Tests
+## 目录结构
 
-Testing is not necessary when your configuration is not complex, but with the increase in the number
-and configuration of your machines, testing becomes more and more important.
+```text
+outputs/
+├── default.nix
+├── aarch64-darwin/
+│   ├── default.nix
+│   ├── src/
+│   │   └── artemis.nix
+│   └── tests/
+├── aarch64-linux/
+│   ├── default.nix
+│   ├── src/
+│   └── tests/
+└── x86_64-linux/
+    ├── default.nix
+    ├── src/
+    │   ├── olympians-apollo.nix
+    │   ├── olympians-athena.nix
+    │   └── olympians-hermes.nix
+    └── tests/
+```
 
-We have two types of tests: eval tests and nixos tests, both of which can help us detect many
-obscure errors early, so as to avoid testing directly in the real world, and to avoid failures in
-personal computers and even corporate online environments.
+## 主机 output
 
-Related projects & docs:
+每个 `src/<name>.nix` 通常负责:
 
-- [haumea](https://github.com/nix-community/haumea): Filesystem-based module system for Nix
-- [Unveiling the Power of the NixOS Integration Test Driver (Part 1)](https://nixcademy.com/2023/10/24/nixos-integration-tests/)
-- [NixOS Tests - NixOS Manual](https://nixos.org/manual/nixos/stable/#sec-nixos-tests)
+- 定义主机名
+- 选择系统架构
+- 组合 NixOS / Darwin 模块
+- 组合 home-manager 模块
+- 暴露相关 package 或测试入口
 
-### 1. Eval Tests
+新增主机时优先复制相近主机文件，再改 `name`、模块列表和必要的主机差异。
 
-> TODO: More Tests!
+## 测试
 
-Eval Tests evaluate the expressions and compare the results with the expected results. It runs fast,
-but it doesn't build a real machine. We use eval tests to ensure that some attributes are correctly
-set for each NixOS host(not Darwin).
+当前主要使用 eval tests。它不会构建完整机器，但能快速确认关键属性是否符合预期。
 
-How to run all the eval tests:
+运行所有 eval tests:
 
 ```bash
 nix eval .#evalTests --show-trace --print-build-logs --verbose
 ```
 
-### 2. NixOS Tests
+NixOS VM tests 暂未作为主路径使用。原因是完整主机依赖私有 agenix
+secrets 和主机专属 key，直接跑整机测试成本较高。
 
-> WIP: not working yet
+## 参考
 
-NixOS Tests builds and starts virtual machines using our NixOS configuration and run tests on them.
-Comparing to eval tests, it runs slow, but it builds a real machine, and we can test the whole
-system actually works as expected.
-
-Problems:
-
-- [ ] We need a private cache server, so that our NixOS tests do not need to build some custom
-      packages every time we run the tests.
-- [ ] Cannot test the whole host, because my host relies on its unique ssh host key to decrypt its
-      agenix secrets.
-  - [ ] Maybe it's better to test every service separately, not the whole host?
-
-How to run NixOS tests for every host:
-
-```bash
-# Format: nix build .#<name>-nixos-tests
-
-nix build .#<name>-nixos-tests
-```
-
-## Overview
-
-All the outputs of this flake are defined here.
-
-```bash
-› tree
-.
-├── default.nix       # The entry point, all the outputs are composed here.
-├── README.md
-├── aarch64-darwin    # All outputs for macOS Apple Silicon
-│   ├── default.nix
-│   └── src           # every host has its own file in this directory
-│       └── artemis.nix
-├── aarch64-linux     # All outputs for Linux ARM64
-│   ├── default.nix
-│   ├── src
-│   └── tests         # eval tests
-└── x86_64-linux      # All outputs for Linux x86_64
-    ├── default.nix
-    ├── src           # every host has its own file in this directory
-    │   ├── olympians-apollo.nix
-    │   ├── olympians-athena.nix
-    │   └── olympians-hermes.nix
-    └── tests         # eval tests
-        ├── home-configurations
-        │   ├── expected.nix
-        │   └── expr.nix
-        ├── home-manager
-        │   ├── expected.nix
-        │   └── expr.nix
-        ├── hostname
-        │   ├── expected.nix
-        │   └── expr.nix
-        └── kernel
-            ├── expected.nix
-            └── expr.nix
-```
+- [haumea](https://github.com/nix-community/haumea)
+- [NixOS integration tests](https://nixcademy.com/2023/10/24/nixos-integration-tests/)
+- [NixOS Tests - NixOS Manual](https://nixos.org/manual/nixos/stable/#sec-nixos-tests)

@@ -1,32 +1,20 @@
-# Home Manager's Linux Submodules
+# Linux Home Manager 配置
 
-This directory contains Linux-specific Home Manager configurations organized for different use
-cases.
+这个目录存放 Linux 专用的用户级配置。
 
-## Configuration Modules
+## 入口
 
-### Core Configurations
+- `core.nix`: Linux 基础配置
+- `tui.nix`: 终端环境配置
+- `gui.nix`: 完整图形桌面入口
 
-- **core.nix**: Essential Linux-specific configurations and settings
-- **base/**: Base Linux configurations including shell, tools, and utilities
-  - `shell.nix`: Shell configurations and aliases
-  - `tools.nix`: Essential command-line tools and utilities
+## 子目录
 
-### Desktop Configurations
+- `base/`: Linux 基础工具、shell、命令行工具
+- `gui/`: 桌面环境、Wayland、niri、Noctalia Shell 和 GUI 应用
 
-- **gui/**: Desktop environment configurations
-  - **niri/**: Niri compositor configuration
-  - **base/**: Common desktop applications and services
-  - **editors/**: Text editor configurations for desktop environments
+## 使用建议
 
-### Available Entry Points
-
-- **core.nix**: Core Linux configuration, suitable for basic setups
-- **tui.nix**: Terminal-based interface configuration for lightweight environments
-- **gui.nix**: Graphical user interface configuration entry point, imports desktop environments
-
-## Usage
-
-- **Lightweight/Terminal**: Use `core.nix` or `tui.nix` for terminal-focused setups
-- **Desktops**: Use `gui.nix` for full desktop environments with Noctalia Shell and Niri compositor
-- **Custom**: Mix and match configurations as needed for your specific use case
+- 只需要终端环境时使用 `tui.nix`
+- 桌面系统使用 `gui.nix`
+- 和窗口管理器、输入法、通知、锁屏、启动器相关的配置优先放在 `gui/`

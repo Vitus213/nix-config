@@ -1,31 +1,23 @@
-# Encryption
+# 加密工具
 
-We have GnuPG & password-store installed by default, mainly for password management, authentication
-& communication encryption.
+这个目录说明终端环境中的加密工具选择。
 
-We also have LUKS2 for disk encryption on Linux, and [rclone](https://rclone.org/crypt/) for
-cross-platform data encryption & syncing.
+## 当前工具
 
-[age](https://github.com/FiloSottile/age) may be more general for file encryption.
+- GnuPG: 密钥、签名、password-store
+- password-store: 密码管理
+- LUKS2: Linux 磁盘加密
+- rclone crypt: 跨平台数据加密和同步
+- age: 文件加密和 agenix secrets
+- SOPS: 可选方案，适合结合云 KMS
 
-[Sops](https://github.com/getsops/sops/tree/main) can be used for file encryption too, if you prefer
-using a Cloud provider for key management.
+## 非对称加密
 
-## Asymmetric Encryption
+age、SOPS 和 GnuPG 都能做非对称加密，用于把文件加密给指定身份。现代文件加密优先考虑 age；如果需要云 KMS，考虑 SOPS。
 
-Both age, Sops & GnuPG provide asymmetric encryption, which is useful for encrypting files for a
-specific user.
+## 对称加密
 
-For modern use, age is recommended, as it use [AEAD encryption function -
-ChaCha20-Poly1305][age Format v1], If you do not want to manage the keys by yourself, Sops is
-recommended, as it use KMS for key management.
+age 和 GnuPG 都支持基于 passphrase 的对称加密。age format v1 使用 scrypt 保护 file
+key，适合简单文件加密场景。
 
-## Symmetric Encryption
-
-Both age & GnuPG provide symmetric encryption, which is useful for encrypting files for a specific
-user.
-
-As described in [age Format v1][age Format v1], age use scrypt to encrypt and decrypt the file key
-with a provided passphrase, which is more secure than GnuPG's symmetric encryption.
-
-[age Format v1]: https://age-encryption.org/v1
+参考: <https://age-encryption.org/v1>
