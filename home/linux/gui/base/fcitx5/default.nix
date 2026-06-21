@@ -15,6 +15,10 @@
     "mozc/config1.db".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/linux/gui/base/fcitx5/mozc-config1.db";
   };
+  xdg.dataFile."fcitx5/rime/default.custom.yaml" = {
+    source = ./default.custom.yaml;
+    force = true;
+  };
 
   i18n.inputMethod = {
     enable = true;
