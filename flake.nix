@@ -84,6 +84,12 @@
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    refind-minimal = {
+      url = "github:evanpurkhiser/rEFInd-minimal";
+      flake = false;
+    };
+
     # secrets management
     agenix = {
       # lock with git commit at May 18, 2025
