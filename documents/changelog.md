@@ -13,6 +13,18 @@
 - 验证方式：执行 `nix eval .#nixosConfigurations.apollo.config.boot.loader.refind.maxGenerations`。
 - 关联文档：[rEFInd 引导方案](./refind-boot.md)、[NixOS 内核策略](./nixos-kernel.md)。
 
+### 修复 apollo rebuild 的 Catppuccin VSCode 与 Neovim 生成冲突
+
+- 影响范围：`apollo` 主机 Home Manager、VSCode Catppuccin 扩展、Neovim AstroNvim 配置入口。
+- 配置入口：`flake.lock`、`home/base/tui/editors/neovim/default.nix`。
+- 变更内容：将 `catppuccin/nix` 更新到 `2026-06-19` 的上游版本，使 VSCode
+  Catppuccin 扩展使用已修复的 pnpm 依赖闭包；显式禁用 Home Manager 生成的
+  `.config/nvim/init.lua`，并关闭 Neovim Python3/Ruby
+  provider，避免它额外写入入口文件并与当前 AstroNvim 目录链接冲突。
+- 验证方式：执行
+  `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace`。
+- 关联文档：[Neovim](../home/base/tui/editors/neovim/README.md)。
+
 ### 优化 rEFInd 菜单项、默认启动与 NixOS 图标
 
 - 影响范围：`apollo` 主机 rEFInd 启动菜单。

@@ -15,6 +15,9 @@
 | 插件目录                    | `~/.local/share/nvim`       | 由 lazy.nvim 生成和管理 |
 | LSP、DAP、linter、formatter | `~/.local/share/nvim/mason` | 由 `default.nix` 安装   |
 
+`~/.config/nvim` 由 Home Manager 链接到本目录的 `nvim/`。当前显式禁用 Home Manager 生成的
+`~/.config/nvim/init.lua`，并关闭 Python3/Ruby provider，避免它额外写入入口文件并覆盖 AstroNvim。
+
 ## 插件更新
 
 lazy.nvim 不会自动更新插件，需要手动执行:

@@ -19,7 +19,10 @@ let
   configPath = "${config.home.homeDirectory}/nix-config/home/base/tui/editors/neovim/nvim";
 in
 {
-  xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink configPath;
+  xdg.configFile = {
+    "nvim".source = config.lib.file.mkOutOfStoreSymlink configPath;
+    "nvim/init.lua".enable = lib.mkForce false;
+  };
   # Disable catppuccin to avoid conflict with my non-nix config.
   catppuccin.nvim.enable = false;
 
@@ -31,6 +34,9 @@ in
     package = pkgs.neovim-unwrapped;
 
     # defaultEditor = true; # set EDITOR at system-wide level
+    # AstroNvim owns ~/.config/nvim; keep Home Manager provider init minimal.
+    withPython3 = false;
+    withRuby = false;
     viAlias = true;
     vimAlias = true;
 
