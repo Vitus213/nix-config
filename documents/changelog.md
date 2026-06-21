@@ -4,6 +4,15 @@
 
 ## 2026-06-21
 
+### 恢复 rEFInd NixOS generation 保留数为 1
+
+- 影响范围：`apollo` 主机 rEFInd 启动菜单。
+- 配置入口：`hosts/olympians-apollo/default.nix`。
+- 变更内容：将 `boot.loader.refind.maxGenerations` 从内核测试期的 `3` 恢复为
+  `1`，主菜单只保留最新 NixOS generation；内核测试需要回滚入口时再临时调高。
+- 验证方式：执行 `nix eval .#nixosConfigurations.apollo.config.boot.loader.refind.maxGenerations`。
+- 关联文档：[rEFInd 引导方案](./refind-boot.md)、[NixOS 内核策略](./nixos-kernel.md)。
+
 ### 优化 rEFInd 菜单项、默认启动与 NixOS 图标
 
 - 影响范围：`apollo` 主机 rEFInd 启动菜单。
