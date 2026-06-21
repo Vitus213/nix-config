@@ -24,6 +24,14 @@
   `nix flake check --no-build`。
 - 关联文档：[rEFInd 引导方案](./refind-boot.md)。
 
+### 建立文档记录与 changelog 规约
+
+- 影响范围：自动化代理工作规约、配置变更文档流程。
+- 配置入口：`AGENTS.md`。
+- 变更内容：要求所有配置变更都维护完整专题文档，并在本文件追加主线记录。
+- 验证方式：静态检查 `AGENTS.md` 与本文件内容一致。
+- 关联文档：本文件。
+
 ### 启用 rEFInd 管理 Intel NixOS 与 ZHITAI Windows 引导
 
 - 影响范围：`apollo` 主机引导配置。
