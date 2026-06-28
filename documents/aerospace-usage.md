@@ -72,7 +72,7 @@ Option + Enter
 注意:
 
 - 这个快捷键打开的是 `Ghostty`
-- `Ghostty` 会自动进入 `1Term`
+- `Ghostty` 会自动进入 `1Ghostty`
 - 而且会以平铺窗口的方式加入当前工作流
 
 ### 3.2 切换焦点
@@ -121,16 +121,16 @@ Option + Shift + =    放大当前窗口
 ### 3.6 切工作区
 
 ```text
-Option + 1    切到 1Term
-Option + 2    切到 2Alacritty
-Option + 3    切到 3Work
-Option + 4    切到 4Firefox
-Option + 5    切到 5Chrome
+Option + 1    切到 1Ghostty
+Option + 2    切到 2Chrome
+Option + 3    切到 3Docs
+Option + 4    切到 4Codex
+Option + 5    切到 5Edge
 Option + 6    切到 6Chat
-Option + 7    切到 7Work
+Option + 7    切到 7Mail
 Option + 8    切到 8Music
 Option + 9    切到 9File
-Option + 0    切到 0Other
+Option + 0    切到 10Other
 Option + a    切到 A
 Option + b    切到 B
 ```
@@ -140,16 +140,16 @@ Option + b    切到 B
 ### 3.7 把窗口送去别的工作区
 
 ```text
-Option + Shift + 1    把当前窗口送到 1Term
-Option + Shift + 2    把当前窗口送到 2Alacritty
-Option + Shift + 3    把当前窗口送到 3Work
-Option + Shift + 4    把当前窗口送到 4Firefox
-Option + Shift + 5    把当前窗口送到 5Chrome
+Option + Shift + 1    把当前窗口送到 1Ghostty
+Option + Shift + 2    把当前窗口送到 2Chrome
+Option + Shift + 3    把当前窗口送到 3Docs
+Option + Shift + 4    把当前窗口送到 4Codex
+Option + Shift + 5    把当前窗口送到 5Edge
 Option + Shift + 6    把当前窗口送到 6Chat
-Option + Shift + 7    把当前窗口送到 7Work
+Option + Shift + 7    把当前窗口送到 7Mail
 Option + Shift + 8    把当前窗口送到 8Music
 Option + Shift + 9    把当前窗口送到 9File
-Option + Shift + 0    把当前窗口送到 0Other
+Option + Shift + 0    把当前窗口送到 10Other
 Option + Shift + a    把当前窗口送到 A
 Option + Shift + b    把当前窗口送到 B
 ```
@@ -281,27 +281,27 @@ Shift + 方向键下    静音
 
 下面这张表是你这套配置的核心。
 
-| 工作区     | 语义           | 自动进入的应用                                  | 显示器绑定 |
-| ---------- | -------------- | ----------------------------------------------- | ---------- |
-| `1Term`    | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                 | `U32V5N`   |
-| `2Firefox` | Firefox 浏览   | `Firefox`                                       | `U32V5N`   |
-| `3Docs`    | 文档笔记       | `Notion`、`Typora`、`Obsidian`                  | `U32V5N`   |
-| `4Chat`    | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`                | `Built-in` |
-| `5Work`    | 工作/开发      | `企业微信`、`Slack`、`VSCode`、`Cursor`         | `U32V5N`   |
-| `6Chrome`  | Chrome 浏览    | `Chrome`                                        | `U32V5N`   |
-| `7Mail`    | 邮件日历       | `Mail`、`Calendar`                              | `U32V5N`   |
-| `8Music`   | 音乐           | QQ 音乐、网易云音乐                             | `Built-in` |
-| `9File`    | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`          | `Built-in` |
-| `0Other`   | 其他工具       | `Wireshark`、`LM Studio`、`Clash Verge`、`Zoom` | `Built-in` |
-| `A`        | 备用           | 无                                              | `U32V5N`   |
-| `B`        | 备用           | 无                                              | `U32V5N`   |
+| 工作区     | 语义           | 自动进入的应用                                                          | 显示器绑定  |
+| ---------- | -------------- | ----------------------------------------------------------------------- | ----------- |
+| `1Ghostty` | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                                         | `main`      |
+| `2Chrome`  | Chrome 浏览    | `Chrome`                                                                | `main`      |
+| `3Docs`    | 文档笔记       | `Notion`、`Typora`、`Obsidian`                                          | `main`      |
+| `4Codex`   | 工作/开发      | `VSCode`、`Cursor`                                                      | `main`      |
+| `5Edge`    | Edge 浏览      | `Edge`                                                                  | `main`      |
+| `6Chat`    | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`、`企业微信`、`Slack`                   | `secondary` |
+| `7Mail`    | 邮件日历       | `Mail`、`Calendar`                                                      | `secondary` |
+| `8Music`   | 音乐           | QQ 音乐、网易云音乐                                                     | `secondary` |
+| `9File`    | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`                                  | `secondary` |
+| `10Other`  | 其他工具       | `Firefox`、`Wireshark`、`LM Studio`、`CC Switch`、`Clash Verge`、`Zoom` | `secondary` |
+| `A`        | 备用           | 无                                                                      | `main`      |
+| `B`        | 备用           | 无                                                                      | `main`      |
 
 这里有几个重要细节:
 
 - `9File` 里的很多应用被显式配置成浮动窗口
-- `VSCode` 和 `Cursor` 现在会去 `7Work`，并以平铺方式打开
-- `0Other` 里的 `Wireshark` 和 `LM Studio` 也被显式配置成浮动
-- `Clash Verge` 会去 `0Other`，但没有强制浮动
+- `VSCode` 和 `Cursor` 现在会去 `4Codex`，并以平铺方式打开
+- `10Other` 里的 `Wireshark` 和 `LM Studio` 会被显式配置成浮动
+- `Firefox`、`CC Switch`、`Clash Verge` 和 `Zoom` 会去 `10Other`，但没有强制浮动
 - `SecurityAgent` 和 `System Settings` 被设置成浮动，但不强制移动工作区
 
 ## 6. 未命中规则的窗口会怎样
@@ -318,17 +318,17 @@ Shift + 方向键下    静音
 - 命中规则的窗口: 按规则决定去哪个工作区，是否浮动
 - 没命中规则的窗口: 默认浮动
 
-这意味着如果你装了一个新应用，它第一次出现时大概率会是浮动窗口。想把它纳入固定工作流，ƒ通常有两种做法:
+这意味着如果你装了一个新应用，它第一次出现时大概率会是浮动窗口。想把它纳入固定工作流，通常有两种做法:
 
 1. 临时使用时，直接手动用 `Option + Shift + 数字` 送到某个工作区
 2. 长期使用时，后续给它加一条 `on-window-detected` 规则
 
 ## 7. 现在的显示器策略
 
-当前配置按双显示器设计：
+当前配置按双显示器设计:
 
-- 外接显示器 `U32V5N` 为主力屏，放置主要工作区
-- 内置 `Built-in Retina Display` 为辅助屏，放置聊天、音乐、文件和其他工具
+- `main` 是 macOS 当前标记的主显示器，放置终端、浏览器、文档和开发工作区
+- `secondary` 是双显示器场景下的非主显示器，放置聊天、邮件、音乐、文件和其他工具
 
 如果只接一块显示器，AeroSpace 会自动把所有工作区集中到当前可用的显示器上。
 
@@ -339,8 +339,8 @@ Shift + 方向键下    静音
 一个很自然的工作流是:
 
 1. `Option + Enter` 打开 `Ghostty`
-2. 它会自动进入 `1Term`
-3. `Option + 4` 去 Firefox，或者 `Option + 5` 去 Chrome
+2. 它会自动进入 `1Ghostty`
+3. `Option + 2` 去 Chrome，或者 `Option + 5` 去 Edge
 4. `Option + 6` 去聊天
 5. 在两个最近工作区间来回跳用 `Option + Tab`
 
@@ -385,7 +385,7 @@ Option + Shift + Tab
 当前配置里:
 
 - 启动快捷键打开的是 `Ghostty`
-- `Ghostty` 和 `Kitty` 都会自动进入 `1Term`
+- `Ghostty` 和 `Kitty` 都会自动进入 `1Ghostty`
 - `Ghostty` 还会显式使用平铺布局
 
 所以现在按 `Option + Enter`，终端会直接进入终端工作区并参与平铺。

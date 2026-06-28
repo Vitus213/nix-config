@@ -165,6 +165,7 @@ in
       # "netbirdio/tap/netbird-ui" # netbird gui app
 
       # AI
+      "cc-switch" # configuration manager for AI coding agents
       # "lm-studio"
 
       # IM & audio & remote desktop & meeting

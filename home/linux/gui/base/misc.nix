@@ -14,10 +14,10 @@
     freerdp # required by remmina
 
     # my custom hardened packages
-    # nixpaks.qq
+    nixpaks.qq
     nixpaks.telegram-desktop
     # qqmusic
-    # bwraps.wechat
+    bwraps.wechat
     feishu
     # discord # update too frequently, use the web version instead
   ];

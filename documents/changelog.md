@@ -2,6 +2,48 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-06-28
+
+### 固定 Rime 小鹤双拼的中西文切换
+
+- 影响范围：NixOS 桌面 Fcitx5 Rime 输入法、Fcitx5 全局快捷键、小鹤双拼中西文状态切换。
+- 配置入口：`home/linux/gui/base/fcitx5/default.custom.yaml`、`home/linux/gui/base/fcitx5/config`、
+  `home/linux/gui/base/fcitx5/profile`。
+- 变更内容：保留 `double_pinyin_flypy` 作为唯一 Rime 输入方案；将 `Ctrl+Space` 绑定到
+  `ascii_mode`，用于稳定切换小鹤双拼的中文状态和 Rime 西文状态
+  `Ａ`；禁用 Rime 对 Shift、CapsLock 和左右 Control 的中西文切换处理；同时显式管理 Fcitx5 全局快捷键，清空 Shift 临时切换键，并将 Fcitx5
+  Default 组收敛为仅包含 `rime`，避免日常在 `rime` 和英文键盘 `en` 之间轮转；Fcitx5 只保留
+  `Ctrl+Alt+Space` 作为救援激活/关闭键。
+- 验证方式：执行 `nixfmt --check home/linux/gui/base/fcitx5/default.nix`；重建或重新部署 Rime 后检查
+  `~/.local/share/fcitx5/rime/build/default.yaml` 中的 `ascii_composer.switch_key` 和
+  `key_binder.bindings`；检查 `~/.config/fcitx5/config` 中没有右 Shift 或 `Ctrl+Space` 全局绑定。
+- 关联文档：[Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)、
+  [Fcitx5 输入法](../home/linux/gui/base/fcitx5/README.md)。
+
+### 启用 NixOS 微信与 QQ 沙箱安装
+
+- 影响范围：`apollo`、`athena` NixOS 桌面用户包列表，微信 AppImage 封装，QQ Nixpak 封装。
+- 配置入口：`home/linux/gui/base/misc.nix`、`hardening/bwraps/wechat.nix`、`hardening/nixpaks/default.nix`、
+  `hardening/nixpaks/qq.nix`。
+- 变更内容：启用 `bwraps.wechat` 和 `nixpaks.qq`；将微信 Linux AppImage 固定到
+  `4.1.1.4`；QQ 局部固定到远端 Nixpkgs master 当前的 `3.2.29-2026-05-28` 源和 hash，不更新整个
+  `nixpkgs-master` 输入；保留微信数据目录隔离和 QQ Nixpak 沙箱。
+- 验证方式：执行
+  `nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.home.packages --show-trace`；执行
+  `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace`。
+- 关联文档：[Linux 微信与 QQ](./linux-im-apps.md)。
+
+### 安装 CC Switch 并固定到 AeroSpace 10Other 工作区
+
+- 影响范围：`artemis` macOS Homebrew 应用列表、AeroSpace 窗口自动分配、AeroSpace 使用文档。
+- 配置入口：`modules/darwin/apps.nix`、`home/darwin/aerospace/aerospace.toml`。
+- 变更内容：通过 Homebrew cask 安装 `cc-switch`；将 `com.ccswitch.desktop` 自动移动到
+  `10Other`，也就是 `Option + 0`
+  对应的其他工具工作区；同步校准 AeroSpace 文档中的当前工作区名称和显示器绑定。
+- 验证方式：静态检查 Darwin Homebrew cask 列表和 AeroSpace `on-window-detected` 规则；执行
+  `nix eval .#darwinConfigurations.artemis.config.homebrew.casks`。
+- 关联文档：[AeroSpace 使用指南](./aerospace-usage.md)。
+
 ## 2026-06-21
 
 ### 恢复 rEFInd NixOS generation 保留数为 1

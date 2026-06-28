@@ -16,13 +16,20 @@ let
     ];
   };
   wrapper = _pkgs: path: (_pkgs.callPackage path callArgs);
+  qqPinned = pkgs-master.qq.overrideAttrs (_: {
+    version = "3.2.29-2026-05-28";
+    src = pkgs-master.fetchurl {
+      url = "https://qqdl.gtimg.cn/qqfile/QQNT/9.9.31/release/00e6a3e7/QQ_3.2.29_260528_amd64_01.deb";
+      hash = "sha256-HjgoB5ZzyUmUvA9HgNXYUoZHY5kgZZhi1J0cLyoZjiU=";
+    };
+  });
 in
 {
   # Add nixpaked Apps into nixpkgs, and reference them in home-manager or other nixos modules
   nixpkgs.overlays = [
     (_: super: {
       nixpaks = {
-        qq = wrapper pkgs-master ./qq.nix;
+        qq = pkgs-master.callPackage ./qq.nix (callArgs // { qq = qqPinned; });
         telegram-desktop = wrapper super ./telegram-desktop.nix;
         firefox = wrapper super ./firefox.nix;
       };

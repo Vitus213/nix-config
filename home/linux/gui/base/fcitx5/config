@@ -1,0 +1,35 @@
+[Hotkey]
+# Trigger Input Method
+EnumerateWithTriggerKeys=False
+EnumerateSkipFirst=False
+
+# Temporarily Toggle Input Method
+AltTriggerKeys=
+
+# Enumerate Input Method Forward
+EnumerateForwardKeys=
+
+# Enumerate Input Method Backward
+EnumerateBackwardKeys=
+
+# Enumerate Input Method Group Forward
+EnumerateGroupForwardKeys=
+
+# Enumerate Input Method Group Backward
+EnumerateGroupBackwardKeys=
+
+# Activate Input Method
+ActivateKeys=
+
+# Deactivate Input Method
+DeactivateKeys=
+
+[Hotkey/TriggerKeys]
+0=Control+Alt+space
+
+[Behavior]
+# Active By Default
+ActiveByDefault=True
+
+# Share Input State
+ShareInputState=All

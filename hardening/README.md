@@ -31,6 +31,8 @@ hardening/
 | Bubblewrap WeChat | 使用中 | WeChat 专用沙箱 |
 | 系统 profile      | 整理中 | 系统级加固配置  |
 
+NixOS 桌面上的微信和 QQ 使用方式见 [Linux 微信与 QQ](../documents/linux-im-apps.md)。
+
 ## 参考方向
 
 - Kernel hardening:

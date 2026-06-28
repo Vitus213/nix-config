@@ -314,6 +314,10 @@ run = ['layout floating', 'move-node-to-workspace 10Other']
 if.app-id = 'ai.elementlabs.lmstudio'
 run = ['layout floating', 'move-node-to-workspace 10Other']
 
+[[on-window-detected]]
+if.app-id = 'com.ccswitch.desktop'
+run = 'move-node-to-workspace 10Other'
+
 # Clash Verge - has problem with floating
 [[on-window-detected]]
 if.app-id = 'io.github.clash-verge-rev.clash-verge-rev'

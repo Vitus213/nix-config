@@ -13,19 +13,19 @@
 }:
 let
   pname = "wechat";
-  # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/we/wechat/package.nix
+  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/we/wechat/package.nix
   sources = {
     aarch64-linux = {
-      version = "4.1.0.13";
+      version = "4.1.1.4";
       src = fetchurl {
-        url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_arm64.AppImage";
-        hash = "";
+        url = "https://web.archive.org/web/20260311102559if_/https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_arm64.AppImage";
+        hash = "sha256-YlWJxT62tXDaNwYVpsPMC5elFH8fsbI1HjTQn6ePiPo=";
       };
     };
     x86_64-linux = {
-      version = "4.1.0.13";
+      version = "4.1.1.4";
       src = fetchurl {
-        url = "https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
+        url = "https://web.archive.org/web/20260311102439if_/https://dldir1v6.qq.com/weixin/Universal/Linux/WeChatLinux_x86_64.AppImage";
         hash = "sha256-XxAvFnlljqurGPDgRr+DnuCKbdVvgXBPh02DLHY3Oz8=";
       };
     };
