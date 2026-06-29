@@ -1,7 +1,13 @@
 {
   config,
+  lib,
+  pkgs,
   ...
 }:
+let
+  sshConfigPath = "${config.home.homeDirectory}/.ssh/config";
+  materializedMarker = "# home-manager-materialized-ssh-config";
+in
 {
   programs.ssh = {
     enable = true;
@@ -59,4 +65,29 @@
       };
     };
   };
+
+  # OpenSSH rejects ~/.ssh/config when the Nix store owner is not root or the
+  # current user. Materialize the generated config as a user-owned regular file.
+  home.activation.prepareMaterializedSshConfig = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+    target="${sshConfigPath}"
+
+    if [ -f "$target" ] && [ ! -L "$target" ] \
+      && ${pkgs.gnugrep}/bin/grep -qxF '${materializedMarker}' "$target"; then
+      ${pkgs.coreutils}/bin/rm -f "$target"
+    fi
+  '';
+
+  home.activation.materializeSshConfig = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    target="${sshConfigPath}"
+
+    if [ -L "$target" ]; then
+      tmp="$target.tmp.$$"
+      {
+        printf '%s\n' '${materializedMarker}'
+        ${pkgs.coreutils}/bin/cat "$target"
+      } > "$tmp"
+      ${pkgs.coreutils}/bin/chmod 0600 "$tmp"
+      ${pkgs.coreutils}/bin/mv -f "$tmp" "$target"
+    fi
+  '';
 }

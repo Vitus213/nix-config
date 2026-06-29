@@ -144,10 +144,10 @@ in
         # # user can read this file.
         # # ---------------------------------------------
         #
-        # "ssh-key-romantic" = {
-        #   file = "${mysecrets}/ssh-key-romantic.age";
-        # }
-        # // user_readable;
+        "ssh-key-romantic" = {
+          file = "${mysecrets}/ssh-key-romantic.age";
+        }
+        // user_readable;
 
         # alias-for-work
         "alias-for-work.nushell" = {
@@ -175,12 +175,12 @@ in
         #   source = config.age.secrets."rclone.conf".path;
         # };
         #
-        # "agenix/ssh-key-romantic" = {
-        #   source = config.age.secrets."ssh-key-romantic".path;
-        #   mode = "0600";
-        #   user = myvars.username;
-        # };
-        #
+        "agenix/ssh-key-romantic" = {
+          source = config.age.secrets."ssh-key-romantic".path;
+          mode = "0600";
+          user = myvars.username;
+        };
+
         # "agenix/ryan4yin-gpg-subkeys.priv.age" = {
         #   source = config.age.secrets."ryan4yin-gpg-subkeys.priv.age".path;
         #   mode = "0000";

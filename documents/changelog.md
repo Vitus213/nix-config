@@ -2,7 +2,42 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-06-29
+
+### 恢复 homelab 专用 SSH 密钥 `ssh-key-romantic`
+
+- 影响范围：`apollo` 的 agenix desktop secrets、Home Manager SSH 配置、内网 `192.168.*`
+  SSH 登录路径。
+- 配置入口：`secrets/nixos.nix`、`home/base/tui/ssh.nix`、私有仓库 `my-secrets/secrets.nix`。
+- 变更内容：在 `my-secrets` 中新增 `ssh-key-romantic.age`；恢复 NixOS 将其解密到
+  `/etc/agenix/ssh-key-romantic` 的映射；保留 `192.168.*` 使用这把专用 key；同时让 Home
+  Manager 激活后把 `~/.ssh/config` 转为用户自有的 `0600` 普通文件，避免 OpenSSH 拒绝读取 Nix store
+  symlink。
+- 验证方式：执行 `nixfmt --check secrets/nixos.nix home/base/tui/ssh.nix`；执行 `nix eval` 检查
+  `ssh-key-romantic` secret 文件和 `/etc/agenix/ssh-key-romantic` 目标权限；对已有 `.age`
+  文件做解密内容哈希对比，确认 rekey 未改变明文。
+- 关联文档：[Homelab SSH Key `ssh-key-romantic`](./homelab-ssh-key-romantic.md)。
+
 ## 2026-06-28
+
+### 调整 apollo 的 2K 显示器缩放
+
+- 影响范围：`apollo` 主机 Niri 输出配置、2K 主显示器 `DP-1` 的桌面缩放。
+- 配置入口：`hosts/olympians-apollo/niri-hardware.kdl`。
+- 变更内容：将 `DP-1` 的 Niri `scale` 从 `1` 调整为
+  `1.24`，接近同一显示器在 Windows 上使用的 124% 缩放观感；保持 `2560x1440@200.000` 显示模式不变。
+- 验证方式：执行 `niri validate`；执行 `niri msg outputs` 检查 `DP-1` 显示约 `Scale: 1.24`。
+- 关联文档：[Niri 显示缩放](./niri-display-scaling.md)。
+
+### 添加 Nushell AI Agent 全权限快捷命令
+
+- 影响范围：Home Manager TUI 工具包、Nushell 启动配置。
+- 配置入口：`home/base/tui/dev-tools.nix`、`home/base/tui/shell/default.nix`。
+- 变更内容：安装 `opencode`；新增 `cy` 作为 Codex 全权限快捷命令；新增 `oy`
+  作为 OpenCode 全权限快捷命令。
+- 验证方式：执行 `nixfmt --check home/base/tui/dev-tools.nix home/base/tui/shell/default.nix`；使用
+  `nu -c` 检查 `cy` alias 和 `oy` 包装命令可解析。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
 
 ### 固定 Rime 小鹤双拼的中西文切换
 

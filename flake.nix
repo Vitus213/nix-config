@@ -169,7 +169,7 @@
 
     # my private secrets repository.
     mysecrets = {
-      url = "git+ssh://git@github.com/Vitus213/my-secrets.git";
+      url = "git+https://github.com/Vitus213/my-secrets.git";
       flake = false;
     };
 
