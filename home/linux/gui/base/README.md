@@ -16,6 +16,7 @@
 | `dev-tools.nix`     | GUI 开发工具                     |
 | `editors.nix`       | GUI 编辑器                       |
 | `media.nix`         | 媒体应用                         |
+| `voice-input.nix`   | Voxtype 语音输入                 |
 | `gaming.nix`        | 游戏相关应用                     |
 | `creative.nix`      | 创作软件                         |
 | `note-taking.nix`   | 笔记应用                         |

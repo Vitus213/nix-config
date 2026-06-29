@@ -55,6 +55,21 @@
 
 ## 2026-06-28
 
+### 启用 Voxtype 语音输入
+
+- 影响范围：`apollo` NixOS Linux 图形桌面、Home Manager 用户包、Voxtype 用户服务、Niri 快捷键。
+- 配置入口：`home/linux/gui/base/voice-input.nix`、`home/linux/gui/niri/conf/keybindings.kdl`。
+- 变更内容：安装 Voxtype `0.7.2`、`wtype`、`wl-clipboard`、`libnotify` 和 `playerctl`；新增
+  `voxtype.service` 用户服务；关闭 Voxtype 内置热键和 OSD，由 Niri 的
+  `Mod+Shift+Space` 切换录音、`Mod+Ctrl+Shift+Space`
+  取消录音或转写；配置 Whisper `small` 中文模型，优先通过 `wtype` 输入文本并在失败时回退到剪贴板；模型文件保留为用户首次使用时手动下载，不写入
+  Git 或 Nix store。
+- 验证方式：执行 `nixfmt --check home/linux/gui/base/voice-input.nix`；执行
+  `nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.systemd.user.services.voxtype.Service.ExecStart --json --show-trace`；执行
+  `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace`；集成前已用
+  `voxtype setup check`、本地 daemon 和 wav 样本转写验证 Voxtype、`wtype`、`wl-copy` 与 OSD 关闭行为。
+- 关联文档：[Linux Voxtype 语音输入](./linux-voice-input.md)。
+
 ### 调整 apollo 的 2K 显示器缩放
 
 - 影响范围：`apollo` 主机 Niri 输出配置、2K 主显示器 `DP-1` 的桌面缩放。
