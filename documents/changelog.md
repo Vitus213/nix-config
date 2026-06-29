@@ -19,6 +19,18 @@
   `aerospace list-apps`、`niri msg windows` 校准实际 app id。
 - 关联文档：[AeroSpace 使用指南](./aerospace-usage.md)、[Niri 工作区与窗口分配](./niri-workspaces.md)。
 
+### 将 Voxtype 切换到 Vulkan 版
+
+- 影响范围：`apollo` NixOS Linux 图形桌面、Voxtype 用户服务、Whisper small 本地语音转写延迟。
+- 配置入口：`home/linux/gui/base/voice-input.nix`。
+- 变更内容：将 Voxtype 包从 CPU 版 `pkgs.voxtype` 切换为 `pkgs.voxtype-vulkan`；在 `voxtype.service`
+  中设置 `VOXTYPE_VULKAN_DEVICE=nvidia`，让 Whisper Vulkan 后端优先选择 RTX
+  3070。该调整用于修复实际测试中 2.7 秒录音在 CPU 版上需要约 34 秒转写的问题。
+- 验证方式：执行 `nixfmt --check home/linux/gui/base/voice-input.nix`；执行
+  `nix eval .#nixosConfigurations.apollo.pkgs.voxtype-vulkan.version --raw`；执行
+  `nix build .#nixosConfigurations.apollo.pkgs.voxtype-vulkan --no-link --print-out-paths`。
+- 关联文档：[Linux Voxtype 语音输入](./linux-voice-input.md)。
+
 ## 2026-06-29
 
 ### 重新生成 homelab 专用 SSH 密钥

@@ -6,7 +6,7 @@
 }:
 
 let
-  package = pkgs.voxtype;
+  package = pkgs.voxtype-vulkan;
 in
 {
   home.packages = [
@@ -65,6 +65,7 @@ in
     };
 
     Service = {
+      Environment = [ "VOXTYPE_VULKAN_DEVICE=nvidia" ];
       ExecStart = "${lib.getExe package} --no-hotkey daemon";
       Restart = "on-failure";
       RestartSec = 2;

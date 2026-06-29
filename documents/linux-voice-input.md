@@ -1,6 +1,7 @@
 # Linux Voxtype 语音输入
 
-本文记录当前 Linux 桌面语音输入方案。配置面向 `apollo` 的 NixOS + Niri Wayland 环境，也会随 Linux GUI Home Manager 基础模块进入同类桌面会话。
+本文记录当前 Linux 桌面语音输入方案。配置面向 `apollo` 的 NixOS + Niri Wayland 环境，也会随 Linux
+GUI Home Manager 基础模块进入同类桌面会话。
 
 ## 当前结论
 
@@ -8,7 +9,7 @@
 
 - 配置入口：`home/linux/gui/base/voice-input.nix`
 - Niri 快捷键入口：`home/linux/gui/niri/conf/keybindings.kdl`
-- Voxtype 版本：`0.7.2`
+- Voxtype 版本：`0.7.2`，使用 `pkgs.voxtype-vulkan`
 - 输出方式：优先通过 `wtype` 向当前光标位置输入文本，失败时回退到 `wl-copy` 剪贴板
 - 识别模型：`small`
 - 识别语言：`zh`
@@ -27,13 +28,16 @@ Voxtype 更适合当前环境：
 - 支持 CJK 文本输入，并带剪贴板回退。
 - nixpkgs 已提供 `pkgs.voxtype` 和 `pkgs.voxtype-vulkan`，不需要先引入额外 flake。
 
-当前先集成 CPU 版 `pkgs.voxtype`。`pkgs.voxtype-vulkan` 在 RTX 3070 上可以正常识别，但短音频测试里 Vulkan 初始化开销明显，首版先保留更稳的 CPU 路径。需要长音频或更大模型时，再单独评估是否切到 `pkgs.voxtype-vulkan`。
+当前使用 `pkgs.voxtype-vulkan`，并在 `voxtype.service` 中设置
+`VOXTYPE_VULKAN_DEVICE=nvidia`，让 Whisper 通过 Vulkan 优先使用 RTX 3070。最初集成的 CPU 版
+`pkgs.voxtype` 在实际输入测试中出现 2.7 秒录音需要约 34 秒转写的问题，日志显示 `use gpu = 0` 和
+`whisper_backend_init_gpu: no GPU found`；因此切换到 Vulkan 版作为当前默认路径。
 
 ## 当前行为
 
 Home Manager 会安装：
 
-- `voxtype`
+- `voxtype-vulkan`
 - `wtype`
 - `wl-clipboard`
 - `libnotify`
@@ -45,6 +49,12 @@ Home Manager 会安装：
 
 ```bash
 systemctl --user status voxtype.service
+```
+
+服务环境中固定：
+
+```text
+VOXTYPE_VULKAN_DEVICE=nvidia
 ```
 
 Niri 快捷键：
@@ -100,6 +110,7 @@ voxtype transcribe /path/to/sample.wav
 本次集成前已验证：
 
 - `pkgs.voxtype` 为 `0.7.2`。
+- 当前配置的 `pkgs.voxtype-vulkan` 为 `0.7.2`，Nix derivation 启用 `gpu-vulkan` feature。
 - `voxtype setup check` 能识别当前 Wayland、`wtype` 和 `wl-copy`。
 - 官方 JFK wav 样本可用 CPU 版成功转写。
 - `pkgs.voxtype-vulkan` 能检测到 NVIDIA RTX 3070 并成功转写同一样本。
@@ -108,13 +119,18 @@ voxtype transcribe /path/to/sample.wav
 ## 已知限制
 
 - 首次使用必须手动下载 Whisper 模型；Nix 构建和 Home Manager 激活阶段不会访问网络下载模型。
-- 当前配置不使用 evdev 热键，因此不需要 `input` 用户组；如果以后启用 Voxtype 内置热键或 modifier release guard，再重新评估权限。
+- 当前配置不使用 evdev 热键，因此不需要 `input` 用户组；如果以后启用 Voxtype 内置热键或 modifier
+  release guard，再重新评估权限。
+- Vulkan 版依赖可用的 NVIDIA Vulkan 栈。若日志重新出现 `use gpu = 0` 或
+  `whisper_backend_init_gpu: no GPU found`，先检查 `nvidia-smi`、`vulkaninfo --summary` 和
+  `VOXTYPE_VULKAN_DEVICE=nvidia` 是否仍在 `voxtype.service` 环境中。
 - OSD 暂时关闭。要启用 OSD，需要先确认 nixpkgs 或上游 flake 中的 OSD 前端如何进入用户环境。
 - `language = "zh"` 更偏向中文输入。长期需要大量中英混合时，可以评估切换为 `language = "auto"`。
 
 ## 回滚
 
-删除或禁用 `home/linux/gui/base/voice-input.nix`，并移除 `home/linux/gui/niri/conf/keybindings.kdl` 中的 Voxtype 快捷键，然后重新部署 Home Manager 配置。
+删除或禁用 `home/linux/gui/base/voice-input.nix`，并移除 `home/linux/gui/niri/conf/keybindings.kdl`
+中的 Voxtype 快捷键，然后重新部署 Home Manager 配置。
 
 保留或删除模型目录不影响系统配置：
 
