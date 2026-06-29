@@ -52,6 +52,15 @@
       use aliases/bat/bat-aliases.nu *
       use ${./aliases/gcloud.nu} *
 
+      # Full-access AI agent shortcuts for trusted worktrees.
+      alias cy = codex --dangerously-bypass-approvals-and-sandbox
+
+      def --wrapped oy [...rest] {
+        with-env { OPENCODE_PERMISSION: '{"*":"allow"}' } {
+          ^opencode ...$rest
+        }
+      }
+
       # -*- modules -*-
       # argx & lg is required by the kubernetes module
       use modules/argx *

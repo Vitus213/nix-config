@@ -4,6 +4,41 @@
 
 ## 2026-06-29
 
+### 重新生成 homelab 专用 SSH 密钥
+
+- 影响范围：`ssh-key-romantic.age`、内网 `192.168.*` SSH 登录私钥、目标 homelab 主机授权列表。
+- 配置入口：私有仓库
+  `/home/vitus/my-secrets/ssh-key-romantic.age`、`documents/homelab-ssh-key-romantic.md`、
+  `flake.lock` 的 `mysecrets` input。
+- 变更内容：重新生成全新的 Ed25519 `ssh-key-romantic` keypair，将私钥按 `secrets.nix`
+  recipients 加密进 private secrets 仓库；更新文档中的 public
+  key 和 SHA256 指纹。目标主机仍需单独把新 public key 加入 `authorized_keys`。
+- 验证方式：只检查解密后的私钥字节数和派生出的 public key/fingerprint；确认私钥为 432 字节。
+- 关联文档：[Homelab SSH Key `ssh-key-romantic`](./homelab-ssh-key-romantic.md)。
+
+### 恢复被空明文覆盖的 agenix secrets
+
+- 影响范围：`mysecrets` flake input、NixOS desktop agenix secrets、TOTP 配置、GitHub token、Nix
+  access token、work alias secret。
+- 配置入口：`flake.lock`、私有仓库 `/home/vitus/my-secrets`、`secrets/README.md`。
+- 变更内容：在 `my-secrets` 中从 `f1ed2a6` 恢复四个非空 secret，并按当前 recipients 重新加密；将
+  `mysecrets` input 更新到包含该修复的后续提交；记录 `agenix -r`
+  在非交互空 stdin 下会写入空明文的风险。
+- 验证方式：只检查解密后字节数，不输出明文；确认 `alias-for-work.nushell.age` 为 5058 字节、
+  `github_token.age` 为 41 字节、`nix-access-tokens.age` 为 68 字节、`totp-secrets.conf.age`
+  为 121 字节。
+- 关联文档：[Secrets 管理](../secrets/README.md)。
+
+### 记录本机 private secrets 仓库位置
+
+- 影响范围：secrets 管理文档、`mysecrets` flake input 排查流程。
+- 配置入口：`secrets/README.md`、`flake.nix` 的 `mysecrets` input。
+- 变更内容：记录本机 private secrets 仓库路径 `/home/vitus/my-secrets`、远端
+  `https://github.com/Vitus213/my-secrets.git`，以及修改 private secrets 后需要提交推送并执行
+  `nix flake update mysecrets`。
+- 验证方式：静态检查 `/home/vitus/my-secrets` 的 git 状态、远端和最近提交；未读取 secret 明文。
+- 关联文档：[Secrets 管理](../secrets/README.md)。
+
 ### 恢复 homelab 专用 SSH 密钥 `ssh-key-romantic`
 
 - 影响范围：`apollo` 的 agenix desktop secrets、Home Manager SSH 配置、内网 `192.168.*`

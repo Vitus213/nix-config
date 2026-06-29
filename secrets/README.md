@@ -13,8 +13,54 @@ secrets 仓库里，并作为 flake input 传入本仓库。
 - NixOS 配置入口是 `secrets/nixos.nix`
 - Darwin 配置入口是 `secrets/darwin.nix`
 - 独立 home-manager 配置入口是 `secrets/home.nix`
+- 本机 private secrets 仓库路径是 `/home/vitus/my-secrets`
 
 不要在 Nix 配置里写 `~/.ssh/id_ed25519`。`~` 是 shell 展开规则，Nix 模块里不会自动展开。
+
+## Private secrets 仓库
+
+本机 private secrets 仓库位于:
+
+```text
+/home/vitus/my-secrets
+```
+
+远端是:
+
+```text
+https://github.com/Vitus213/my-secrets.git
+```
+
+当前 `flake.nix` 通过 `mysecrets` input 引用这个仓库，并在 `flake.lock` 中锁定具体提交。修改
+`/home/vitus/my-secrets` 后，需要先在 private secrets 仓库提交并推送，再回到本仓库执行:
+
+```bash
+nix flake update mysecrets
+```
+
+排查 secrets 解密失败时，优先对比三处状态:
+
+```bash
+git -C /home/vitus/my-secrets status --short
+git -C /home/vitus/my-secrets log --oneline --decorate -5
+jq '.nodes.mysecrets.locked' flake.lock
+```
+
+不要在本仓库文档或提交信息中写入 secret 明文、token、私钥内容或解密后的文件内容。
+
+当前 `agenix 0.15.0` 在非交互 stdin 下执行 `agenix -r` 时，会把 `EDITOR` 设为
+`cp -- /dev/stdin`。如果 stdin 为空，它会把已解密明文覆盖为空文件后再加密。rekey 前必须确认命令在真正交互式 TTY 中执行，或者改用显式临时明文加
+`age --recipient ...` 的受控流程。
+
+2026-06-29 已从 private secrets 仓库的 `f1ed2a6` 恢复并重新加密这些被空明文覆盖的文件:
+
+- `alias-for-work.nushell.age`
+- `github_token.age`
+- `nix-access-tokens.age`
+- `totp-secrets.conf.age`
+
+对应修复提交是 `my-secrets` 的 `73fde417974f308959b1c904f34349fe9c3e9b49`。`ssh-key-romantic.age`
+创建后历史中一直解密为空，需要重新找到原始私钥内容后再生成。
 
 ## 添加或更新 secret
 

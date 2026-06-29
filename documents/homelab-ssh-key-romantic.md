@@ -21,13 +21,13 @@ ForwardAgent yes
 当前 `ssh-key-romantic` 的 public key 是:
 
 ```text
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINtP9qCwq/z63r0QDzFxiYcHDNS8MQzyUchZMFmMUrZX ssh-key-romantic homelab
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMpmGeM4GP8Kv8lMTac4YYvBFmTO5qPoaHZgFz+FOkoG ssh-key-romantic homelab 2026-06-29
 ```
 
 指纹:
 
 ```text
-SHA256:yJDv5u81bbzobhNHyyVDjtk9MM/V45/FmtuvITmwtPg
+SHA256:Hxrb0W0iIlN8gHKowcouWUF13946VX9/hSj/M6biqm8
 ```
 
 ## 文件位置
@@ -70,11 +70,16 @@ secrets/nixos.nix
 /home/vitus/.ssh/id_ed25519
 ```
 
-生成或更新 `ssh-key-romantic.age` 后，需要执行:
+生成或更新 `ssh-key-romantic.age` 时，不要在非交互 stdin 下执行 `agenix -r`。当前 `agenix 0.15.0`
+在非交互 stdin 下会把 `EDITOR` 设为 `cp -- /dev/stdin`，空 stdin 会把 secret 明文写成 0 字节。
+
+安全做法是在临时目录生成 SSH 私钥后，直接使用 `age` 按 `secrets.nix` recipients 加密:
 
 ```bash
 cd /home/vitus/my-secrets
-RULES=./secrets.nix agenix -r -i /home/vitus/.ssh/id_ed25519
+nix-instantiate --json --eval --strict -E \
+  '(let rules = import ./secrets.nix; in rules."ssh-key-romantic.age".publicKeys)' |
+  jq -r '.[]'
 ```
 
 然后提交并推送 `my-secrets`，回到 `nix-config` 更新 `mysecrets` flake input:
@@ -141,8 +146,9 @@ nix eval --json .#nixosConfigurations.$(hostname).config.environment.etc."agenix
 更正记录:
 
 - 初次写入 `ssh-key-romantic.age` 时错误使用了非交互 stdin 路径，导致密文解密后是 0 字节。
-- 2026-06-29 已重新生成并直接通过 `age` 按 `secrets.nix` recipients 加密。
-- 修正后解密出的私钥大小为 419 字节，能推导出上方 public key 和指纹。
+- 2026-06-29 已重新生成全新的 Ed25519 SSH key，并直接通过 `age` 按 `secrets.nix` recipients 加密。
+- 修正后解密出的私钥大小为 432 字节，能推导出上方 public key 和指纹。
+- 新 public key 需要重新加入目标 homelab 主机的 `authorized_keys` 后才能用于 SSH 登录。
 - 一次软路由 SSH 测试虽然成功，但 OpenSSH debug 显示认证方式是 `none`，不能作为 `ssh-key-romantic`
   已被路由器接受的证据。
 
