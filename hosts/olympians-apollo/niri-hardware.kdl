@@ -41,11 +41,13 @@
 // // ============= Named Workspaces =============
 // workspace "1terminal" { open-on-output "DP-1"; }
 // workspace "2browser" { open-on-output "DP-1"; }
-// workspace "5music" { open-on-output "DP-2"; }
-
 // workspace "3docs" { open-on-output "DP-2"; }
-// workspace "4chat" { open-on-output "DP-2"; }
-// workspace "6file" { open-on-output "DP-2"; }
+// workspace "4codex" { open-on-output "DP-2"; }
+// workspace "5code" { open-on-output "DP-2"; }
+
+// workspace "6chat" { open-on-output "DP-2"; }
+// workspace "8music" { open-on-output "DP-2"; }
+// workspace "9file" { open-on-output "DP-2"; }
 // workspace "0other" { open-on-output "DP-2"; }
 
 
@@ -58,9 +60,11 @@ output "DP-1" {
 // ============= Named Workspaces =============
 workspace "1terminal" { open-on-output "DP-1"; }
 workspace "2browser" { open-on-output "DP-1"; }
-workspace "5music" { open-on-output "DP-1"; }
-
 workspace "3docs" { open-on-output "DP-1"; }
-workspace "4chat" { open-on-output "DP-1"; }
-workspace "6file" { open-on-output "DP-1"; }
+workspace "4codex" { open-on-output "DP-1"; }
+workspace "5code" { open-on-output "DP-1"; }
+
+workspace "6chat" { open-on-output "DP-1"; }
+workspace "8music" { open-on-output "DP-1"; }
+workspace "9file" { open-on-output "DP-1"; }
 workspace "0other" { open-on-output "DP-1"; }

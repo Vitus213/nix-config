@@ -72,7 +72,7 @@ Option + Enter
 注意:
 
 - 这个快捷键打开的是 `Ghostty`
-- `Ghostty` 会自动进入 `1Ghostty`
+- `Ghostty` 会自动进入 `1Terminal`
 - 而且会以平铺窗口的方式加入当前工作流
 
 ### 3.2 切换焦点
@@ -121,16 +121,16 @@ Option + Shift + =    放大当前窗口
 ### 3.6 切工作区
 
 ```text
-Option + 1    切到 1Ghostty
-Option + 2    切到 2Chrome
+Option + 1    切到 1Terminal
+Option + 2    切到 2Browser
 Option + 3    切到 3Docs
 Option + 4    切到 4Codex
-Option + 5    切到 5Edge
+Option + 5    切到 5Code
 Option + 6    切到 6Chat
 Option + 7    切到 7Mail
 Option + 8    切到 8Music
 Option + 9    切到 9File
-Option + 0    切到 10Other
+Option + 0    切到 0Other
 Option + a    切到 A
 Option + b    切到 B
 ```
@@ -140,16 +140,16 @@ Option + b    切到 B
 ### 3.7 把窗口送去别的工作区
 
 ```text
-Option + Shift + 1    把当前窗口送到 1Ghostty
-Option + Shift + 2    把当前窗口送到 2Chrome
+Option + Shift + 1    把当前窗口送到 1Terminal
+Option + Shift + 2    把当前窗口送到 2Browser
 Option + Shift + 3    把当前窗口送到 3Docs
 Option + Shift + 4    把当前窗口送到 4Codex
-Option + Shift + 5    把当前窗口送到 5Edge
+Option + Shift + 5    把当前窗口送到 5Code
 Option + Shift + 6    把当前窗口送到 6Chat
 Option + Shift + 7    把当前窗口送到 7Mail
 Option + Shift + 8    把当前窗口送到 8Music
 Option + Shift + 9    把当前窗口送到 9File
-Option + Shift + 0    把当前窗口送到 10Other
+Option + Shift + 0    把当前窗口送到 0Other
 Option + Shift + a    把当前窗口送到 A
 Option + Shift + b    把当前窗口送到 B
 ```
@@ -281,27 +281,28 @@ Shift + 方向键下    静音
 
 下面这张表是你这套配置的核心。
 
-| 工作区     | 语义           | 自动进入的应用                                                          | 显示器绑定  |
-| ---------- | -------------- | ----------------------------------------------------------------------- | ----------- |
-| `1Ghostty` | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                                         | `main`      |
-| `2Chrome`  | Chrome 浏览    | `Chrome`                                                                | `main`      |
-| `3Docs`    | 文档笔记       | `Notion`、`Typora`、`Obsidian`                                          | `main`      |
-| `4Codex`   | 工作/开发      | `VSCode`、`Cursor`                                                      | `main`      |
-| `5Edge`    | Edge 浏览      | `Edge`                                                                  | `main`      |
-| `6Chat`    | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`、`企业微信`、`Slack`                   | `secondary` |
-| `7Mail`    | 邮件日历       | `Mail`、`Calendar`                                                      | `secondary` |
-| `8Music`   | 音乐           | QQ 音乐、网易云音乐                                                     | `secondary` |
-| `9File`    | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`                                  | `secondary` |
-| `10Other`  | 其他工具       | `Firefox`、`Wireshark`、`LM Studio`、`CC Switch`、`Clash Verge`、`Zoom` | `secondary` |
-| `A`        | 备用           | 无                                                                      | `main`      |
-| `B`        | 备用           | 无                                                                      | `main`      |
+| 工作区      | 语义           | 自动进入的应用                                               | 显示器绑定  |
+| ----------- | -------------- | ------------------------------------------------------------ | ----------- |
+| `1Terminal` | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                              | `main`      |
+| `2Browser`  | 浏览器         | `Chrome`、`Edge`、`Firefox`                                  | `main`      |
+| `3Docs`     | 文档笔记       | `Notion`、`Typora`、`Obsidian`                               | `main`      |
+| `4Codex`    | Codex GUI      | `ChatGPT`、`Claude` 等 AI 图形客户端                         | `main`      |
+| `5Code`     | 代码编辑器     | `VSCode`、`Zed`、`Cursor`                                    | `main`      |
+| `6Chat`     | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`、`企业微信`、`Slack`        | `secondary` |
+| `7Mail`     | 邮件日历       | `Mail`、`Calendar`                                           | `secondary` |
+| `8Music`    | 音乐           | QQ 音乐、网易云音乐                                          | `secondary` |
+| `9File`     | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`                       | `secondary` |
+| `0Other`    | 其他工具       | `Wireshark`、`LM Studio`、`CC Switch`、`Clash Verge`、`Zoom` | `secondary` |
+| `A`         | 备用           | 无                                                           | `main`      |
+| `B`         | 备用           | 无                                                           | `main`      |
 
 这里有几个重要细节:
 
 - `9File` 里的很多应用被显式配置成浮动窗口
-- `VSCode` 和 `Cursor` 现在会去 `4Codex`，并以平铺方式打开
-- `10Other` 里的 `Wireshark` 和 `LM Studio` 会被显式配置成浮动
-- `Firefox`、`CC Switch`、`Clash Verge` 和 `Zoom` 会去 `10Other`，但没有强制浮动
+- `ChatGPT`、`Claude` 等 AI 图形客户端会去 `4Codex`
+- `VSCode`、`Zed` 和 `Cursor` 现在会去 `5Code`，并以平铺方式打开
+- `0Other` 里的 `Wireshark` 和 `LM Studio` 会被显式配置成浮动
+- `CC Switch`、`Clash Verge` 和 `Zoom` 会去 `0Other`，但没有强制浮动
 - `SecurityAgent` 和 `System Settings` 被设置成浮动，但不强制移动工作区
 
 ## 6. 未命中规则的窗口会怎样
@@ -339,8 +340,8 @@ Shift + 方向键下    静音
 一个很自然的工作流是:
 
 1. `Option + Enter` 打开 `Ghostty`
-2. 它会自动进入 `1Ghostty`
-3. `Option + 2` 去 Chrome，或者 `Option + 5` 去 Edge
+2. 它会自动进入 `1Terminal`
+3. `Option + 2` 去浏览器
 4. `Option + 6` 去聊天
 5. 在两个最近工作区间来回跳用 `Option + Tab`
 
@@ -385,7 +386,7 @@ Option + Shift + Tab
 当前配置里:
 
 - 启动快捷键打开的是 `Ghostty`
-- `Ghostty` 和 `Kitty` 都会自动进入 `1Ghostty`
+- `Ghostty` 和 `Kitty` 都会自动进入 `1Terminal`
 - `Ghostty` 还会显式使用平铺布局
 
 所以现在按 `Option + Enter`，终端会直接进入终端工作区并参与平铺。

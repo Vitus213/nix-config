@@ -118,32 +118,32 @@ alt-shift-minus = 'resize smart -50'
 alt-shift-equal = 'resize smart +50'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-alt-1 = 'workspace 1Ghostty'
-alt-2 = 'workspace 2Chrome'
+alt-1 = 'workspace 1Terminal'
+alt-2 = 'workspace 2Browser'
 alt-3 = 'workspace 3Docs'
 alt-4 = 'workspace 4Codex'
-alt-5 = 'workspace 5Edge'
+alt-5 = 'workspace 5Code'
 alt-6 = 'workspace 6Chat'
 alt-7 = 'workspace 7Mail'
 alt-8 = 'workspace 8Music'
 alt-9 = 'workspace 9File'
-alt-0 = 'workspace 10Other'
+alt-0 = 'workspace 0Other'
 alt-a = 'workspace A'          # In your config, you can drop workspace bindings that you don't need
 alt-b = 'workspace B'
 
 
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-alt-shift-1 = 'move-node-to-workspace 1Ghostty'
-alt-shift-2 = 'move-node-to-workspace 2Chrome'
+alt-shift-1 = 'move-node-to-workspace 1Terminal'
+alt-shift-2 = 'move-node-to-workspace 2Browser'
 alt-shift-3 = 'move-node-to-workspace 3Docs'
 alt-shift-4 = 'move-node-to-workspace 4Codex'
-alt-shift-5 = 'move-node-to-workspace 5Edge'
+alt-shift-5 = 'move-node-to-workspace 5Code'
 alt-shift-6 = 'move-node-to-workspace 6Chat'
 alt-shift-7 = 'move-node-to-workspace 7Mail'
 alt-shift-8 = 'move-node-to-workspace 8Music'
 alt-shift-9 = 'move-node-to-workspace 9File'
-alt-shift-0 = 'move-node-to-workspace 10Other'
+alt-shift-0 = 'move-node-to-workspace 0Other'
 alt-shift-a = 'move-node-to-workspace A'
 alt-shift-b = 'move-node-to-workspace B'
 
@@ -205,19 +205,19 @@ PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
 
 [[on-window-detected]]
 if.app-id = 'net.kovidgoyal.kitty'
-run = 'move-node-to-workspace 1Ghostty'
+run = 'move-node-to-workspace 1Terminal'
 
 [[on-window-detected]]
 if.app-id = 'com.mitchellh.ghostty'
-run = ['layout tiling', 'move-node-to-workspace 1Ghostty']
+run = ['layout tiling', 'move-node-to-workspace 1Terminal']
 
 [[on-window-detected]]
 if.app-id = 'org.alacritty'
-run = 'move-node-to-workspace 1Ghostty'
+run = 'move-node-to-workspace 1Terminal'
 
 [[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
-run = 'move-node-to-workspace 10Other'
+run = 'move-node-to-workspace 2Browser'
 
 [[on-window-detected]]
 if.app-id = 'notion.id'
@@ -240,11 +240,19 @@ if.app-id = 'com.tencent.xinWeChat'
 run = 'move-node-to-workspace 6Chat'
 
 [[on-window-detected]]
+if.app-id = 'com.tencent.WeChat'
+run = 'move-node-to-workspace 6Chat'
+
+[[on-window-detected]]
 if.app-id = 'com.electron.lark'
 run = 'move-node-to-workspace 6Chat'
 
 [[on-window-detected]]
 if.app-id = 'com.tencent.qq'
+run = 'move-node-to-workspace 6Chat'
+
+[[on-window-detected]]
+if.app-id = 'com.tencent.QQ'
 run = 'move-node-to-workspace 6Chat'
 
 [[on-window-detected]]
@@ -257,20 +265,48 @@ if.app-id = 'com.tinyspeck.slackmacgap'
 run = 'move-node-to-workspace 6Chat'
 
 [[on-window-detected]]
-if.app-id = 'com.microsoft.VSCode'
+if.app-id = 'com.openai.chat'
 run = ['layout tiling', 'move-node-to-workspace 4Codex']
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'ChatGPT'
+run = ['layout tiling', 'move-node-to-workspace 4Codex']
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'Codex'
+run = ['layout tiling', 'move-node-to-workspace 4Codex']
+
+[[on-window-detected]]
+if.app-id = 'com.anthropic.claudefordesktop'
+run = ['layout tiling', 'move-node-to-workspace 4Codex']
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'Claude'
+run = ['layout tiling', 'move-node-to-workspace 4Codex']
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = ['layout tiling', 'move-node-to-workspace 5Code']
+
+[[on-window-detected]]
+if.app-id = 'dev.zed.Zed'
+run = ['layout tiling', 'move-node-to-workspace 5Code']
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'Zed'
+run = ['layout tiling', 'move-node-to-workspace 5Code']
 
 [[on-window-detected]]
 if.app-id = 'com.todesktop.230313mzl4w4u92' # Cursor AI Editor
-run = ['layout tiling', 'move-node-to-workspace 4Codex']
+run = ['layout tiling', 'move-node-to-workspace 5Code']
 
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
-run = 'move-node-to-workspace 2Chrome'
+run = 'move-node-to-workspace 2Browser'
 
 [[on-window-detected]]
 if.app-id = 'com.microsoft.edgemac'
-run = 'move-node-to-workspace 5Edge'
+run = 'move-node-to-workspace 2Browser'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
@@ -308,24 +344,24 @@ run = ['layout floating', 'move-node-to-workspace 9File']
 
 [[on-window-detected]]
 if.app-id = 'org.wireshark.Wireshark'
-run = ['layout floating', 'move-node-to-workspace 10Other']
+run = ['layout floating', 'move-node-to-workspace 0Other']
 
 [[on-window-detected]]
 if.app-id = 'ai.elementlabs.lmstudio'
-run = ['layout floating', 'move-node-to-workspace 10Other']
+run = ['layout floating', 'move-node-to-workspace 0Other']
 
 [[on-window-detected]]
 if.app-id = 'com.ccswitch.desktop'
-run = 'move-node-to-workspace 10Other'
+run = 'move-node-to-workspace 0Other'
 
 # Clash Verge - has problem with floating
 [[on-window-detected]]
 if.app-id = 'io.github.clash-verge-rev.clash-verge-rev'
-run = ['move-node-to-workspace 10Other']
+run = ['move-node-to-workspace 0Other']
 
 [[on-window-detected]]
 if.app-id = 'us.zoom.xos'
-run = 'move-node-to-workspace 10Other'
+run = 'move-node-to-workspace 0Other'
 
 
 # Auth UI - do not move it
@@ -351,11 +387,11 @@ run = ['layout floating']
 # =================================================================
 
 [workspace-to-monitor-force-assignment]
-1Ghostty = 'main'
-2Chrome = 'main'
+1Terminal = 'main'
+2Browser = 'main'
 3Docs = 'main'
 4Codex = 'main'
-5Edge = 'main'
+5Code = 'main'
 A = 'main'
 B = 'main'
 
@@ -363,4 +399,4 @@ B = 'main'
 7Mail = 'secondary'
 8Music = 'secondary'
 9File = 'secondary'
-10Other = 'secondary'
+0Other = 'secondary'

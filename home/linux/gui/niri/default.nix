@@ -31,6 +31,8 @@ in
             "niri/noctalia-shell.kdl".source = mkSymlink "${confPath}/noctalia-shell.kdl";
             "niri/spawn-at-startup.kdl".source = mkSymlink "${confPath}/spawn-at-startup.kdl";
             "niri/windowrules.kdl".source = mkSymlink "${confPath}/windowrules.kdl";
+            "niri/scripts/normalize-workspaces.sh".source =
+              mkSymlink "${confPath}/scripts/normalize-workspaces.sh";
           };
 
         systemd.user.services.niri-flake-polkit = {

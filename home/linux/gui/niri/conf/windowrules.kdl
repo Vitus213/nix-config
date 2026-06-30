@@ -36,45 +36,6 @@ window-rule {
     open-maximized true
 }
 
-// Chat applications - open in workspace 4
-window-rule {
-    // match app-id="org.telegram.desktop"
-    match title="^Telegram"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match title="^Feishu"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match app-id="feishu"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match title="^飞书"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match app-id="wechat"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match app-id="com.tencent.WeChat"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match title="^WeChat"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match title="^微信"
-    open-on-workspace "4chat"
-}
-window-rule {
-    match app-id="QQ"
-    open-on-workspace "4chat"
-}
-
 // Docs / notes applications - open in workspace 3
 window-rule {
     match app-id="obsidian"
@@ -96,19 +57,144 @@ window-rule {
     open-maximized true
 }
 
-// File management applications - open in workspace 6
+// Codex GUI and AI desktop clients - open in workspace 4
+window-rule {
+    match title="^ChatGPT"
+    open-on-workspace "4codex"
+    open-maximized true
+}
+window-rule {
+    match title="^Codex"
+    open-on-workspace "4codex"
+    open-maximized true
+}
+window-rule {
+    match title="^Claude"
+    open-on-workspace "4codex"
+    open-maximized true
+}
+
+// Code editors - open in workspace 5
+window-rule {
+    match app-id="code"
+    open-on-workspace "5code"
+    open-maximized true
+}
+window-rule {
+    match app-id="Code"
+    open-on-workspace "5code"
+    open-maximized true
+}
+window-rule {
+    match app-id="code-url-handler"
+    open-on-workspace "5code"
+    open-maximized true
+}
+window-rule {
+    match app-id="Cursor"
+    open-on-workspace "5code"
+    open-maximized true
+}
+window-rule {
+    match app-id="dev.zed.Zed"
+    open-on-workspace "5code"
+    open-maximized true
+}
+window-rule {
+    match title="^Zed"
+    open-on-workspace "5code"
+    open-maximized true
+}
+
+// Chat applications - open in workspace 6
+window-rule {
+    match app-id="org.telegram.desktop"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^Telegram"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^Feishu"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match app-id="feishu"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^飞书"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match app-id="wechat"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match app-id="com.tencent.WeChat"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^WeChat"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^Weixin"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^微信"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match app-id="QQ"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match app-id="qq"
+    open-on-workspace "6chat"
+}
+window-rule {
+    match title="^QQ"
+    open-on-workspace "6chat"
+}
+
+// Music applications - open in workspace 8
+window-rule {
+    match app-id="qqmusic"
+    open-on-workspace "8music"
+}
+window-rule {
+    match app-id="QQMusic"
+    open-on-workspace "8music"
+}
+window-rule {
+    match app-id="netease-cloud-music"
+    open-on-workspace "8music"
+}
+window-rule {
+    match title="^网易云音乐"
+    open-on-workspace "8music"
+}
+
+// File management applications - open in workspace 9
 window-rule {
     match app-id="com.github.johnfactotum.Foliate"
-    open-on-workspace "6file"
+    open-on-workspace "9file"
 }
 window-rule {
     match app-id="thunar"
-    open-on-workspace "6file"
+    open-on-workspace "9file"
 }
 
 // Other applications - open in workspace 0
 window-rule {
     match app-id="clash-verge"
+    open-on-workspace "0other"
+}
+window-rule {
+    match app-id="io.github.clash-verge-rev.clash-verge-rev"
     open-on-workspace "0other"
 }
 window-rule {

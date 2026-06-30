@@ -2,6 +2,23 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-06-30
+
+### 对齐 AeroSpace 与 Niri 工作区自动分配
+
+- 影响范围：`artemis` macOS AeroSpace 工作区、NixOS Niri 工作区、聊天/浏览器/文档/Codex
+  GUI/代码编辑器/音乐/其他工具窗口自动归类。
+- 配置入口：`home/darwin/aerospace/aerospace.toml`、`home/linux/gui/niri/conf/keybindings.kdl`、
+  `home/linux/gui/niri/conf/windowrules.kdl`、`home/linux/gui/niri/conf/scripts/normalize-workspaces.sh`、
+  `hosts/olympians-apollo/niri-hardware.kdl`、`hosts/olympians-athena/niri-hardware.kdl`。
+- 变更内容：将 `1` 定义为终端、`2` 定义为浏览器、`3` 定义为文档笔记、`4` 定义为 Codex
+  GUI 类 AI 图形客户端、`5` 定义为 VSCode/Zed/Cursor 代码编辑器、`6` 定义为微信/QQ/Telegram 等聊天、
+  `8` 定义为音乐、`0` 定义为 Clash Verge/CC
+  Switch/Zoom 等其他工具；同步更新快捷键和显示器绑定，并新增 Niri 工作区顺序整理脚本。
+- 验证方式：执行 AeroSpace TOML 静态检查、`prettier --check`、`niri validate`；运行中可用
+  `aerospace list-apps`、`niri msg windows` 校准实际 app id。
+- 关联文档：[AeroSpace 使用指南](./aerospace-usage.md)、[Niri 工作区与窗口分配](./niri-workspaces.md)。
+
 ## 2026-06-29
 
 ### 重新生成 homelab 专用 SSH 密钥
@@ -60,14 +77,14 @@
 - 影响范围：`apollo` NixOS Linux 图形桌面、Home Manager 用户包、Voxtype 用户服务、Niri 快捷键。
 - 配置入口：`home/linux/gui/base/voice-input.nix`、`home/linux/gui/niri/conf/keybindings.kdl`。
 - 变更内容：安装 Voxtype `0.7.2`、`wtype`、`wl-clipboard`、`libnotify` 和 `playerctl`；新增
-  `voxtype.service` 用户服务；关闭 Voxtype 内置热键和 OSD，由 Niri 的
-  `Mod+Shift+Space` 切换录音、`Mod+Ctrl+Shift+Space`
-  取消录音或转写；配置 Whisper `small` 中文模型，优先通过 `wtype` 输入文本并在失败时回退到剪贴板；模型文件保留为用户首次使用时手动下载，不写入
-  Git 或 Nix store。
+  `voxtype.service` 用户服务；关闭 Voxtype 内置热键和 OSD，由 Niri 的 `Mod+Shift+Space`
+  切换录音、`Mod+Ctrl+Shift+Space` 取消录音或转写；配置 Whisper `small` 中文模型，优先通过 `wtype`
+  输入文本并在失败时回退到剪贴板；模型文件保留为用户首次使用时手动下载，不写入 Git 或 Nix store。
 - 验证方式：执行 `nixfmt --check home/linux/gui/base/voice-input.nix`；执行
   `nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.systemd.user.services.voxtype.Service.ExecStart --json --show-trace`；执行
   `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace`；集成前已用
-  `voxtype setup check`、本地 daemon 和 wav 样本转写验证 Voxtype、`wtype`、`wl-copy` 与 OSD 关闭行为。
+  `voxtype setup check`、本地 daemon 和 wav 样本转写验证 Voxtype、`wtype`、`wl-copy`
+  与 OSD 关闭行为。
 - 关联文档：[Linux Voxtype 语音输入](./linux-voice-input.md)。
 
 ### 调整 apollo 的 2K 显示器缩放
@@ -118,12 +135,12 @@
   `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace`。
 - 关联文档：[Linux 微信与 QQ](./linux-im-apps.md)。
 
-### 安装 CC Switch 并固定到 AeroSpace 10Other 工作区
+### 安装 CC Switch 并固定到 AeroSpace 0Other 工作区
 
 - 影响范围：`artemis` macOS Homebrew 应用列表、AeroSpace 窗口自动分配、AeroSpace 使用文档。
 - 配置入口：`modules/darwin/apps.nix`、`home/darwin/aerospace/aerospace.toml`。
 - 变更内容：通过 Homebrew cask 安装 `cc-switch`；将 `com.ccswitch.desktop` 自动移动到
-  `10Other`，也就是 `Option + 0`
+  `0Other`，也就是 `Option + 0`
   对应的其他工具工作区；同步校准 AeroSpace 文档中的当前工作区名称和显示器绑定。
 - 验证方式：静态检查 Darwin Homebrew cask 列表和 AeroSpace `on-window-detected` 规则；执行
   `nix eval .#darwinConfigurations.artemis.config.homebrew.casks`。
