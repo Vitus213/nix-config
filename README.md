@@ -76,14 +76,17 @@ Flakes 用来固定输入版本、组织多平台输出，并让 `nixos-rebuild`
 
 ## 部署
 
-> 不要直接把这套配置部署到陌生机器上。这里包含我的硬件配置、私有 secrets
-> input 和个人路径。新机器要先按文档适配硬件配置和 secrets。
+> 不要直接把个人主机配置部署到陌生机器上。`apollo`、`athena` 等包含我的硬件配置、私有 secrets
+> input 和个人路径。新机器如果只需要通用桌面，可先用 `generic`。
 
 NixOS:
 
 ```bash
 # 显式部署某个 NixOS 配置
 sudo nixos-rebuild switch --flake .#apollo
+
+# 通用桌面配置，不启用个人 secrets 和 preservation
+sudo nixos-rebuild switch --flake .#generic
 
 # 按当前 hostname 匹配 nixosConfigurations
 just local
@@ -96,6 +99,7 @@ just local debug
 
 - [nixos-installer](./nixos-installer/): 旧版 ISO 安装流程
 - [fresh-nixos-preservation-deploy.md](./documents/fresh-nixos-preservation-deploy.md): 全新 NixOS 机器启用 preservation 的当前流程
+- [generic-nixos-host.md](./documents/generic-nixos-host.md): 不启用个人 secrets 和 preservation 的通用桌面 host
 
 macOS:
 

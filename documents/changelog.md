@@ -4,6 +4,19 @@
 
 ## 2026-06-30
 
+### 添加通用 NixOS 桌面 host
+
+- 影响范围：x86_64 NixOS flake outputs、通用桌面部署入口、Home
+  Manager 桌面配置中的个人 secret 依赖。
+- 配置入口：`outputs/x86_64-linux/src/olympians-generic.nix`、`hosts/olympians-generic/`。
+- 变更内容：从 `apollo` 复制出 `generic` host，保留桌面/Niri/Home Manager 基础配置；注释掉
+  `secrets/nixos.nix` 和 `modules.secrets.desktop.enable`；注释掉
+  `preservation.nix`；关闭 NVIDIA/force-X11 主机选项；避免通用 host 依赖 `/etc/agenix/*`
+  下的个人 secret。
+- 验证方式：执行 `nixfmt --check`；执行 `nix eval` 检查 `generic` 主机名、Home Manager
+  home 目录、Nix extraOptions 和 preservation 选项；执行低风险 eval 测试。
+- 关联文档：[通用 NixOS 桌面 Host](./generic-nixos-host.md)。
+
 ### 对齐 AeroSpace 与 Niri 工作区自动分配
 
 - 影响范围：`artemis` macOS AeroSpace 工作区、NixOS Niri 工作区、聊天/浏览器/文档/Codex

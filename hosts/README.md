@@ -10,6 +10,7 @@
 | --------- | ----- | --------------------------- | ------------------------ | ------ |
 | `apollo`  | NixOS | Ryzen 5 5600 + RTX 3070 LHR | 主力桌面、游戏、日常使用 | 使用中 |
 | `athena`  | NixOS | 待补充                      | 第二台桌面               | 规划中 |
+| `generic` | NixOS | 部署前替换硬件配置          | 通用桌面模板             | 模板   |
 | `artemis` | macOS | MacBook Pro M4Pro 14" 48GB  | 工作机                   | 使用中 |
 
 ### 外部系统
@@ -26,6 +27,7 @@ RISC-V 集群:
 - `olympians-*`: 希腊神话命名的 NixOS 桌面主机
 - `darwin-*`: macOS 主机
 - `apollo` / `athena` / `artemis`: 当前主要物理机
+- `generic`: 不带个人 secrets 和 preservation 的通用 NixOS 桌面模板
 
 ## 添加新主机
 
@@ -43,6 +45,7 @@ RISC-V 集群:
 ### 常用模板
 
 - 桌面 NixOS: 参考 `olympians-apollo/`
+- 无个人 secrets 的通用桌面 NixOS: 参考 `olympians-generic/`
 - macOS: 参考 `darwin-artemis/`
 - preservation: 参考 `olympians-apollo/preservation.nix`
 
