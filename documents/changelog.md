@@ -2,6 +2,26 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-03
+
+### 安装 Zed 并记录应用版本审计
+
+- 影响范围：`apollo`、`athena`、`generic` NixOS 桌面 Home Manager
+  GUI 编辑器包列表，应用版本来源审计文档。
+- 配置入口：`home/linux/gui/base/editors.nix`、`home/base/core/npm.nix`、
+  `home/base/core/shells/default.nix`、`home/base/tui/dev-tools.nix`。
+- 变更内容：通过主 `pkgs.zed-editor`
+  安装 Zed；记录当前主要 GUI 应用的求值版本、版本来源、是否局部固定以及是否使用 NixPak；明确当前 NixPak 只封装 Firefox、Telegram
+  Desktop 和 QQ，WeChat 使用 bubblewrap AppImage 封装而不是 NixPak；安装
+  `bun`，将 OpenCode 从 Nix 包列表移除，改为通过用户级 npm 安装 `opencode-ai`，并记录 Pi/Oh My
+  Pi 的 bun 安装方式。
+- 验证方式：执行
+  `nixfmt --check home/linux/gui/base/editors.nix home/base/core/npm.nix home/base/core/shells/default.nix home/base/tui/dev-tools.nix`；执行
+  `nix eval` 检查 `pkgs.zed-editor`、`pkgs.bun`、`nixpaks.firefox`、`nixpaks.telegram-desktop`、
+  `nixpaks.qq` 和 `bwraps.wechat` 版本；执行 Home Manager 用户包列表求值；使用 `nu -c` 检查 `cy` 和
+  `oy` wrapper 可解析。
+- 关联文档：[应用版本审计](./application-version-audit.md)、[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
 ## 2026-06-30
 
 ### 添加通用 NixOS 桌面 host

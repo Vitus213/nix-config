@@ -6,10 +6,11 @@
 }:
 {
   home.packages = with pkgs; [
+    bun
     pnpm
   ];
 
-  # make `npm install -g <pkg>` happey
+  # make `npm install -g <pkg>` happy
   #
   # mainly used to install npm packages that updates frequently
   # such as gemini-cli, claude-code, etc.

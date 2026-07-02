@@ -27,7 +27,7 @@ in
 {
   home.packages = [
     pkgs-master.code-cursor
-    # pkgs-master.zed-editor
+    pkgs.zed-editor
     # pkgs-master.antigravity-fhs
     pkgs-stable.wpsoffice-cn
   ];

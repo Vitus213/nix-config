@@ -56,7 +56,7 @@ Flakes 用来固定输入版本、组织多平台输出，并让 `nixos-rebuild`
 | 文件管理                   | [Yazi][Yazi] + [thunar][thunar]                                                                |
 | Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                      |
 | 媒体播放器                 | [mpv][mpv]                                                                                     |
-| 编辑器                     | [Neovim][Neovim]                                                                               |
+| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed                                                       |
 | 字体                       | [Nerd Fonts][Nerd fonts]                                                                       |
 | 图片查看                   | [imv][imv]                                                                                     |
 | 截图                       | Niri 内置截图                                                                                  |

@@ -22,9 +22,6 @@
 
     sqlite
 
-    # AI agents
-    opencode
-
     # misc
     gitleaks
   ];
