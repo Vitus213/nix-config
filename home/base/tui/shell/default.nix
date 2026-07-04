@@ -62,8 +62,8 @@
       }
 
       # -*- modules -*-
-      # argx & lg is required by the kubernetes module
-      use modules/argx *
+      # Keep argx namespaced so its `parse` command does not shadow Nushell's built-in `parse`.
+      use modules/argx
       use modules/lg *
       # k8s/helm aliases, completions, 
       use modules/kubernetes *
