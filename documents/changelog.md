@@ -2,6 +2,19 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-04
+
+### 为 Noctalia 锁屏新增专用 PAM 服务
+
+- 影响范围：Niri/Noctalia Linux 图形桌面的锁屏密码认证路径。
+- 配置入口：`modules/nixos/desktop.nix`、`home/linux/gui/base/noctalia/default.nix`。
+- 变更内容：新增 `security.pam.services.noctalia-lock`，并在 `noctalia-shell.service`
+  中设置 `NOCTALIA_PAM_SERVICE=noctalia-lock`，让 Noctalia 锁屏使用专用轻量 PAM 服务，而不是默认走完整
+  `/etc/pam.d/login` 登录栈。
+- 验证方式：执行 `nix eval` 检查 `noctalia-lock` PAM 服务存在、Noctalia 用户服务环境变量指向
+  `noctalia-lock`；执行 `nixfmt --check` 和低风险 eval 测试。
+- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)。
+
 ## 2026-07-03
 
 ### 安装 Zed 并记录应用版本审计
