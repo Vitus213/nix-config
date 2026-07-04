@@ -2,6 +2,26 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-04
+
+### 收敛 Linux 软件包来源到主 unstable
+
+- 影响范围：Linux 桌面 GUI 编辑器、Rust 工具链、Clash Verge、Guix、QQ
+  NixPak 封装、flake 输入结构和应用版本审计文档。
+- 配置入口：`flake.nix`、`outputs/default.nix`、`home/linux/gui/base/editors.nix`、
+  `home/base/tui/editors/packages.nix`、`modules/nixos/desktop/networking/clash-verge.nix`、
+  `modules/nixos/desktop/guix.nix`、`hardening/nixpaks/default.nix`。
+- 变更内容：移除直接维护的 `nixpkgs-stable`、`nixpkgs-2505` 和 `nixpkgs-master`
+  inputs；将 Cursor、VSCode、WPS Office CN、Rust 工具链、Clash Verge Rev、Guix 和 QQ 封装切回主
+  `pkgs`，也就是主 `nixpkgs` 的 `nixos-unstable` 包集合；保留 `nixpkgs-patched` 作为已有的 patched
+  unstable 来源。
+- 验证方式：执行 `bash scripts/check-nixpkgs-policy.sh`；执行
+  `nix eval .#evalTests --show-trace --print-build-logs --verbose`；执行 `nix eval` 检查
+  `pkgs.bun`、`pkgs.code-cursor`、`pkgs.vscode`、`pkgs.wpsoffice-cn` 和 `pkgs.clash-verge-rev`
+  版本。尝试执行 `nix flake update` 和分批更新核心 inputs，但当前网络到 GitHub archive 多次返回
+  `Truncated tar archive`，因此本次只完成输入结构收敛和删除无用 lock 节点，未完成全量刷新到最新远端 rev。
+- 关联文档：[应用版本审计](./application-version-audit.md)、[Linux 微信与 QQ](./linux-im-apps.md)。
+
 ## 2026-07-03
 
 ### 安装 Zed 并记录应用版本审计

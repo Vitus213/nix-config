@@ -1,6 +1,5 @@
 {
   pkgs,
-  pkgs-master,
   ...
 }:
 {
@@ -75,11 +74,11 @@
 
           #-- rust
           # we'd better use the rust-overlays for rust development
-          pkgs-master.rustc
-          pkgs-master.rust-analyzer
-          pkgs-master.cargo # rust package manager
-          pkgs-master.rustfmt
-          pkgs-master.clippy # rust linter
+          rustc
+          rust-analyzer
+          cargo # rust package manager
+          rustfmt
+          clippy # rust linter
 
           #-- bash
           bash-language-server
@@ -101,7 +100,7 @@
       #   fnlfmt # fennel
       #   (
       #     if pkgs.stdenv.isLinux && pkgs.stdenv.isx86
-      #     then pkgs-master.akkuPackages.scheme-langserver
+      #     then akkuPackages.scheme-langserver
       #     else pkgs.emptyDirectory
       #   )
       # ]

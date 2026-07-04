@@ -9,18 +9,18 @@
   `1.6.3`。
 - 当前 NixPak 只封装 3 个应用：`nixpaks.firefox`、`nixpaks.telegram-desktop`、`nixpaks.qq`。
 - 明确局部固定、不完全跟随 `nixpkgs` 统一更新的应用/数据目前有 3 个：QQ、WeChat、Rime Ice。
-- `pkgs-master` 当前锁定在 2026-03-25，适合临时拿较新的 Cursor、VSCode、Guix、Clash
-  Verge；但不能假设它对所有包都更新。例如锁定的 `pkgs-master.zed-editor` 是 `0.228.0`，比主
-  `pkgs.zed-editor` 的 `1.6.3` 旧。
+- Linux 桌面应用默认跟随主 `nixpkgs` 输入，也就是
+  `github:nixos/nixpkgs/nixos-unstable`；仓库不再为常规软件额外维护 `nixpkgs-stable` 或
+  `nixpkgs-master` 包集合。
 
 ## 应用清单
 
 | 应用             | 当前版本             | 配置入口                                                                                    | 版本来源                                                          | 固定 | NixPak | 处理建议                                        |
 | ---------------- | -------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---- | ------ | ----------------------------------------------- |
 | Zed              | `1.6.3`              | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.zed-editor`                                 | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
-| Cursor           | `2.6.21`             | `home/linux/gui/base/editors.nix`                                                           | `nixpkgs-master` 的 `pkgs-master.code-cursor`                     | 否   | 否     | 更新 `nixpkgs-master` 时同步检查                |
-| VSCode           | `1.112.0`            | `home/linux/gui/base/editors.nix`                                                           | `nixpkgs-master` 的 `pkgs-master.vscode`                          | 否   | 否     | 更新 `nixpkgs-master` 时同步检查                |
-| WPS Office CN    | `12.1.2.23578`       | `home/linux/gui/base/editors.nix`                                                           | `nixpkgs-stable` 的 `pkgs-stable.wpsoffice-cn`                    | 否   | 否     | 跟随 `nixpkgs-stable` 更新                      |
+| Cursor           | `3.7.19`             | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.code-cursor`                                | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
+| VSCode           | `1.124.2`            | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.vscode`                                     | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
+| WPS Office CN    | `12.1.2.25882`       | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.wpsoffice-cn`                               | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
 | Firefox          | `152.0`              | `home/linux/gui/base/browsers.nix`、`hardening/nixpaks/firefox.nix`                         | 主 `nixpkgs` 的 `pkgs.firefox`                                    | 否   | 是     | 保留 NixPak 沙箱，版本跟随主 `nixpkgs`          |
 | Google Chrome    | `149.0.7827.114`     | `home/linux/gui/base/browsers.nix`                                                          | 主 `nixpkgs` 的 `pkgs.google-chrome`                              | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
 | Chromium         | `149.0.7827.114`     | `home/linux/gui/base/browsers.nix`                                                          | aarch64 fallback，主 `nixpkgs` 的 `pkgs.chromium`                 | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
@@ -31,8 +31,8 @@
 | Bun              | `1.3.13`             | `home/base/core/npm.nix`                                                                    | 主 `nixpkgs` 的 `pkgs.bun`                                        | 否   | 否     | 由 Nix 安装，用于用户级安装 Pi / Oh My Pi       |
 | OpenCode         | 用户级 npm           | `home/base/core/npm.nix`、`home/base/tui/shell/default.nix`                                 | `npm install -g opencode-ai@latest`                               | 否   | 否     | 跟随 npm 更新，不通过 Nix 固定                  |
 | Pi / Oh My Pi    | 用户级 bun           | `home/base/core/npm.nix`、`documents/nushell-ai-agent-aliases.md`                           | `bun install -g @oh-my-pi/pi-coding-agent@latest oh-my-pi@latest` | 否   | 否     | 跟随 bun 更新，不通过 Nix 固定                  |
-| Clash Verge Rev  | `2.4.7`              | `modules/nixos/desktop/networking/clash-verge.nix`                                          | `nixpkgs-master` 的 `pkgs-master.clash-verge-rev`                 | 否   | 否     | 等主 `nixpkgs` 修复后可评估回退到主 `pkgs`      |
-| Guix             | `1.5.0`              | `modules/nixos/desktop/guix.nix`                                                            | `nixpkgs-master` 的 `pkgs-master.guix`                            | 否   | 否     | 等主 `nixpkgs` 修复后可评估回退到主 `pkgs`      |
+| Clash Verge Rev  | `2.5.1`              | `modules/nixos/desktop/networking/clash-verge.nix`                                          | 主 `nixpkgs` 的 `pkgs.clash-verge-rev`                            | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
+| Guix             | `1.5.0`              | `modules/nixos/desktop/guix.nix`                                                            | 主 `nixpkgs` 的 `pkgs.guix`                                       | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
 | Noctalia Shell   | `4.4.3`              | `home/linux/gui/base/noctalia/default.nix`                                                  | `nixpkgs-patched` 的 `pkgs-patched.noctalia-shell`                | 否   | 否     | 跟随 `nixpkgs-patched` 更新                     |
 | Voxtype Vulkan   | `0.7.2`              | `home/linux/gui/base/voice-input.nix`                                                       | 主 `nixpkgs` 的 `pkgs.voxtype-vulkan`                             | 否   | 否     | 跟随主 `nixpkgs` 更新                           |
 

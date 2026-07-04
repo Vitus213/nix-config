@@ -1,8 +1,6 @@
 {
   lib,
   pkgs,
-  pkgs-master,
-  pkgs-stable,
   config,
   ...
 }:
@@ -26,15 +24,15 @@ let
 in
 {
   home.packages = [
-    pkgs-master.code-cursor
+    pkgs.code-cursor
     pkgs.zed-editor
-    # pkgs-master.antigravity-fhs
-    pkgs-stable.wpsoffice-cn
+    # pkgs.antigravity-fhs
+    pkgs.wpsoffice-cn
   ];
 
   programs.vscode = {
     enable = true;
-    package = pkgs-master.vscode.override {
+    package = pkgs.vscode.override {
       commandLineArgs = vscodeCliArgs;
     };
     # profiles.default.userSettings = {

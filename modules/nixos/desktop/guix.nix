@@ -1,11 +1,9 @@
-{ pkgs-master, ... }:
+{ pkgs, ... }:
 {
   # https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/guix/default.nix
   services.guix = {
     enable = true;
-    # Follow the official nixpkgs master Guix package until nixos-unstable
-    # carries the same guile-zlib sharedlibdir fix.
-    package = pkgs-master.guix;
+    package = pkgs.guix;
     # The store directory where the Guix service will serve to/from.
     # NOTE: most of the cached builds are assumed to be in `/gnu/store`.
     storeDir = "/gnu/store";

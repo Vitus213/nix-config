@@ -37,13 +37,9 @@
     # https://hydra.nixos.org/jobset/nixpkgs/unstable
     # update via nix flake update nixpkgs --override-input nixpkgs github:NixOS/nixpkgs/<commit-hash>
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-25.11";
-    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
 
     # nixpkgs with some custom patches
     nixpkgs-patched.url = "github:ryan4yin/nixpkgs/nixos-unstable";
-    # get some latest packages from the master branch
-    nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
     # for macos
     # nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";

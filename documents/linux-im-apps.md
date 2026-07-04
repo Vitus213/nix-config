@@ -6,8 +6,8 @@
 
 - 微信使用官方 Linux WeChat AppImage `4.1.1.4`，通过 `bwraps.wechat` 封装后安装。
 - QQ 使用官方 Linux QQ `3.2.29-2026-05-28`，通过 `nixpaks.qq` 封装后安装。
-- 本仓库没有更新整个 `nixpkgs-master` 输入；`nixpaks.qq` 只对 QQ 局部固定到远端 Nixpkgs
-  master 当前来源，避免同时牵动 Cursor、VSCode、Rust、Guix、Clash Verge 等其它包。
+- QQ 的封装从主 `nixpkgs` 的 `pkgs.qq` 派生，并在 `hardening/nixpaks/default.nix`
+  中局部固定官方 deb 的 URL 和 hash。
 - 两者都在 `home/linux/gui/base/misc.nix` 进入 Home Manager 用户包列表。
 - 不把 Flatpak 作为主方案；Flatpak 只作为临时排障或对照方案。
 
@@ -15,7 +15,7 @@
 
 - `home/linux/gui/base/misc.nix`: 启用 `bwraps.wechat` 和 `nixpaks.qq`。
 - `hardening/bwraps/wechat.nix`: 固定微信 AppImage 版本、下载源和 bubblewrap 参数。
-- `hardening/nixpaks/qq.nix`: 基于局部固定后的 `pkgs-master.qq` 生成 QQ 的 Nixpak 封装。
+- `hardening/nixpaks/qq.nix`: 基于局部固定后的 `pkgs.qq` 生成 QQ 的 Nixpak 封装。
 - `hardening/nixpaks/default.nix`: 只对 `nixpaks.qq` 固定 QQ `3.2.29-2026-05-28` 源和 hash。
 
 ## 当前行为
@@ -37,12 +37,10 @@ QQ:
 
 ## 为什么这样选
 
-- Nixpkgs master 当前已经把 Linux WeChat 更新到 `4.1.1.4`，来源是腾讯官方 Linux AppImage。
-- 2026-06-28 查询到远端 Nixpkgs master 的 Linux QQ 为
-  `3.2.29-2026-05-28`，来源是腾讯 QQNT 官方 deb。
-- 当前仓库锁定的 `pkgs-master.qq` 仍是
-  `3.2.25-2026-02-05`，其官方下载地址已经返回 404；因此这里只对 QQ 局部固定到
-  `3.2.29-2026-05-28`，不更新整个 `nixpkgs-master` 输入。
+- Nixpkgs 已经包含 Linux WeChat `4.1.1.4`，来源是腾讯官方 Linux AppImage。
+- 当前 QQ 固定到
+  `3.2.29-2026-05-28`，来源是腾讯 QQNT 官方 deb；固定 URL 和 hash 是为了避免上游下载地址变动导致旧 Nixpkgs 版本的
+  `pkgs.qq` 失效。
 - Flathub 的 QQ manifest 也采用 `QQ_3.2.29_260528`，并显式配置 Wayland 输入法相关参数。
 - Flathub 的 WeChat manifest 仍设置
   `QT_QPA_PLATFORM=xcb`，说明当前微信 Linux 客户端更适合按 X11/xcb 路径运行。
@@ -50,8 +48,9 @@ QQ:
 
 参考:
 
-- Nixpkgs WeChat: <https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/we/wechat/package.nix>
-- Nixpkgs QQ: <https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/qq/qq/sources.nix>
+- Nixpkgs WeChat:
+  <https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/we/wechat/package.nix>
+- Nixpkgs QQ: <https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/qq/qq/sources.nix>
 - Flathub WeChat:
   <https://github.com/flathub/com.tencent.WeChat/blob/master/com.tencent.WeChat.yaml>
 - Flathub QQ: <https://github.com/flathub/com.qq.QQ/blob/master/com.qq.QQ.yaml>
