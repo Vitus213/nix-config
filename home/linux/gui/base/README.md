@@ -38,9 +38,18 @@ Noctalia Shell 当前承担桌面 shell 的主要职责，替代或整合了部�
 
 主配置在 `noctalia/config/settings.json`。
 
-锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`，实际密码认证通过
-`NOCTALIA_PAM_SERVICE=noctalia-lock` 指向 NixOS 生成的 `/etc/pam.d/noctalia-lock`。这个
-PAM 服务只给 Noctalia 锁屏使用，避免锁屏解锁走完整 `/etc/pam.d/login` 登录栈。
+Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动。当前不设置
+`NOCTALIA_PAM_SERVICE`，因此 Noctalia 锁屏认证使用默认的完整 `/etc/pam.d/login` PAM 栈。
+
+锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`。
+
+## 空闲策略
+
+`hypridle` 当前按以下顺序处理空闲动作：
+
+- 3 分钟：关闭键盘背光，恢复活动后还原键盘背光。
+- 20 分钟：调用 Noctalia 锁屏。
+- 20 分 30 秒：通过 `niri msg action power-off-monitors` 关闭显示器，恢复活动后重新打开显示器。
 
 ## 参考
 

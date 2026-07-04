@@ -52,7 +52,6 @@ in
       Restart = "on-failure";
 
       Environment = [
-        "NOCTALIA_PAM_SERVICE=noctalia-lock"
         "QT_QPA_PLATFORM=wayland;xcb"
         "QT_QPA_PLATFORMTHEME=qt6ct"
         "QT_AUTO_SCREEN_SCALE_FACTOR=1"
