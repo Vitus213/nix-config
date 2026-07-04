@@ -4,6 +4,95 @@
 
 ## 2026-07-04
 
+### 修复 Bun 全局 bin 未进入 Nushell PATH
+
+- 影响范围：所有复用共享 Home Manager shell 配置的 Bash/Nushell 启动环境，以及通过 Bun 安装的 Pi /
+  Oh My Pi CLI。
+- 配置入口：`home/base/core/shells/default.nix`。
+- 变更内容：在已有 `~/.bun/bin` 之外，将 Bun 当前提示的 global bin 目录 `~/.cache/.bun/bin`
+  也加入 PATH，使 `omp` 这类 Bun 全局命令能被 Nushell 继承；同步更新 Nushell AI Agent 快捷命令文档。
+- 验证方式：先求值确认旧 `bashrcExtra` 只包含 `~/.bun/bin`，且本机 `omp` 位于
+  `~/.cache/.bun/bin/omp`；修改后执行 `nixfmt --check` 并重新求值确认 `bashrcExtra` 包含
+  `~/.cache/.bun/bin`。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
+### 同步全仓 README 与专题文档当前事实
+
+- 影响范围：仓库 README、outputs/hosts/infra/nixos-installer
+  README、Niri 缩放文档、NixOS 内核策略文档。
+- 配置入口：`README.md`、`outputs/README.md`、`hosts/README.md`、`infra/README.md`、
+  `nixos-installer/README.md`、`documents/niri-display-scaling.md`、`documents/nixos-kernel.md`。
+- 变更内容：按当前 flake
+  outputs 和求值结果更新 README 中的 NixOS 版本、主机状态、文档索引；同步 outputs 目录树中的
+  `generic` 和 `empty.nix`；移除 hosts/infra 文档中不属于当前仓库的 `ryan4yin/*` 外部维护描述；标清
+  `nixos-installer/` 是旧版辅助入口；将 Niri/NixOS/内核版本更新为当前求值结果，并记录
+  `linuxPackages_7_0` 当前为 `7.0.14` 且上游已 EOL。
+- 验证方式：执行当前 flake 的 NixOS、Niri、内核和 rEFInd 关键属性求值；执行全仓 Markdown 旧归属链接搜索、相对链接检查和
+  `git diff --check`。未运行 `just local` 或 `nixos-rebuild switch`，因为本次只改文档。
+- 关联文档：[NixOS 内核策略](./nixos-kernel.md)、[Niri 显示缩放](./niri-display-scaling.md)、
+  [Flake 输出](../outputs/README.md)、[主机配置](../hosts/README.md)。
+
+### 完善 README 与全新 NixOS preservation 部署教程
+
+- 影响范围：仓库 README 入口、全新 NixOS 机器部署 NixCoffee 的操作流程、preservation 与 agenix
+  bootstrap 排障文档。
+- 配置入口：`README.md`、`documents/fresh-nixos-preservation-deploy.md`。
+- 变更内容：将 README 标题、badge 和仓库链接改为 `Vitus213/nix-config`；新增当前仓库架构、主要 flake
+  output、NixOS 新机最快部署流程；补充 fresh deploy 文档中的版本依据、`/persistent`
+  检查、`~/nix-config` 被 preservation bind 成空目录时的修复方式，以及 private `mysecrets`
+  拉取失败的 bootstrap 处理。
+- 验证方式：执行静态链接/旧仓库引用搜索；执行 README 和 fresh deploy 文档的关键命令片段检查。未运行
+  `just local` 或 `nixos-rebuild switch`，因为本次只改文档且这些命令会切换当前系统。
+- 关联文档：[全新 NixOS + preservation 部署流程](./fresh-nixos-preservation-deploy.md)。
+
+### 回退 Noctalia 锁屏轻量 PAM 与 Niri spawn-at-startup 尝试
+
+- 影响范围：Niri/Noctalia Linux 图形桌面的 shell 启动顺序和锁屏认证环境。
+- 配置入口：`home/linux/gui/niri/default.nix`、`home/linux/gui/niri/conf/config.kdl`、
+  `home/linux/gui/base/noctalia/default.nix`、`modules/nixos/desktop.nix`。
+- 变更内容：撤回 Noctalia 专用 `noctalia-lock` PAM 服务和 Niri `spawn-at-startup`
+  启动方式；恢复 Home Manager `noctalia-shell.service` 用户服务启动 Noctalia，并取消
+  `NOCTALIA_PAM_SERVICE` 环境变量，使锁屏认证回到默认完整 `/etc/pam.d/login`
+  PAM 栈。该回退用于恢复登录/锁屏界面稳定性，后续另行排查快速解锁方案。
+- 验证方式：执行 `nixfmt --check`、低风险 eval 测试、`niri validate`，并求值检查
+  `noctalia-shell.service` 存在、服务环境不包含 `NOCTALIA_PAM_SERVICE`、`noctalia-lock`
+  PAM 服务不存在。
+- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)。
+
+### 禁用无实际 Btrfs 布局的 btrbk 实例
+
+- 影响范围：所有导入 NixOS base 模块的主机，尤其是当前使用 ext4 persistence 的 `apollo`。
+- 配置入口：`modules/nixos/base/btrbk.nix`。
+- 变更内容：注释掉共享模块中无条件启用的 `services.btrbk.instances.btrbk`，仅保留
+  `/btr_pool/@persistent` Btrfs 快照模板；当前 `apollo` 的 `/persistent`
+  是 ext4 根分区内的持久化目录，不存在 `/btr_pool` 或 `/snapshots`，因此不应启动 btrbk。
+- 验证方式：执行 `nix eval` 确认 `apollo.config.services.btrbk.instances` 为空；执行 `nix eval` 和
+  `findmnt` 确认 `apollo` 当前文件系统为 ext4/vfat；执行 `nixfmt --check` 和低风险 eval 测试。
+- 关联文档：[btrbk 配置状态](./btrbk.md)。
+
+### 修复 Nushell fzf 集成遮蔽 parse 导致的启动失败
+
+- 影响范围：所有复用共享 Home Manager
+  shell 配置的 Nushell 启动链路，以及依赖 Nushell 自动启动的 Zellij 会话。
+- 配置入口：`home/base/tui/shell/default.nix`、`home/base/core/core.nix`、`home/base/tui/zellij/default.nix`。
+- 变更内容：将 `nu_scripts` 的 `modules/argx` 从星号导入改为限定名导入，避免其自定义 `parse`
+  覆盖 Nushell 内建 `parse`；保留 Kubernetes 模块通过 `argx parse` 使用该辅助命令，修复 Home
+  Manager 生成的 fzf Nushell 集成脚本执行 `parse --regex` 时失败的问题。
+- 验证方式：先用 `use modules/argx *` 复现 `parse --regex` unknown flag；再执行限定名导入的低风险
+  `nu -n -c` 验证 fzf 集成脚本和 `argx parse` 可同时使用；执行 `nixfmt --check` 和低风险 eval 测试。
+- 关联文档：[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)。
+
+### 调整 Niri/Noctalia 空闲熄屏时间
+
+- 影响范围：Linux 图形桌面的 `hypridle` 空闲管理行为。
+- 配置入口：`home/linux/gui/base/hypridle/hypridle.conf`。
+- 变更内容：将显示器 DPMS 关闭动作从空闲 30 分钟提前到空闲 20 分 30 秒；锁屏仍在空闲 20 分钟触发，熄屏保留 Noctalia
+  10 秒锁屏倒计时后的缓冲。
+- 验证方式：执行 `niri msg action --help` 确认 `power-off-monitors`/`power-on-monitors`
+  动作存在；执行 `journalctl --user -u hypridle.service`
+  确认当前服务已注册锁屏和熄屏 listener；执行格式检查和低风险 eval 测试。
+- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)。
+
 ### 修复 croc source hash drift 导致的 apollo build 失败
 
 - 影响范围：所有导入共享 overlays 的 NixOS 和 nix-darwin 配置中的 `pkgs.croc`。
@@ -15,17 +104,6 @@
   `nix build .#nixosConfigurations.apollo.pkgs.croc --no-link --print-build-logs`；执行
   `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace --print-build-logs`。
 - 关联文档：[Croc build 修复](./croc-build-fix.md)。
-
-### 为 Noctalia 锁屏新增专用 PAM 服务
-
-- 影响范围：Niri/Noctalia Linux 图形桌面的锁屏密码认证路径。
-- 配置入口：`modules/nixos/desktop.nix`、`home/linux/gui/base/noctalia/default.nix`。
-- 变更内容：新增 `security.pam.services.noctalia-lock`，并在 `noctalia-shell.service` 中设置
-  `NOCTALIA_PAM_SERVICE=noctalia-lock`，让 Noctalia 锁屏使用专用轻量 PAM 服务，而不是默认走完整
-  `/etc/pam.d/login` 登录栈。
-- 验证方式：执行 `nix eval` 检查 `noctalia-lock` PAM 服务存在、Noctalia 用户服务环境变量指向
-  `noctalia-lock`；执行 `nixfmt --check` 和低风险 eval 测试。
-- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)。
 
 ### 收敛 Linux 软件包来源到主 unstable
 
