@@ -5,9 +5,11 @@
 配置入口：
 
 - `home/base/core/npm.nix`：安装 `bun` 和 `pnpm`，并配置 `npm install -g` 的用户级安装前缀为
-  `~/.npm`。
-- `home/base/core/shells/default.nix`：把 `~/.npm/bin`、`~/.bun/bin` 和 `~/.cache/.bun/bin`
-  加入 shell `PATH`。`omp` 当前由 Bun 提示安装在 `~/.cache/.bun/bin`。
+  `~/.npm`。当前 Bun 通过 `overlays/bun/default.nix` 临时覆盖到 `1.3.14`，满足最新版
+  `@oh-my-pi/pi-coding-agent` 的 `bun >= 1.3.14` 要求。
+- `home/base/core/shells/default.nix` 和 `home/base/core/shells/config.nu`：把 `~/.npm/bin`、
+  `~/.bun/bin` 和 `~/.cache/.bun/bin` 加入 shell `PATH`。`omp` 当前由 Bun 提示安装在
+  `~/.cache/.bun/bin`。
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
 
 ## 安装和更新
@@ -18,6 +20,13 @@ Pi / Oh My Pi 使用 Bun 安装或更新：
 
 ```bash
 bun install -g @oh-my-pi/pi-coding-agent@latest oh-my-pi@latest
+```
+
+如果尚未切换到包含 Bun `1.3.14` 的系统或 Home Manager 生成，最新版 `omp`
+可先用官方预编译二进制安装：
+
+```bash
+curl -fsSL https://omp.sh/install | sh -s -- --binary
 ```
 
 OpenCode 使用 npm 安装或更新：
@@ -32,9 +41,10 @@ npm install -g opencode-ai@latest
 ```bash
 bun --version
 omp --version
-oh-my-pi --version
 opencode --version
 ```
+
+`oh-my-pi` 作为配套包随 Pi / Oh My Pi 安装；当前常用入口是 `omp`。
 
 ## 当前命令
 

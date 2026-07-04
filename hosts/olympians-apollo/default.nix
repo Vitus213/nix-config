@@ -38,6 +38,8 @@ in
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_7_0;
+  # Match Windows' default RTC behavior for dual boot.
+  time.hardwareClockInLocalTime = true;
 
   boot.loader = {
     grub.enable = false;

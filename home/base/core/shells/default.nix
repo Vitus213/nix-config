@@ -27,10 +27,9 @@ in
     '';
   };
 
-  # 只对 bash/zsh 这类传统 shell 生效，Nushell 需要走自己的 alias 配置。
+  # 只对 bash/zsh 这类传统 shell 生效，Nushell PATH 在 config.nu 中直接维护。
   home.shellAliases = shellAliases;
 
-  # Nushell 由 bash 启动，因此会继承上面的 PATH。
   programs.nushell = {
     enable = true;
     # Nushell follows XDG on this host, so keep the generated config where `nu`

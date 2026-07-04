@@ -4,6 +4,43 @@
 
 ## 2026-07-04
 
+### 让 apollo 双系统硬件时钟跟随 Windows 本地时间
+
+- 影响范围：`apollo` 主机的 NixOS 与 Windows 双系统时间同步行为。
+- 配置入口：`hosts/olympians-apollo/default.nix`。
+- 变更内容：启用
+  `time.hardwareClockInLocalTime = true`，让 NixOS 按 Windows 默认方式把 RTC 视为本地时间，避免双系统切换后时间偏移。
+- 验证方式：执行低风险 eval 测试；未执行 `just local` 或
+  `nixos-rebuild switch`，因为这些命令会切换当前系统。
+- 关联文档：[rEFInd 双系统启动](./refind-boot.md)。
+
+### 临时覆盖 Bun 到 1.3.14
+
+- 影响范围：所有复用共享 overlays 的 NixOS 和 nix-darwin 配置中的 `pkgs.bun`，以及通过 Bun 安装的 Pi
+  / Oh My Pi CLI。
+- 配置入口：`overlays/bun/default.nix`、`home/base/core/npm.nix`。
+- 变更内容：新增 Bun overlay，将 `pkgs.bun` 从当前主 `nixpkgs` 的 `1.3.13` 临时覆盖到
+  `1.3.14`，以满足最新版 `@oh-my-pi/pi-coding-agent` 的 `bun >= 1.3.14`
+  要求；同步更新应用版本审计和 Nushell AI
+  Agent 快捷命令文档。待 nixpkgs 合入并进入当前输入后应移除该 overlay。
+- 验证方式：先新增 Bun 版本 eval test 并确认旧配置失败；修改后执行 `nixfmt --check`、Bun 版本求值、
+  `nix eval .#evalTests --show-trace --print-build-logs`、
+  `nix build .#nixosConfigurations.apollo.pkgs.bun --no-link --print-build-logs`，并用构建出的 Bun
+  `1.3.14` 安装最新版 `@oh-my-pi/pi-coding-agent` 后确认 `omp --version` 返回 `omp/16.3.5`。
+- 关联文档：[应用版本审计](./application-version-audit.md)、[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
+### 修复 Nushell 直接启动时找不到 omp
+
+- 影响范围：所有复用共享 Home Manager shell 配置的 Nushell 启动环境，以及 Bun 全局安装的 `omp`。
+- 配置入口：`home/base/core/shells/config.nu`、`home/base/core/shells/default.nix`。
+- 变更内容：在 Nushell 自身配置中直接加入 `~/.bun/bin` 和
+  `~/.cache/.bun/bin`，避免 Nushell 未经 Bash 启动时丢失 Bun global bin；同步修正文档中 PATH 说明。
+- 验证方式：先新增 Nushell Bun PATH eval test 并确认旧配置失败；修改后执行
+  `nixfmt --check`、低风险 eval 测试，并用
+  `nu --config home/base/core/shells/config.nu --env-config /dev/null -c` 检查 `$env.PATH` 能找到
+  `~/.cache/.bun/bin/omp`。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
 ### 修复 Bun 全局 bin 未进入 Nushell PATH
 
 - 影响范围：所有复用共享 Home Manager shell 配置的 Bash/Nushell 启动环境，以及通过 Bun 安装的 Pi /

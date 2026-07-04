@@ -28,6 +28,7 @@
 - Windows 通过手动菜单项启动，直接指向 ZHITAI ESP 的 `\EFI\Microsoft\Boot\bootmgfw.efi`。
 - rEFInd 主题使用开源项目 `evanpurkhiser/rEFInd-minimal`。
 - rEFInd 主菜单只显示 NixOS 与 Windows 两个启动项，默认选择 NixOS。
+- NixOS 与 Windows 一样把硬件 RTC 视为本地时间，避免双系统切换后时间偏移。
 - 当前 NixOS 求值使用的 rEFInd 包版本是 `0.14.2`；rEFInd 官方配置文档当前也引用 `0.14.2`。
 
 ## NixOS 配置
@@ -44,6 +45,8 @@ refind-minimal = {
 `hosts/olympians-apollo/default.nix` 启用 rEFInd：
 
 ```nix
+time.hardwareClockInLocalTime = true;
+
 boot.loader = {
   grub.enable = false;
   systemd-boot.enable = false;
