@@ -4,7 +4,7 @@
 
 ## 当前配置
 
-`apollo` 主机当前使用 Niri 26.04，系统为 NixOS 26.11.20260616。
+`apollo` 主机当前使用 Niri `26.04`，系统求值版本为 NixOS `26.11.20260702.6517942`。
 
 `DP-1` 是主显示器，当前识别为 `Shenzhen KTC Technology Group H27T22S-3 Pro`：
 

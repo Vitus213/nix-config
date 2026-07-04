@@ -35,7 +35,7 @@ terraform apply
 
 ## 相关配置
 
-- Kubernetes YAML 在单独仓库 [ryan4yin/k8s-gitops](https://github.com/ryan4yin/k8s-gitops) 中维护
+- Kubernetes YAML 不在当前仓库维护；这里只记录与 MinIO backend 和日志桶相关的 Terraform 配置
 - secrets 由 [secrets](../secrets/) 和 agenix 管理
 
 ## 安全约定

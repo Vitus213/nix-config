@@ -1,6 +1,7 @@
-# NixOS 安装器配置
+# 旧版 NixOS 安装辅助入口
 
-这个目录保留一个较小的安装用 flake，用来在 ISO 环境里快速测试和安装 `apollo` 的基础系统。
+这个目录保留一个较小的安装用 flake，用来在 ISO 环境里快速测试和安装 `apollo`
+的基础系统。它不是当前推荐的新机主线教程。
 
 > 当前更推荐阅读
 > [documents/fresh-nixos-preservation-deploy.md](../documents/fresh-nixos-preservation-deploy.md)。那份文档记录了现在全新 NixOS 机器启用 preservation、使用用户
@@ -14,17 +15,22 @@
 2. 测试文件系统、LUKS、Btrfs、preservation、Secure Boot 等底层改动
 3. 在部署主 flake 前得到一个能启动的最小系统
 
-## 推荐流程
+## 当前建议
 
-1. 从官方 NixOS ISO 启动
-2. 分区、格式化、挂载到 `/mnt`
-3. 运行 `nixos-generate-config --root /mnt`
-4. 把生成的硬件配置迁移到目标主机目录
-5. 使用本目录 flake 或主 flake 安装
-6. 第一次重启前，把 `machine-id`、SSH host key 等需要持久化的文件放入 `/persistent`
-7. 第一次启动后生成 `~/.ssh/id_ed25519`
-8. 为 private secrets 仓库 rekey
-9. 回到主 flake 执行正式 `nixos-rebuild switch`
+新机器优先按 [全新 NixOS + preservation 部署流程](../documents/fresh-nixos-preservation-deploy.md)
+执行。只有在需要单独测试 LUKS、Btrfs 子卷、Secure Boot 或最小安装 flake 时，再参考本目录。
+
+如果使用本目录，也必须遵守当前主线流程:
+
+1. 从官方 NixOS ISO 启动。
+2. 分区、格式化、挂载到 `/mnt`，并准备 `/mnt/persistent`。
+3. 运行 `nixos-generate-config --root /mnt`。
+4. 把生成的硬件配置迁移到目标主机目录。
+5. 使用本目录 flake 或主 flake 安装一个能启动的系统。
+6. 第一次重启前，把 `machine-id`、SSH host key 等需要持久化的文件放入 `/persistent`。
+7. 第一次启动后生成 `~/.ssh/id_ed25519`。
+8. 为 private secrets 仓库 rekey。
+9. 回到主 flake 执行正式 `nixos-rebuild switch`。
 
 ## LUKS + Btrfs 示例
 

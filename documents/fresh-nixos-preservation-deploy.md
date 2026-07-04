@@ -12,6 +12,36 @@
 - preservation 开启时，agenix 解密 identity 使用 `/home/vitus/.ssh/id_ed25519`
 - `/home/vitus/.ssh` 已经在 preservation 用户目录列表里，重启后应该保留
 
+当前版本依据:
+
+- 当前配置的 `system.stateVersion` 是 `25.11`
+- 当前 `flake.lock` 锁定 `preservation` 为 `nix-community/preservation` 的
+  `93416f4614ad2dfed5b0dcf12f27e57d27a5ab11`
+- 当前 `flake.lock` 锁定 `agenix` 为 `ryantm/agenix` 的 `4835b1dc898959d8547a871ef484930675cb47f1`
+- 分区、格式化、`nixos-generate-config --root /mnt` 和 `nixos-install` 顺序参考 NixOS 官方安装手册
+- agenix identity 配置参考 agenix README；preservation 行为参考 preservation README 和本仓库
+  `hosts/olympians-*/preservation.nix`
+
+## 0. 最快成功路径
+
+如果目标只是让一台全新 NixOS 机器尽快能 rebuild 这套 NixCoffee，按这个顺序做:
+
+1. ISO 里先准备 `/mnt`、`/mnt/boot`、`/mnt/persistent`，确认 `/persistent` 未来有真实挂载或目录。
+2. 生成当前机器的 `hardware-configuration.nix`，不要直接复用旧机器的硬件配置。
+3. 如果新机器还不能访问 private `mysecrets`，首次安装先临时关闭 `modules.secrets.desktop.enable`。
+4. 先完成一次能启动的 `nixos-install`，不要在 secrets 和 `/persistent` 没准备好前反复 `just local`。
+5. 第一次重启前，把 `/etc/machine-id` 和 SSH host keys 移到 `/mnt/persistent`。
+6. 第一次启动后，生成 `/home/vitus/.ssh/id_ed25519`，把 public key 加入 private secrets
+   recipients，并在能解旧 secrets 的机器上 rekey。
+7. 把仓库放到 `/home/vitus/nix-config` 的真实持久化目标里；如果该路径已经被 preservation
+   bind 成空目录，按本文第 10 节修复。
+8. 执行 `nix flake update mysecrets`，确认
+   `nix eval .#nixosConfigurations.$(hostname).config.age.identityPaths --json` 输出用户 key。
+9. 最后再运行 `just local debug` 或 `sudo nixos-rebuild switch --flake .#$(hostname)`。
+
+这条路径的核心是: 先有 `/persistent`，再有用户 agenix identity，再 rekey private
+secrets，最后才正式切换系统。
+
 ## 1. 先理解部署顺序
 
 全新机器最容易踩坑的地方不是 Nix 语法，而是启动顺序:
@@ -50,7 +80,10 @@ lsblk
 - `/persistent`: 持久化数据目录
 
 如果使用一个普通 ext4 root 分区，可以在安装前先创建 `/mnt/persistent`
-目录；如果使用 btrfs，建议单独建 `@persistent` subvolume 并挂载到 `/mnt/persistent`。
+目录。这个目录会跟随 root 文件系统保留，不是单独分区；优点是最快，缺点是以后想清空 root 时要格外小心。
+
+如果使用 btrfs，建议单独建 `@persistent` subvolume 并挂载到
+`/mnt/persistent`。如果使用单独分区或 LUKS，也必须保证最终系统里有一个路径挂载到 `/persistent`。
 
 示例，创建 ESP 和 root 分区:
 
@@ -74,6 +107,16 @@ mount /dev/disk/by-label/ESP /mnt/boot
 
 如果你要用 LUKS 或 btrfs subvolume，可以参考 `nixos-installer/README.md`，但要保留一个最终挂载到
 `/persistent` 的持久化位置。
+
+挂载完成后立刻检查:
+
+```bash
+findmnt /mnt
+findmnt /mnt/boot
+test -d /mnt/persistent
+```
+
+如果 `/mnt/persistent` 不存在，后续不要继续安装 preservation 主机配置。
 
 ## 4. 生成并迁移硬件配置
 
@@ -164,6 +207,10 @@ boot.initrd.systemd.enable = true;
 - `/home/vitus/.ssh`
 - `/home/vitus/nix-config`
 - Home Manager 和 Nix profile 相关目录
+
+注意: preservation 只负责把这些路径映射到
+`/persistent`。它不会自动把 root 文件系统里已有的内容复制过去。如果 `/home/vitus/nix-config`
+已经存在，但 `/persistent/home/vitus/nix-config` 是空的，正式切换后看到的会是空目录。
 
 ## 6. 安装系统
 
@@ -269,6 +316,29 @@ git clone https://github.com/Vitus213/nix-config.git ~/nix-config
 cd ~/nix-config
 ```
 
+如果 `~/nix-config` 已经存在但里面没有 `.git`，通常是 preservation 已经把它 bind 到空的
+`/persistent/home/vitus/nix-config`。先确认:
+
+```bash
+findmnt ~/nix-config
+ls -la ~/nix-config
+ls -la /persistent/home/vitus/nix-config
+```
+
+如果确认是空目录，可以直接把仓库 clone 到这个持久化目标:
+
+```bash
+rm -rf ~/nix-config
+git clone https://github.com/Vitus213/nix-config.git ~/nix-config
+```
+
+如果 `rm -rf ~/nix-config` 提示目标是挂载点，先不要强删，改为把内容 clone 到临时目录再复制进去:
+
+```bash
+git clone https://github.com/Vitus213/nix-config.git /tmp/nix-config
+cp -a /tmp/nix-config/. ~/nix-config/
+```
+
 如果你在 ISO 阶段修改过硬件配置但还没提交，需要把那些改动带回来。最稳妥的做法是在 ISO 阶段就提交到你自己的 repo，或者第一次启动后重新执行:
 
 ```bash
@@ -316,6 +386,9 @@ just local debug
 
 `just local` 会按当前 `hostname` 匹配 `nixosConfigurations`。如果主机名和 flake
 output 名不一致，先用显式 flake 名称切换。
+
+如果以后启用 MySQL、MariaDB、PostgreSQL 或其他服务密钥，也按同一原则处理: 不要把明文写进本仓库；先把新机器的 public
+key 加入 private secrets recipients，rekey 并更新 `mysecrets` input，再启用依赖这些 secret 的模块。
 
 ## 11. 常见错误和处理
 
@@ -366,6 +439,31 @@ could not create target /etc/agenix/totp-secrets.conf
 2. 把当前有效文件搬到 `/persistent` 对应位置
 3. 重新 `nixos-rebuild switch`
 
+### `~/nix-config` 变成空目录
+
+症状:
+
+- `cd ~/nix-config` 成功，但 `git status` 报不是 git 仓库
+- `ls ~/nix-config` 基本为空
+- `findmnt ~/nix-config` 显示它来自 `/persistent/home/vitus/nix-config`
+
+处理方式:
+
+1. 确认 `/persistent/home/vitus/nix-config` 是目标持久化目录
+2. 把仓库重新 clone 或复制到 `~/nix-config`
+3. 确认 `~/nix-config/.git` 存在后再运行 `just local`
+
+不要在空的 `~/nix-config` 里直接运行 rebuild。那会让排障路径变得很乱。
+
+### private `mysecrets` 拉取失败
+
+如果 `nixos-install` 或 `nixos-rebuild` 在取 `mysecrets` input 时失败，先确认新机器是否能访问
+`https://github.com/Vitus213/my-secrets.git`，以及当前 SSH/GitHub 凭据是否有权限。
+
+bootstrap 阶段可以临时关闭
+`modules.secrets.desktop.enable`，先得到一个能启动的系统。完成用户 key 生成、GitHub 授权、private
+secrets rekey 和 `nix flake update mysecrets` 后，再恢复 desktop secrets。
+
 ### 不要在第一次部署时运行高影响切换
 
 这些命令会构建并切换当前系统:
@@ -391,6 +489,7 @@ nix eval .#evalTests --show-trace --print-build-logs --verbose
 - `hosts/olympians-<host>/hardware-configuration.nix` 来自当前机器
 - `hosts/olympians-<host>/preservation.nix` 已导入
 - `/persistent` 已经存在并挂载
+- `~/nix-config/.git` 存在，仓库没有被空的 preservation 目录覆盖
 - `/home/vitus/.ssh/id_ed25519` 存在
 - `~/.ssh/id_ed25519.pub` 已加入 private secrets recipients
 - private secrets 已 rekey 并 push

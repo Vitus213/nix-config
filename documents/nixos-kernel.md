@@ -5,12 +5,12 @@
 ## 当前方案
 
 - 主 `nixpkgs` 输入使用 `github:nixos/nixpkgs/nixos-unstable`。
-- 当前 `flake.lock` 将主 `nixpkgs` 固定到 `567a49d1913ce81ac6e9582e3553dd90a955875f`。
-- 这个 `nixpkgs` 求值出的版本是 `26.11.20260616.567a49d`。
-- `home-manager` 输入跟随主 `nixpkgs`，当前固定到 `78e7d8b13ecd7f5256a5c11ce216876164099d9f`。更新主
+- 当前 `flake.lock` 将主 `nixpkgs` 固定到 `0c88e1f2bdb93d5999019e99cb0e61e1fe2af4c5`。
+- 这个 `nixpkgs` 求值出的 NixOS 版本是 `26.11.20260702.6517942`。
+- `home-manager` 输入跟随主 `nixpkgs`，当前固定到 `abfad3d2958c9e6300a883bd443512c55dfeb1be`。更新主
   `nixpkgs` 时应同步更新它，避免模块 API 与包集合不匹配。
 - `apollo` 显式使用 `pkgs.linuxPackages_7_0`。
-- 当前 `apollo` 求值出的内核版本是 `7.0.12`。
+- 当前 `apollo` 求值出的内核版本是 `7.0.14`。
 - rEFInd 当前只保留最新 1 个 NixOS
   generation，避免启动菜单长期显示旧 generation；内核升级测试前可临时调高。
 - `nixos-unstable` 更新移除了旧的 `services.kmscon.fonts` 和 `services.kmscon.extraConfig`
@@ -19,15 +19,14 @@
   别名；当前仓库已将编辑器工具和 devShell 中的 Node 工具迁移到顶层包名，例如
   `yaml-language-server`、`typescript-language-server` 和 `prettier`。
 
-`kernel.org` 在 2026-06-21 的状态：
+`kernel.org` 在 2026-07-04 的状态：
 
-- 最新 stable 是 `7.1.1`。
-- `7.0` 系列最新 stable 是 `7.0.13`。
+- 最新 stable 是 `7.1.2`。
+- `7.0.14` 已标记为 EOL。
 
-当前不直接使用
-`pkgs.linuxPackages_latest`，因为它会跟随 nixpkgs 中最新主线内核分支移动；在 2026-06-21 的
-`nixos-unstable` 上它是 `7.1`，在 `master` 上它是 `7.1.1`。`apollo`
-带 NVIDIA 闭源/开源内核模块与日常桌面负载，固定到 `linuxPackages_7_0` 更利于回滚和排查。
+当前不直接使用 `pkgs.linuxPackages_latest`，因为它会跟随 nixpkgs 中最新主线内核分支移动。`apollo`
+带 NVIDIA 闭源/开源内核模块与日常桌面负载，短期固定到 `linuxPackages_7_0` 更利于回滚和排查；但由于
+`7.0.14` 已 EOL，下一次内核维护应优先评估升级到当前 nixpkgs 中仍受维护的内核系列。
 
 ## 配置入口
 
@@ -65,9 +64,8 @@ nix eval --raw .#nixosConfigurations.apollo.pkgs.linuxPackages_7_0.kernel.versio
 boot.kernelPackages = pkgs.linuxPackages_latest;
 ```
 
-如果只想从 `7.0.12` 升到 `7.0.13`，应等 `nixos-unstable` 中 `linuxPackages_7_0`
-更新，或评估是否短期改用 `nixpkgs-master`
-的对应包。不要直接手写内核 tarball，除非确实要维护自定义内核构建。
+如果只想继续使用
+`7.0.x`，需要先确认 nixpkgs 中是否仍提供安全更新。不要直接手写内核 tarball，除非确实要维护自定义内核构建。
 
 ## 验证方式
 

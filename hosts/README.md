@@ -13,20 +13,18 @@
 | `generic` | NixOS | 部署前替换硬件配置          | 通用桌面模板             | 模板   |
 | `artemis` | macOS | MacBook Pro M4Pro 14" 48GB  | 工作机                   | 使用中 |
 
-### 外部系统
+### 其他入口
 
-- SBC 主机在 [ryan4yin/nixos-config-sbc](https://github.com/ryan4yin/nixos-config-sbc) 中维护
 - `hermes` 是 Ubuntu 上的独立 home-manager 配置
-
-RISC-V 集群:
-
-![](/_img/nixos-riscv-cluster.webp)
+- KubeVirt / homelab 相关主机和镜像入口在 `modules/nixos/server/`、`lib/genKubeVirt*.nix` 和
+  `Justfile` 中维护
 
 ## 命名规则
 
 - `olympians-*`: 希腊神话命名的 NixOS 桌面主机
 - `darwin-*`: macOS 主机
-- `apollo` / `athena` / `artemis`: 当前主要物理机
+- `apollo` / `artemis`: 当前主要物理机
+- `athena`: 第二台 NixOS 桌面配置，仍处于规划/迁移状态
 - `generic`: 不带个人 secrets 和 preservation 的通用 NixOS 桌面模板
 
 ## 添加新主机
@@ -58,14 +56,9 @@ RISC-V 集群:
 
 ![](/_img/nix-distributed-building-log.webp)
 
-## 参考
+## 相关文档
 
-- [Oshi no Ko 【推しの子】](https://en.wikipedia.org/wiki/Oshi_no_Ko)
-- [The Rolling Girls 【ローリング☆ガールズ】](https://en.wikipedia.org/wiki/The_Rolling_Girls)
-- [List of Twelve Kingdoms characters](https://en.wikipedia.org/wiki/List_of_Twelve_Kingdoms_characters)
-
-![](/_img/idols-famaily.webp) ![](/_img/idols-ai.webp)
-
-![](/_img/rolling_girls.webp)
-
-![](/_img/12kingdoms-1.webp) ![](/_img/12kingdoms-Youko-Rakushun.webp)
+- [全新 NixOS + preservation 部署流程](../documents/fresh-nixos-preservation-deploy.md)
+- [通用 NixOS 桌面 Host](../documents/generic-nixos-host.md)
+- [rEFInd 启动配置](../documents/refind-boot.md)
+- [NixOS 内核策略](../documents/nixos-kernel.md)
