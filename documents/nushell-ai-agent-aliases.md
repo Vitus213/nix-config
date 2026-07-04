@@ -6,7 +6,8 @@
 
 - `home/base/core/npm.nix`：安装 `bun` 和 `pnpm`，并配置 `npm install -g` 的用户级安装前缀为
   `~/.npm`。
-- `home/base/core/shells/default.nix`：把 `~/.npm/bin` 和 `~/.bun/bin` 加入 shell `PATH`。
+- `home/base/core/shells/default.nix`：把 `~/.npm/bin`、`~/.bun/bin` 和 `~/.cache/.bun/bin`
+  加入 shell `PATH`。`omp` 当前由 Bun 提示安装在 `~/.cache/.bun/bin`。
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
 
 ## 安装和更新

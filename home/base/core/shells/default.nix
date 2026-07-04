@@ -16,20 +16,21 @@ let
   rustBin = "${config.home.homeDirectory}/.cargo/bin";
   npmBin = "${config.home.homeDirectory}/.npm/bin";
   bunBin = "${config.home.homeDirectory}/.bun/bin";
+  bunCacheBin = "${config.home.homeDirectory}/.cache/.bun/bin";
 in
 {
   programs.bash = {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:${localBin}:${goBin}:${rustBin}:${npmBin}:${bunBin}"
+      export PATH="$PATH:${localBin}:${goBin}:${rustBin}:${npmBin}:${bunBin}:${bunCacheBin}"
     '';
   };
 
-  # NOTE: only works in bash/zsh, not nushell
+  # 只对 bash/zsh 这类传统 shell 生效，Nushell 需要走自己的 alias 配置。
   home.shellAliases = shellAliases;
 
-  # NOTE: nushell will be launched in bash, so it can inherit all the eenvironment variables.
+  # Nushell 由 bash 启动，因此会继承上面的 PATH。
   programs.nushell = {
     enable = true;
     # Nushell follows XDG on this host, so keep the generated config where `nu`
