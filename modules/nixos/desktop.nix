@@ -49,8 +49,9 @@ in
         };
       };
 
-      # fix https://github.com/ryan4yin/nix-config/issues/10
+      # Lock-screen PAM services should stay lighter than the full login stack.
       security.pam.services.swaylock = { };
+      security.pam.services.noctalia-lock = { };
     })
   ];
 }

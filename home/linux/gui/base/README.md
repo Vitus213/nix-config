@@ -38,6 +38,10 @@ Noctalia Shell 当前承担桌面 shell 的主要职责，替代或整合了部�
 
 主配置在 `noctalia/config/settings.json`。
 
+锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`，实际密码认证通过
+`NOCTALIA_PAM_SERVICE=noctalia-lock` 指向 NixOS 生成的 `/etc/pam.d/noctalia-lock`。这个
+PAM 服务只给 Noctalia 锁屏使用，避免锁屏解锁走完整 `/etc/pam.d/login` 登录栈。
+
 ## 参考
 
 - <https://docs.noctalia.dev/docs>

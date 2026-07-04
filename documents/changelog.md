@@ -4,6 +4,17 @@
 
 ## 2026-07-04
 
+### 为 Noctalia 锁屏新增专用 PAM 服务
+
+- 影响范围：Niri/Noctalia Linux 图形桌面的锁屏密码认证路径。
+- 配置入口：`modules/nixos/desktop.nix`、`home/linux/gui/base/noctalia/default.nix`。
+- 变更内容：新增 `security.pam.services.noctalia-lock`，并在 `noctalia-shell.service` 中设置
+  `NOCTALIA_PAM_SERVICE=noctalia-lock`，让 Noctalia 锁屏使用专用轻量 PAM 服务，而不是默认走完整
+  `/etc/pam.d/login` 登录栈。
+- 验证方式：执行 `nix eval` 检查 `noctalia-lock` PAM 服务存在、Noctalia 用户服务环境变量指向
+  `noctalia-lock`；执行 `nixfmt --check` 和低风险 eval 测试。
+- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)。
+
 ### 收敛 Linux 软件包来源到主 unstable
 
 - 影响范围：Linux 桌面 GUI 编辑器、Rust 工具链、Clash Verge、Guix、QQ
