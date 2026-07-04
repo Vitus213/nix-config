@@ -4,6 +4,18 @@
 
 ## 2026-07-04
 
+### 修复 croc source hash drift 导致的 apollo build 失败
+
+- 影响范围：所有导入共享 overlays 的 NixOS 和 nix-darwin 配置中的 `pkgs.croc`。
+- 配置入口：`overlays/croc/default.nix`、`modules/base/packages.nix`。
+- 变更内容：新增 croc overlay，将 `croc 10.4.5` 的 `src.rev` 固定到当前 `v10.4.5` tag 指向的 commit
+  `57e5fd7cef0466e3dbe086e18d00fc9e40e4dffa`，并修正 GitHub archive hash，避免 fixed-output
+  derivation hash mismatch 中断 `apollo` toplevel build。
+- 验证方式：执行
+  `nix build .#nixosConfigurations.apollo.pkgs.croc --no-link --print-build-logs`；执行
+  `nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace --print-build-logs`。
+- 关联文档：[Croc build 修复](./croc-build-fix.md)。
+
 ### 为 Noctalia 锁屏新增专用 PAM 服务
 
 - 影响范围：Niri/Noctalia Linux 图形桌面的锁屏密码认证路径。
