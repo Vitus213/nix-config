@@ -207,3 +207,7 @@ window-rule {
     match app-id="Zoom Workplace"
     open-on-workspace "0other"
 }
+window-rule {
+    match app-id="wemeetapp"
+    open-on-workspace "0other"
+}

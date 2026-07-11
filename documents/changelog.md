@@ -2,7 +2,84 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-11
+
+### 向 Orca FHS 环境映射 agenix secrets
+
+- 影响范围：StablyAI Orca `1.4.134` 及其内置终端；Orca 可以读取 `/etc/agenix`
+  中所有由当前用户权限允许读取的 secrets。
+- 配置入口：`overlays/stably-orca/default.nix`。
+- 变更内容：为 `appimageTools.wrapAppImage` 增加 `/etc/agenix` 目录级只读
+  `--ro-bind-try`，让 Orca 的 `buildFHSEnv` 在重建 `/etc`
+  后仍能按宿主机相同路径访问 agenix 文件；目录级挂载同时避免单文件目标的父目录不存在时被 Bubblewrap 静默跳过。未提供该目录的主机继续正常启动。
+- 验证方式：构建
+  `apollo.pkgs.stably-orca`；确认生成的 Bubblewrap 启动器包含目录级只读挂载；通过宿主机 user
+  systemd 启动同参数 FHS 环境，确认 `/etc/agenix` 可见，并由 Nushell 成功执行
+  `source /etc/agenix/alias-for-work.nushell`。部署后对比新旧 Orca mount namespace，确认新终端存在
+  `/persistent/etc/agenix -> /etc/agenix` 只读挂载；结束部署前遗留的旧 Orca 后，报错终端随之退出。
+- 关联文档：[Orca 桌面应用](./orca.md)。
+
+### 修复 Fcitx5 启动竞争和 WeChat 候选框
+
+- 影响范围：全部 Linux GUI 主机的 Fcitx5 启动方式，以及 WeChat `4.1.1.4`
+  在 Niri/XWayland 下的 Rime 候选框。
+- 配置入口：`home/linux/gui/base/fcitx5/default.nix`、`hardening/bwraps/wechat.nix`。
+- 变更内容：增加用户级 `org.fcitx.Fcitx5.desktop` 并设置 `Hidden=true`，禁用系统 XDG
+  autostart 生成的过早启动实例，只保留 Home Manager `fcitx5-daemon.service`；WeChat 沙箱继续隐藏
+  `WAYLAND_DISPLAY` 并显式使用 XIM，确保 XWayland 客户端连接到已注册的 Fcitx5 XIM 服务。
+- 验证方式：复现到旧实例缺少 `XIM_SERVERS`，且 Home
+  Manager 服务因 D-Bus 名称冲突退出；当前会话停止旧实例并启动 `fcitx5-daemon.service` 后，确认服务为
+  `active`、
+  `XIM_SERVERS(ATOM) = @server=fcitx`、Rime 正常；重启 WeChat 后实测候选框恢复显示。求值确认
+  `Hidden=true` 覆盖，`apollo` 和 `athena` 的 `system.build.toplevel` 均构建成功。
+- 关联文档：[Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)、[Linux 微信与 QQ](./linux-im-apps.md)。
+
+### 安装 Linux 腾讯会议、持久化用户数据并固定工作区
+
+- 影响范围：全部 Linux GUI 主机新增腾讯会议 `3.26.10.401`，并将其窗口自动分配到 Niri
+  `0other`；Apollo 和 Athena 保留登录态与应用数据，不持久化可重建缓存。
+- 配置入口：`home/linux/gui/base/media.nix`、`home/linux/gui/niri/conf/windowrules.kdl`、
+  `hosts/olympians-apollo/preservation.nix`、`hosts/olympians-athena/preservation.nix`。
+- 变更内容：通过主 `nixpkgs` 的 `pkgs.wemeet`
+  安装腾讯会议，沿用上游包提供的 Wayland 屏幕共享、摄像头预览、X11 输入焦点和音频设备兼容修复；按实测
+  `app-id="wemeetapp"` 将主窗口和辅助窗口送到 `0other`；持久化 `~/.local/share/wemeetapp`，不持久化
+  `~/.cache/wemeetapp`。
+- 验证方式：求值确认 Apollo Home Manager 包列表包含 `wemeet 3.26.10.401`；构建 `apollo.pkgs.wemeet`
+  成功；以隔离的临时 `HOME` 启动客户端，确认程序能启动，并确认持久数据和缓存分别写入
+  `$XDG_DATA_HOME/wemeetapp` 与 `$XDG_CACHE_HOME/wemeetapp`；执行 `niri validate` 成功；从 `6chat`
+  启动后，实测主窗口、辅助窗口和音频接入方式窗口均匹配 `wemeetapp` 并进入 `0other`。未执行
+  `just local` 或
+  `nixos-rebuild switch`，登录、音视频、中文输入和 Niri/Wayland 屏幕共享仍需部署后实测。
+- 关联文档：[Linux 腾讯会议](./tencent-meeting.md)、[Niri 工作区与窗口分配](./niri-workspaces.md)。
+
+### 将 Orca 内置终端默认 shell 切换为 Nushell
+
+- 影响范围：Linux 图形桌面的 StablyAI Orca `1.4.134`
+  内置终端；不改变系统登录 shell、Ghostty 启动链路或其他应用的 `SHELL`。
+- 配置入口：`overlays/stably-orca/default.nix`。
+- 变更内容：使用 `makeWrapper` 为 Orca 启动包装器设置 Nix store 中的 Nushell 路径，使新建终端默认以
+  `nu -l` 启动；部署后需要在 Orca 的 Terminal 设置中重启长期运行的 terminal daemon。
+- 验证方式：构建 `apollo.pkgs.stably-orca`；检查生成的 `bin/orca` 包装器包含
+  `export SHELL=...-nushell-0.113.1/bin/nu`；使用同一 store 路径执行 `nu -l` 并确认版本为
+  `0.113.1`；求值确认 `apollo` Home Manager 仍安装 Orca。未执行 `just local` 或
+  `nixos-rebuild switch`，因为这些命令会切换当前系统。
+- 关联文档：[Orca 桌面应用](./orca.md)。
+
 ## 2026-07-10
+
+### 切换聊天应用自启动并修复 WeChat 候选框
+
+- 影响范围：全部 Linux GUI 主机的 XDG autostart，以及 WeChat `4.1.1.4`
+  在 Niri/XWayland 下的 Fcitx5/Rime 候选框显示。
+- 配置入口：`home/linux/gui/base/xdg/autostart.nix`、`hardening/bwraps/wechat.nix`。
+- 变更内容：移除 Telegram 的默认自启动条目，改为登录后启动 WeChat；保留新版 WeChat，通过在其 bubblewrap 沙箱中移除
+  `WAYLAND_DISPLAY` 并显式设置 `XMODIFIERS=@im=fcitx`，强制使用 XWayland/XIM，避免 Fcitx
+  Portal 候选框坐标在 Niri 下落到屏幕外。
+- 验证方式：求值确认 autostart 列表包含 `wechat.desktop`
+  且不含 Telegram；构建 WeChat 包并检查生成的包装脚本包含 XIM 环境参数；`apollo` 和 `athena` 的
+  `system.build.toplevel` 均构建成功。未执行 `just local` 或
+  `nixos-rebuild switch`，因此候选框仍需部署后进行实际输入确认。
+- 关联文档：[Linux 微信与 QQ](./linux-im-apps.md)。
 
 ### 统一 Voxtype 简体输出并简化录音快捷键
 

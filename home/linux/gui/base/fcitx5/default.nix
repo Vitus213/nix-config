@@ -16,6 +16,13 @@
       source = ./classicui.conf;
       force = true;
     };
+    # Avoid racing the Home Manager service before Niri's XWayland is ready.
+    "autostart/org.fcitx.Fcitx5.desktop".text = ''
+      [Desktop Entry]
+      Type=Application
+      Name=Fcitx 5
+      Hidden=true
+    '';
     "mozc/config1.db".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/linux/gui/base/fcitx5/mozc-config1.db";
   };

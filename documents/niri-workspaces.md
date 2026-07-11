@@ -14,7 +14,7 @@
 | `6chat`     | 聊天沟通   | `Telegram`、飞书、微信、QQ                    |
 | `8music`    | 音乐       | QQ 音乐、网易云音乐                           |
 | `9file`     | 文件/阅读  | `Foliate`、`Thunar`                           |
-| `0other`    | 其他工具   | `Clash Verge`、`Zoom`                         |
+| `0other`    | 其他工具   | `Clash Verge`、`Zoom`、腾讯会议               |
 
 Niri 工作区名称使用小写，语义和 macOS AeroSpace 的 `1Terminal`、`2Browser`、`3Docs`、`4Codex`、
 `5Code`、`6Chat`、`8Music`、`0Other` 对齐。
@@ -85,6 +85,15 @@ Title: "Weixin"
 
 因此 `windowrules.kdl` 同时匹配 `wechat`、`com.tencent.WeChat`、`WeChat`、`Weixin` 和 `微信`。
 
+腾讯会议实测使用：
+
+```text
+App ID: "wemeetapp"
+Title: "腾讯会议"
+```
+
+规则使用 `wemeetapp`，让主窗口和辅助窗口统一进入 `0other`。
+
 ## 验证
 
 静态验证:
@@ -102,8 +111,8 @@ niri msg windows
 niri msg workspaces
 ```
 
-期望聊天应用进入 `6chat`，代码编辑器进入 `5code`，音乐进入 `8music`，Clash/Zoom 等工具进入
-`0other`。
+期望聊天应用进入 `6chat`，代码编辑器进入 `5code`，音乐进入
+`8music`，Clash、Zoom 和腾讯会议等工具进入 `0other`。
 
 如果某个窗口已经在旧工作区，重新加载配置不会自动迁移它；窗口规则主要影响新创建的窗口。可以手动移动当前窗口:
 

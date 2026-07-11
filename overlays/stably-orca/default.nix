@@ -7,6 +7,8 @@ _:
           appimageTools,
           fetchurl,
           lib,
+          makeWrapper,
+          nushell,
         }:
         let
           pname = "orca";
@@ -24,6 +26,10 @@ _:
         appimageTools.wrapAppImage {
           inherit pname version;
           src = appimageContents;
+          nativeBuildInputs = [ makeWrapper ];
+          extraBwrapArgs = [
+            "--ro-bind-try /etc/agenix /etc/agenix"
+          ];
 
           extraInstallCommands = ''
             desktop_file="$(find ${appimageContents} -name '*.desktop' -print -quit)"
@@ -42,6 +48,8 @@ _:
             if [[ -n "$icon_file" ]]; then
               install -Dm644 "$icon_file" "$out/share/pixmaps/$(basename "$icon_file")"
             fi
+
+            wrapProgram "$out/bin/orca" --set SHELL "${lib.getExe nushell}"
           '';
 
           meta = {

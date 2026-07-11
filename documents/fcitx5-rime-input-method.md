@@ -62,11 +62,12 @@ patch:
 
 ## 重启与重新部署
 
-当前会话中的 Fcitx5 由 D-Bus 激活，真实运行单元通常是 `dbus-...org.fcitx.Fcitx5...service`，不一定是
-`fcitx5-daemon.service`。重启当前生效的 Fcitx5：
+当前会话中的 Fcitx5 只由 Home Manager 的 `fcitx5-daemon.service` 启动。用户级
+`org.fcitx.Fcitx5.desktop` 设置 `Hidden=true`，用于禁止系统 XDG
+autostart 创建重复实例。重启当前生效的 Fcitx5：
 
 ```bash
-systemctl --user restart "$(systemctl --user list-units --type=service --state=running --no-pager | awk '/org.fcitx.Fcitx5/ {print $1; exit}')"
+systemctl --user restart fcitx5-daemon.service
 ```
 
 重新部署 Rime 配置：
@@ -99,6 +100,15 @@ rime
 Default
 2
 ```
+
+检查唯一启动服务和 XWayland XIM 注册：
+
+```bash
+systemctl --user is-active fcitx5-daemon.service
+nix shell nixpkgs#xprop -c xprop -root XIM_SERVERS
+```
+
+期望分别得到 `active` 和 `XIM_SERVERS(ATOM) = @server=fcitx`。
 
 检查 Rime 生成配置：
 

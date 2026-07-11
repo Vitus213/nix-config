@@ -269,6 +269,7 @@ in
         # Meeting / Remote Desktop / Recording
         # ======================================
         ".zoom"
+        ".local/share/wemeetapp"
         ".config/obs-studio"
         ".config/sunshine"
         ".config/freerdp"

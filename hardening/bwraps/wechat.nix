@@ -82,6 +82,9 @@ appimageTools.wrapAppImage {
     "--bind \${WECHAT_HOME_DIR} \${HOME}"
     "--bind \${WECHAT_FILES_DIR} \${WECHAT_FILES_DIR}"
     "--chdir \${HOME}"
+    # WeChat 4.1 may use the Fcitx portal when Wayland is visible, which misplaces the candidate popup on Niri/XWayland.
+    "--unsetenv WAYLAND_DISPLAY"
+    "--setenv XMODIFIERS @im=fcitx"
     # wechat-universal only supports xcb
     "--setenv QT_QPA_PLATFORM xcb"
     "--setenv QT_AUTO_SCREEN_SCALE_FACTOR 1"

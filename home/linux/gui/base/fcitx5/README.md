@@ -8,6 +8,7 @@
 - `config`: 链接到 `~/.config/fcitx5/config`，固定 Fcitx5 全局快捷键
 - `mozc-config1.db`: 链接到 `~/.config/mozc/config1.db`
 - `classicui.conf`: Fcitx5 Classic UI 配置
+- `default.nix`: 管理 Home Manager Fcitx5 服务，并用用户级 `Hidden=true` 覆盖禁用系统 XDG autostart
 - `default.custom.yaml`: Rime 用户补丁，固定小鹤双拼并调整 Rime 内部中/西文切换键
 
 ## 注意
@@ -20,6 +21,10 @@ Rime 当前只保留 `double_pinyin_flypy` 小鹤双拼方案。`Ctrl+Space`
 
 Fcitx5 的 Default 输入法组只保留 `rime`，避免日常在 `rime` 和英文键盘 `en`
 之间轮转。Fcitx5 全局层清空 Shift 临时切换键，只保留 `Ctrl+Alt+Space` 作为救援激活/关闭快捷键。
+
+Fcitx5 只由 Home Manager 的 `fcitx5-daemon.service` 启动。系统包自带的 `org.fcitx.Fcitx5.desktop`
+会被用户级 autostart 覆盖禁用，避免它在 Niri 的 XWayland 尚未就绪时抢先启动，导致 `XIM_SERVERS`
+未注册和 WeChat 候选框不可见。
 
 详细使用、验证和回滚方式见 `documents/fcitx5-rime-input-method.md`。
 

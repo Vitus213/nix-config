@@ -19,6 +19,7 @@
     mesa-demos
     nvitop
     (pkgs-x64.zoom-us)
+    wemeet
   ];
 
   programs.mpv = {

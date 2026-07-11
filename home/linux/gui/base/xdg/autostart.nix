@@ -12,7 +12,7 @@
 
     # nixpaks
     "${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop"
-    "${pkgs.nixpaks.telegram-desktop}/share/applications/org.telegram.desktop.desktop"
+    "${pkgs.bwraps.wechat}/share/applications/wechat.desktop"
   ]
   ++ lib.optionals pkgs.stdenv.isx86_64 [
     "${pkgs.obsidian}/share/applications/obsidian.desktop"
