@@ -11,6 +11,7 @@
 | Nushell | `0.113.1` | 主 `nixpkgs` 的 `pkgs.nushell` |
 | Zellij  | `0.44.3`  | 主 `nixpkgs` 的 `pkgs.zellij`  |
 | fzf     | `0.73.1`  | 主 `nixpkgs` 的 `pkgs.fzf`     |
+| Atuin   | `18.16.1` | 主 `nixpkgs` 的 `pkgs.atuin`   |
 
 这些组件默认跟随主 `nixpkgs` 输入更新，不在仓库内单独固定版本。
 
@@ -18,8 +19,8 @@
 
 - `home/base/core/shells/default.nix`：启用 `programs.nushell`，并让 Home Manager 管理
   `~/.config/nushell/config.nu` 和 `env.nu`。
-- `home/base/core/shells/config.nu`：仓库维护的基础 Nushell 配置。
-- `home/base/core/core.nix`：启用 `programs.fzf`，Home Manager 会为 Nushell 生成 fzf 集成脚本。
+- `home/base/core/core.nix`：启用 `programs.fzf` 和 `programs.atuin`；fzf 的 Ctrl-R history
+  widget 被显式关闭，Ctrl-R 归 Atuin history 集成使用。
 - `home/base/tui/shell/default.nix`：加载 `nu_scripts` 中的别名、Kubernetes 辅助模块和 AI
   Agent 快捷命令。
 - `home/base/tui/zellij/default.nix`：启用 Zellij，并在 Nushell 启动后自动进入 Zellij。
@@ -55,6 +56,16 @@ use modules/argx
 ```
 
 这样 Kubernetes 模块仍可通过 `argx parse` 使用辅助解析器，同时全局 `parse` 保持为 Nushell 内建命令。
+
+## Ctrl-R 归属
+
+Bash 和 Nushell 同时启用 fzf 与 Atuin shell 集成。当前配置保留 Atuin 的 Ctrl-R 历史搜索，并设置：
+
+```nix
+programs.fzf.historyWidget.command = "";
+```
+
+这样 Home Manager 仍会加载 fzf 的文件和目录选择集成，但不会再让 fzf 与 Atuin 同时注册 Ctrl-R。
 
 ## 验证
 

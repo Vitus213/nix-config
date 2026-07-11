@@ -11,6 +11,11 @@
   `~/.bun/bin` 和 `~/.cache/.bun/bin` 加入 shell `PATH`。`omp` 当前由 Bun 提示安装在
   `~/.cache/.bun/bin`。
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
+- `~/.omp/agent/models.yml`：OMP 用户级模型 catalog 覆盖。当前 `llm-codex` provider 保留
+  `gpt-5.5`，并新增 `gpt-5.6-sol`、`gpt-5.6-terra`，两者输入上下文按 `370K`、输出上限按 `128K`
+  配置。
+- `~/.omp/agent/config.yml`：OMP 用户级角色配置。当前 `enabledModels` 限定为
+  `llm-codex/*`，`modelProviderOrder` 优先 `llm-codex`。
 
 ## 安装和更新
 
@@ -46,6 +51,17 @@ opencode --version
 
 `oh-my-pi` 作为配套包随 Pi / Oh My Pi 安装；当前常用入口是 `omp`。
 
+## 当前 OMP 模型
+
+| 角色                             | 当前模型                        |
+| -------------------------------- | ------------------------------- |
+| `smol`                           | `llm-codex/gpt-5.6-sol:high`    |
+| `default` / `advisor` / `review` | `llm-codex/gpt-5.6-sol:xhigh`   |
+| `slow` / `plan`                  | `llm-codex/gpt-5.6-terra:xhigh` |
+
+`gpt-5.6-sol` 和 `gpt-5.6-terra` 都通过 `llm-codex` 自定义 provider 访问。模型元数据以
+`~/.omp/agent/models.yml` 为准：`contextWindow: 370000`，`maxTokens: 128000`。
+
 ## 当前命令
 
 | 命令 | 展开行为                                                 |
@@ -71,4 +87,9 @@ oy run "帮我检查这个仓库"
 nixfmt --check home/base/core/npm.nix home/base/core/shells/default.nix home/base/tui/dev-tools.nix home/base/tui/shell/default.nix
 nu -c 'alias cy = codex --dangerously-bypass-approvals-and-sandbox; help aliases | where name == cy'
 nu -c 'def --wrapped oy [...rest] { with-env { OPENCODE_PERMISSION: "{\"*\":\"allow\"}" } { print $env.OPENCODE_PERMISSION; print $rest } }; oy test'
+omp --version
+omp models llm-codex
+omp config get modelRoles --json
+omp --model llm-codex/gpt-5.6-sol --thinking low --no-tools --no-session -p "只输出 OK"
+omp --model llm-codex/gpt-5.6-terra --thinking low --no-tools --no-session -p "只输出 OK"
 ```

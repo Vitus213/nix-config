@@ -4,24 +4,24 @@
 
 ## 模块分类
 
-| 文件或目录          | 用途                             |
-| ------------------- | -------------------------------- |
-| `noctalia/`         | Noctalia Shell 配置和用户服务    |
-| `hypridle/`         | 空闲管理                         |
-| `fcitx5/`           | Fcitx5 输入法                    |
-| `gtk.nix`           | GTK 主题                         |
-| `xdg/`              | XDG 文件关联和 autostart         |
-| `browsers.nix`      | 浏览器                           |
-| `desktop-tools.nix` | 日常桌面工具                     |
-| `dev-tools.nix`     | GUI 开发工具                     |
-| `editors.nix`       | GUI 编辑器                       |
-| `media.nix`         | 媒体应用                         |
-| `voice-input.nix`   | Voxtype 语音输入                 |
-| `gaming.nix`        | 游戏相关应用                     |
-| `creative.nix`      | 创作软件                         |
-| `note-taking.nix`   | 笔记应用                         |
-| `misc.nix`          | Wayland 工具、截图、录屏、音频等 |
-| `nvidia.nix`        | NVIDIA 相关用户级配置            |
+| 文件或目录          | 用途                                    |
+| ------------------- | --------------------------------------- |
+| `noctalia/`         | Noctalia Shell 配置和用户服务           |
+| `hypridle/`         | 空闲管理                                |
+| `fcitx5/`           | Fcitx5 输入法                           |
+| `gtk.nix`           | GTK 主题                                |
+| `xdg/`              | XDG 文件关联和 autostart                |
+| `browsers.nix`      | 浏览器                                  |
+| `desktop-tools.nix` | 日常桌面工具                            |
+| `dev-tools.nix`     | GUI 开发工具                            |
+| `editors.nix`       | GUI 编辑器                              |
+| `media.nix`         | 媒体应用                                |
+| `voice-input.nix`   | Voxtype 语音输入                        |
+| `gaming.nix`        | 游戏相关应用                            |
+| `creative.nix`      | 创作软件                                |
+| `note-taking.nix`   | 笔记应用                                |
+| `misc.nix`          | Wayland 工具、截图、录屏、音频、Orca 等 |
+| `nvidia.nix`        | NVIDIA 相关用户级配置                   |
 
 ## Noctalia Shell
 
@@ -42,6 +42,12 @@ Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动�
 `NOCTALIA_PAM_SERVICE`，因此 Noctalia 锁屏认证使用默认的完整 `/etc/pam.d/login` PAM 栈。
 
 锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`。
+
+## Orca
+
+`misc.nix` 通过 `pkgs.stably-orca` 安装 StablyAI Orca `1.4.134`，启动命令为
+`orca`。Niri 会将 Orca 默认打开到 `5code` 工作区并最大化。版本固定、更新和回滚方式见
+[Orca 桌面应用](../../../../documents/orca.md)。
 
 ## 空闲策略
 

@@ -45,8 +45,11 @@
     };
   };
 
-  # A command-line fuzzy finder
-  programs.fzf.enable = true;
+  # A command-line fuzzy finder. Ctrl-R stays owned by Atuin.
+  programs.fzf = {
+    enable = true;
+    historyWidget.command = "";
+  };
 
   # very fast version of tldr in Rust
   programs.tealdeer = {

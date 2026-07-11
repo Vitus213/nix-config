@@ -4,13 +4,15 @@
 
 ## 当前设计
 
-`ssh-key-romantic` 是连接内网 `192.168.*` 主机使用的专用 SSH 私钥。Home Manager 的 SSH 配置会对
-`192.168.*` 使用:
+`ssh-key-romantic` 是连接内网 `192.168.*` 主机使用的专用 SSH 私钥。Home Manager 的 SSH 配置入口是
+`home/base/tui/ssh.nix`，当前使用 `programs.ssh.settings` 和 OpenSSH 原生命令名生成
+`~/.ssh/config`。对 `192.168.*` 会生成：
 
 ```sshconfig
-IdentityFile /etc/agenix/ssh-key-romantic
-IdentitiesOnly yes
-ForwardAgent yes
+Host 192.168.*
+  IdentityFile /etc/agenix/ssh-key-romantic
+  IdentitiesOnly yes
+  ForwardAgent yes
 ```
 
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
@@ -117,6 +119,10 @@ Bad owner or permissions on /home/vitus/.ssh/config
 ```text
 0600 vitus
 ```
+
+该 materialize 逻辑只处理生成文件的所有权和权限，不改变 `programs.ssh.settings`
+中定义的 Host 规则。不要改回已废弃的 `programs.ssh.matchBlocks`，否则 Home
+Manager 会在求值时再次提示迁移 warning。
 
 ## 路由器授权
 

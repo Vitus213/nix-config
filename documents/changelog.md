@@ -2,6 +2,70 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-10
+
+### 统一 Voxtype 简体输出并简化录音快捷键
+
+- 影响范围：Linux 图形桌面的 Voxtype 中文转写结果和 Niri 录音快捷键。
+- 配置入口：`home/linux/gui/base/voice-input.nix`、`home/linux/gui/niri/conf/keybindings.kdl`。
+- 变更内容：将 Whisper 初始提示词改为简体中文，并通过 OpenCC `1.3.0` 的 `t2s`
+  本地后处理确保最终输出为简体；将录音切换键从 `Mod+Shift+Space` 改为单键 `Scroll Lock`，取消键改为
+  `Shift+Scroll Lock`。
+- 验证方式：执行 `nixfmt --check` 和
+  `niri validate`；实际调用 OpenCC 验证繁体转简体；求值检查生成的 Voxtype TOML；构建 `apollo` 的
+  `system.build.toplevel` 成功。未执行 `just local` 或
+  `nixos-rebuild switch`，因为这些命令会切换当前系统。
+- 关联文档：[Linux Voxtype 语音输入](./linux-voice-input.md)。
+
+### 安装 StablyAI Orca 桌面应用
+
+- 影响范围：Linux 图形桌面 Home Manager 与 Niri 配置，新增可从应用启动器或 `orca`
+  命令启动的 Orca 桌面应用；窗口默认打开到 `5code` 工作区并最大化。
+- 配置入口：`home/linux/gui/base/misc.nix`、`overlays/stably-orca/default.nix`、
+  `home/linux/gui/niri/conf/windowrules.kdl`。
+- 变更内容：新增 `pkgs.stably-orca` overlay，固定官方 `v1.4.134` Linux
+  AppImage；保持安装后的主命令为 `orca`，同时避免与 nixpkgs 中 GNOME 屏幕阅读器 `pkgs.orca`
+  属性冲突；Niri 按 `app-id="orca"` 将窗口放入 `5code` 工作区并最大化。
+- 验证方式：执行 `nix build` 构建 `apollo.pkgs.stably-orca`；求值确认版本为
+  `1.4.134`；检查生成的桌面文件包含 `Exec=orca %U` 和 `StartupWMClass=orca`；执行 `niri validate`
+  确认窗口规则有效；构建 `apollo` 的 `system.build.toplevel` 成功。未执行 `just local` 或
+  `nixos-rebuild switch`，因为这些命令会切换当前系统。
+- 关联文档：[Orca 桌面应用](./orca.md)、[应用版本审计](./application-version-audit.md)、[Linux 桌面基础配置](../home/linux/gui/base/README.md)。
+
+### 切换 OMP 到 GPT 5.6 模型
+
+- 影响范围：用户级 OMP 配置、`llm-codex`
+  自定义模型 catalog，以及 OMP 的默认、慢速、计划、advisor、review 和 smol 模型角色。
+- 配置入口：`~/.omp/agent/models.yml`、`~/.omp/agent/config.yml`。
+- 变更内容：将 OMP 从 `omp/16.3.5` 更新到 `omp/16.4.0`；在 `llm-codex` provider 下新增 `gpt-5.6-sol`
+  和 `gpt-5.6-terra`，两者按输入上下文 `370K`、输出上限 `128K` 配置；将 `smol` 切到
+  `llm-codex/gpt-5.6-sol:high`，`default`、`advisor`、`review` 切到
+  `llm-codex/gpt-5.6-sol:xhigh`，`slow`、`plan` 保留 `llm-codex/gpt-5.6-terra:xhigh`。
+- 验证方式：执行 `omp models llm-codex` 确认两个 5.6 模型显示为 `370K` context 和 `128K`
+  max-out；分别用
+  `omp --model llm-codex/gpt-5.6-sol --thinking low --no-tools --no-session -p "只输出 OK"` 和
+  `omp --model llm-codex/gpt-5.6-terra --thinking low --no-tools --no-session -p "只输出 OK"`
+  确认请求成功。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
+## 2026-07-05
+
+### 消除 apollo rebuild 的 Home Manager 与 flake input warning
+
+- 影响范围：`apollo` 主机构建求值、共享 Home Manager shell/SSH/Catppuccin 配置，以及 Linux
+  gaming 模块的 AAGL 输入检查。
+- 配置入口：`home/base/core/theme.nix`、`home/base/core/core.nix`、`home/base/tui/ssh.nix`、`modules/nixos/desktop/gaming.nix`。
+- 变更内容：显式设置 `catppuccin.autoEnable = true` 以匹配当前全局启用行为；为 Catppuccin VSCode
+  port 覆盖 pnpm 构建参数到 `nodejs-slim`；保留 Atuin 占用 Ctrl-R 并关闭 fzf history widget；将 Home
+  Manager SSH 配置从已废弃的 `programs.ssh.matchBlocks` 迁移到 `programs.ssh.settings`；保留当前
+  `aagl-gtk-on-nix release-25.11` 输入并在模块顶层关闭 release 分支检查。
+- 验证方式：执行 `nixfmt`；执行
+  `nix eval .#nixosConfigurations.apollo.config.system.build.toplevel.drvPath --show-trace`
+  确认目标 evaluation warning 不再出现；求值确认 fzf
+  Ctrl-R 命令为空、`catppuccin.autoEnable = true`、AAGL release 检查为 `false`、`192.168.*` SSH
+  Host 规则已由 `programs.ssh.settings` 生成。
+- 关联文档：[应用版本审计](./application-version-audit.md)、[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)、[Homelab SSH Key `ssh-key-romantic`](./homelab-ssh-key-romantic.md)。
+
 ## 2026-07-04
 
 ### 让 apollo 双系统硬件时钟跟随 Windows 本地时间

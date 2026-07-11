@@ -106,6 +106,12 @@ window-rule {
     open-maximized true
 }
 
+window-rule {
+    match app-id="orca"
+    open-on-workspace "5code"
+    open-maximized true
+}
+
 // Chat applications - open in workspace 6
 window-rule {
     match app-id="org.telegram.desktop"

@@ -9,6 +9,9 @@
     # do not support .pdf
     foliate
 
+    # AI agent orchestration desktop app
+    stably-orca
+
     # remote desktop(rdp connect)
     remmina
     freerdp # required by remmina

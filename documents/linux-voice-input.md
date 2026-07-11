@@ -13,6 +13,7 @@ GUI Home Manager 基础模块进入同类桌面会话。
 - 输出方式：优先通过 `wtype` 向当前光标位置输入文本，失败时回退到 `wl-copy` 剪贴板
 - 识别模型：`small`
 - 识别语言：`zh`
+- 简体处理：使用简体中文 `initial_prompt`，再通过 OpenCC `1.3.0` 的 `t2s` 转换兜底
 - 内置热键：关闭，由 Niri 快捷键调用 `voxtype record`
 - OSD：关闭，因为当前 nixpkgs 中没有打包 `voxtype-osd-native` 或 `voxtype-osd-gtk4`
 
@@ -59,10 +60,12 @@ VOXTYPE_VULKAN_DEVICE=nvidia
 
 Niri 快捷键：
 
-- `Mod + Shift + Space`：开始或停止录音
-- `Mod + Ctrl + Shift + Space`：取消当前录音或转写
+- `Scroll Lock`：开始或停止录音
+- `Shift + Scroll Lock`：取消当前录音或转写
 
-转写完成后，文本会优先直接输入到当前焦点窗口；如果虚拟键盘输入失败，Voxtype 会把文本写入剪贴板。
+Whisper 的 `language = "zh"` 只限定中文，不区分简体和繁体。当前配置先通过简体中文 `initial_prompt`
+引导模型，再将结果交给 Nix store 中的 OpenCC `t2s`
+转换，最后优先直接输入到当前焦点窗口；如果虚拟键盘输入失败，Voxtype 会把文本写入剪贴板。OpenCC 处理完全在本地进行，不访问网络。
 
 ## 首次使用
 
@@ -116,6 +119,14 @@ voxtype transcribe /path/to/sample.wav
 - `pkgs.voxtype-vulkan` 能检测到 NVIDIA RTX 3070 并成功转写同一样本。
 - `[osd].enabled = false` 在本地 daemon 测试中生效，服务可保持运行且不会调用缺失的 OSD 前端。
 
+本次简体输出和快捷键调整已验证：
+
+- `nixfmt --check` 通过。
+- `niri validate` 确认 `Scroll_Lock` 和 `Shift+Scroll_Lock` 绑定有效。
+- OpenCC `1.3.0` 的 `t2s` 实际转换样例输出为简体中文。
+- 求值确认生成的 Voxtype TOML 包含简体提示词和 OpenCC 绝对路径。
+- `apollo` 的 `system.build.toplevel` 构建成功。
+
 ## 已知限制
 
 - 首次使用必须手动下载 Whisper 模型；Nix 构建和 Home Manager 激活阶段不会访问网络下载模型。
@@ -125,7 +136,8 @@ voxtype transcribe /path/to/sample.wav
   `whisper_backend_init_gpu: no GPU found`，先检查 `nvidia-smi`、`vulkaninfo --summary` 和
   `VOXTYPE_VULKAN_DEVICE=nvidia` 是否仍在 `voxtype.service` 环境中。
 - OSD 暂时关闭。要启用 OSD，需要先确认 nixpkgs 或上游 flake 中的 OSD 前端如何进入用户环境。
-- `language = "zh"` 更偏向中文输入。长期需要大量中英混合时，可以评估切换为 `language = "auto"`。
+- `language = "zh"` 更偏向中文输入。长期需要大量中英混合时，可以评估切换为
+  `language = "auto"`；OpenCC 只转换中文字符，不改写英文内容。
 
 ## 回滚
 

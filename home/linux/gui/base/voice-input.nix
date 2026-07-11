@@ -35,7 +35,7 @@ in
     language = "zh"
     translate = false
     on_demand_loading = true
-    initial_prompt = "Chinese and English mixed dictation for desktop text input."
+    initial_prompt = "以下是普通话与英文技术术语混合的桌面听写。请始终使用简体中文。"
 
     [output]
     mode = "type"
@@ -45,6 +45,10 @@ in
     pre_type_delay_ms = 100
     wait_for_modifier_release = false
     wtype_shift_prefix = true
+
+    [output.post_process]
+    command = "${lib.getExe' pkgs.opencc "opencc"} -c t2s.json"
+    timeout_ms = 1000
 
     [output.notification]
     on_recording_start = true
