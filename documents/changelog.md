@@ -4,6 +4,19 @@
 
 ## 2026-07-12
 
+### 更新 Orca 至 1.4.137
+
+- 影响范围：全部 Linux GUI 主机的 StablyAI Orca，由 `1.4.135` 更新至官方最新稳定版 `1.4.137`。
+- 配置入口：`overlays/stably-orca/default.nix`。
+- 变更内容：更新官方 Linux AppImage URL 和固定哈希，保留 Orca 进程级 Nushell 默认值、`/etc/agenix`
+  目录级只读映射和 XDG 自启动。上游新增全平台终端右键粘贴，并修复 Linux daemon 在 PTY 启动前的 Unix
+  shell fallback、后台恢复后的陈旧终端窗格、Claude 问题等待状态等问题。
+- 验证方式：构建 `apollo.pkgs.stably-orca`；求值确认版本为 `1.4.137`；确认生成的桌面文件包含
+  `Exec=orca %U` 和 `X-AppImage-Version=1.4.137`，启动器设置 Nushell
+  `0.113.1`，Bubblewrap 启动器保留 `--ro-bind-try /etc/agenix /etc/agenix`。未执行 `just local` 或
+  `nixos-rebuild switch`。
+- 关联文档：[Orca 桌面应用](./orca.md)、[应用版本审计](./application-version-audit.md)。
+
 ### 恢复 Esc 与 Caps Lock 原生键位
 
 - 影响范围：全部 NixOS 桌面主机和 macOS Artemis；`Esc` 恢复 Escape，`Caps Lock`

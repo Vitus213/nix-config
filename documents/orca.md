@@ -7,11 +7,11 @@
 Linux 图形桌面通过 Home Manager 安装 Orca。配置入口是 `home/linux/gui/base/misc.nix`，实际软件包由
 `overlays/stably-orca/default.nix` 提供。
 
-当前固定版本为 `1.4.135`，来源是官方 GitHub release 的 Linux AppImage：
+当前固定版本为 `1.4.137`，来源是官方 GitHub release 的 Linux AppImage：
 
-- release: <https://github.com/stablyai/orca/releases/tag/v1.4.135>
-- AppImage: <https://github.com/stablyai/orca/releases/download/v1.4.135/orca-linux.AppImage>
-- Nix hash: `sha256-E8vCVVDFXMtsRWgmkIVtG8hXt916lmwF7tjjhYLUuko=`
+- release: <https://github.com/stablyai/orca/releases/tag/v1.4.137>
+- AppImage: <https://github.com/stablyai/orca/releases/download/v1.4.137/orca-linux.AppImage>
+- Nix hash: `sha256-jHQSL6aTSnZEZgsKT7HxyXZppQwatUgiF1UPzR4fyZg=`
 
 nixpkgs 中已有的 `pkgs.orca` 是 GNOME 屏幕阅读器，不是 StablyAI Orca。本仓库使用 `pkgs.stably-orca`
 作为属性名避免冲突，但安装后的主命令仍是官方命令 `orca`。
@@ -20,9 +20,11 @@ Orca 使用内置的 xterm.js 终端界面，不会启动 Ghostty、Foot 等外�
 只为 Orca 进程设置
 `SHELL=${lib.getExe pkgs.nushell}`，因此新建终端默认运行当前 nixpkgs 中的 Nushell，不会改变系统登录 shell、Ghostty 启动链路或其他图形应用的环境。
 
-Orca `1.4.135`
-尚未提供 Linux 默认 shell 设置，其 shell-ready 启动包装只专门支持 Bash 和 Zsh。Nushell 会以 `nu -l`
-登录模式启动，普通交互终端可正常使用；Orca 自动投递 Agent 启动命令时不会获得 Bash/Zsh 专用的 shell-ready 标记。
+Orca `1.4.137`
+尚未提供 Linux 默认 shell 设置，其 shell-ready 启动包装仍只专门支持 Bash 和 Zsh；但该版本会在 PTY 启动前校验 Unix
+daemon 使用的绝对 shell 路径，并将实际 shell 传播到子进程环境。当前包装器提供有效的 Nushell 绝对路径，因此 Nushell 会以
+`nu -l`
+登录模式启动；普通交互终端可正常使用，Orca 自动投递 Agent 启动命令时不会获得 Bash/Zsh 专用的 shell-ready 标记。
 
 Orca AppImage 通过 nixpkgs 的 `appimageTools.wrapAppImage` 运行在 `buildFHSEnv`
 创建的 FHS 环境中。该环境会重新创建 `/etc`，因此默认看不到宿主机的 `/etc/agenix`。当前 overlay 使用
@@ -96,7 +98,7 @@ nix store prefetch-file --json https://github.com/stablyai/orca/releases/downloa
 ```bash
 nix build --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.pkgs.stably-orca' --impure --no-link --print-build-logs
 nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getVersion pkgs.stably-orca' --impure
-nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); cfg = flake.nixosConfigurations.apollo.config; lib = flake.inputs.nixpkgs.lib; in builtins.any (pkg: (pkg.pname or "") == "orca" && lib.getVersion pkg == "1.4.135") cfg.home-manager.users.vitus.home.packages' --impure
+nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); cfg = flake.nixosConfigurations.apollo.config; lib = flake.inputs.nixpkgs.lib; in builtins.any (pkg: (pkg.pname or "") == "orca" && lib.getVersion pkg == "1.4.137") cfg.home-manager.users.vitus.home.packages' --impure
 nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in map toString flake.nixosConfigurations.apollo.config.home-manager.users.vitus.xdg.autostart.entries' --impure
 nix build --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.config.home-manager.users.vitus.home.activationPackage' --impure --no-link --print-out-paths
 nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getExe pkgs.nushell' --impure
