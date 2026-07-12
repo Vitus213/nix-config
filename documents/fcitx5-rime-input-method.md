@@ -9,7 +9,7 @@
 - `Ctrl+Space`：Rime 内部切换小鹤双拼的 `中` / `Ａ`。
 - `Ctrl+Alt+Space`：Fcitx5 救援激活/关闭键。
 - `Shift`：不参与输入法切换。
-- `CapsLock`：保留给 keyd 的 Esc/Ctrl 映射，不参与输入法切换。
+- `CapsLock`：保持系统原生大写锁定功能，不参与输入法切换。
 
 Fcitx5 的 Default 输入法组只保留 `rime`。`en` 是 Fcitx5 的键盘输入法，不是 Rime 的西文状态；Rime 的
 `Ａ` 是小鹤双拼方案内部的 `ascii_mode`。

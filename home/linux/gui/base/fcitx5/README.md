@@ -17,7 +17,7 @@
 
 Rime 当前只保留 `double_pinyin_flypy` 小鹤双拼方案。`Ctrl+Space`
 由 Rime 处理，用于在小鹤双拼内切换中文状态和 Rime 西文状态
-`Ａ`；Shift、CapsLock 和 Control 不参与输入法切换，其中 CapsLock 保留给 keyd 的 Esc/Ctrl 映射。
+`Ａ`；Shift、CapsLock 和 Control 不参与输入法切换，CapsLock 保持系统原生大写锁定功能。
 
 Fcitx5 的 Default 输入法组只保留 `rime`，避免日常在 `rime` 和英文键盘 `en`
 之间轮转。Fcitx5 全局层清空 Shift 临时切换键，只保留 `Ctrl+Alt+Space` 作为救援激活/关闭快捷键。

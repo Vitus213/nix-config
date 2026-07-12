@@ -4,6 +4,18 @@
 
 ## 2026-07-12
 
+### 恢复 Esc 与 Caps Lock 原生键位
+
+- 影响范围：全部 NixOS 桌面主机和 macOS Artemis；`Esc` 恢复 Escape，`Caps Lock`
+  恢复系统大写锁定，不再交换两个键，也不再提供点按 Escape、长按 Control 的复合行为。
+- 配置入口：`modules/nixos/desktop/peripherals.nix`、`modules/darwin/system.nix`。
+- 变更内容：移除 Linux 上仅用于 Esc/Caps Lock 映射的 `keyd 2.6.0` 服务配置；移除 macOS 的
+  nix-darwin `system.keyboard` 映射。Fcitx5/Rime 继续禁止 Caps Lock 参与中西文切换，不改变其系统键位。
+- 验证方式：求值确认 Apollo、Athena 和 Generic 的 `services.keyd.enable` 均为 `false`；确认
+  Artemis 的 `system.keyboard.enableKeyMapping` 为 `false` 且 `userKeyMapping` 为空。未执行
+  `just local`、`nixos-rebuild switch` 或 `darwin-rebuild switch`，实体键行为需部署后实测。
+- 关联文档：[Esc 与 Caps Lock 原生键位](./keyboard-layout.md)、[Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)。
+
 ### 将桌面壁纸切换为本机 WLOP 作品
 
 - 影响范围：全部 Linux GUI 主机的 Noctalia 壁纸目录；每台主机需要单独准备不受 Git 管理的本机图片。
