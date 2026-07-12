@@ -8,6 +8,8 @@
     "${pkgs.alacritty}/share/applications/Alacritty.desktop"
     "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop"
 
+    "${pkgs.stably-orca}/share/applications/orca.desktop"
+
     # "${pkgs.clash-verge-rev}/share/applications/clash-verge.desktop"
 
     # nixpaks

@@ -20,7 +20,7 @@
 | 应用                   | 当前版本             | 配置入口                                                                                    | 版本来源                                                            | 固定/修补 | NixPak | 处理建议                                                                        |
 | ---------------------- | -------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | --------- | ------ | ------------------------------------------------------------------------------- |
 | Zed                    | `1.6.3`              | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.zed-editor`                                   | 否        | 否     | 跟随主 `nixpkgs` 更新                                                           |
-| Orca                   | `1.4.134`            | `home/linux/gui/base/misc.nix`、`overlays/stably-orca/default.nix`                          | 官方 GitHub release 的 `orca-linux.AppImage`                        | 是        | 否     | 使用 `pkgs.stably-orca` 避免与 GNOME `pkgs.orca` 冲突；更新时同步 `orca.md`     |
+| Orca                   | `1.4.135`            | `home/linux/gui/base/misc.nix`、`overlays/stably-orca/default.nix`                          | 官方 GitHub release 的 `orca-linux.AppImage`                        | 是        | 否     | 使用 `pkgs.stably-orca` 避免与 GNOME `pkgs.orca` 冲突；更新时同步 `orca.md`     |
 | Cursor                 | `3.7.19`             | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.code-cursor`                                  | 否        | 否     | 跟随主 `nixpkgs` 更新                                                           |
 | VSCode                 | `1.124.2`            | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.vscode`                                       | 否        | 否     | 跟随主 `nixpkgs` 更新                                                           |
 | Catppuccin VSCode 扩展 | `3.19.0`             | `home/base/core/theme.nix`                                                                  | `catppuccin/nix` 的 VSCode port，本仓库修正 pnpm `nodejs-slim` 参数 | 是        | 否     | 等上游改用 `nodejs-slim` 后移除本地包覆盖                                       |
@@ -73,4 +73,4 @@ nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-c
 
 - Zed Linux 安装文档：<https://zed.dev/docs/linux>
 - NixOS Wiki Zed：<https://wiki.nixos.org/wiki/Zed>
-- Orca release：<https://github.com/stablyai/orca/releases/tag/v1.4.134>
+- Orca release：<https://github.com/stablyai/orca/releases/tag/v1.4.135>

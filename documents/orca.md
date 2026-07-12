@@ -7,11 +7,11 @@
 Linux 图形桌面通过 Home Manager 安装 Orca。配置入口是 `home/linux/gui/base/misc.nix`，实际软件包由
 `overlays/stably-orca/default.nix` 提供。
 
-当前固定版本为 `1.4.134`，来源是官方 GitHub release 的 Linux AppImage：
+当前固定版本为 `1.4.135`，来源是官方 GitHub release 的 Linux AppImage：
 
-- release: <https://github.com/stablyai/orca/releases/tag/v1.4.134>
-- AppImage: <https://github.com/stablyai/orca/releases/download/v1.4.134/orca-linux.AppImage>
-- Nix hash: `sha256-LkPMYi+prl1aKDzBJ02vCu2PXJAVmF3O2bOwXiQeoWw=`
+- release: <https://github.com/stablyai/orca/releases/tag/v1.4.135>
+- AppImage: <https://github.com/stablyai/orca/releases/download/v1.4.135/orca-linux.AppImage>
+- Nix hash: `sha256-E8vCVVDFXMtsRWgmkIVtG8hXt916lmwF7tjjhYLUuko=`
 
 nixpkgs 中已有的 `pkgs.orca` 是 GNOME 屏幕阅读器，不是 StablyAI Orca。本仓库使用 `pkgs.stably-orca`
 作为属性名避免冲突，但安装后的主命令仍是官方命令 `orca`。
@@ -20,7 +20,7 @@ Orca 使用内置的 xterm.js 终端界面，不会启动 Ghostty、Foot 等外�
 只为 Orca 进程设置
 `SHELL=${lib.getExe pkgs.nushell}`，因此新建终端默认运行当前 nixpkgs 中的 Nushell，不会改变系统登录 shell、Ghostty 启动链路或其他图形应用的环境。
 
-Orca `1.4.134`
+Orca `1.4.135`
 尚未提供 Linux 默认 shell 设置，其 shell-ready 启动包装只专门支持 Bash 和 Zsh。Nushell 会以 `nu -l`
 登录模式启动，普通交互终端可正常使用；Orca 自动投递 Agent 启动命令时不会获得 Bash/Zsh 专用的 shell-ready 标记。
 
@@ -33,9 +33,14 @@ Orca AppImage 通过 nixpkgs 的 `appimageTools.wrapAppImage` 运行在 `buildFH
 Niri 会按窗口的 `app-id="orca"` 将 Orca 默认打开到 `5code` 工作区并最大化。窗口规则位于
 `home/linux/gui/niri/conf/windowrules.kdl`。
 
+Home Manager 通过 `home/linux/gui/base/xdg/autostart.nix` 将 Orca 自带的 `orca.desktop` 安装到
+`~/.config/autostart/orca.desktop`。Orca 会在用户进入 Niri 图形会话且 XDG
+autostart 就绪后自动启动，不会在尚无 Wayland、D-Bus 和 portal 环境的系统引导阶段启动。
+
 ## 使用方式
 
-更新 Home Manager 或 NixOS 配置后，可以从应用启动器打开 `Orca`，也可以在终端运行：
+更新 Home Manager 或 NixOS 配置后，Orca 会在下次登录 Niri 图形会话时自动启动。也可以从应用启动器打开
+`Orca`，或在终端运行：
 
 ```bash
 orca
@@ -68,6 +73,9 @@ nix store prefetch-file --json https://github.com/stablyai/orca/releases/downloa
 
 ## 回滚方式
 
+如果不再需要登录后自动启动，从 `home/linux/gui/base/xdg/autostart.nix` 的 `xdg.autostart.entries`
+中移除 `stably-orca` 桌面文件条目。Orca 仍会保留在应用启动器中并可手动运行。
+
 如果需要撤销 agenix 目录映射，从 `overlays/stably-orca/default.nix` 移除
 `extraBwrapArgs`。撤销后 Orca 仍可启动，但内置 Nushell 无法再通过
 `/etc/agenix/alias-for-work.nushell` 加载工作 alias。
@@ -88,10 +96,13 @@ nix store prefetch-file --json https://github.com/stablyai/orca/releases/downloa
 ```bash
 nix build --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.pkgs.stably-orca' --impure --no-link --print-build-logs
 nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getVersion pkgs.stably-orca' --impure
-nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); cfg = flake.nixosConfigurations.apollo.config; lib = flake.inputs.nixpkgs.lib; in builtins.any (pkg: (pkg.pname or "") == "orca" && lib.getVersion pkg == "1.4.134") cfg.home-manager.users.vitus.home.packages' --impure
+nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); cfg = flake.nixosConfigurations.apollo.config; lib = flake.inputs.nixpkgs.lib; in builtins.any (pkg: (pkg.pname or "") == "orca" && lib.getVersion pkg == "1.4.135") cfg.home-manager.users.vitus.home.packages' --impure
+nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in map toString flake.nixosConfigurations.apollo.config.home-manager.users.vitus.xdg.autostart.entries' --impure
+nix build --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.config.home-manager.users.vitus.home.activationPackage' --impure --no-link --print-out-paths
 nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getExe pkgs.nushell' --impure
 out=$(nix build --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.pkgs.stably-orca' --impure --no-link --print-out-paths)
 grep '^export SHELL=' "$out/bin/orca"
+grep -- '--ro-bind-try /etc/agenix /etc/agenix' "$out/bin/.orca-wrapped"
 "$(nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getExe pkgs.nushell' --impure)" -l -c 'version | get version'
 ```
 

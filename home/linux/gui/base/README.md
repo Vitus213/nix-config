@@ -55,9 +55,9 @@ Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动�
 
 ## Orca
 
-`misc.nix` 通过 `pkgs.stably-orca` 安装 StablyAI Orca `1.4.134`，启动命令为
-`orca`。Niri 会将 Orca 默认打开到 `5code` 工作区并最大化。版本固定、更新和回滚方式见
-[Orca 桌面应用](../../../../documents/orca.md)。
+`misc.nix` 通过 `pkgs.stably-orca` 安装 StablyAI Orca `1.4.135`，启动命令为
+`orca`。`xdg/autostart.nix` 让 Orca 在登录 Niri 图形会话后自动启动；Niri 会将窗口默认打开到 `5code`
+工作区并最大化。版本固定、自启动、更新和回滚方式见 [Orca 桌面应用](../../../../documents/orca.md)。
 
 ## 空闲策略
 

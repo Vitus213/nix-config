@@ -9,12 +9,26 @@
 - 影响范围：全部 NixOS 桌面主机和 macOS Artemis；`Esc` 恢复 Escape，`Caps Lock`
   恢复系统大写锁定，不再交换两个键，也不再提供点按 Escape、长按 Control 的复合行为。
 - 配置入口：`modules/nixos/desktop/peripherals.nix`、`modules/darwin/system.nix`。
-- 变更内容：移除 Linux 上仅用于 Esc/Caps Lock 映射的 `keyd 2.6.0` 服务配置；移除 macOS 的
-  nix-darwin `system.keyboard` 映射。Fcitx5/Rime 继续禁止 Caps Lock 参与中西文切换，不改变其系统键位。
-- 验证方式：求值确认 Apollo、Athena 和 Generic 的 `services.keyd.enable` 均为 `false`；确认
-  Artemis 的 `system.keyboard.enableKeyMapping` 为 `false` 且 `userKeyMapping` 为空。未执行
-  `just local`、`nixos-rebuild switch` 或 `darwin-rebuild switch`，实体键行为需部署后实测。
+- 变更内容：移除 Linux 上仅用于 Esc/Caps Lock 映射的 `keyd 2.6.0` 服务配置；移除 macOS 的 nix-darwin
+  `system.keyboard` 映射。Fcitx5/Rime 继续禁止 Caps Lock 参与中西文切换，不改变其系统键位。
+- 验证方式：求值确认 Apollo、Athena 和 Generic 的 `services.keyd.enable` 均为
+  `false`；确认 Artemis 的 `system.keyboard.enableKeyMapping` 为 `false` 且 `userKeyMapping`
+  为空。未执行 `just local`、`nixos-rebuild switch` 或
+  `darwin-rebuild switch`，实体键行为需部署后实测。
 - 关联文档：[Esc 与 Caps Lock 原生键位](./keyboard-layout.md)、[Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)。
+
+### 登录图形会话后自动启动 Orca
+
+- 影响范围：全部 Linux GUI 主机的 StablyAI Orca
+  `1.4.135`；用户进入 Niri 图形会话后自动打开 Orca，不在缺少 Wayland、D-Bus 和 portal 环境的系统引导阶段启动。
+- 配置入口：`home/linux/gui/base/xdg/autostart.nix`。
+- 变更内容：将 `pkgs.stably-orca` 提供的 `orca.desktop` 加入 Home Manager XDG
+  autostart 列表；继续沿用 `app-id="orca"` 的 Niri 窗口规则，启动后进入 `5code` 工作区并最大化。
+- 验证方式：求值确认 Apollo 和 Athena 的 XDG autostart 列表均包含 Orca `1.4.135`
+  桌面文件；构建Apollo Home Manager generation，确认生成的 `~/.config/autostart/orca.desktop` 包含
+  `Exec=orca %U`、`Terminal=false` 和 `X-AppImage-Version=1.4.135`。未执行 `just local` 或
+  `nixos-rebuild switch`。
+- 关联文档：[Orca 桌面应用](./orca.md)。
 
 ### 将桌面壁纸切换为本机 WLOP 作品
 
@@ -33,6 +47,19 @@
   [WLOP 壁纸来源清单](https://github.com/Vitus213/wallpapers)。
 
 ## 2026-07-11
+
+### 更新 Orca 至 1.4.135
+
+- 影响范围：Linux 图形桌面的 StablyAI Orca，由 `1.4.134` 更新至官方最新的 `1.4.135`。
+- 配置入口：`overlays/stably-orca/default.nix`。
+- 变更内容：更新官方 Linux AppImage URL 和固定哈希；保留 Orca 进程级 Nushell 默认值及 `/etc/agenix`
+  目录级只读映射。上游版本包含 Linux 文件监视循环、终端冻结和性能、Codex 重复 TOML project
+  key、SSH 与远程连接可靠性等修复。
+- 验证方式：构建 `apollo.pkgs.stably-orca`；求值确认版本为 `1.4.135` 且 Apollo Home
+  Manager 用户包列表仍包含 Orca；确认生成的启动器设置 Nushell `0.113.1`，Bubblewrap 启动器保留
+  `--ro-bind-try /etc/agenix /etc/agenix`，并执行包装器指定的 `nu -l` 确认版本。未执行 `just local`
+  或 `nixos-rebuild switch`。
+- 关联文档：[Orca 桌面应用](./orca.md)、[应用版本审计](./application-version-audit.md)。
 
 ### 向 Orca FHS 环境映射 agenix secrets
 

@@ -12,11 +12,11 @@ _:
         }:
         let
           pname = "orca";
-          version = "1.4.134";
+          version = "1.4.135";
 
           src = fetchurl {
             url = "https://github.com/stablyai/orca/releases/download/v${version}/orca-linux.AppImage";
-            hash = "sha256-LkPMYi+prl1aKDzBJ02vCu2PXJAVmF3O2bOwXiQeoWw=";
+            hash = "sha256-E8vCVVDFXMtsRWgmkIVtG8hXt916lmwF7tjjhYLUuko=";
           };
 
           appimageContents = appimageTools.extract {
