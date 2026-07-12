@@ -4,19 +4,21 @@
 
 ## 2026-07-12
 
-### 将桌面壁纸迁移到个人仓库
+### 将桌面壁纸切换为本机 WLOP 作品
 
-- 影响范围：全部 Linux GUI 主机的 Noctalia 壁纸数据源；随机切换、全显示器同步和壁纸取色行为不变。
-- 配置入口：`flake.nix`、`flake.lock`、`home/linux/gui/base/noctalia/default.nix`。
-- 变更内容：创建公开仓库 [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)，迁移现有 12 张图片、
-  默认壁纸符号链接、工具脚本和上游 MIT 许可证/作者说明；将非 flake 的 `wallpapers` input 从
-  `ryan4yin/wallpapers` 切换到个人仓库，并锁定提交 `64ae67b8f9799ac83da3fb752e5e1138ac4cbe87`。
-- 验证方式：逐文件比较迁移内容；确认 Apollo Home Manager 的 `~/Pictures/Wallpapers` source 求值到新输入的
-  Nix store 路径且包含全部 17 个条目；执行
-  `nix eval .#evalTests --show-trace --print-build-logs --verbose` 返回 `true`。未执行 `just local`，因此当前系统
-  仍使用已部署 generation，下一次重建后切换到新锁定来源。
+- 影响范围：全部 Linux GUI 主机的 Noctalia 壁纸目录；每台主机需要单独准备不受 Git 管理的本机图片。
+- 配置入口：`home/linux/gui/base/noctalia/config/settings.json`、
+  `home/linux/gui/base/noctalia/default.nix`、`flake.nix`、`flake.lock`。
+- 变更内容：从 WLOP 官方 ArtStation 筛选 8 张横屏展示图，仅保存到本机 `~/Pictures/WLOP`；Noctalia 改为
+  递归扫描该目录。移除 `wallpapers` flake input 和 Home Manager 的只读壁纸目录映射；公开仓库
+  [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers) 删除旧图片，改为只记录 WLOP 官方作品页、
+  本机文件名和分辨率，并忽略所有图片/视频文件，避免公开再分发未授权原图。
+- 验证方式：确认 8 张本机文件均为可识别 JPEG，分辨率覆盖 `1920x753` 至 `1920x1126`；确认
+  `noctalia-shell.service` 为 `active`，通过 IPC 将所有显示器切换到 `dome.jpg`，运行时缓存记录
+  `DP-1` 已使用该文件；执行 `nix eval .#evalTests --show-trace --print-build-logs --verbose` 返回 `true`，
+  `nixfmt --check` 通过。未执行 `just local`。
 - 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)、
-  [个人壁纸仓库](https://github.com/Vitus213/wallpapers)。
+  [WLOP 壁纸来源清单](https://github.com/Vitus213/wallpapers)。
 
 ## 2026-07-11
 

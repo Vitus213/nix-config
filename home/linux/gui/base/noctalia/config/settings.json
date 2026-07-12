@@ -643,7 +643,7 @@
     },
     "wallpaper": {
         "automationEnabled": true,
-        "directory": "/home/vitus/Pictures/Wallpapers",
+        "directory": "/home/vitus/Pictures/WLOP",
         "enableMultiMonitorDirectories": false,
         "enabled": true,
         "favorites": [

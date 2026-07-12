@@ -174,12 +174,6 @@
     #   flake = false;
     # };
 
-    # my wallpapers
-    wallpapers = {
-      url = "github:Vitus213/wallpapers";
-      flake = false;
-    };
-
     # nur-ryan4yin = {
     #   url = "github:ryan4yin/nur-packages";
     #   inputs.nixpkgs.follows = "nixpkgs";

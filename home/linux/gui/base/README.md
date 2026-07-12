@@ -38,14 +38,15 @@ Noctalia Shell 当前承担桌面 shell 的主要职责，替代或整合了部�
 
 主配置在 `noctalia/config/settings.json`。
 
-壁纸内容来自公开仓库 [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)。`flake.nix` 将它声明为
-非 flake 的 `wallpapers` input，`flake.lock` 固定具体提交；`noctalia/default.nix` 再把输入映射为
-`~/Pictures/Wallpapers`。Noctalia 从该目录递归读取图片，当前每 600 秒为所有显示器随机切换，并从壁纸生成
-Shell 配色。
+Noctalia 从本机私有目录 `~/Pictures/WLOP` 递归读取壁纸，当前每 600 秒为所有显示器随机切换，并从壁纸生成
+Shell 配色。该目录不由 Nix、Home Manager 或 Git 管理；每台桌面主机都需要从 WLOP 官方渠道单独准备图片。
+当前筛选作品的标题、官方页面和预期文件名记录在公开的
+[Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)，仓库不保存原图。
 
-向壁纸仓库新增或移除图片后，先提交并推送该仓库，再在本配置仓库执行
-`nix flake update wallpapers` 并提交更新后的 `flake.lock`。需要回滚壁纸集合时，恢复本配置仓库中对应版本的
-`flake.lock`；需要整体更换来源时，同时修改 `flake.nix` 的 `wallpapers.url` 并重新更新该 input。
+新增或恢复壁纸时，将合法取得的文件复制到 `~/Pictures/WLOP`，再通过 Noctalia 壁纸选择器或
+`noctalia-shell ipc call wallpaper set <path> all` 应用。需要更换目录时修改
+`noctalia/config/settings.json` 的 `wallpaper.directory`；回滚时恢复该字段并重新选择目标图片。
+
 
 Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动。当前不设置
 `NOCTALIA_PAM_SERVICE`，因此 Noctalia 锁屏认证使用默认的完整 `/etc/pam.d/login` PAM 栈。

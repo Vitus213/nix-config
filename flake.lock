@@ -955,8 +955,7 @@
         "nuenv": "nuenv",
         "pre-commit-hooks": "pre-commit-hooks",
         "preservation": "preservation",
-        "refind-minimal": "refind-minimal",
-        "wallpapers": "wallpapers"
+        "refind-minimal": "refind-minimal"
       }
     },
     "rust-overlay": {
@@ -1084,22 +1083,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "wallpapers": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1783858366,
-        "narHash": "sha256-aAuTC615myIO3ydQRvDTmkXSzeDI8opp6jSKwmJMbY4=",
-        "owner": "Vitus213",
-        "repo": "wallpapers",
-        "rev": "64ae67b8f9799ac83da3fb752e5e1138ac4cbe87",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Vitus213",
-        "repo": "wallpapers",
         "type": "github"
       }
     },

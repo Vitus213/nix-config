@@ -3,7 +3,6 @@
   config,
   pkgs,
   pkgs-patched,
-  wallpapers,
   ...
 }:
 
@@ -20,8 +19,6 @@ in
   ++ (lib.optionals pkgs.stdenv.isx86_64 [
     pkgs.gpu-screen-recorder # recoding screen
   ]);
-
-  home.file."Pictures/Wallpapers".source = wallpapers;
 
   xdg.configFile =
     let
