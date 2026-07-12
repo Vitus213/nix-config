@@ -2,6 +2,22 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-12
+
+### 将桌面壁纸迁移到个人仓库
+
+- 影响范围：全部 Linux GUI 主机的 Noctalia 壁纸数据源；随机切换、全显示器同步和壁纸取色行为不变。
+- 配置入口：`flake.nix`、`flake.lock`、`home/linux/gui/base/noctalia/default.nix`。
+- 变更内容：创建公开仓库 [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)，迁移现有 12 张图片、
+  默认壁纸符号链接、工具脚本和上游 MIT 许可证/作者说明；将非 flake 的 `wallpapers` input 从
+  `ryan4yin/wallpapers` 切换到个人仓库，并锁定提交 `64ae67b8f9799ac83da3fb752e5e1138ac4cbe87`。
+- 验证方式：逐文件比较迁移内容；确认 Apollo Home Manager 的 `~/Pictures/Wallpapers` source 求值到新输入的
+  Nix store 路径且包含全部 17 个条目；执行
+  `nix eval .#evalTests --show-trace --print-build-logs --verbose` 返回 `true`。未执行 `just local`，因此当前系统
+  仍使用已部署 generation，下一次重建后切换到新锁定来源。
+- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)、
+  [个人壁纸仓库](https://github.com/Vitus213/wallpapers)。
+
 ## 2026-07-11
 
 ### 向 Orca FHS 环境映射 agenix secrets

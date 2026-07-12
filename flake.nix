@@ -176,7 +176,7 @@
 
     # my wallpapers
     wallpapers = {
-      url = "github:ryan4yin/wallpapers";
+      url = "github:Vitus213/wallpapers";
       flake = false;
     };
 

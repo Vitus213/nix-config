@@ -1090,15 +1090,15 @@
     "wallpapers": {
       "flake": false,
       "locked": {
-        "lastModified": 1703310017,
-        "narHash": "sha256-SL3PIDa4BNz2rDZ/9KwnJCAfhelIoqpLtQ/FSYgfusI=",
-        "owner": "ryan4yin",
+        "lastModified": 1783858366,
+        "narHash": "sha256-aAuTC615myIO3ydQRvDTmkXSzeDI8opp6jSKwmJMbY4=",
+        "owner": "Vitus213",
         "repo": "wallpapers",
-        "rev": "20dea02ee2c0bb74dadcc3d4ec5efe78d00520dc",
+        "rev": "64ae67b8f9799ac83da3fb752e5e1138ac4cbe87",
         "type": "github"
       },
       "original": {
-        "owner": "ryan4yin",
+        "owner": "Vitus213",
         "repo": "wallpapers",
         "type": "github"
       }
