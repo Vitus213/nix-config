@@ -28,10 +28,12 @@ systemctl --user status type4me-linux.service
 `type4me-linux.service` 在 Wayland 图形会话中执行：
 
 ```text
-type4me-linux gui --background
+type4me-linux service
 ```
 
-服务导出 `io.github.vitus.Type4Me.Controller` D-Bus 接口。Niri 快捷键直接调用该接口：
+专用 `service` 入口以 Gio
+service 模式持有应用单例，避免 systemd 启动进程退化为已有 GUI 的远程客户端并以成功码退出。服务导出
+`io.github.vitus.Type4Me.Controller` D-Bus 接口。Niri 快捷键直接调用该接口：
 
 - `Scroll Lock`：调用 `Toggle`，开始或停止录音
 - `Shift + Scroll Lock`：调用 `Cancel`，取消当前录音

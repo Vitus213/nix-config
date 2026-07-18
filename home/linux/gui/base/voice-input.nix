@@ -26,7 +26,7 @@ in
     };
 
     Service = {
-      ExecStart = "${lib.getExe type4mePackage} gui --background";
+      ExecStart = "${lib.getExe type4mePackage} service";
       Restart = "on-failure";
       RestartSec = 2;
       TimeoutStopSec = 20;

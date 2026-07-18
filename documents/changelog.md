@@ -4,6 +4,17 @@
 
 ## 2026-07-18
 
+### 修复 Type4Me systemd 单例所有权
+
+- 影响范围：Apollo 及使用 Linux GUI 基础模块的 Type4Me 常驻服务。
+- 配置入口：`home/linux/gui/base/voice-input.nix`。
+- 变更内容：将 unit 的启动命令从通用 `gui --background` 切换为专用 `service` 入口；该入口使用 Gio
+  service 模式，已有 GUI 占用应用总线名称时会失败并由 systemd 重试，不再作为远程客户端成功退出后脱离监管。
+- 验证方式：Type4Me
+  460 项测试和 flake 构建通过；已有单例冲突返回失败码 1，隔离 D-Bus/Xvfb 会话中的 service 持续运行；`nixfmt --check`、`niri validate`
+  和 `nix flake check --no-build` 通过。未执行 `just local` 或 `nixos-rebuild switch`。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
 ### 消除 Niri 按需 XWayland 导致的 Fcitx5 启动竞态
 
 - 影响范围：全部 Linux GUI 主机的 Fcitx5 XIM 注册，以及 WeChat `4.1.1.4`
@@ -129,14 +140,14 @@
 - 影响范围：全部 Linux GUI 主机的 Noctalia 壁纸目录；每台主机需要单独准备不受 Git 管理的本机图片。
 - 配置入口：`home/linux/gui/base/noctalia/config/settings.json`、
   `home/linux/gui/base/noctalia/default.nix`、`flake.nix`、`flake.lock`。
-- 变更内容：从 WLOP 官方 ArtStation 筛选 8 张横屏展示图，仅保存到本机 `~/Pictures/WLOP`；Noctalia 改为
-  递归扫描该目录。移除 `wallpapers` flake input 和 Home Manager 的只读壁纸目录映射；公开仓库
-  [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers) 删除旧图片，改为只记录 WLOP 官方作品页、
-  本机文件名和分辨率，并忽略所有图片/视频文件，避免公开再分发未授权原图。
+- 变更内容：从 WLOP 官方 ArtStation 筛选 8 张横屏展示图，仅保存到本机
+  `~/Pictures/WLOP`；Noctalia 改为递归扫描该目录。移除 `wallpapers` flake input 和 Home
+  Manager 的只读壁纸目录映射；公开仓库 [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)
+  删除旧图片，改为只记录 WLOP 官方作品页、本机文件名和分辨率，并忽略所有图片/视频文件，避免公开再分发未授权原图。
 - 验证方式：确认 8 张本机文件均为可识别 JPEG，分辨率覆盖 `1920x753` 至 `1920x1126`；确认
   `noctalia-shell.service` 为 `active`，通过 IPC 将所有显示器切换到 `dome.jpg`，运行时缓存记录
-  `DP-1` 已使用该文件；执行 `nix eval .#evalTests --show-trace --print-build-logs --verbose` 返回 `true`，
-  `nixfmt --check` 通过。未执行 `just local`。
+  `DP-1` 已使用该文件；执行 `nix eval .#evalTests --show-trace --print-build-logs --verbose` 返回
+  `true`， `nixfmt --check` 通过。未执行 `just local`。
 - 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md)、
   [WLOP 壁纸来源清单](https://github.com/Vitus213/wallpapers)。
 
