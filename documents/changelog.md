@@ -2,6 +2,87 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-18
+
+### 消除 Niri 按需 XWayland 导致的 Fcitx5 启动竞态
+
+- 影响范围：全部 Linux GUI 主机的 Fcitx5 XIM 注册，以及 WeChat `4.1.1.4`
+  在 Niri/XWayland 下的 Rime 候选框。
+- 配置入口：`home/linux/gui/base/fcitx5/default.nix`。
+- 变更内容：为 `fcitx5-daemon.service` 增加 `ExecStartPre=xprop -root`；先触发并确认 Niri `26.04`
+  的按需 XWayland 已经可连接，再启动 Fcitx5 注册
+  `XIM_SERVERS`，消除仅禁用重复 autostart 后仍存在的登录启动竞态。WeChat 继续隐藏 `WAYLAND_DISPLAY`
+  并强制使用 XWayland/XIM。
+- 验证方式：现场复现 `XIM_SERVERS` 不存在且微信同时出现 `wayland_v2` 与 `fcitx4`
+  输入上下文；重启 Fcitx5 和 WeChat 后确认 `XIM_SERVERS(ATOM) = @server=fcitx`，微信只进入
+  `Group [x11::0]` 且前端为 `fcitx4`。求值确认 Apollo 和 Athena 的服务均包含 `xprop -root`
+  启动前置命令，两台主机的 `system.build.toplevel` 均构建成功。仓库配置尚未执行 `just local` 或
+  `nixos-rebuild switch` 部署。
+- 关联文档：[Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)、[Linux 微信与 QQ](./linux-im-apps.md)。
+
+## 2026-07-15
+
+### 完全移除 Voxtype 语音输入
+
+- 影响范围：Apollo 及使用 Linux GUI 基础模块的 Niri 桌面；Type4Me 成为唯一语音输入方案。
+- 配置入口：`home/linux/gui/base/voice-input.nix`、`home/linux/gui/niri/conf/keybindings.kdl`。
+- 变更内容：删除 `pkgs.voxtype-vulkan` 用户包、`~/.config/voxtype/config.toml`、 `voxtype.service`
+  及其 Vulkan/OpenCC 配置；保留 Type4Me 服务、模型管理、Wayland 文本注入工具和
+  `Scroll Lock`/`Shift + Scroll Lock` D-Bus 快捷键。当前会话中的旧 Voxtype
+  unit 已停止并禁用，用户模型数据未自动删除。
+- 验证方式：Apollo Home Manager 求值确认服务集合不含 `voxtype`、用户包集合不含 Voxtype，且
+  `type4me-linux` 服务仍存在；`niri validate`、`nixfmt --check` 和 `nix flake check --no-build`
+  通过。未执行 `just local` 或 `nixos-rebuild switch`。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)、[应用版本审计](./application-version-audit.md)。
+
+## 2026-07-14
+
+### 补齐 apollo 双系统 RTC 首次校准步骤
+
+- 影响范围：`apollo` 在 NixOS 与 Windows 之间切换时的硬件时钟一致性。
+- 配置入口：`hosts/olympians-apollo/default.nix`；当前继续使用
+  `time.hardwareClockInLocalTime = true`，本次不改变系统配置。
+- 变更内容：确认运行中的 NixOS 已按本地时间解释 RTC，但硬件时钟仍保留 UTC 值，导致 RTC 与
+  `Asia/Shanghai` 本地时间相差 8 小时；补充首次启用后的 `hwclock --systohc --localtime --noadjfile`
+  校准、状态检查和 Windows 时间同步步骤。`--noadjfile` 避免 `hwclock` 尝试改写由 Nix
+  store 提供的只读 `/etc/adjtime`。
+- 验证方式：`timedatectl status` 确认系统时钟已同步、NTP 服务为 active、`RTC in local TZ` 为
+  `yes`，同时观测到校准前 `RTC time` 比 `Local time` 少 8 小时；util-linux `2.42` 的
+  `hwclock --help` 和手册确认 `--noadjfile` 会跳过
+  `/etc/adjtime`。实际 RTC 写入由用户在本机终端执行。
+- 关联文档：[rEFInd 双系统启动](./refind-boot.md#双系统时间校准)。
+
+## 2026-07-13
+
+### 将 Niri 语音输入快捷键切换到 Type4Me
+
+- 影响范围：Apollo 及使用 Linux GUI 基础模块的 Niri 桌面；`Scroll Lock`
+  切换 Type4Me 录音，`Shift + Scroll Lock` 取消录音，Voxtype 保留为未绑定快捷键的后备服务。
+- 配置入口：`flake.nix`、`flake.lock`、`home/linux/gui/base/voice-input.nix`、
+  `home/linux/gui/niri/conf/keybindings.kdl`。
+- 变更内容：增加本地 `path:/home/vitus/type4me-linux` flake 输入并锁定，安装 Type4Me
+  `0.1.0`，增加随 Wayland 会话启动的 `type4me-linux.service`；Niri 26.04 通过
+  `io.github.vitus.Type4Me.Controller` D-Bus 接口调用 `Toggle` 和 `Cancel`。当前 GNOME
+  Portal 后端的 GlobalShortcuts v1 在 `BindShortcuts` 返回响应码 `2`，因此保留 compositor 原生绑定。
+- 验证方式：`niri validate` 通过；Apollo Home Manager 服务和包集合求值通过；Type4Me
+  flake 包构建成功；当前会话服务为 `active`，D-Bus 五个控制方法均已导出，真实 `Toggle` 和 `Cancel`
+  调用成功。未执行 `just local` 或 `nixos-rebuild switch`。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
+### 将 Noctalia 壁纸源切换到个人仓库
+
+- 影响范围：全部 Linux GUI 主机的 Noctalia Shell `4.4.3`；壁纸选择器改为递归读取
+  `Vitus213/wallpapers` 仓库 `jpg/` 目录中的 8 张 JPG，自动换壁纸保持关闭。
+- 配置入口：`flake.nix`、`flake.lock`、`home/linux/gui/base/noctalia/default.nix`、
+  `home/linux/gui/base/noctalia/config/settings.json`。
+- 变更内容：将壁纸 input 从 `ryan4yin/wallpapers` 切换为 `github:Vitus213/wallpapers`，锁定提交
+  `e1c407b445c9a3c6d2606302b5d375cae9a51c88`；Home Manager 只把 input 的 `jpg/` 子目录链接到
+  `~/Pictures/Wallpapers`，Noctalia 继续读取该稳定路径并保留 `automationEnabled = false`。
+- 验证方式：`nix flake check --no-build` 和 `just test` 均通过；Apollo Home Manager 求值确认
+  `wallpapers` input 存在，链接源为锁定仓库的 `jpg/` 子目录，并精确包含 8 张预期 JPG。未执行
+  `just local` 或 `nixos-rebuild switch`。
+- 关联文档：[Linux 桌面基础配置](../home/linux/gui/base/README.md#壁纸来源)。
+
 ## 2026-07-12
 
 ### 更新 Orca 至 1.4.137

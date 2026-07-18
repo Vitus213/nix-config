@@ -30,6 +30,8 @@
     source = ./default.custom.yaml;
     force = true;
   };
+  # Trigger Niri's on-demand XWayland before Fcitx registers its XIM server.
+  systemd.user.services.fcitx5-daemon.Service.ExecStartPre = "${pkgs.xprop}/bin/xprop -root";
 
   i18n.inputMethod = {
     enable = true;

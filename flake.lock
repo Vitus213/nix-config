@@ -318,6 +318,24 @@
         "type": "github"
       }
     },
+    "flake-utils_2": {
+      "inputs": {
+        "systems": "systems_4"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "ghostty": {
       "inputs": {
         "flake-compat": "flake-compat_2",
@@ -955,7 +973,9 @@
         "nuenv": "nuenv",
         "pre-commit-hooks": "pre-commit-hooks",
         "preservation": "preservation",
-        "refind-minimal": "refind-minimal"
+        "refind-minimal": "refind-minimal",
+        "type4me-linux": "type4me-linux",
+        "wallpapers": "wallpapers"
       }
     },
     "rust-overlay": {
@@ -1083,6 +1103,55 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_4": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "type4me-linux": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783957221,
+        "narHash": "sha256-ea5RLSJ2MOiJq49pAyHnporspV0wtpmCivvp26kl7ZE=",
+        "path": "/home/vitus/type4me-linux",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/vitus/type4me-linux",
+        "type": "path"
+      }
+    },
+    "wallpapers": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1783874972,
+        "narHash": "sha256-GRIqE5B7m1H8K/5/ACNU7OzI8blv3/FsnImAVtgf5w0=",
+        "owner": "Vitus213",
+        "repo": "wallpapers",
+        "rev": "e1c407b445c9a3c6d2606302b5d375cae9a51c88",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Vitus213",
+        "repo": "wallpapers",
         "type": "github"
       }
     },

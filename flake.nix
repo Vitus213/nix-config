@@ -163,9 +163,20 @@
 
     ########################  My own repositories  #########################################
 
+    type4me-linux = {
+      url = "path:/home/vitus/type4me-linux";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # my private secrets repository.
     mysecrets = {
       url = "git+https://github.com/Vitus213/my-secrets.git";
+      flake = false;
+    };
+
+    # my wallpapers
+    wallpapers = {
+      url = "github:Vitus213/wallpapers";
       flake = false;
     };
 

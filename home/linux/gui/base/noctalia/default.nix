@@ -3,6 +3,7 @@
   config,
   pkgs,
   pkgs-patched,
+  wallpapers,
   ...
 }:
 
@@ -20,6 +21,7 @@ in
     pkgs.gpu-screen-recorder # recoding screen
   ]);
 
+  home.file."Pictures/Wallpapers".source = wallpapers + "/jpg";
   xdg.configFile =
     let
       mkSymlink = config.lib.file.mkOutOfStoreSymlink;

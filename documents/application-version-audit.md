@@ -38,7 +38,7 @@
 | Clash Verge Rev        | `2.5.1`              | `modules/nixos/desktop/networking/clash-verge.nix`                                          | 主 `nixpkgs` 的 `pkgs.clash-verge-rev`                              | 否        | 否     | 跟随主 `nixpkgs` 更新                                                           |
 | Guix                   | `1.5.0`              | `modules/nixos/desktop/guix.nix`                                                            | 主 `nixpkgs` 的 `pkgs.guix`                                         | 否        | 否     | 跟随主 `nixpkgs` 更新                                                           |
 | Noctalia Shell         | `4.4.3`              | `home/linux/gui/base/noctalia/default.nix`                                                  | `nixpkgs-patched` 的 `pkgs-patched.noctalia-shell`                  | 否        | 否     | 跟随 `nixpkgs-patched` 更新                                                     |
-| Voxtype Vulkan         | `0.7.2`              | `home/linux/gui/base/voice-input.nix`                                                       | 主 `nixpkgs` 的 `pkgs.voxtype-vulkan`                               | 否        | 否     | 跟随主 `nixpkgs` 更新                                                           |
+| Type4Me Linux          | `0.1.0`              | `flake.nix`、`home/linux/gui/base/voice-input.nix`                                          | 本地 `path:/home/vitus/type4me-linux` flake input                   | 是        | 否     | 发布远程仓库后将本地绝对路径切换为固定远程 flake URL                            |
 | Anime Game Launcher    | `3.19.5`             | `modules/nixos/desktop/gaming.nix`                                                          | `aagl-gtk-on-nix` 的 `release-25.11` input                          | 是        | 否     | 当前保留 25.11 分支并关闭 release 检查；等上游提供匹配主 `nixpkgs` 的分支后更新 |
 | Honkers Railway        | `1.15.0`             | `modules/nixos/desktop/gaming.nix`                                                          | `aagl-gtk-on-nix` 的 `release-25.11` input                          | 是        | 否     | 当前保留 25.11 分支并关闭 release 检查；等上游提供匹配主 `nixpkgs` 的分支后更新 |
 | Sleepy Launcher        | `1.6.6`              | `modules/nixos/desktop/gaming.nix`                                                          | `aagl-gtk-on-nix` 的 `release-25.11` input                          | 是        | 否     | 当前保留 25.11 分支并关闭 release 检查；等上游提供匹配主 `nixpkgs` 的分支后更新 |
@@ -56,7 +56,7 @@
 - Zed、Cursor、VSCode、WPS Office CN、Orca
 - Google Chrome、Chromium
 - WeChat，它使用 `appimageTools.wrapAppImage` 和 bubblewrap 参数，不是 NixPak
-- Clash Verge Rev、Noctalia Shell、Voxtype Vulkan
+- Clash Verge Rev、Noctalia Shell、Type4Me Linux
 
 NixPak 适合继续用于浏览器和闭源 IM 这类需要限制家目录读写面的应用；编辑器、输入法数据、桌面 shell 和系统服务类应用不默认套 NixPak，避免破坏插件、LSP、桌面集成或系统服务行为。
 

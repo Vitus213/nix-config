@@ -85,6 +85,32 @@ NixOS rEFInd 模块会把 `extraConfig` 放在生成配置前面，并在后面�
 EFI stub loader 处理，rEFInd 默认会查找 `os_linux.png`；当前配置把主题目录中的 `os_linux.png` 覆盖为
 `os_nixos.png`，因此 NixOS 菜单项显示 NixOS 图标。
 
+## 双系统时间校准
+
+`time.hardwareClockInLocalTime = true`
+只规定 NixOS 如何解释 RTC，不会把已经按 UTC 保存的 RTC 自动改写为本地时间。首次启用该选项后，如果
+`timedatectl status` 中的 `RTC time` 仍比 `Local time` 少 8 小时，先确认
+`System clock synchronized: yes`，再执行一次：
+
+```bash
+sudo hwclock --systohc --localtime --noadjfile
+```
+
+该命令把当前已由 NTP 同步的系统本地时间写入硬件时钟。NixOS 的 `/etc/adjtime` 来自只读的Nix
+store；`--noadjfile` 跳过该文件，而 `--localtime` 已在命令行明确指定 RTC 使用本地时间。随后执行：
+
+```bash
+timedatectl status
+sudo hwclock --show --localtime --noadjfile
+```
+
+`RTC time` 应与 `Local time` 一致，`RTC in local TZ` 应为
+`yes`。重启到 Windows 后再使用“设置 > 时间和语言 > 日期和时间 > 立即同步”校验 Windows 时间。
+
+这是兼容 Windows 默认 RTC 行为的方案。systemd 会警告本地 RTC 模式不能完整处理时区和夏令时变化；当前时区固定为
+`Asia/Shanghai`，没有夏令时。如果以后让 Windows 通过 `RealTimeIsUniversal` 使用UTC，应同时删除
+`time.hardwareClockInLocalTime = true`，避免两边再次采用不同约定。
+
 ## 验证步骤
 
 实施前先做只读备份与记录：

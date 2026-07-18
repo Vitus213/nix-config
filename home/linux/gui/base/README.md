@@ -16,7 +16,7 @@
 | `dev-tools.nix`     | GUI 开发工具                            |
 | `editors.nix`       | GUI 编辑器                              |
 | `media.nix`         | 媒体应用                                |
-| `voice-input.nix`   | Voxtype 语音输入                        |
+| `voice-input.nix`   | Type4Me 语音输入                        |
 | `gaming.nix`        | 游戏相关应用                            |
 | `creative.nix`      | 创作软件                                |
 | `note-taking.nix`   | 笔记应用                                |
@@ -53,6 +53,17 @@ Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动�
 
 锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`。
 
+### 壁纸来源
+
+Noctalia Shell `4.4.3` 从 `/home/vitus/Pictures/Wallpapers` 递归读取壁纸，路径由
+`noctalia/config/settings.json` 的 `wallpaper.directory` 固定。Home Manager 将该目录链接到非 flake
+input `github:Vitus213/wallpapers` 的 `jpg/` 子目录；`flake.lock`
+固定具体提交，只向壁纸选择器暴露 JPG 文件，不暴露壁纸仓库的 `README.md` 和 `sources.json`。
+
+新增或替换壁纸时先更新 `Vitus213/wallpapers` 的 `jpg/` 目录，再更新本仓库的 `wallpapers`
+锁定版本并部署配置。当前 `automationEnabled` 为 `false`，不会按间隔自动切换壁纸。回滚时可将
+`wallpapers.url` 和 `home.file."Pictures/Wallpapers".source` 改回其他壁纸仓库及其图片子目录。
+
 ## Orca
 
 `misc.nix` 通过 `pkgs.stably-orca` 安装 StablyAI Orca `1.4.137`，启动命令为
@@ -69,5 +80,5 @@ Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动�
 
 ## 参考
 
-- <https://docs.noctalia.dev/docs>
+- <https://docs.noctalia.dev/v4/>
 - [上级目录说明](../README.md)
