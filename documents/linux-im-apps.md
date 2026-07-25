@@ -35,8 +35,8 @@
 - XDG autostart 使用封装包提供的 `wechat.desktop`，登录桌面会话后自动启动微信。
 - 沙箱内移除 `WAYLAND_DISPLAY`，显式设置 `XMODIFIERS=@im=fcitx`，并保留 `QT_QPA_PLATFORM=xcb`、
   `QT_IM_MODULE=fcitx` 和 `GTK_IM_MODULE=fcitx`，让新版微信通过 XWayland/XIM 显示 Fcitx5 候选框。
-- Fcitx5 只由 `fcitx5-daemon.service` 启动；服务通过 `ExecStartPre=xprop -root`
-  触发并确认 Niri 的按需 XWayland 已经可连接，然后注册 `XIM_SERVERS`。
+- Fcitx5 只由 `fcitx5-daemon.service` 启动；启动前通过 `xprop -root` 触发 Niri 的按需 XWayland。
+  `fcitx5-xim-recovery.timer` 每 10 秒检查 `XIM_SERVERS`，属性缺失时自动重启 Fcitx5。
 
 QQ:
 
@@ -57,10 +57,12 @@ QQ:
 - 微信和 QQ 都是闭源 IM，应限制其默认读取整个家目录的能力；本仓库已有 Nixpak/bubblewrap 结构，比直接安装裸包更符合当前加固习惯。
 - WeChat `4.1.1.4` 同时看到 Wayland 和 X11 环境时可能改走 Fcitx
   Portal；该路径的候选框坐标在 Niri/XWayland 下可能落到屏幕外。系统 XDG autostart 与 Home
-  Manager 服务同时启动 Fcitx5 时，过早启动的实例也会导致 XIM 未注册。即使只保留 Home
-  Manager 服务，Niri `26.04`
-  的 XWayland 仍是首个 X11 客户端连接时才按需启动，因此 Fcitx5 与 Niri 同时启动时仍可能早于 XWayland。当前在 Fcitx5 启动前执行
-  `xprop -root`，先触发并确认 XWayland 可连接，再注册 XIM；微信沙箱继续隐藏 Wayland 并强制使用 XIM。
+  Manager 服务同时启动 Fcitx5 时，过早启动的实例也会导致 XIM 未注册，因此当前只保留 Home
+  Manager 服务。
+- Niri `26.04` 会按需管理 `xwayland-satellite`。实测显示器断连时 satellite 可能以状态 `101`
+  退出，Fcitx5 随后丢失 XCB 连接；Niri 虽会拉起新的 satellite，Fcitx5 `5.1.21`
+  不会自动重新注册 XIM。当前用定时健康检查发现缺失的 `XIM_SERVERS`
+  并重启 Fcitx5，恢复注册；微信沙箱继续隐藏 Wayland 并强制使用 XIM。
 
 参考:
 
@@ -92,6 +94,7 @@ nix build .#nixosConfigurations.athena.config.system.build.toplevel --no-link --
 
 ```bash
 systemctl --user is-active fcitx5-daemon.service
+systemctl --user is-active fcitx5-xim-recovery.timer
 nix shell nixpkgs#xprop -c xprop -root XIM_SERVERS
 # 预期输出：XIM_SERVERS(ATOM) = @server=fcitx
 fcitx5-diagnose
@@ -105,7 +108,8 @@ fcitx5-diagnose
 - 登录桌面会话后微信会自动启动，Telegram 不会自动启动。
 - 微信聊天输入框能正常显示 Fcitx5/Rime 候选框，而不只是接受盲打后的上屏结果。
 - `fcitx5-diagnose` 中微信位于 `Group [x11::0]`，输入上下文前端为 `fcitx4`，而不是 `wayland_v2`。
-- 当前会话实测在重启 Fcitx5 和 WeChat 后，微信聊天输入框已恢复显示 Rime 候选框。
+- 故障注入终止 `xwayland-satellite` 后，恢复脚本能重启 Fcitx5，并重新建立
+  `XIM_SERVERS(ATOM) = @server=fcitx`。
 
 ## 回滚
 

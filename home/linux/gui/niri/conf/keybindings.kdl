@@ -20,7 +20,7 @@ binds {
 
     // Launcher
     Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    Mod+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
+    Alt+Space { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
     XF86Search { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
 
     // Locker

@@ -9,7 +9,7 @@
 - `mozc-config1.db`: 链接到 `~/.config/mozc/config1.db`
 - `classicui.conf`: Fcitx5 Classic UI 配置
 - `default.nix`: 管理 Home Manager Fcitx5 服务，禁用系统 XDG
-  autostart，并在服务启动前确认 XWayland 可连接
+  autostart，并在 XWayland 重启后自动恢复 XIM
 - `default.custom.yaml`: Rime 用户补丁，固定小鹤双拼并调整 Rime 内部中/西文切换键
 
 ## 注意
@@ -25,8 +25,8 @@ Fcitx5 的 Default 输入法组只保留 `rime`，避免日常在 `rime` 和英�
 
 Fcitx5 只由 Home Manager 的 `fcitx5-daemon.service` 启动。系统包自带的 `org.fcitx.Fcitx5.desktop`
 会被用户级 autostart 覆盖禁用，避免第二个实例争抢 D-Bus 名称。服务启动前用 `xprop -root`
-触发并确认 Niri 的按需 XWayland 已经可连接，随后 Fcitx5 才注册
-`XIM_SERVERS`，避免 WeChat 候选框不可见。
+触发 Niri 的按需 XWayland；`fcitx5-xim-recovery.timer` 每 10 秒检查
+`XIM_SERVERS`，在显示器断连等原因导致 XWayland 重启、Fcitx5 丢失 XCB 连接后自动重启 Fcitx5，恢复 WeChat 的 XIM 候选框。
 
 详细使用、验证和回滚方式见 `documents/fcitx5-rime-input-method.md`。
 

@@ -1,4 +1,19 @@
 { config, pkgs, ... }:
+let
+  ximRecovery = pkgs.writeShellApplication {
+    name = "fcitx5-xim-recover";
+    runtimeInputs = with pkgs; [
+      gnugrep
+      systemd
+      xprop
+    ];
+    text = ''
+      if ! xprop -root XIM_SERVERS 2>/dev/null | grep -q '@server=fcitx'; then
+        systemctl --user restart fcitx5-daemon.service
+      fi
+    '';
+  };
+in
 {
   catppuccin.fcitx5.enable = false;
   xdg.configFile = {
@@ -16,7 +31,7 @@
       source = ./classicui.conf;
       force = true;
     };
-    # Avoid racing the Home Manager service before Niri's XWayland is ready.
+    # Disable the package autostart entry so only the Home Manager service owns Fcitx.
     "autostart/org.fcitx.Fcitx5.desktop".text = ''
       [Desktop Entry]
       Type=Application
@@ -32,6 +47,32 @@
   };
   # Trigger Niri's on-demand XWayland before Fcitx registers its XIM server.
   systemd.user.services.fcitx5-daemon.Service.ExecStartPre = "${pkgs.xprop}/bin/xprop -root";
+  systemd.user.services.fcitx5-xim-recovery = {
+    Unit = {
+      Description = "Recover the Fcitx5 XIM server after XWayland restarts";
+      After = [
+        "graphical-session.target"
+        "fcitx5-daemon.service"
+      ];
+      ConditionEnvironment = "DISPLAY";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${ximRecovery}/bin/fcitx5-xim-recover";
+    };
+  };
+  systemd.user.timers.fcitx5-xim-recovery = {
+    Unit = {
+      Description = "Periodically verify the Fcitx5 XIM server";
+      PartOf = [ "graphical-session.target" ];
+    };
+    Timer = {
+      OnBootSec = "10s";
+      OnUnitActiveSec = "10s";
+      Unit = "fcitx5-xim-recovery.service";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 
   i18n.inputMethod = {
     enable = true;

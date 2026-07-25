@@ -14,6 +14,35 @@
   成功解析新的 Nix store 服务路径；未执行 `just local` 全系统切换。
 - 关联文档：[Linux 语音输入](./linux-voice-input.md)。
 
+## 2026-07-24
+
+### 将 Noctalia 启动器切换为 Alt + Space
+
+- 影响范围：全部使用通用 Niri 配置的 Linux GUI 主机，以及应用自身的 `Alt + Space` 快捷键。
+- 配置入口：`home/linux/gui/niri/conf/keybindings.kdl`。
+- 变更内容：将 Noctalia 应用启动器的全局入口从 `Mod + Space` 改为 `Alt + Space`；保留 `Mod + D` 和
+  `XF86Search` 作为备用入口。
+- 验证方式：使用 Niri `26.04` 执行 `niri validate`，确认当前 `/home/vitus/.config/niri/config.kdl`
+  配置有效；未执行系统切换。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)。
+
+## 2026-07-19
+
+### 自动恢复 XWayland 重启后丢失的 Fcitx5 XIM
+
+- 影响范围：全部 Linux GUI 主机的 Fcitx5 XIM 注册，以及 WeChat `4.1.1.4`
+  在 Niri/XWayland 下的 Rime 候选框。
+- 配置入口：`home/linux/gui/base/fcitx5/default.nix`。
+- 变更内容：保留首次启动前的 XWayland 探测，并增加
+  `fcitx5-xim-recovery.timer`；图形会话中每 10 秒检查一次
+  `XIM_SERVERS`，仅在属性缺失时重启 Fcitx5。该机制修复显示器断连导致 `xwayland-satellite`
+  退出后，Fcitx5 不会随 satellite 重建而重新注册 XIM 的问题。
+- 验证方式：本次启动日志确认 Fcitx5 首次注册成功；显示器断连时 satellite 以状态 `101`
+  退出，Fcitx5 同时记录 XCB 断连。故障注入终止 satellite 后确认 `XIM_SERVERS`
+  消失；运行恢复脚本后 Fcitx5 PID 更新、satellite 重建，`XIM_SERVERS(ATOM) = @server=fcitx`
+  恢复。Apollo `system.build.toplevel` 构建及恢复脚本 ShellCheck 通过；新定时器尚未执行系统部署。
+- 关联文档：[Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)、[Linux 微信与 QQ](./linux-im-apps.md)。
+
 ## 2026-07-18
 
 ### 修复 Type4Me systemd 单例所有权

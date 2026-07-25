@@ -42,6 +42,10 @@ Home Manager 会把这些配置链接到 `~/.config/niri/`。
 
 ## 快捷键
 
+使用 `Alt + Space` 打开或关闭 Noctalia 应用启动器。`Mod + D` 和 `XF86Search`
+保留为备用入口。由于该键位由 Niri 全局处理，应用自身的 `Alt + Space`
+快捷键不会收到按键；如需恢复原配置，将 `keybindings.kdl` 中的 `Alt+Space` 改回 `Mod+Space`。
+
 当前使用 `Mod + 数字` 切换工作区:
 
 ```text
