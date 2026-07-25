@@ -2,6 +2,18 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-07-25
+
+### 将 Type4Me 切换为已发布的远程 flake
+
+- 影响范围：Apollo 及使用 Linux GUI 基础模块的 Type4Me 用户服务。
+- 配置入口：`flake.nix`、`flake.lock`、`documents/linux-voice-input.md`。
+- 变更内容：将 Type4Me 输入从本机绝对路径切换为 GitHub flake，并将锁文件固定到
+  `3e367432036bbbbb035dbaa6229ecb3ce94ee2d8`，使 CUDA 识别构建可由配置仓库独立复现。
+- 验证方式：Type4Me 提交已推送，`nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.systemd.user.services.type4me-linux.Service.ExecStart --json`
+  成功解析新的 Nix store 服务路径；未执行 `just local` 全系统切换。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
 ## 2026-07-18
 
 ### 修复 Type4Me systemd 单例所有权

@@ -1129,14 +1129,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1783957221,
-        "narHash": "sha256-ea5RLSJ2MOiJq49pAyHnporspV0wtpmCivvp26kl7ZE=",
-        "path": "/home/vitus/type4me-linux",
-        "type": "path"
+        "lastModified": 1784958832,
+        "narHash": "sha256-mEC5RuPyYB9rPo5PaG8L5oz+XUj/YyInyPV7MdB7Oc0=",
+        "owner": "Vitus213",
+        "repo": "type4me-linux",
+        "rev": "3e367432036bbbbb035dbaa6229ecb3ce94ee2d8",
+        "type": "github"
       },
       "original": {
-        "path": "/home/vitus/type4me-linux",
-        "type": "path"
+        "owner": "Vitus213",
+        "repo": "type4me-linux",
+        "type": "github"
       }
     },
     "wallpapers": {

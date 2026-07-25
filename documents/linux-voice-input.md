@@ -7,7 +7,7 @@ Manager 基础模块，也会进入使用该模块的同类桌面会话。
 
 Type4Me 是 Niri 唯一的全局语音输入入口。
 
-- Type4Me 源码输入：`path:/home/vitus/type4me-linux`
+- Type4Me flake 输入：`github:Vitus213/type4me-linux`，由 `flake.lock` 固定到已验证提交
 - Home Manager 配置：`home/linux/gui/base/voice-input.nix`
 - Niri 快捷键：`home/linux/gui/niri/conf/keybindings.kdl`
 - Type4Me 版本：`0.1.0`
@@ -92,9 +92,8 @@ busctl --user introspect io.github.vitus.Type4Me \
 
 ## 已知限制
 
-- `type4me-linux`
-  flake 输入当前使用本机绝对路径，适合该个人配置仓库；迁移到其他机器前需要同步源码或改为可访问的远程 flake
-  URL。
+- `type4me-linux` 使用 GitHub flake 输入；更新应用前必须先推送提交，再更新
+  `flake.lock`，以便系统配置继续可复现。
 - 当前 Portal 后端不能完成 GlobalShortcuts 绑定，Niri 快捷键是主控制路径。
 - Niri 没有按键松开绑定，所以只提供切换与取消，不提供按住说话。
 - Type4Me 模型需要单独安装；缺少模型时 GUI 和控制服务仍可启动，但识别不能完成。

@@ -164,7 +164,7 @@
     ########################  My own repositories  #########################################
 
     type4me-linux = {
-      url = "path:/home/vitus/type4me-linux";
+      url = "github:Vitus213/type4me-linux";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
