@@ -4,6 +4,40 @@
 
 ## 2026-08-15
 
+### 雷神加速器与 OpenClash fake-ip 共存（路由器侧，apollo 加入游戏白名单）
+
+- 影响范围：路由器（192.168.100.1）防火墙/UPnP/dhcp；apollo 的游戏 UDP 绕过 OpenClash 交给雷神，其余设备继续 fake-ip。
+- 配置入口：路由器
+  `/etc/openclash/custom/openclash_custom_firewall_rules.sh`（白名单加 192.168.100.148）、dhcp 静态租约（apollo
+  MAC→148）、`upnpd.config.enabled=1`；雷神官方路由器插件 + apk 补依赖（ImmortalWrt
+  25.12 无 opkg）。
+- 变更内容：复用既有四层隔离（游戏域名国内 DNS / fake-ip 过滤 / Clash DIRECT /
+  UDP 旁路），仅把 apollo 加入第 4 层白名单并做静态租约；启用 UOnP 供雷神 App 发现设备。
+- 验证方式：apollo 上 ea.com/playapex.com 解析为真实 IP、google.com 仍 198.18.x；nft
+  openclash_mangle 含 148 的 return 规则且有命中计数。
+- 回滚与详情：`~/work/all_server/leigod-openclash-gaming.md`（含 hook 备份 `.bak-20260815-apollo`
+  与全量回滚步骤）；SERVERS.md 已同步。
+
+### 文件管理器由 Thunar 切换为 Nautilus（并补 GTK 主题）
+
+- 影响范围：所有加载 `modules/nixos/desktop`
+  的 NixOS 桌面（apollo/athena/generic）；Thunar（GTK/X11 时代，niri 下走 XWayland，4K 分数缩放模糊）被完全移除。
+- 配置入口：`modules/nixos/desktop/misc.nix`（`programs.thunar` 删除， `environment.systemPackages`
+  加入 `nautilus` + `file-roller`）、 `home/linux/gui/niri/conf/windowrules.kdl`（app-id 钉
+  `org.gnome.Nautilus`，仍走 `9file` 工作区）、`home/linux/gui/base/desktop-tools.nix`（新增
+  `GSK_RENDERER=gl`、`GTK_THEME` 会话变量）、`home/base/core/theme.nix`（新增
+  `gtk.theme`）、`README.md`、`documents/niri-workspaces.md`。
+- 变更内容：Nautilus `50.2.2`（GTK4/libadwaita 原生 Wayland，视觉最优雅； `file-roller`
+  提供右键解压）。两个 NVIDIA 必需环境变量：`GSK_RENDERER=gl` 修 GTK4 Vulkan 渲染崩溃（实测
+  `VK_ERROR_OUT_OF_DATE_KHR`）；`GTK_THEME` 强制 Catppuccin
+  Mocha/Pink 主题（libadwaita 应用不读 settings.ini 的 gtk-theme-name）。 `gtk.theme` 声明式写入
+  `catppuccin-gtk`（mocha/pink/rimless）。中途曾短暂配置 Dolphin，试跑后按用户反馈换回 GTK 系；Dolphin 已完全移除。终端侧 yazi（`yy`）与
+  `inode/directory` MIME 绑定不变。
+- 验证方式：Nautilus 实机试跑截图确认深色 Catppuccin 主题与彩色图标生效；
+  `nixfmt --check`、`nix eval .#evalTests`、apollo toplevel 完整求值通过；未执行 `just local`
+  或系统切换。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)、[应用版本审计](./application-version-audit.md)。
+
 ### 重建精简游戏栈并在 apollo 启用（Apex/Overwatch 需求）
 
 - 影响范围：apollo 主机新增 Steam/Proton/gamescope/gamemode/lutris/mangohud 等；athena/generic 不受影响（模块仍按主机 opt-in）。
