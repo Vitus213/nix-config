@@ -54,7 +54,7 @@ nix eval .#nixosConfigurations.apollo.config.system.build.toplevel.drvPath
 nix build --no-link --print-out-paths 'github:youwen5/zen-browser-flake#zen-browser'
 ```
 
-## 默认浏览器
+## 默认浏览器与自启动
 
 Zen 目前是默认浏览器，由两处声明式配置共同决定：
 
@@ -63,8 +63,14 @@ Zen 目前是默认浏览器，由两处声明式配置共同决定：
   `xdg-mime default` 的临时修改会在下次部署时被覆盖。
 - `$BROWSER` 环境变量：`home/linux/base/shell.nix`，值为 `zen`。
 
-换回 Firefox：把 `browser` 列表首位改回 `firefox.desktop`、`BROWSER` 改回 `firefox`，再 `just local`
-部署。
+登录自启动也已切换为 Zen：`home/linux/gui/base/xdg/autostart.nix` 的 `xdg.autostart.entries` 用 Zen
+flake input 提供的 `zen.desktop` 替代了原 `nixpaks.firefox`
+条目（`Exec=zen --name zen %U`，zen 二进制在用户 profile
+PATH 中）。Firefox 不再随登录自启动，仍保留安装可手动使用。
+
+换回 Firefox：把 `browser` 列表首位改回 `firefox.desktop`、`BROWSER` 改回
+`firefox`，并把 autostart 条目换回
+`${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop`，再 `just local` 部署。
 
 uBlock Origin 等扩展需首次启动后手动安装（Zen 支持 Firefox 全部附加组件）。
 
@@ -72,10 +78,13 @@ uBlock Origin 等扩展需首次启动后手动安装（Zen 支持 Firefox 全�
 
 1. 恢复默认浏览器为 Firefox：`home/linux/gui/base/xdg/mime.nix` 的 `browser` 列表首位改回
    `firefox.desktop`，`home/linux/base/shell.nix` 的 `BROWSER` 改回 `firefox`
-2. 从 `home/linux/gui/base/browsers.nix` 的 `home.packages` 移除 zen-browser 条目
-3. 删除 `home/linux/gui/niri/conf/windowrules.kdl` 中的 `app-id="zen"` 规则
-4. `nix flake lock --update-input zen-browser` 不需要；直接 `just local` 即可
-5. flake input 与 lock 条目可一并删除（`git checkout` 对应文件段）
+2. 恢复自启动：`home/linux/gui/base/xdg/autostart.nix` 把 Zen 条目换回
+   `${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop`，并移除该文件
+   `zen-browser` 参数
+3. 从 `home/linux/gui/base/browsers.nix` 的 `home.packages` 移除 zen-browser 条目
+4. 删除 `home/linux/gui/niri/conf/windowrules.kdl` 中的 `app-id="zen"` 规则
+5. `nix flake lock --update-input zen-browser` 不需要；直接 `just local` 即可
+6. flake input 与 lock 条目可一并删除（`git checkout` 对应文件段）
 
 ## 参考
 

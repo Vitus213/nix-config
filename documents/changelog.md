@@ -4,6 +4,20 @@
 
 ## 2026-08-15
 
+### 登录自启动浏览器切换为 Zen Browser
+
+- 影响范围：所有 Linux
+  GUI 主机（apollo/athena/generic）；登录 Niri 会话后自动启动的浏览器由 Firefox 改为 Zen。Firefox 保留安装，仅不再自启动。
+- 配置入口：`home/linux/gui/base/xdg/autostart.nix`（`xdg.autostart.entries` 浏览器条目由
+  `nixpaks.firefox` 换为 Zen flake input 提供的 `zen.desktop`，函数参数新增 `zen-browser`）。
+- 变更内容：承接「默认浏览器切换为 Zen
+  Browser」——默认浏览器（MIME/`$BROWSER`）已切换，登录自启动仍是 Firefox，本次统一为 Zen。`Exec=zen --name zen %U`，zen 二进制在用户 profile
+  PATH；Niri `app-id="zen"` 规则继续钉到 `2browser` 工作区。
+- 验证方式：`nixfmt --check` 通过；`nix eval .#evalTests` =
+  true；apollo/athena/generic 三主机完整求值无警告；求值实测 autostart 列表含
+  `zen.desktop`（1.21.14b）且不含 Firefox。未执行 `just local` 或系统切换。
+- 关联文档：[Zen Browser](./zen-browser.md)。
+
 ### 修复配置审计发现的缺陷（MIME/ssh/GTK 警告）+ 补测试
 
 - 影响范围：所有 Linux 主机；其中 ssh 行为变更仅影响 generic（`192.168.*`
