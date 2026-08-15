@@ -137,23 +137,3 @@ export def darwin-switch [
 export def darwin-rollback [] {
     ./result/sw/bin/darwin-rebuild --rollback
 }
-
-# ==================== Virtual Machines related =====================
-
-# Build and upload a VM image
-export def upload-vm [
-    name: string
-    mode: string
-] {
-    print $"upload-vm '($name)' in '($mode)' mode..."
-    print (repeat-str "=" 50)
-    let target = $".#($name)"
-    if "debug" == $mode {
-        nom build $target --show-trace --verbose
-    } else {
-        nix build $target
-    }
-
-    let remote = $"ryan@rakushun:/data/caddy/fileserver/vms/kubevirt-($name).qcow2"
-    rsync -avz --progress --copy-links --checksum result $remote
-}

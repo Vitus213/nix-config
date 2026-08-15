@@ -18,11 +18,6 @@ outputs/
 │   ├── src/
 │   │   └── artemis.nix
 │   └── tests/
-├── aarch64-linux/
-│   ├── default.nix
-│   ├── src/
-│   │   └── empty.nix
-│   └── tests/
 └── x86_64-linux/
     ├── default.nix
     ├── src/

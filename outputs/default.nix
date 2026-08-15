@@ -51,8 +51,6 @@ let
   # modules for each supported system
   nixosSystems = {
     x86_64-linux = import ./x86_64-linux (args // { system = "x86_64-linux"; });
-    aarch64-linux = import ./aarch64-linux (args // { system = "aarch64-linux"; });
-    # riscv64-linux = import ./riscv64-linux (args // {system = "riscv64-linux";});
   };
   darwinSystems = {
     aarch64-darwin = import ./aarch64-darwin (args // { system = "aarch64-darwin"; });
@@ -81,31 +79,6 @@ in
   nixosConfigurations = lib.attrsets.mergeAttrsList (
     map (it: it.nixosConfigurations or { }) nixosSystemValues
   );
-
-  # Colmena - remote deployment via SSH
-  colmena = {
-    meta =
-      (
-        let
-          system = "x86_64-linux";
-        in
-        {
-          # colmena's default nixpkgs & specialArgs
-          nixpkgs = import nixpkgs { inherit system; };
-          specialArgs = genSpecialArgs system;
-        }
-      )
-      // {
-        # per-node nixpkgs & specialArgs
-        nodeNixpkgs = lib.attrsets.mergeAttrsList (
-          map (it: it.colmenaMeta.nodeNixpkgs or { }) nixosSystemValues
-        );
-        nodeSpecialArgs = lib.attrsets.mergeAttrsList (
-          map (it: it.colmenaMeta.nodeSpecialArgs or { }) nixosSystemValues
-        );
-      };
-  }
-  // lib.attrsets.mergeAttrsList (map (it: it.colmena or { }) nixosSystemValues);
 
   # macOS Hosts
   darwinConfigurations = lib.attrsets.mergeAttrsList (

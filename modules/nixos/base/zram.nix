@@ -1,3 +1,4 @@
+{ lib, ... }:
 {
   # Enable in-memory compressed devices and swap space provided by the zram kernel module.
   # By enable this, we can store more data in memory instead of fallback to disk-based swap devices directly,
@@ -5,7 +6,8 @@
   #
   #   https://www.kernel.org/doc/Documentation/blockdev/zram.txt
   zramSwap = {
-    enable = true;
+    # mkDefault: 允许主机在需要时直接 `zramSwap.enable = false;` 覆盖
+    enable = lib.mkDefault true;
     # one of "lzo", "lz4", "zstd"
     algorithm = "zstd";
     # Priority of the zram swap devices.

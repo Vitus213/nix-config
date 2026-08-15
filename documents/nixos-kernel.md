@@ -36,9 +36,8 @@
 boot.kernelPackages = pkgs.linuxPackages_7_0;
 ```
 
-NixOS 的 `boot.kernelPackages`
-会同时切换内核以及依赖当前内核构建的包。`hosts/olympians-apollo/nvidia.nix` 里的 NVIDIA 驱动保持跟随
-`config.boot.kernelPackages`，不单独指定驱动包。
+NixOS 的 `boot.kernelPackages` 会同时切换内核以及依赖当前内核构建的包。`hosts/_shared/nvidia.nix`
+里的 NVIDIA 驱动保持跟随 `config.boot.kernelPackages`，不单独指定驱动包。
 
 ## 升级流程
 

@@ -28,13 +28,12 @@ let
 in
 {
   imports = [
-    ./netdev-mount.nix
+    ../_shared/netdev-mount.nix
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./nvidia.nix
-    ./apollo
+    ../_shared/nvidia.nix
 
-    ./preservation.nix
+    ../_shared/preservation.nix
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_7_0;
@@ -68,10 +67,10 @@ in
   };
 
   # Zram consumes physical memory for compression, which can cause a deadlock and system hang if the model size approaches the physical memory limit.
-  zramSwap.enable = lib.mkForce false;
+  zramSwap.enable = false;
 
-  services.sunshine.enable = lib.mkForce true;
-  services.tuned.ppdSettings.main.default = lib.mkForce "performance";
+  services.sunshine.enable = true;
+  services.tuned.ppdSettings.main.default = "performance";
 
   networking = {
     inherit hostName;

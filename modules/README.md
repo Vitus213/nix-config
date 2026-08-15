@@ -35,17 +35,16 @@ macOS 专用配置，主要包括:
 - SSH
 - 用户
 - 安全设置
-- 临时处理不兼容包的模块
+- 移除 darwin 上不兼容的包（overlay 在 `lib/macosSystem.nix` 中统一定义）
 
 入口说明见 [modules/darwin/README.md](./darwin/README.md)。
 
 ## `nixos/`
 
-NixOS 专用配置分三类:
+NixOS 专用配置分两类:
 
 - `base/`: 核心系统服务、网络、SSH、用户组、Nix、监控、zram 等
 - `desktop/`: Wayland 桌面、字体、XDG、虚拟化、外设、桌面网络工具等
-- `server/`: 服务器、KubeVirt、不同架构服务器基础配置
 
 `modules/nixos/desktop.nix` 是桌面配置的组合入口。
 
@@ -59,7 +58,5 @@ NixOS 专用配置分三类:
 
 ## 支持平台
 
-- `x86_64-linux`: NixOS 桌面和服务器
-- `aarch64-linux`: ARM64 Linux
+- `x86_64-linux`: NixOS 桌面
 - `aarch64-darwin`: Apple Silicon macOS
-- `riscv64-linux`: 服务器和实验环境

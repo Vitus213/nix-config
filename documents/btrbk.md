@@ -34,10 +34,8 @@
 仓库里仍保留几类 Btrfs 文字引用，但它们不是当前 `apollo` 的启用配置：
 
 - `nixos-installer/README.md`：旧的 Btrfs 安装示例。
-- `hosts/*/preservation.nix`：关于 Btrfs/ZFS rollback 的注释。
+- `hosts/_shared/preservation.nix`：关于 Btrfs/ZFS rollback 的注释。
 - `documents/fresh-nixos-preservation-deploy.md`：说明可以选择 Btrfs subvolume 作为 `/persistent`。
-- `lib/genKubeVirtHostModule.nix`、`lib/genKubeVirtGuestModule.nix`：KubeVirt 模板里支持 `btrfs`
-  文件系统类型。
 - `hosts/olympians-athena/README.md`：历史 Btrfs 布局记录。
 
 ## 验证

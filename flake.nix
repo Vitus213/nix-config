@@ -66,11 +66,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.4.3";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     preservation = {
       url = "github:nix-community/preservation";
     };
@@ -95,11 +90,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    disko = {
-      url = "github:nix-community/disko/v1.11.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # add git hooks to format nix code before commit
     pre-commit-hooks = {
       url = "github:cachix/git-hooks.nix";
@@ -121,28 +111,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ghostty = {
-      url = "github:ghostty-org/ghostty/tip"; # Latest Continuous Release
-    };
-
-    blender-bin = {
-      url = "github:edolstra/nix-warez?dir=blender";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nixos-apple-silicon = {
-      # asahi-6.18.9
-      url = "github:nix-community/nixos-apple-silicon";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    helix = {
-      # Helix with steel as plugin system
-      # https://github.com/helix-editor/helix/pull/8675
-      url = "github:mattwparas/helix/steel-event-system";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # -------------- Gaming ---------------------
 
     nix-gaming = {
@@ -153,6 +121,10 @@
       url = "github:ezKEa/aagl-gtk-on-nix/release-25.11";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Oh My Pi (omp) coding agent, installed via its official Home Manager module
+    # instead of the previous user-level `bun install -g`.
+    omp.url = "github:can1357/oh-my-pi";
 
     ########################  Some non-flake repositories  #########################################
 

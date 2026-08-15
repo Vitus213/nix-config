@@ -14,8 +14,7 @@
 ## 配置入口
 
 - `home/linux/gui/base/media.nix`：安装 `pkgs.wemeet`。
-- `hosts/olympians-apollo/preservation.nix`：持久化 Apollo 的腾讯会议数据。
-- `hosts/olympians-athena/preservation.nix`：持久化 Athena 的腾讯会议数据。
+- `hosts/_shared/preservation.nix`：持久化 Apollo 和 Athena 的腾讯会议数据（两台主机共享同一份 preservation 配置）。
 - `home/linux/gui/niri/conf/windowrules.kdl`：将腾讯会议窗口分配到 `0other`。
 
 ## 当前行为
@@ -83,7 +82,7 @@ nix build .#nixosConfigurations.apollo.pkgs.wemeet --no-link --show-trace
 
 1. 从 `home/linux/gui/base/media.nix` 删除 `wemeet`。
 2. 从 `home/linux/gui/niri/conf/windowrules.kdl` 删除 `wemeetapp` 窗口规则。
-3. 从 Apollo 和 Athena 的 `preservation.nix` 删除 `.local/share/wemeetapp`。
+3. 从共享的 `hosts/_shared/preservation.nix` 删除 `.local/share/wemeetapp`。
 4. 重新构建并部署对应主机配置。
 
 删除 preservation 条目后，下一次以临时根目录启动时，未另外备份的腾讯会议登录态和应用数据会丢失。

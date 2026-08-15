@@ -5,27 +5,15 @@
 
 ## 核心生成器
 
-| 文件                | 用途                      |
-| ------------------- | ------------------------- |
-| `attrs.nix`         | attribute set 处理工具    |
-| `macosSystem.nix`   | 生成 nix-darwin 系统配置  |
-| `nixosSystem.nix`   | 生成 NixOS 系统配置       |
-| `colmenaSystem.nix` | 生成 Colmena 远程部署配置 |
-| `default.nix`       | 汇总并导出所有 helper     |
-
-## 专用模块生成器
-
-| 文件                         | 用途                        |
-| ---------------------------- | --------------------------- |
-| `genK3sAgentModule.nix`      | 生成 K3s agent 节点模块     |
-| `genK3sServerModule.nix`     | 生成 K3s server 节点模块    |
-| `genKubeVirtGuestModule.nix` | 生成 KubeVirt guest VM 模块 |
-| `genKubeVirtHostModule.nix`  | 生成 KubeVirt host 模块     |
+| 文件              | 用途                     |
+| ----------------- | ------------------------ |
+| `macosSystem.nix` | 生成 nix-darwin 系统配置 |
+| `nixosSystem.nix` | 生成 NixOS 系统配置      |
+| `default.nix`     | 汇总并导出所有 helper    |
 
 ## 支持的平台
 
-- `x86_64-linux`: 主要 NixOS 桌面和服务器
-- `aarch64-linux`: ARM64 Linux 主机
+- `x86_64-linux`: 主要 NixOS 桌面
 - `aarch64-darwin`: Apple Silicon macOS 主机
 
 ## 使用原则

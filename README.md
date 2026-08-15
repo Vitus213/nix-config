@@ -56,6 +56,7 @@
 
 - 主 `nixpkgs`: `nixos-unstable`，当前求值版本 `26.11.20260702.6517942`
 - `home-manager`: 跟随主 `nixpkgs`
+- `omp`: Oh My Pi 编码代理，官方 flake 源码构建，经 Home Manager `programs.omp` 安装
 - `preservation`: 管理 `/persistent` 持久化映射
 - `agenix`: 管理 secrets 解密和 `/etc/agenix/*`
 - `mysecrets`: private flake input，不在本仓库保存明文
@@ -106,7 +107,7 @@
 | 截图                       | Niri 内置截图                                                                                  |
 | 录屏                       | [OBS][OBS]                                                                                     |
 | 文件系统和加密             | tmpfs `/`、Btrfs 子卷、LUKS 加密、`/persistent` 持久化                                         |
-| Secure Boot                | [lanzaboote][lanzaboote]                                                                       |
+| Secure Boot                | 当前未启用（历史方案为 [lanzaboote][lanzaboote]，已随主机清理移除）                            |
 
 ## 截图
 

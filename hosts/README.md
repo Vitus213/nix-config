@@ -16,8 +16,6 @@
 ### 其他入口
 
 - `hermes` 是 Ubuntu 上的独立 home-manager 配置
-- KubeVirt / homelab 相关主机和镜像入口在 `modules/nixos/server/`、`lib/genKubeVirt*.nix` 和
-  `Justfile` 中维护
 
 ## 命名规则
 
@@ -35,7 +33,7 @@
 
 1. 在 `hosts/` 下创建新目录，例如 `hosts/olympians-<name>/`
 2. 放入当前机器生成的 `hardware-configuration.nix`
-3. 编写 `default.nix`，导入硬件配置、主机专用模块和可选的 `preservation.nix`
+3. 编写 `default.nix`，导入硬件配置、主机专用模块和可选的 `hosts/_shared/preservation.nix`
 4. 如果需要 home-manager，添加 `home.nix`
 5. 在 `outputs/<system>/src/<name>.nix` 中添加 flake output
 6. 如需固定网络信息，在 `vars/networking.nix` 中补充主机地址
@@ -45,7 +43,7 @@
 - 桌面 NixOS: 参考 `olympians-apollo/`
 - 无个人 secrets 的通用桌面 NixOS: 参考 `olympians-generic/`
 - macOS: 参考 `darwin-artemis/`
-- preservation: 参考 `olympians-apollo/preservation.nix`
+- preservation: 参考 `hosts/_shared/preservation.nix`
 
 ## 分布式构建
 

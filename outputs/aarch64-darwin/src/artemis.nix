@@ -1,7 +1,7 @@
 {
-  # NOTE: the args not used in this file CAN NOT be removed!
-  # because haumea pass argument lazily,
-  # and these arguments are used in the functions like `mylib.nixosSystem`, `mylib.colmenaSystem`, etc.
+  # NOTE: haumea 只把签名里显式命名的参数从 args 中传入，`@args` 再整体透传给
+  # mylib.macosSystem（其内部使用 inputs / lib / myvars / system / genSpecialArgs）。
+  # 因此这些参数即使本文件没有直接使用，也必须保留在签名里。
   inputs,
   lib,
   mylib,

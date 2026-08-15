@@ -7,7 +7,7 @@
 
 - 默认用户名来自 `vars/default.nix`，当前是 `vitus`
 - desktop 主机配置参考 `hosts/olympians-apollo/` 或 `hosts/olympians-athena/`
-- preservation 配置在对应主机的 `preservation.nix`
+- preservation 共享配置在 `hosts/_shared/preservation.nix`，由启用它的主机 `default.nix` 导入
 - agenix 的 NixOS 配置在 `secrets/nixos.nix`
 - preservation 开启时，agenix 解密 identity 使用 `/home/vitus/.ssh/id_ed25519`
 - `/home/vitus/.ssh` 已经在 preservation 用户目录列表里，重启后应该保留
@@ -20,7 +20,7 @@
 - 当前 `flake.lock` 锁定 `agenix` 为 `ryantm/agenix` 的 `4835b1dc898959d8547a871ef484930675cb47f1`
 - 分区、格式化、`nixos-generate-config --root /mnt` 和 `nixos-install` 顺序参考 NixOS 官方安装手册
 - agenix identity 配置参考 agenix README；preservation 行为参考 preservation README 和本仓库
-  `hosts/olympians-*/preservation.nix`
+  `hosts/_shared/preservation.nix`
 
 ## 0. 最快成功路径
 
@@ -149,7 +149,7 @@ cp /mnt/etc/nixos/hardware-configuration.nix \
 
 - `hosts/<new-host>/default.nix`
 - `hosts/<new-host>/hardware-configuration.nix`
-- `hosts/<new-host>/preservation.nix`
+- 如需持久化，导入共享的 `hosts/_shared/preservation.nix`
 - `outputs/x86_64-linux/src/<new-host>.nix`
 - `vars/networking.nix`，如果需要固定网络信息
 
@@ -170,11 +170,11 @@ modules.secrets.desktop.enable = true;
 
 ## 5. 确认 preservation 配置
 
-主机配置需要导入 preservation:
+主机配置需要导入 preservation（当前 apollo/athena 都使用共享文件）:
 
 ```nix
 imports = [
-  ./preservation.nix
+  ../_shared/preservation.nix
 ];
 ```
 
@@ -487,7 +487,7 @@ nix eval .#evalTests --show-trace --print-build-logs --verbose
 
 - `hostname` 和 flake output 名一致，例如 `apollo`
 - `hosts/olympians-<host>/hardware-configuration.nix` 来自当前机器
-- `hosts/olympians-<host>/preservation.nix` 已导入
+- 主机 `default.nix` 已导入 `hosts/_shared/preservation.nix`
 - `/persistent` 已经存在并挂载
 - `~/nix-config/.git` 存在，仓库没有被空的 preservation 目录覆盖
 - `/home/vitus/.ssh/id_ed25519` 存在

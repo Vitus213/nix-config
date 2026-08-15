@@ -11,7 +11,7 @@
 - `ssh.nix`: SSH 配置
 - `system.nix`: 系统设置
 - `users.nix`: 用户设置
-- `broken-packages.nix`: 临时处理不兼容包
+- darwin 不兼容包的移除 overlay 统一定义在 `lib/macosSystem.nix`
 
 更完整的 nix-darwin 入门说明可参考
 [nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter)。

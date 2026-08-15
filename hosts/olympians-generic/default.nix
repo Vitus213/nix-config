@@ -13,13 +13,12 @@ let
 in
 {
   imports = [
-    ./netdev-mount.nix
+    ../_shared/netdev-mount.nix
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    # ./nvidia.nix
-    ./generic
-
-    # ./preservation.nix
+    # 可选能力（默认关闭），按需解开注释：
+    # ../_shared/nvidia.nix
+    # ../_shared/preservation.nix
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_7_0;
@@ -34,11 +33,13 @@ in
   };
 
   # Zram consumes physical memory for compression, which can cause a deadlock and system hang if the model size approaches the physical memory limit.
-  zramSwap.enable = lib.mkForce false;
+  zramSwap.enable = false;
 
-  services.sunshine.enable = lib.mkForce true;
-  services.tuned.ppdSettings.main.default = lib.mkForce "performance";
+  services.sunshine.enable = true;
+  services.tuned.ppdSettings.main.default = "performance";
 
+  # generic 不启用 secrets，因此 /etc/agenix/nix-access-tokens 不存在。
+  # 必须用 mkForce 覆盖 modules/nixos/base/nix.nix 里的 `!include`，否则启动时 nix 会报错。
   nix.extraOptions = lib.mkForce ''
     builders-use-substitutes = true
   '';
