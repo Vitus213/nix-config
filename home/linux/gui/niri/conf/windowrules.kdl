@@ -30,6 +30,11 @@ window-rule {
     open-on-workspace "2browser"
     open-maximized true
 }
+window-rule {
+    match app-id="zen"
+    open-on-workspace "2browser"
+    open-maximized true
+}
 
 // Docs / notes applications - open in workspace 3
 window-rule {
