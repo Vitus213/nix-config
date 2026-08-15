@@ -2,6 +2,140 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-08-15
+
+### 移除未使用的 swaylock
+
+- 影响范围：所有 Linux GUI 主机的用户包与 Wayland PAM 服务。
+- 配置入口：`home/linux/gui/base/desktop-tools.nix`、`modules/nixos/desktop.nix`。
+- 变更内容：删除 `programs.swaylock.enable` 与对应
+  `security.pam.services.swaylock`。锁屏链路实际走 noctalia-shell 内置
+  `WlSessionLock`，全仓库无任何 swaylock 调用路径，属死重。
+- 验证方式：`nix-instantiate --parse` 与 `nix eval .#evalTests` 通过；未执行系统切换。
+- 关联文档：[Noctalia 锁屏解锁延迟修复](./lockscreen-pam.md)。
+
+### Noctalia 锁屏解锁延迟修复（专用 PAM 服务 + 降哈希成本）
+
+- 影响范围：所有加载 `modules/nixos/desktop`
+  的 NixOS 桌面（apollo/athena/generic）上 noctalia-shell 的锁屏认证行为；解锁耗时从实测约 10 秒降至预期约 0.1 秒。
+- 配置入口：`modules/nixos/desktop/security.nix`（新增
+  `security.pam.services.noctalia-lock`）、`home/linux/gui/base/noctalia/default.nix`
+  （noctalia-shell.service 注入 `NOCTALIA_PAM_SERVICE=noctalia-lock`）、
+  `vars/default.nix`（`initialHashedPassword`）、
+  `outputs/x86_64-linux/tests/lockscreen-pam/`（回归测试）。
+- 变更内容：锁屏认证从完整 `login` PAM 栈（unix-early nullok 探测 3.5s +
+  gnome-keyring 解密 ~3s + 多次 pam_unix 验证）切换到专用精简栈（单次 pam_unix 校验）。锁屏不再顺带解锁 gnome-keyring；greetd 登录时已解锁，会话内不受影响。
+  `initialHashedPassword` 由 scrypt rounds=11 换成 yescrypt 默认 rounds（`mkpasswd -m yescrypt -s`
+  生成并经 crypt 往返校验），单次验证 1741ms → 17ms。
+- 验证方式：`nix eval .#evalTests`（含新回归测试）通过；错误密码结构测试显示 Password 提示从 T+3536ms 提前到 T+1ms；新哈希单次验证实测 17ms。未执行
+  `just local` 或系统切换；实测解锁效果待部署后确认。
+- 关联文档：[Noctalia 锁屏解锁延迟修复](./lockscreen-pam.md)。
+
+### 将 Oh My Pi（omp）从用户级 Bun 迁移到官方 flake
+
+- 影响范围：所有加载 `home/base/core` 的主机（apollo/athena/generic/artemis/hermes）上的 `omp`
+  安装方式与版本来源；移除临时 Bun overlay 与对应 shell PATH 补丁。
+- 配置入口：`flake.nix`（新增 `omp` input）、`home/base/core/omp.nix`（启用
+  `programs.omp.enable`）、`home/base/core/npm.nix`、`home/base/core/shells/default.nix`、
+  `home/base/core/shells/config.nu`。
+- 变更内容：删除 `overlays/bun/default.nix`（nixpkgs 仍为 bun 1.3.13，omp 已不再依赖系统 Bun）与对应
+  `outputs/x86_64-linux/tests/bun`、`nushell-bun-path` eval test；移除
+  `~/.bun/bin`、`~/.cache/.bun/bin` PATH 条目与 `home.packages` 中的 `bun`；OMP 改为官方 flake
+  `can1357/oh-my-pi` 源码构建（当前 `17.3.4`），版本固定于 `flake.lock`。
+  `~/.omp/agent/config.yml`、`models.yml` 仍为用户级文件，手工维护。
+- 验证方式：`nixfmt --check`、`nix eval .#evalTests` 通过； `nix eval` 确认 apollo HM 中
+  `programs.omp.enable = true`、`pkgs.bun` 回落至 `1.3.13`；
+  `nix build github:can1357/oh-my-pi#default` 构建并运行 `omp --version`
+  验证（构建耗时较长，官方无二进制缓存）。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)、[应用版本审计](./application-version-audit.md)。
+
+### 主机共享模块与仓库清理（W1 + W2）
+
+- 影响范围：全部主机（apollo/athena/generic/artemis/hermes）的构建组织方式与 flake
+  inputs；35 项关键配置属性语义快照对比零差异，行为不变。
+- 配置入口：`hosts/_shared/`（preservation/nvidia/netdev-mount 共享模块）、
+  `modules/nixos/base/zram.nix`、`modules/nixos/desktop/power.nix`、
+  `modules/nixos/desktop/networking/remote-desktop.nix`（mkDefault 化）、
+  `lib/macosSystem.nix`（darwin overlay 单一来源）、`Justfile`（`up-nix` 修复）。
+- 变更内容：删除 6 个无引用 flake
+  inputs 与 lock 修剪；删除无主机导入的 secureboot/重复 preservation/nvidia 副本、空 aarch64-linux
+  outputs、server/KubeVirt/K3s/colmena 死代码与 Justfile 对应命令组；主机层样板去重并消除 mkForce；home/linux 入口链式化；src 文件幽灵参数清理。
+- 验证方式：`nix eval .#evalTests` 通过；变更前后语义快照逐项对比零差异；hermes drvPath 不变；未执行
+  `just local` 或系统切换。
+- 关联文档：[主机共享模块与仓库清理](./host-shared-modules.md)。
+
+### 开启 Herdr 后台通知与 OMP Agent 集成
+
+- 影响范围：全部加载共享 TUI Home
+  Manager 配置的 Linux 与 macOS 主机上的 Herdr 通知行为；apollo 上已运行的 Herdr `0.7.1`
+  server 已同步生效。
+- 配置入口：`home/base/tui/dev-tools.nix`；用户级集成文件
+  `~/.omp/agent/extensions/herdr-omp-agent-state.ts`（由 `herdr integration install omp`
+  管理，不进 Home Manager）。
+- 变更内容：`~/.config/herdr/config.toml` 新增
+  `[ui.toast] delivery = "herdr"`，后台 Agent 完成或需要输入时弹出应用内 toast；并通过 Herdr 官方
+  `omp`
+  集成扩展让 Herdr 识别 OMP 会话状态。提示音沿用默认开启。本机无 dunst/mako 等系统通知守护进程，故未使用
+  `system`/`terminal` 投递模式。
+- 验证方式：`nixfmt --check` 与 apollo Home
+  Manager 配置求值确认新 config.toml 内容；对运行中的 server 执行 `herdr server reload-config` 后
+  `herdr notification show` 返回 `shown: true`；`herdr integration status` 显示
+  `omp: current (v3)`，`herdr pane list` 中当前 Pane 显示 `"agent":"omp"`。未执行 `just local`
+  或系统切换。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
+## 2026-08-14
+
+### 安装 bb Agent IDE（用户级 npm）
+
+- 影响范围：当前用户环境的可用 Agent 工具集；不涉及 Nix 配置、Home Manager 或系统服务变更。
+- 配置入口：无 Nix 变更；文档为 `documents/bb.md`，npm 全局前缀与 PATH 沿用
+  `home/base/core/npm.nix`、`home/base/core/shells/default.nix`。
+- 变更内容：通过 `npm install -g bb-app@latest` 安装 bb（`get-bb/bb`，agentic IDE，提供 `bb`
+  CLI、`bb-app` launcher、Web UI 与 HTTP API）；沿用 OpenCode /
+  Pi 的用户级安装约定，不通过 Nix 固定版本，数据目录为 `~/.bb/`。
+- 验证方式：`bb --version` 返回 `0.37.0`；以 `BB_TELEMETRY=false` 启动 `bb-app`
+  后确认 38886 端口的应用与 `/api/health` 均返回200；`bb status`
+  成功连接运行中的 server；验证后已停止冒烟实例。
+- 关联文档：[bb Agent IDE](./bb.md)。
+
+## 2026-08-13
+
+### Herdr Pane 跳过 Zellij 自动启动
+
+- 影响范围：全部加载共享 TUI Home Manager 配置的 Linux 与 macOS 主机。
+- 配置入口：`home/base/tui/zellij/default.nix`。
+- 变更内容：Nushell 自动启动 Zellij 的条件增加
+  `(not ("HERDR_ENV" in $env))`，Herdr 交互式 Pane（Herdr 注入
+  `HERDR_ENV=1`）不再嵌套 Zellij，直接进入 Nushell；普通终端行为不变。原因：嵌套复用器会使 Herdr 的 Agent 检测失效，Pane 前台进程显示为 Zellij，Agents 面板始终为空。只影响新启动的 Shell，已运行 Pane 需退出 Zellij 或重建。
+- 验证方式：检查 Herdr Pane 进程环境存在 `HERDR_ENV=1`；执行 Home Manager 配置求值与仓库 eval
+  tests；未执行 `just local` 或系统切换。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
+## 2026-08-12
+
+### 修复 Herdr Pane 的错误 Shell 提示符显示
+
+- 影响范围：全部加载共享 TUI Home Manager 配置的 Linux 与 macOS 主机中新建的 Herdr 交互式 Pane。
+- 配置入口：`home/base/tui/dev-tools.nix`。
+- 变更内容：通过 `~/.config/herdr/config.toml` 将 Herdr 的默认交互式 Shell 固定为 Home
+  Manager 管理的登录 Nushell，避免 Herdr 回退到 `$SHELL` 后进入 Bash 初始化链并显示字面量
+  `\[\]`；不改终端字体。
+- 验证方式：对比默认 Bash Pane 与仅切换 Nushell 的隔离 Herdr `0.7.1` 会话，确认 `shopt` 错误和
+  `\[\]` 同时消失，且边框、中文与 Nerd Font 字符探针正常；执行 Home
+  Manager 配置求值、构建与仓库 eval tests；未执行 `just local` 或系统切换。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
+### 安装 Herdr Agent 终端运行时
+
+- 影响范围：全部加载共享 TUI Home Manager 配置的 Linux 与 macOS 主机。
+- 配置入口：`home/base/tui/dev-tools.nix`。
+- 变更内容：通过主 `nixpkgs` 的 `pkgs.herdr`
+  安装 Herdr；保留现有 Zellij 自动启动链路，Herdr 按需手动启动，不新增系统服务。
+- 验证方式：执行 Herdr 包版本求值、Home Manager 包集合求值、Herdr 包构建与仓库 eval tests；未执行
+  `just local` 或系统切换。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
 ## 2026-07-25
 
 ### 将 Type4Me 切换为已发布的远程 flake
