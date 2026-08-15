@@ -29,17 +29,13 @@ in
         ControlPersist = "no";
       };
 
-      # "github.com" = {
-      #   # "Using SSH over the HTTPS port for GitHub"
-      #   # "(port 22 is banned by some proxies / firewalls)"
-      #   HostName = "ssh.github.com";
-      #   Port = 443;
-      #   User = "git";
-      #
-      #   # Specifies that ssh should only use the identity file explicitly configured above
-      #   # required to prevent sending default identity files first.
-      #   IdentitiesOnly = true;
-      # };
+      # Route GitHub SSH through its HTTPS endpoint when TCP/22 is unavailable.
+      "github.com" = {
+        HostName = "ssh.github.com";
+        Port = 443;
+        User = "git";
+        HostKeyAlias = "github.com";
+      };
 
       "192.168.*" = {
         # "allow to securely use local SSH agent to authenticate on the remote machine."

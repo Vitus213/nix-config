@@ -16,8 +16,9 @@ in
   # auto start zellij in nushell
   programs.nushell.extraConfig = ''
     # auto start zellij
-    # except when in emacs or zellij itself
-    if (not ("ZELLIJ" in $env)) and (not ("INSIDE_EMACS" in $env)) {
+    # except when in emacs, zellij itself, or herdr panes
+    # herdr injects HERDR_ENV; nested multiplexer hides agents from herdr detection
+    if (not ("ZELLIJ" in $env)) and (not ("INSIDE_EMACS" in $env)) and (not ("HERDR_ENV" in $env)) {
       if "ZELLIJ_AUTO_ATTACH" in $env and $env.ZELLIJ_AUTO_ATTACH == "true" {
         ^zellij attach -c
       } else {

@@ -34,7 +34,7 @@
       # # -*- completion -*-
       # use custom-completions/cargo/cargo-completions.nu *
       # use custom-completions/curl/curl-completions.nu *
-      # use custom-completions/git/git-completions.nu *
+      use custom-completions/git/git-completions.nu *
       # use custom-completions/glow/glow-completions.nu *
       # use custom-completions/just/just-completions.nu *
       # use custom-completions/make/make-completions.nu *
