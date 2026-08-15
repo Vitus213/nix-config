@@ -6,7 +6,6 @@
   xdg.autostart.entries = [
     "${pkgs.foot}/share/applications/foot.desktop"
     "${pkgs.alacritty}/share/applications/Alacritty.desktop"
-    "${pkgs.ghostty}/share/applications/com.mitchellh.ghostty.desktop"
 
     "${pkgs.stably-orca}/share/applications/orca.desktop"
 

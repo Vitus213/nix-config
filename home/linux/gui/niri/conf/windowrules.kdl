@@ -13,11 +13,6 @@ window-rule {
     open-on-workspace "1terminal"
     open-maximized true
 }
-window-rule {
-    match app-id="com.mitchellh.ghostty"
-    open-on-workspace "1terminal"
-    open-maximized true
-}
 
 // Web browsers - open in workspace 2
 window-rule {

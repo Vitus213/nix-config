@@ -8,9 +8,7 @@
         my_terminal_desktop = [
           # NOTE: We have add these packages at user level
           "Alacritty.desktop"
-          "kitty.desktop"
           "foot.desktop"
-          "com.mitchellh.ghostty.desktop"
         ];
       in
       {

@@ -15,8 +15,8 @@ binds {
     Mod+Shift+0 { spawn-sh "$HOME/.config/niri/scripts/normalize-workspaces.sh"; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+Return { spawn "foot"; }
-    Mod+Shift+Return { spawn "alacritty"; }
+    Mod+Return { spawn "alacritty"; }
+    Mod+Shift+Return { spawn "foot"; }
 
     // Launcher
     Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
@@ -259,8 +259,8 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 
     // Utility shortcuts
-    Scroll_Lock repeat=false hotkey-overlay-title="Type4Me 切换录音" { spawn "busctl" "--user" "call" "io.github.vitus.Type4Me" "/io/github/vitus/Type4Me" "io.github.vitus.Type4Me.Controller" "Toggle"; }
-    Shift+Scroll_Lock repeat=false hotkey-overlay-title="Type4Me 取消录音" { spawn "busctl" "--user" "call" "io.github.vitus.Type4Me" "/io/github/vitus/Type4Me" "io.github.vitus.Type4Me.Controller" "Cancel"; }
+    Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音输入切换" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle"; }
+    Shift+Scroll_Lock repeat=false hotkey-overlay-title="Syllune 取消录音" { spawn "sh" "-c" "kill -TERM \"$(cat \"$XDG_RUNTIME_DIR/syllune-overlay.pid\")\" 2>/dev/null"; }
     Mod+Shift+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
     Mod+C { spawn "noctalia-shell" "ipc" "callx" "launcher" "calculator"; }
 

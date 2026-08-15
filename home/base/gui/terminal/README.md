@@ -4,15 +4,23 @@
 
 ## 当前选择
 
-- `kitty`: 主力终端
-- `foot`: 轻量 Wayland 终端
-- `alacritty`: 跨平台备用终端
-- `ghostty`: 新终端方案，按平台启用
+按平台保留两个终端：
 
-## `xterm-kitty` 远程主机问题
+- **Linux**:
+  - `foot`: 主终端（`Mod+Return`），Wayland 原生、启动快、内存低，server 模式常驻
+  - `alacritty`: 备用终端（`Mod+Shift+Return`），Rust 实现
+- **macOS**:
+  - `ghostty`: Homebrew cask 安装的终端
+  - `alacritty`: 备用终端
 
-kitty 默认把 `TERM` 设置为 `xterm-kitty`。远程机器或 `sudo`
-后的 root 环境如果没有对应 terminfo，就可能出现:
+已移除：Linux 上的 `ghostty`、所有平台的 `kitty`（零使用）。
+
+配置文件在 `terminals.nix`（foot + ghostty settings）与 `alacritty/default.nix`。
+
+## 历史参考：`xterm-kitty` 远程主机问题
+
+kitty 已从本机移除。如果未来在远程主机上使用 kitty，它默认把 `TERM` 设置为 `xterm-kitty`，远程机器或
+`sudo` 后的 root 环境如果没有对应 terminfo，就可能出现:
 
 ```text
 'xterm-kitty': unknown terminal type
