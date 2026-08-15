@@ -38,15 +38,17 @@
   或系统切换。
 - 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)、[应用版本审计](./application-version-audit.md)。
 
-### 重建精简游戏栈并在 apollo 启用（Apex/Overwatch 需求）
+### 重建精简游戏栈并在 apollo 启用（Overwatch 等；Apex 仍被 EA 封锁）
 
 - 影响范围：apollo 主机新增 Steam/Proton/gamescope/gamemode/lutris/mangohud 等；athena/generic 不受影响（模块仍按主机 opt-in）。
 - 配置入口：`modules/nixos/desktop/gaming.nix`、`home/linux/gui/base/gaming.nix`、
   `outputs/x86_64-linux/src/olympians-apollo.nix`。
 - 变更内容：重写两个 gaming 模块——只保留 Steam/Proton/gamemode/gamescope/lutris/
   mangohud 核心，移除 aagl/nix-gaming 依赖（不再需要 mihoyo 启动器）；apollo 两侧
-  `modules.desktop.gaming.enable = true`。背景：2026-06 反作弊更新后 Apex/OW2 的 Linux
-  EAC/BattlEye 均已生效，Steam+Proton 可直接进游戏。
+  `modules.desktop.gaming.enable = true`。
+- 事实更正（2026-08-15 实测）：Apex
+  Legends 仍对 Linux/Proton 返回 E111000B 封锁，2026-06 的"重新生效"为短暂窗口，本条目此前"Apex 可直接进游戏"的表述作废；Overwatch
+  2（BattlEye 已支持 Proton）等不受影响。Apex 在 NixOS 上只能走云游戏（GeForce NOW）或等 EA 解禁。
 - 验证方式：`nix eval .#nixosConfigurations.apollo.config.programs.steam.enable` =
   true、gamemode/lutris 均 true；`nix eval .#evalTests` 通过。未执行系统切换。
 

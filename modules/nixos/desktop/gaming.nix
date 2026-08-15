@@ -23,8 +23,9 @@ in
     #   <https://www.protondb.com/> 可查各游戏的 Linux 兼容评级。
     #   入门指南: <https://www.reddit.com/r/linux_gaming/wiki/faq/>
     #
-    # Apex Legends / Overwatch 2 等已对 Linux 启用反作弊支持的游戏，
-    # 通过 Steam + Proton 即可进游戏（Steam 设置里启用 Steam Play）。
+    # Overwatch 2 等 BattlEye 已支持 Proton 的游戏，Steam + Proton 可直接进游戏
+    # （Steam 设置里启用 Steam Play）。Apex Legends 截至 2026-08 仍被 EA 反作弊
+    # 封锁（E111000B），Linux 原生不可玩，只能云游戏或等解禁。
     # ==========================================================================
 
     # Games installed by Steam works fine on NixOS, no other configuration needed.
