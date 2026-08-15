@@ -38,18 +38,21 @@ Noctalia Shell 当前承担桌面 shell 的主要职责，替代或整合了部�
 
 主配置在 `noctalia/config/settings.json`。
 
-Noctalia 从本机私有目录 `~/Pictures/WLOP` 递归读取壁纸，当前每 600 秒为所有显示器随机切换，并从壁纸生成
-Shell 配色。该目录不由 Nix、Home Manager 或 Git 管理；每台桌面主机都需要从 WLOP 官方渠道单独准备图片。
-当前筛选作品的标题、官方页面和预期文件名记录在公开的
+Noctalia 从本机私有目录 `~/Pictures/WLOP`
+递归读取壁纸，当前每 600 秒为所有显示器随机切换，并从壁纸生成 Shell 配色。该目录不由 Nix、Home
+Manager 或 Git 管理；每台桌面主机都需要从 WLOP 官方渠道单独准备图片。当前筛选作品的标题、官方页面和预期文件名记录在公开的
 [Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)，仓库不保存原图。
 
 新增或恢复壁纸时，将合法取得的文件复制到 `~/Pictures/WLOP`，再通过 Noctalia 壁纸选择器或
 `noctalia-shell ipc call wallpaper set <path> all` 应用。需要更换目录时修改
 `noctalia/config/settings.json` 的 `wallpaper.directory`；回滚时恢复该字段并重新选择目标图片。
 
-
-Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动。当前不设置
-`NOCTALIA_PAM_SERVICE`，因此 Noctalia 锁屏认证使用默认的完整 `/etc/pam.d/login` PAM 栈。
+Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动。服务设置了
+`NOCTALIA_PAM_SERVICE=noctalia-lock`，锁屏认证使用专用的精简 PAM 服务
+`/etc/pam.d/noctalia-lock`（定义在
+`modules/nixos/desktop/security.nix`），只做一次 pam_unix 校验，避免默认 `login`
+栈的多次哈希验证导致解锁等待约 10 秒。该服务不运行 session 阶段，锁屏时不再顺带解锁 gnome-keyring；登录时 greetd 已负责解锁，会话内不受影响。背景与验证见
+[documents/lockscreen-pam.md](../../../../documents/lockscreen-pam.md)。
 
 锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`。
 

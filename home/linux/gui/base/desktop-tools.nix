@@ -36,9 +36,6 @@
     wf-recorder # screen recording
   ];
 
-  # screen locker
-  programs.swaylock.enable = true;
-
   # Logout Menu
   programs.wlogout.enable = true;
 

@@ -48,9 +48,6 @@ in
           };
         };
       };
-
-      # Lock-screen PAM services should stay lighter than the full login stack.
-      security.pam.services.swaylock = { };
     })
   ];
 }

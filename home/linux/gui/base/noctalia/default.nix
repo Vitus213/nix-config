@@ -54,6 +54,9 @@ in
         "QT_QPA_PLATFORM=wayland;xcb"
         "QT_QPA_PLATFORMTHEME=qt6ct"
         "QT_AUTO_SCREEN_SCALE_FACTOR=1"
+        # 锁屏认证走专用精简 PAM 服务（定义在 modules/nixos/desktop/security.nix），
+        # 避免默认 login 栈的多次哈希验证导致解锁缓慢。
+        "NOCTALIA_PAM_SERVICE=noctalia-lock"
       ];
     };
 
