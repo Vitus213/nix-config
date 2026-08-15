@@ -4,6 +4,18 @@
 
 ## 2026-08-15
 
+### 移除游戏栈（不在 NixOS 上打游戏）
+
+- 影响范围：所有 Linux 桌面主机的 flake inputs 与桌面模块；gaming 此前全部 `enable = false`，但
+  `gaming.nix` 顶部无条件 import
+  nix-gaming/aagl 模块，aagl 不跟随 nixpkgs 会独立 eval 一份，属纯开销。
+- 配置入口：`flake.nix`、`modules/nixos/desktop/gaming.nix`、`home/linux/gui/base/gaming.nix`、
+  `outputs/x86_64-linux/src/olympians-*.nix`。
+- 变更内容：删除 `nix-gaming`/`aagl` inputs 与两个 gaming 模块，清理三个 src 文件的
+  `modules.desktop.gaming.enable = false`；同步 README 与 application-version-audit。
+- 验证方式：三个 src 文件 `nix-instantiate --parse` 通过；`nix eval .#evalTests`
+  通过；flake.lock 修剪 aagl/nix-gaming。未执行系统切换。
+
 ### 移除未使用的 swaylock
 
 - 影响范围：所有 Linux GUI 主机的用户包与 Wayland PAM 服务。

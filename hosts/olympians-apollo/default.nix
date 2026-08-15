@@ -6,7 +6,7 @@
 }:
 #############################################################
 #
-#  Apollo - my main computer, with NixOS + AMD Ryzen 5 5600 + RTX 3070 LHR GPU, for gaming & daily use.
+#  Apollo - my main computer, with NixOS + AMD Ryzen 5 5600 + RTX 3070 LHR GPU, for daily use.
 #
 #############################################################
 let
