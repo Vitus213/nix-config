@@ -17,7 +17,6 @@
 | `editors.nix`       | GUI 编辑器                              |
 | `media.nix`         | 媒体应用                                |
 | `voice-input.nix`   | Type4Me 语音输入                        |
-| `gaming.nix`        | 游戏相关应用（Steam/Proton/Lutris）     |
 | `creative.nix`      | 创作软件                                |
 | `note-taking.nix`   | 笔记应用                                |
 | `misc.nix`          | Wayland 工具、截图、录屏、音频、Orca 等 |

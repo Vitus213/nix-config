@@ -4,6 +4,19 @@
 
 ## 2026-08-15
 
+### 回滚游戏栈与雷神加速器（不再安装）
+
+- 影响范围：apollo 移除 Steam/Proton/gamemode/lutris 等；路由器移除雷神插件、UOnP、apollo 白名单与静态租约。OpenClash
+  fake-ip 及其既有游戏域名隔离规则保持原样。
+- 配置入口：`modules/nixos/desktop/gaming.nix`、`home/linux/gui/base/gaming.nix`（删除）、
+  `outputs/x86_64-linux/src/olympians-apollo.nix`、路由器侧（官方卸载脚本 + apk del +
+  hook 备份恢复）。
+- 变更内容：删除两个 gaming 模块与 apollo 的 `gaming.enable`；路由器卸载雷神、禁用 UOnP、恢复
+  `openclash_custom_firewall_rules.sh`
+  备份、删 apollo 静态租约。原因：Apex 截至 2026-08 仍被 EA 反作弊封锁（E111000B），本机游戏栈无实际用途。
+- 验证方式：`nix eval .#evalTests` 通过；路由器无 leigod 进程/目录/init、nft 无 148 规则、upnpd
+  STOPPED、手机静态租约（.115）保留。
+
 ### 雷神加速器与 OpenClash fake-ip 共存（路由器侧，apollo 加入游戏白名单）
 
 - 影响范围：路由器（192.168.100.1）防火墙/UPnP/dhcp；apollo 的游戏 UDP 绕过 OpenClash 交给雷神，其余设备继续 fake-ip。

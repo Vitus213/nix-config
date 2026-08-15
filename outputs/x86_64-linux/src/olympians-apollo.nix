@@ -31,22 +31,17 @@ let
         {
           modules.desktop.fonts.enable = true;
           modules.desktop.wayland.enable = true;
-          modules.desktop.gaming.enable = true;
           modules.secrets.desktop.enable = true;
         }
       ];
-    home-modules =
-      (map mylib.relativeToRoot [
+    home-modules = (
+      map mylib.relativeToRoot [
         # common
         "home/linux/gui.nix"
         # host specific
         "hosts/olympians-${name}/home.nix"
-      ])
-      ++ [
-        {
-          modules.desktop.gaming.enable = true;
-        }
-      ];
+      ]
+    );
   };
 
   modules-niri = {
