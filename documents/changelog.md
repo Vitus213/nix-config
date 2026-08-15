@@ -4,6 +4,21 @@
 
 ## 2026-08-15
 
+### 默认浏览器切换为 Zen Browser
+
+- 影响范围：所有加载 `home/linux/gui`
+  链的主机（apollo/athena/generic）；`xdg-open`/portal 打开的 http(s) 与 html/pdf/json 等类型、以及读取
+  `$BROWSER` 的 CLI 程序均改用 Zen。Firefox/Chrome 保留安装并作为回退。
+- 配置入口：`home/linux/gui/base/xdg/mime.nix`（`browser` 列表首位改为
+  `zen.desktop`）、`home/linux/base/shell.nix`（`BROWSER` 改为 `zen`）。
+- 变更内容：此前 MIME 默认浏览器为 Firefox、`BROWSER=firefox`（Zen 加装时有意未切换），本次正式切换。`mime.nix`
+  强制写入 `mimeapps.list`（`force = true`），运行时 `xdg-mime default`
+  的临时修改会被下次部署覆盖，故必须走声明式配置。
+- 验证方式：`nixfmt --check`、`nix eval .#evalTests` 通过；apollo toplevel完整求值通过。未执行
+  `just local` 或系统切换；部署后可用 `xdg-mime query default x-scheme-handler/https` 确认输出
+  `zen.desktop`。
+- 关联文档：[Zen Browser](./zen-browser.md)。
+
 ### 回滚游戏栈与雷神加速器（不再安装）
 
 - 影响范围：apollo 移除 Steam/Proton/gamemode/lutris 等；路由器移除雷神插件、UOnP、apollo 白名单与静态租约。OpenClash

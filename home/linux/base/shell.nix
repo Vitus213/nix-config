@@ -24,7 +24,7 @@ rec {
     # XAUTHORITY = "$XDG_RUNTIME_DIR/Xauthority";
 
     # set default applications
-    BROWSER = "firefox";
+    BROWSER = "zen";
 
     # enable scrolling in git diff
     DELTA_PAGER = "less -R";
