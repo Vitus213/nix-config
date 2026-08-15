@@ -98,7 +98,7 @@
 | 网络管理                   | [NetworkManager][NetworkManager]                                                               |
 | 输入法                     | [Fcitx5][Fcitx5] + [Rime][rime] + [雾凇拼音 Rime Ice][rime-ice]                                |
 | 系统监控                   | [Btop][Btop]                                                                                   |
-| 文件管理                   | [Yazi][Yazi] + [thunar][thunar]                                                                |
+| 文件管理                   | [Yazi][Yazi] + [Dolphin][dolphin]                                                              |
 | Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                      |
 | 媒体播放器                 | [mpv][mpv]                                                                                     |
 | 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed                                                       |
@@ -201,7 +201,7 @@ just local debug
 [catppuccin-nix]: https://github.com/catppuccin/nix
 [NetworkManager]: https://wiki.gnome.org/Projects/NetworkManager
 [tuigreet]: https://github.com/apognu/tuigreet
-[thunar]: https://gitlab.xfce.org/xfce/thunar
+[dolphin]: https://apps.kde.org/dolphin/
 [Yazi]: https://github.com/sxyazi/yazi
 [Btrfs]: https://btrfs.readthedocs.io
 [LUKS]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system

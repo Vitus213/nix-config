@@ -31,24 +31,31 @@
 - 回滚与详情：`~/work/all_server/leigod-openclash-gaming.md`（含 hook 备份 `.bak-20260815-apollo`
   与全量回滚步骤）；SERVERS.md 已同步。
 
-### 文件管理器由 Thunar 切换为 Nautilus（并补 GTK 主题）
+### 文件管理器由 Thunar 切换为 Dolphin（Kvantum Catppuccin 主题）
 
 - 影响范围：所有加载 `modules/nixos/desktop`
   的 NixOS 桌面（apollo/athena/generic）；Thunar（GTK/X11 时代，niri 下走 XWayland，4K 分数缩放模糊）被完全移除。
 - 配置入口：`modules/nixos/desktop/misc.nix`（`programs.thunar` 删除， `environment.systemPackages`
-  加入 `nautilus` + `file-roller`）、 `home/linux/gui/niri/conf/windowrules.kdl`（app-id 钉
-  `org.gnome.Nautilus`，仍走 `9file` 工作区）、`home/linux/gui/base/desktop-tools.nix`（新增
-  `GSK_RENDERER=gl`、`GTK_THEME` 会话变量）、`home/base/core/theme.nix`（新增
+  加入 `kdePackages.dolphin` + `kdePackages.ark`）、
+  `home/linux/gui/niri/conf/windowrules.kdl`（app-id 钉 `org.kde.dolphin`，仍走 `9file`
+  工作区）、`home/linux/gui/base/kde-theme.nix`（新增：Kvantum 引擎 + Catppuccin Mocha/Pink 主题 +
+  kdeglobals 图标）、`home/linux/gui/base/desktop-tools.nix` （新增
+  `QT_STYLE_OVERRIDE=kvantum`、`GSK_RENDERER=gl`、`GTK_THEME`）、 `home/base/core/theme.nix`（新增
   `gtk.theme`）、`README.md`、`documents/niri-workspaces.md`。
-- 变更内容：Nautilus `50.2.2`（GTK4/libadwaita 原生 Wayland，视觉最优雅； `file-roller`
-  提供右键解压）。两个 NVIDIA 必需环境变量：`GSK_RENDERER=gl` 修 GTK4 Vulkan 渲染崩溃（实测
-  `VK_ERROR_OUT_OF_DATE_KHR`）；`GTK_THEME` 强制 Catppuccin
-  Mocha/Pink 主题（libadwaita 应用不读 settings.ini 的 gtk-theme-name）。 `gtk.theme` 声明式写入
-  `catppuccin-gtk`（mocha/pink/rimless）。中途曾短暂配置 Dolphin，试跑后按用户反馈换回 GTK 系；Dolphin 已完全移除。终端侧 yazi（`yy`）与
-  `inode/directory` MIME 绑定不变。
-- 验证方式：Nautilus 实机试跑截图确认深色 Catppuccin 主题与彩色图标生效；
-  `nixfmt --check`、`nix eval .#evalTests`、apollo toplevel 完整求值通过；未执行 `just local`
-  或系统切换。
+- 变更内容：最终选 Dolphin（冷启动 16ms vs Nautilus
+  2338ms，实测 146 倍；KIO 异步 I/O；分栏/内嵌终端/批量重命名）。主题链：`kdePackages.qtstyleplugin-kvantum`
+  引擎 + `catppuccin-kvantum`（mocha/pink）主题放
+  `~/.config/Kvantum/`（catppuccin/nix 官方布局），图标用已安装的 Catppuccin 重着色 Papirus。`QT_STYLE_OVERRIDE=kvantum`
+  必需（kdeglobals widgetStyle 在非 Plasma 环境不生效）。GTK 侧同步补齐： `gtk.theme` =
+  `catppuccin-gtk`（mocha/pink/rimless）保护 foliate/remmina/wlogout 等 GTK 应用；`GSK_RENDERER=gl`
+  修 NVIDIA 上 GTK4 Vulkan 崩溃（实测 `VK_ERROR_OUT_OF_DATE_KHR`）。中途试跑过 Nautilus 与 COSMIC
+  files：Nautilus 需 NVIDIA 补丁且启动慢，COSMIC
+  files 在 niri 下功能残缺，均弃。终端侧 yazi（`yy`）与 `inode/directory` MIME 绑定不变。
+- 已知限制：非 Plasma 环境下 KColorScheme 不加载 .colors 文件，Dolphin 文件视图文字对比度偏低（深灰文字于深蓝底）；Kvantum
+  chrome 与图标正常。属 KDE 色彩框架在非 Plasma 会话的已知深坑，未继续硬修。
+- 验证方式：Dolphin 实机试跑截图确认深色 Mocha 背景 + Kvantum
+  chrome + 粉色文件夹图标生效；`nixfmt --check`、`nix eval .#evalTests`、apollo
+  toplevel 完整求值通过；未执行 `just local` 或系统切换。
 - 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)、[应用版本审计](./application-version-audit.md)。
 
 ### 重建精简游戏栈并在 apollo 启用（Overwatch 等；Apex 仍被 EA 封锁）

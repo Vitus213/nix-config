@@ -19,6 +19,12 @@
     "SDL_VIDEODRIVER" = "wayland";
     "GDK_BACKEND" = "wayland";
     "XDG_SESSION_TYPE" = "wayland";
+    # GTK4 Vulkan renderer crashes on NVIDIA (VK_ERROR_OUT_OF_DATE_KHR);
+    # force GL backend for GTK4 apps (foliate, remmina, wlogout, ...).
+    "GSK_RENDERER" = "gl";
+    # Force Catppuccin GTK theme for GTK apps; pairs with gtk.theme in
+    # home/base/core/theme.nix.
+    "GTK_THEME" = "catppuccin-mocha-pink-standard+rimless";
   };
 
   home.packages = with pkgs; [

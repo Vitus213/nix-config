@@ -1,4 +1,9 @@
-{ catppuccin, pkgs, ... }:
+{
+  catppuccin,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   catppuccinPackages = catppuccin.packages.${pkgs.stdenv.hostPlatform.system};
@@ -98,5 +103,20 @@ in
     accent = "pink";
 
     sources.vscode = catppuccinVscode;
+  };
+
+  # GTK 窗口主题：此前 gtk.theme 为空，Nautilus 等 GTK 应用跑 libadwaita 默认灰。
+  # 与仓库 Catppuccin Mocha/Pink 身份对齐；仅 Linux（darwin 无 GTK 桌面需求）。
+  gtk = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    enable = true;
+    theme = {
+      package = pkgs.catppuccin-gtk.override {
+        variant = "mocha";
+        accents = [ "pink" ];
+        size = "standard";
+        tweaks = [ "rimless" ];
+      };
+      name = "catppuccin-mocha-pink-standard+rimless";
+    };
   };
 }

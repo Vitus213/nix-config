@@ -22,6 +22,11 @@
   environment.systemPackages = with pkgs; [
     gnumake
     wl-clipboard
+    # Dolphin (KDE/Qt6, native Wayland, KIO async I/O); ark provides
+    # right-click archive extraction. Themed via Kvantum Catppuccin
+    # (see home/linux/gui/base/kde-theme.nix).
+    kdePackages.dolphin
+    kdePackages.ark
   ];
 
   services = {
