@@ -4,6 +4,35 @@
 
 ## 2026-08-15
 
+### 重建精简游戏栈并在 apollo 启用（Apex/Overwatch 需求）
+
+- 影响范围：apollo 主机新增 Steam/Proton/gamescope/gamemode/lutris/mangohud 等；athena/generic 不受影响（模块仍按主机 opt-in）。
+- 配置入口：`modules/nixos/desktop/gaming.nix`、`home/linux/gui/base/gaming.nix`、
+  `outputs/x86_64-linux/src/olympians-apollo.nix`。
+- 变更内容：重写两个 gaming 模块——只保留 Steam/Proton/gamemode/gamescope/lutris/
+  mangohud 核心，移除 aagl/nix-gaming 依赖（不再需要 mihoyo 启动器）；apollo 两侧
+  `modules.desktop.gaming.enable = true`。背景：2026-06 反作弊更新后 Apex/OW2 的 Linux
+  EAC/BattlEye 均已生效，Steam+Proton 可直接进游戏。
+- 验证方式：`nix eval .#nixosConfigurations.apollo.config.programs.steam.enable` =
+  true、gamemode/lutris 均 true；`nix eval .#evalTests` 通过。未执行系统切换。
+
+### 加装 Zen Browser（垂直标签栏浏览器，Wayland 原生）
+
+- 影响范围：所有加载 `home/linux/gui`
+  链的主机（apollo/athena/generic）的浏览器栈；新增并存浏览器，不替换现有 Firefox/Chrome，MIME 默认浏览器仍为 Firefox。
+- 配置入口：`flake.nix`（新增 `zen-browser` flake input）、
+  `home/linux/gui/base/browsers.nix`（`home.packages` 加入
+  `zen-browser.packages.<system>.default`）、
+  `home/linux/gui/niri/conf/windowrules.kdl`（`app-id="zen"` 钉到 `2browser` 工作区）。
+- 变更内容：加装 Zen Browser `1.21.14b`（Firefox 开源分支，默认左侧垂直标签栏，Workspaces/Split
+  View/Compact Mode 面向超多标签场景），版本来源
+  `github:youwen5/zen-browser-flake`（上游每日自动跟随 Zen 发布），固定于
+  `flake.lock`。未套 NixPak，与 Chrome 的处理一致；uBlock Origin 等扩展待首次启动后手动安装。
+- 验证方式：apollo 主机完整求值到 toplevel drvPath 通过； `nix build` 实测构建
+  `zen-browser-1.21.14b` 成功，desktop 文件确认 Wayland app-id 为 `zen`；`nix eval .#evalTests` 与
+  `nixfmt --check` 通过。未执行 `just local` 或系统切换；实际使用体验待部署后确认。
+- 关联文档：[Zen Browser](./zen-browser.md)、[应用版本审计](./application-version-audit.md)。
+
 ### 移除游戏栈（不在 NixOS 上打游戏）
 
 - 影响范围：所有 Linux 桌面主机的 flake inputs 与桌面模块；gaming 此前全部 `enable = false`，但
