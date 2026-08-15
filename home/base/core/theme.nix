@@ -107,6 +107,8 @@ in
 
   # GTK 窗口主题：此前 gtk.theme 为空，Nautilus 等 GTK 应用跑 libadwaita 默认灰。
   # 与仓库 Catppuccin Mocha/Pink 身份对齐；仅 Linux（darwin 无 GTK 桌面需求）。
+  # gtk4.theme 显式置 null：新版 home-manager 要求对 gtk.theme → gtk4 的隐式传播
+  # 做显式决策，否则每次求值打弃用警告。
   gtk = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
     enable = true;
     theme = {
@@ -118,5 +120,6 @@ in
       };
       name = "catppuccin-mocha-pink-standard+rimless";
     };
+    gtk4.theme = null;
   };
 }

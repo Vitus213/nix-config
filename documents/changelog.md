@@ -4,6 +4,31 @@
 
 ## 2026-08-15
 
+### 修复配置审计发现的缺陷（MIME/ssh/GTK 警告）+ 补测试
+
+- 影响范围：所有 Linux 主机；其中 ssh 行为变更仅影响 generic（`192.168.*`
+  homelab 块此前声称已删除、实际仍被渲染，本次真正移除）。
+- 配置入口：`home/linux/gui/base/xdg/mime.nix`、`home/base/tui/ssh.nix`（新增
+  `modules.ssh.homelab.enable` 选项，默认 true）、`hosts/olympians-generic/home.nix`、
+  `home/base/core/theme.nix`、`outputs/x86_64-linux/tests/home-manager/`。
+- 变更内容：
+  1. `x-scheme-handler/tg`
+     的 desktop 文件名删除尾随空格（`org.telegram.desktop.desktop `）；该空格此前已写入部署的
+     `mimeapps.list`，严格解析器可能匹配失败。
+  2. generic 主机删除 homelab `192.168.*` ssh 块：此前用 `programs.ssh.matchBlocks`
+     mkForce 覆盖，但基模块声明在 `programs.ssh.settings`
+     下，覆盖对象错误从未生效（生成的 config 仍含指向 `/etc/agenix/ssh-key-romantic` 的块）；且
+     `mkForce {}` 只清空块内容、仍残留空 `Host` 头，故改为基模块新增声明式开关
+     `modules.ssh.homelab.enable`，generic 置 false，该键整体不渲染。
+  3. `theme.nix` 显式 `gtk4.theme = null`，消除新版 home-manager 关于 `gtk.theme`
+     隐式传播的弃用警告（GUI 链 `gtk.nix` 已有同值，hermes TUI 链缺失）。
+- 验证方式：`nixfmt --check` 改动文件通过；`nix eval .#evalTests` =
+  true（home-manager 测试扩至四主机并新增 `sshHasHomelabBlock`
+  断言，generic=false/其余=true）；四主机完整求值均无弃用警告；构建产物实测generic 的
+  `~/.ssh/config` 无 `192.168.*` 块、apollo 的 `mimeapps.list`
+  `x-scheme-handler/tg=org.telegram.desktop.desktop`（无尾随空格）。未执行 `just local` 或系统切换。
+- 关联文档：[通用 NixOS 桌面 Host](./generic-nixos-host.md)。
+
 ### 默认浏览器切换为 Zen Browser
 
 - 影响范围：所有加载 `home/linux/gui`

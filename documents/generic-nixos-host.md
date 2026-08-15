@@ -19,7 +19,8 @@
 - 不加载 `/etc/agenix/alias-for-work.nushell`
 - 不生成依赖 `/etc/agenix/github_token` 的 GitHub CLI auth
 - 不链接 `/etc/agenix/totp-secrets.conf`
-- 不配置 `192.168.*` 使用 `/etc/agenix/ssh-key-romantic`
+- 不配置 `192.168.*` 使用 `/etc/agenix/ssh-key-romantic`（通过 `modules.ssh.homelab.enable = false`
+  删除该块，见 `home/base/tui/ssh.nix`）
 
 ## 使用方式
 

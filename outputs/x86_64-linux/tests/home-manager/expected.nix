@@ -1,12 +1,14 @@
-{
-  myvars,
-  lib,
-}:
+{ myvars, ... }:
 let
   username = myvars.username;
-  hosts = [
-    "apollo"
-    "athena"
-  ];
+  mk = sshHasHomelabBlock: {
+    homeDirectory = "/home/${username}";
+    inherit sshHasHomelabBlock;
+  };
 in
-lib.genAttrs hosts (_: "/home/${username}")
+{
+  apollo = mk true;
+  athena = mk true;
+  generic = mk false;
+  hermes = mk true;
+}

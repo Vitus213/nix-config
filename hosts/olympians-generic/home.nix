@@ -12,7 +12,10 @@ in
   modules.desktop.nvidia.enable = false;
   modules.desktop.forceX11Compat.enable = false;
 
-  programs.ssh.matchBlocks."192.168.*" = lib.mkForce { };
+  # Drop the homelab `192.168.*` block: its IdentityFile /etc/agenix/ssh-key-romantic
+  # does not exist on this secret-free host (the old `matchBlocks` mkForce targeted
+  # a different option than the base module uses, so it never took effect).
+  modules.ssh.homelab.enable = false;
   home.activation.configureGhAuth = lib.mkForce "";
   xdg.configFile."agenix/github_token".enable = lib.mkForce false;
   xdg.configFile."totp/secrets.conf".enable = lib.mkForce false;
