@@ -169,8 +169,6 @@ const NU_PLUGIN_DIRS = [
 # a convenience method for prepending to the path:
 use std/util "path add"
 path add "~/.local/bin"
-path add "~/.bun/bin"
-path add "~/.cache/.bun/bin"
 
 # You can remove duplicate directories from the path using:
 $env.PATH = ($env.PATH | uniq)

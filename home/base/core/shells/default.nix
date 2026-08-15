@@ -15,15 +15,13 @@ let
   goBin = "${config.home.homeDirectory}/go/bin";
   rustBin = "${config.home.homeDirectory}/.cargo/bin";
   npmBin = "${config.home.homeDirectory}/.npm/bin";
-  bunBin = "${config.home.homeDirectory}/.bun/bin";
-  bunCacheBin = "${config.home.homeDirectory}/.cache/.bun/bin";
 in
 {
   programs.bash = {
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:${localBin}:${goBin}:${rustBin}:${npmBin}:${bunBin}:${bunCacheBin}"
+      export PATH="$PATH:${localBin}:${goBin}:${rustBin}:${npmBin}"
     '';
   };
 

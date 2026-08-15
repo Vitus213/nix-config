@@ -4,12 +4,12 @@
 
 配置入口：
 
-- `home/base/core/npm.nix`：安装 `bun` 和 `pnpm`，并配置 `npm install -g` 的用户级安装前缀为
-  `~/.npm`。当前 Bun 通过 `overlays/bun/default.nix` 临时覆盖到 `1.3.14`，满足最新版
-  `@oh-my-pi/pi-coding-agent` 的 `bun >= 1.3.14` 要求。
-- `home/base/core/shells/default.nix` 和 `home/base/core/shells/config.nu`：把 `~/.npm/bin`、
-  `~/.bun/bin` 和 `~/.cache/.bun/bin` 加入 shell `PATH`。`omp` 当前由 Bun 提示安装在
-  `~/.cache/.bun/bin`。
+- `home/base/core/npm.nix`：安装 `pnpm`，并配置 `npm install -g` 的用户级安装前缀为 `~/.npm`。
+- `home/base/core/omp.nix`：导入官方 flake `can1357/oh-my-pi` 的 Home Manager 模块，通过
+  `programs.omp.enable = true` 安装 OMP。omp 由官方 flake 源码构建，版本固定于 `flake.lock`（当前
+  `17.3.4`），不再依赖用户级 Bun 全局安装。
+- `home/base/core/shells/default.nix` 和 `home/base/core/shells/config.nu`：把 `~/.npm/bin`
+  加入 shell `PATH`。旧的 `~/.bun/bin`、`~/.cache/.bun/bin` 条目已随 omp 迁移移除。
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
 - `~/.omp/agent/models.yml`：OMP 用户级模型 catalog 覆盖。当前 `llm-codex` provider 保留
   `gpt-5.5`，并新增 `gpt-5.6-sol`、`gpt-5.6-terra`，两者输入上下文按 `370K`、输出上限按 `128K`
@@ -19,22 +19,18 @@
 
 ## 安装和更新
 
-这些 CLI 更新频繁，不通过 Nix 固定版本。
-
-Pi / Oh My Pi 使用 Bun 安装或更新：
+OMP 通过官方 flake 安装，更新方式是刷新该 input 并重新切换系统：
 
 ```bash
-bun install -g @oh-my-pi/pi-coding-agent@latest oh-my-pi@latest
+nix flake update omp
+# 然后重新构建/切换系统配置（如 just local）
 ```
 
-如果尚未切换到包含 Bun `1.3.14` 的系统或 Home Manager 生成，最新版 `omp`
-可先用官方预编译二进制安装：
+官方 flake 首次构建需要本机源码编译 Rust
+core 与 Bun 依赖（约 1400 个 derivation），后续版本更新通常只需增量编译。官方 flake 声明了
+`nix-community.cachix.org` substituter（本仓库已信任），可减轻构建压力。
 
-```bash
-curl -fsSL https://omp.sh/install | sh -s -- --binary
-```
-
-OpenCode 使用 npm 安装或更新：
+OpenCode 仍使用 npm 安装或更新（更新频繁，不通过 Nix 固定）：
 
 ```bash
 npm config set prefix "$HOME/.npm"
@@ -44,12 +40,11 @@ npm install -g opencode-ai@latest
 安装后应能看到：
 
 ```bash
-bun --version
 omp --version
 opencode --version
 ```
 
-`oh-my-pi` 作为配套包随 Pi / Oh My Pi 安装；当前常用入口是 `omp`。
+当前常用入口是 `omp`；其可执行文件来自 Home Manager 管理的官方 flake 包。
 
 ## 当前 OMP 模型
 
