@@ -498,6 +498,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-syllune": {
+      "locked": {
+        "lastModified": 1782467914,
+        "narHash": "sha256-pGvFkM8N0xEkIIXDe5YYfbEAvHrk4IxBrjB/x8OomhE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e73de5be04e0eff4190a1432b946d469c794e7b4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e73de5be04e0eff4190a1432b946d469c794e7b4",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1786384358,
@@ -639,13 +655,14 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-darwin": "nixpkgs-darwin",
         "nixpkgs-patched": "nixpkgs-patched",
+        "nixpkgs-syllune": "nixpkgs-syllune",
         "nu_scripts": "nu_scripts",
         "nuenv": "nuenv",
         "omp": "omp",
         "pre-commit-hooks": "pre-commit-hooks",
         "preservation": "preservation",
         "refind-minimal": "refind-minimal",
-        "type4me": "type4me",
+        "syllune": "syllune",
         "wallpapers": "wallpapers",
         "zen-browser": "zen-browser"
       }
@@ -690,6 +707,27 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "syllune": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "nixpkgs-syllune"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786974831,
+        "narHash": "sha256-oj1OQZDgS1yj+9fKfT3ocl9FSMs7l31OGAC5u62YXxU=",
+        "owner": "Vitus213",
+        "repo": "syllune",
+        "rev": "1d2492002084d004b86a5319b03eec5350fff450",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Vitus213",
+        "repo": "syllune",
         "type": "github"
       }
     },
@@ -809,28 +847,6 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "type4me": {
-      "inputs": {
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1784958832,
-        "narHash": "sha256-mEC5RuPyYB9rPo5PaG8L5oz+XUj/YyInyPV7MdB7Oc0=",
-        "owner": "Vitus213",
-        "repo": "type4me-linux",
-        "rev": "3e367432036bbbbb035dbaa6229ecb3ce94ee2d8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Vitus213",
-        "repo": "type4me-linux",
-        "rev": "3e367432036bbbbb035dbaa6229ecb3ce94ee2d8",
         "type": "github"
       }
     },

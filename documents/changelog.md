@@ -80,6 +80,24 @@
 
 ## 2026-08-16
 
+### 语音输入由 Type4Me 切换为 Syllune（远程 flake）
+
+- 影响范围：所有 Linux
+  GUI 主机（apollo/athena/generic）的语音输入栈；Type4Me 包、服务与 flake 输入一并移除，不再保留后备。
+- 配置入口：`flake.nix`（`type4me-linux` 输入换为 `github:Vitus213/syllune`，锁定
+  `0c35b8e`，`inputs.nixpkgs` 不跟随主仓库）、`home/linux/gui/base/voice-input.nix`。
+- 变更内容：Syllune 是 Rust 本地实时转写工具（sherpa-onnx
+  `streaming-paraformer-bilingual-zh-en`），替代 Type4Me 成为 Niri 唯一全局语音输入。
+  `voice-input.nix` 改为安装 Syllune flake 包、`eww`、`python3`，声明
+  `eww-syllune-overlay.service`（overlay pill）与
+  `syllune-web.service`（历史记录控制台，`127.0.0.1:8790`）。Niri `Scroll_Lock` / `Ctrl+Scroll_Lock`
+  绑定指向 `~/.config/eww/syllune-overlay-toggle`
+  overlay 脚本（独立仓库，不由本配置管理，新主机需手动克隆）。
+- 验证方式：`nixfmt --check` 通过；`nix eval .#evalTests` = true；apollo 求值实测服务集合含
+  `syllune-web`、`eww-syllune-overlay` 且不含 `type4me-linux`；`nix build` 通过 syllune
+  flake 输入构建 Syllune CUDA 包成功。未执行 `just local` 或系统切换。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)、[应用版本审计](./application-version-audit.md)。
+
 ### PDF 默认查看器由浏览器切换为 Sioyek
 
 - 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的 `application/pdf` 默认打开方式。

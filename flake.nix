@@ -131,11 +131,15 @@
 
     ########################  My own repositories  #########################################
 
-    # Type4Me 语音输入（曾切换为 Syllune，本次换回并固定已验证提交）。
-    type4me = {
-      url = "github:Vitus213/type4me-linux/3e367432036bbbbb035dbaa6229ecb3ce94ee2d8";
-      inputs.nixpkgs.follows = "nixpkgs";
+    # Syllune 语音输入（替代 Type4Me），远程 flake 锁定已验证提交。
+    # nixpkgs-syllune 固定到 syllune 自身 flake.lock 验证过的提交：本机 store
+    # 已有该组合构建的全部 CUDA 依赖产物；跟随主仓库 nixpkgs 或让 lock 重解析
+    # 都会使 CUDA 版 onnxruntime 失去缓存、本机源码重编译（约 1 小时）。
+    syllune = {
+      url = "github:Vitus213/syllune";
+      inputs.nixpkgs.follows = "nixpkgs-syllune";
     };
+    nixpkgs-syllune.url = "github:NixOS/nixpkgs/e73de5be04e0eff4190a1432b946d469c794e7b4";
 
     # my private secrets repository.
     mysecrets = {
