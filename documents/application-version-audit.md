@@ -37,7 +37,7 @@
 | Guix                   | `1.5.0`              | `modules/nixos/desktop/guix.nix`                                                            | 主 `nixpkgs` 的 `pkgs.guix`                                                        | 否             | 否     | 跟随主 `nixpkgs` 更新                                                                       |
 | Noctalia Shell         | `4.4.3`              | `home/linux/gui/base/noctalia/default.nix`                                                  | `nixpkgs-patched` 的 `pkgs-patched.noctalia-shell`                                 | 否             | 否     | 跟随 `nixpkgs-patched` 更新                                                                 |
 | Dolphin                | `26.04.2`            | `modules/nixos/desktop/misc.nix`、`home/linux/gui/base/kde-theme.nix`（Kvantum 主题）       | 主 `nixpkgs` 的 `pkgs.kdePackages.dolphin`（含 `ark` 归档前端）                    | 否             | 否     | 跟随主 `nixpkgs` 更新；替换原 Thunar；主题链见 changelog                                    |
-| Type4Me                | `0.1.0`              | `flake.nix`、`home/linux/gui/base/voice-input.nix`                                          | `github:Vitus213/type4me-linux` flake input，固定 `3e36743...`（曾切换为 Syllune） | 是             | 否     | `nix flake lock --update-input type4me` 更新；详见 [Linux 语音输入](./linux-voice-input.md) |
+| Syllune                | `0.1.0`              | `flake.nix`、`home/linux/gui/base/voice-input.nix`                                          | `github:Vitus213/syllune` flake input 的 CPU 版（云端 ASR，本地推理未启用）        | 是             | 否     | `nix flake lock --update-input syllune` 更新；详见 [Linux 语音输入](./linux-voice-input.md)  |
 | Sioyek                 | `2.0.0-unstable`     | `home/linux/gui/base/media.nix`、`home/linux/gui/base/xdg/mime.nix`                         | 主 `nixpkgs` 的 `pkgs.sioyek`（PDF 默认查看器，替代浏览器）                        | 否             | 否     | 跟随主 `nixpkgs` 更新                                                                       |
 
 ## NixPak 使用边界
@@ -52,7 +52,7 @@
 - Zed、Cursor、VSCode、LibreOffice Fresh、Orca、飞书
 - Zen Browser
 - WeChat，它使用 `appimageTools.wrapAppImage` 和 bubblewrap 参数，不是 NixPak
-- FlClash、Noctalia Shell、Type4Me
+- FlClash、Noctalia Shell、Syllune
 
 NixPak 适合继续用于闭源 IM 这类需要限制家目录读写面的应用；编辑器、浏览器、输入法数据、桌面 shell 和系统服务类应用不默认套 NixPak，避免破坏插件、LSP、桌面集成或系统服务行为。
 
