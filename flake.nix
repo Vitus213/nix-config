@@ -132,9 +132,8 @@
     ########################  My own repositories  #########################################
 
     # Syllune 语音输入（替代 Type4Me），远程 flake 锁定已验证提交。
-    # nixpkgs-syllune 固定到 syllune 自身 flake.lock 验证过的提交：本机 store
-    # 已有该组合构建的全部 CUDA 依赖产物；跟随主仓库 nixpkgs 或让 lock 重解析
-    # 都会使 CUDA 版 onnxruntime 失去缓存、本机源码重编译（约 1 小时）。
+    # nixpkgs-syllune 固定到 syllune 自身 flake.lock 验证过的提交，避免主仓库
+    # nixpkgs 更新时 sherpa-onnx/onnxruntime 依赖漂移、本机源码重编译。
     syllune = {
       url = "github:Vitus213/syllune";
       inputs.nixpkgs.follows = "nixpkgs-syllune";
