@@ -259,8 +259,8 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 
     // Utility shortcuts
-    Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音输入切换" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle"; }
-    Shift+Scroll_Lock repeat=false hotkey-overlay-title="Syllune 取消录音" { spawn "sh" "-c" "kill -TERM \"$(cat \"$XDG_RUNTIME_DIR/syllune-overlay.pid\")\" 2>/dev/null"; }
+    Ctrl+Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音输入切换" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle"; }
+    Scroll_Lock repeat=false hotkey-overlay-title="Syllune 取消录音" { spawn "sh" "-c" "kill -TERM \"$(cat \"$XDG_RUNTIME_DIR/syllune-overlay.pid\")\" 2>/dev/null"; }
     Mod+Shift+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
     Mod+C { spawn "noctalia-shell" "ipc" "callx" "launcher" "calculator"; }
 

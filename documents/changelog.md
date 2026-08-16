@@ -4,6 +4,15 @@
 
 ## 2026-08-16
 
+### Syllune 语音输入快捷键改为 Ctrl+Scroll_Lock / Scroll_Lock
+
+- 影响范围：Linux GUI 主机的 Syllune 语音输入覆盖层触发方式。
+- 配置入口：`home/linux/gui/niri/conf/keybindings.kdl`。
+- 变更内容：触发键由 `Scroll_Lock` / `Shift+Scroll_Lock` 改为 `Ctrl+Scroll_Lock`（切换覆盖层）/
+  `Scroll_Lock`（取消录音），与原方案同为独立按键、不占用滚轮。
+- 验证方式：`niri validate` 通过，`niri msg action load-config-file` 热重载成功。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
 ### 修复飞书屏幕共享仍黑屏：重启旧构建进程并强制 NVIDIA invalid modifier
 
 - 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的飞书屏幕共享。
