@@ -42,6 +42,26 @@
   `zen.desktop`（1.21.14b）且不含 Firefox。未执行 `just local` 或系统切换。
 - 关联文档：[Zen Browser](./zen-browser.md)。
 
+### 在 bailian provider 新增 DeepSeek V4 Pro 0813 并切换 slow/plan 角色
+
+- 影响范围：用户级 OMP 模型 catalog 与模型角色；`slow`、`plan` 角色由 `bailian/qwen3.8-max:max`
+  切换为 `bailian/deepseek-v4-pro-0813:max`，其余角色不变（advisor/review 仍为
+  `bailian/qwen3.8-max:max`、smol 仍为 `bailian/deepseek-v4-flash-0731:max`）。`bailian/*`
+  的 fallback 链仍指向 `scitrace/gpt-5.6-sol`。
+- 配置入口：`~/.omp/agent/models.yml`、`~/.omp/agent/config.yml`。
+- 变更内容：在 `bailian` provider 下新增
+  `deepseek-v4-pro-0813`（上下文 1M、输出上限 393K、思考力度 high/max，compat 参数与既有
+  `deepseek-v4-pro` 一致：`thinking.type=enabled`、 `reasoning_content`
+  字段、工具调用需保留 reasoning/assistant 内容）；`modelRoles` 的 `slow` 与 `plan`
+  切换到该模型。需求中提到的 `deepseek-v4-pro-0831` 在百炼不存在（`/v1/models` 无此 id，直接调用返回
+  `model_not_found`），现存最接近的带日期快照为 `0813`；裸别名 `deepseek-v4-pro`
+  此前已配置，指向最新 pro 快照。
+- 验证方式：curl 调用百炼 `chat/completions` 确认 `deepseek-v4-pro-0813` 正常返回（含
+  `reasoning_content`）；`omp models bailian` 显示新模型（1M / 393K，efforts high,max）；
+  `omp --model bailian/deepseek-v4-pro-0813 --thinking low --no-tools --no-session -p "只输出 OK"`
+  成功；`omp config get modelRoles --json` 确认 slow/plan 已指向新模型。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
 ### 修复配置审计发现的缺陷（MIME/ssh/GTK 警告）+ 补测试
 
 - 影响范围：所有 Linux 主机；其中 ssh 行为变更仅影响 generic（`192.168.*`

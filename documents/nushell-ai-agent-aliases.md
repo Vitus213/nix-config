@@ -11,11 +11,13 @@
 - `home/base/core/shells/default.nix` 和 `home/base/core/shells/config.nu`：把 `~/.npm/bin`
   加入 shell `PATH`。旧的 `~/.bun/bin`、`~/.cache/.bun/bin` 条目已随 omp 迁移移除。
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
-- `~/.omp/agent/models.yml`：OMP 用户级模型 catalog 覆盖。当前 `llm-codex` provider 保留
-  `gpt-5.5`，并新增 `gpt-5.6-sol`、`gpt-5.6-terra`，两者输入上下文按 `370K`、输出上限按 `128K`
-  配置。
-- `~/.omp/agent/config.yml`：OMP 用户级角色配置。当前 `enabledModels` 限定为
-  `llm-codex/*`，`modelProviderOrder` 优先 `llm-codex`。
+- `~/.omp/agent/models.yml`：OMP 用户级模型 catalog 覆盖。`bailian` provider 包含
+  `qwen3.8-max`、`deepseek-v4-flash-0731`、`deepseek-v4-pro`、`deepseek-v4-pro-0813`、
+  `glm-5.2-fast-preview`；另有 `scitrace`、`ccsci`、`sub2test`、`test-otel` 自定义 provider 与官方
+  `deepseek`。
+- `~/.omp/agent/config.yml`：OMP 用户级角色配置。`enabledModels` 覆盖 `bailian/*`
+  与 scitrace/ccsci/sub2test/test-otel 各 provider；`bailian/*` 的 fallback 链为
+  `scitrace/gpt-5.6-sol`。
 
 ## 安装和更新
 
@@ -48,14 +50,14 @@ opencode --version
 
 ## 当前 OMP 模型
 
-| 角色                             | 当前模型                        |
-| -------------------------------- | ------------------------------- |
-| `smol`                           | `llm-codex/gpt-5.6-sol:high`    |
-| `default` / `advisor` / `review` | `llm-codex/gpt-5.6-sol:xhigh`   |
-| `slow` / `plan`                  | `llm-codex/gpt-5.6-terra:xhigh` |
+| 角色                 | 当前模型                             |
+| -------------------- | ------------------------------------ |
+| `slow` / `plan`      | `bailian/deepseek-v4-pro-0813:max`   |
+| `advisor` / `review` | `bailian/qwen3.8-max:max`            |
+| `smol`               | `bailian/deepseek-v4-flash-0731:max` |
 
-`gpt-5.6-sol` 和 `gpt-5.6-terra` 都通过 `llm-codex` 自定义 provider 访问。模型元数据以
-`~/.omp/agent/models.yml` 为准：`contextWindow: 370000`，`maxTokens: 128000`。
+以上角色均走 `bailian` provider（百炼 DashScope 兼容模式），`bailian/*` 的 fallback 链为
+`scitrace/gpt-5.6-sol`。模型元数据以 `~/.omp/agent/models.yml` 为准。
 
 ## 当前命令
 
@@ -83,8 +85,7 @@ nixfmt --check home/base/core/npm.nix home/base/core/shells/default.nix home/bas
 nu -c 'alias cy = codex --dangerously-bypass-approvals-and-sandbox; help aliases | where name == cy'
 nu -c 'def --wrapped oy [...rest] { with-env { OPENCODE_PERMISSION: "{\"*\":\"allow\"}" } { print $env.OPENCODE_PERMISSION; print $rest } }; oy test'
 omp --version
-omp models llm-codex
+omp models bailian
 omp config get modelRoles --json
-omp --model llm-codex/gpt-5.6-sol --thinking low --no-tools --no-session -p "只输出 OK"
-omp --model llm-codex/gpt-5.6-terra --thinking low --no-tools --no-session -p "只输出 OK"
+omp --model bailian/deepseek-v4-pro-0813 --thinking low --no-tools --no-session -p "只输出 OK"
 ```
