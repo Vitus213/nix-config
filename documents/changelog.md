@@ -4,6 +4,18 @@
 
 ## 2026-08-16
 
+### PDF 默认查看器由浏览器切换为 Sioyek
+
+- 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的 `application/pdf` 默认打开方式。
+- 配置入口：`home/linux/gui/base/media.nix`（安装 `pkgs.sioyek`）、
+  `home/linux/gui/base/xdg/mime.nix`（`application/pdf` 默认改为 `sioyek.desktop`，移除原
+  `# TODO: pdf viewer`）、`home/linux/gui/niri/conf/windowrules.kdl`（Sioyek 钉到 `9file`）。
+- 变更内容：浏览器看 PDF 偏重且无阅读位点/笔记；Sioyek 键盘驱动、平滑滚动、Qt 走 Wayland，与现有 nvim/yazi 风格一致。目录默认保持 yazi 不变。
+- 验证方式：`nixfmt --check` 通过；`nix eval .#evalTests` = true；apollo 求值实测 `home.packages` 含
+  `sioyek-2.0.0-unstable`、`xdg.mimeApps` 的 `application/pdf` 为
+  `["sioyek.desktop"]`；`niri validate` 通过。未执行 `just local`。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)、[应用版本审计](./application-version-audit.md)。
+
 ### Syllune 语音输入快捷键改为 Scroll_Lock / Ctrl+Scroll_Lock
 
 - 影响范围：Linux GUI 主机的 Syllune 语音输入覆盖层触发方式。

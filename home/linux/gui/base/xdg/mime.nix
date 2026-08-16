@@ -27,7 +27,7 @@
       in
       {
         "application/json" = browser;
-        "application/pdf" = browser; # TODO: pdf viewer
+        "application/pdf" = [ "sioyek.desktop" ]; # 独立 PDF 查看器（键盘驱动，Wayland 原生）
 
         "text/html" = browser;
         "text/xml" = browser;

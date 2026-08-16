@@ -11,6 +11,7 @@
     playerctl
     pulsemixer
     imv # simple image viewer
+    sioyek # PDF viewer，键盘驱动，Wayland 原生（Qt）
 
     # video/audio tools
     libva-utils
