@@ -36,9 +36,10 @@
     # audio
     alsa-utils # provides amixer/alsamixer/...
     networkmanagerapplet # provide GUI app: nm-connection-editor
-    # screenshot/screencast
-    flameshot
-    hyprshot # screen shot
+    # screenshot/screencast（Wayland 原生链：grim 截图、slurp 选区、satty 标注）
+    grim
+    slurp
+    satty
     wf-recorder # screen recording
   ];
 

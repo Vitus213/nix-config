@@ -23,7 +23,7 @@
   ]
   ++ lib.optionals pkgs.stdenv.isx86_64 [
     "${pkgs.obsidian}/share/applications/obsidian.desktop"
-    "${pkgs.typora}/share/applications/typora.desktop"
+    "${pkgs.apostrophe}/share/applications/org.gnome.gitlab.somas.Apostrophe.desktop"
   ];
   # ++ (
   #   if pkgs.stdenv.isx86_64 then

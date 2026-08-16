@@ -23,7 +23,7 @@
 | Cursor                 | `3.7.19`             | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.code-cursor`                                              | 否        | 否     | 跟随主 `nixpkgs` 更新                                                                  |
 | VSCode                 | `1.124.2`            | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.vscode`                                                   | 否        | 否     | 跟随主 `nixpkgs` 更新                                                                  |
 | Catppuccin VSCode 扩展 | `3.19.0`             | `home/base/core/theme.nix`                                                                  | `catppuccin/nix` 的 VSCode port，本仓库修正 pnpm `nodejs-slim` 参数             | 是        | 否     | 等上游改用 `nodejs-slim` 后移除本地包覆盖                                              |
-| WPS Office CN          | `12.1.2.25882`       | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.wpsoffice-cn`                                             | 否        | 否     | 跟随主 `nixpkgs` 更新                                                                  |
+| LibreOffice Fresh      | `26.2.1.2`           | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.libreoffice-fresh`（开源，Wayland 原生，替代闭源 WPS）    | 否        | 否     | 跟随主 `nixpkgs` 更新                                                                  |
 | Firefox                | `152.0`              | `home/linux/gui/base/browsers.nix`、`hardening/nixpaks/firefox.nix`                         | 主 `nixpkgs` 的 `pkgs.firefox`                                                  | 否        | 是     | 保留 NixPak 沙箱，版本跟随主 `nixpkgs`                                                 |
 | Google Chrome          | `149.0.7827.114`     | `home/linux/gui/base/browsers.nix`                                                          | 主 `nixpkgs` 的 `pkgs.google-chrome`                                            | 否        | 否     | 跟随主 `nixpkgs` 更新                                                                  |
 | Chromium               | `149.0.7827.114`     | `home/linux/gui/base/browsers.nix`                                                          | aarch64 fallback，主 `nixpkgs` 的 `pkgs.chromium`                               | 否        | 否     | 跟随主 `nixpkgs` 更新                                                                  |
@@ -51,7 +51,7 @@
 
 当前未使用 NixPak 的主要图形应用:
 
-- Zed、Cursor、VSCode、WPS Office CN、Orca
+- Zed、Cursor、VSCode、LibreOffice Fresh、Orca
 - Google Chrome、Chromium、Zen Browser
 - WeChat，它使用 `appimageTools.wrapAppImage` 和 bubblewrap 参数，不是 NixPak
 - Clash Verge Rev、Noctalia Shell、Type4Me Linux

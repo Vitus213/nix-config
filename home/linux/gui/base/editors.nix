@@ -27,7 +27,7 @@ in
     pkgs.code-cursor
     pkgs.zed-editor
     # pkgs.antigravity-fhs
-    pkgs.wpsoffice-cn
+    pkgs.libreoffice-fresh # 开源办公套件，Wayland 原生，替代闭源 WPS
   ];
 
   programs.vscode = {

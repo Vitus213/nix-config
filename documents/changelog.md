@@ -2,6 +2,30 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-08-16
+
+### 为契合 Wayland 将截图/办公/笔记组件替换为开源版
+
+- 影响范围：所有 Linux
+  GUI 主机（apollo/athena/generic）的截图链、办公套件与 Markdown 笔记；macOS（artemis）不受影响。
+- 配置入口：`home/linux/gui/base/desktop-tools.nix`（`flameshot`/`hyprshot` →
+  `grim`/`slurp`/`satty`）、`home/linux/gui/base/editors.nix`（`wpsoffice-cn` →
+  `libreoffice-fresh`）、`home/linux/gui/base/note-taking.nix`（`typora` →
+  `apostrophe`）、`home/linux/gui/base/xdg/autostart.nix`（autostart 条目同步）、
+  `home/linux/gui/niri/conf/windowrules.kdl`（`title="^Typora"` 规则换为
+  `app-id="org.gnome.gitlab.somas.Apostrophe"`）。
+- 变更内容：hyprshot 依赖 hyprctl，实测在 niri 下不可用；flameshot 在 niri 上多屏截图与标注有已知问题；grim 在本机 niri 实测截屏正常，故截图链换为 Wayland 原生 grim（截图）+
+  slurp（选区）+
+  satty（标注），基础全屏/窗口截图继续用 niri 内置 Print 键。办公套件由闭源 WPS 换为开源 LibreOffice
+  Fresh（GTK/KDE Wayland 原生）。笔记由闭源 Typora 换为 Apostrophe（GTK4、Wayland 原生）。
+- 验证方式：`nixfmt --check` 改动文件通过；`nix eval .#evalTests` =
+  true；apollo/athena/generic三主机求值实测 `home.packages` 含
+  `apostrophe-3.4`、`grim-1.5.0`、`slurp-1.5.0`、`satty-0.21.1`、
+  `libreoffice-26.2.1.2`，且不再含 typora/wpsoffice/flameshot/hyprshot；apostrophe
+  desktop 文件确认存在（`org.gnome.gitlab.somas.Apostrophe.desktop`）。未执行 `just local`
+  或系统切换。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)、[应用版本审计](./application-version-audit.md)。
+
 ## 2026-08-15
 
 ### 登录自启动浏览器切换为 Zen Browser

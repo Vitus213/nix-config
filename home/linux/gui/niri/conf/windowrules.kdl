@@ -52,7 +52,7 @@ window-rule {
     open-on-workspace "3docs"
 }
 window-rule {
-    match title="^Typora"
+    match app-id="org.gnome.gitlab.somas.Apostrophe"
     open-on-workspace "3docs"
     open-maximized true
 }

@@ -7,8 +7,8 @@
 | 工作区      | 语义       | 自动进入的应用                                |
 | ----------- | ---------- | --------------------------------------------- |
 | `1terminal` | 终端       | `foot`、`Alacritty`、`Ghostty`                |
-| `2browser`  | 浏览器     | `Firefox`、`Google Chrome`、`Chromium`        |
-| `3docs`     | 文档笔记   | `Obsidian`、`Typora`                          |
+| `2browser`  | 浏览器     | `Zen`、`Firefox`、`Google Chrome`、`Chromium` |
+| `3docs`     | 文档笔记   | `Obsidian`、`Apostrophe`                      |
 | `4codex`    | Codex GUI  | `ChatGPT`、`Codex`、`Claude` 等 AI 图形客户端 |
 | `5code`     | 代码编辑器 | `VSCode`、`Cursor`、`Zed`                     |
 | `6chat`     | 聊天沟通   | `Telegram`、飞书、微信、QQ                    |
