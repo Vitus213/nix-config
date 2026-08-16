@@ -4,6 +4,40 @@
 
 ## 2026-08-16
 
+### 修复飞书屏幕共享仍黑屏：重启旧构建进程并强制 NVIDIA invalid modifier
+
+- 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的飞书屏幕共享。
+- 配置入口：`home/linux/gui/niri/conf/debug-nvidia.kdl`（新增）、
+  `home/linux/gui/niri/conf/config.kdl`（include）、`home/linux/gui/niri/default.nix` （链接新文件到
+  `~/.config/niri/`）、`documents/wayland-screen-sharing.md`。
+- 变更内容：两个叠加根因。其一，`just local` 部署后运行中的飞书仍是修复前旧构建（wrapper 无
+  `WebRTCPipeWireCapturer`），kill 后由 niri 重新拉起，新进程 cmdline 含参数。其二，带参数后 niri 日志仍报 ScreenCast
+  `Connecting -> Paused -> Error("no more input formats")`：NVIDIA DRM
+  modifier 无法被 portal 客户端导入，格式协商失败；新增 `debug { force-pipewire-invalid-modifier; }`
+  强制 linear 路径。该 flag 每次 StartCast 实时读取，热重载后下次共享生效，无需重登录。
+- 验证方式：`niri validate` 通过、`niri msg action load-config-file`
+  成功且日志无 include 报错；新飞书进程 `/proc/<pid>/cmdline` 含
+  `enable-features=WebRTCPipeWireCapturer`；niri 源码（v26.04）确认多 `debug`
+  节点合并、flag 在 StartCast 时读取。远端真实画面待会议内确认。
+- 关联文档：[Wayland 屏幕共享](./wayland-screen-sharing.md)。
+
+### 修复 Niri 下飞书屏幕共享黑屏并验证 portal 链路
+
+- 影响范围：所有 Linux
+  GUI 主机（apollo/athena/generic）的飞书屏幕共享；OBS 与腾讯会议配置不变，仅补充已验证的正确入口和对照方式。
+- 配置入口：`home/linux/gui/base/misc.nix`（`pkgs.feishu` 加入
+  `WebRTCPipeWireCapturer`）、`documents/wayland-screen-sharing.md`、`documents/linux-im-apps.md`、`documents/tencent-meeting.md`、`documents/application-version-audit.md`。
+- 变更内容：ASHPD 与 OBS 实测证明当前 D-Bus、portal-gnome、Niri
+  ScreenCast、PipeWire、NVIDIA 链路可建立实时流，不替换 portal；飞书保持 XWayland，只把捕获后端切到 portal/PipeWire。腾讯会议保留包含完整上游修复的默认
+  `wemeet`，`wemeet-xwayland` 继续作为会议内对照入口。
+- 验证方式：飞书同包 Chromium
+  A/B 实测无参数时整屏缩略图黑屏、加参数后 portal 返回实时画面；覆盖后的 Feishu `7.66.10`
+  构建成功，产物 wrapper 与运行时命令行均含该参数且窗口仍为 XWayland；OBS `32.1.2`
+  实测 PipeWire 流为 BGRx 2560×1440、状态 `streaming`；`nix eval .#evalTests` =
+  true，apollo/athena/generic 三主机完整求值通过。未执行 `just local`
+  或系统切换；飞书/腾讯会议真实会议仍需登录后确认远端画面。
+- 关联文档：[Wayland 屏幕共享](./wayland-screen-sharing.md)、[Linux 微信、QQ 与飞书](./linux-im-apps.md)、[Linux 腾讯会议](./tencent-meeting.md)。
+
 ### 为契合 Wayland 将截图/办公/笔记组件替换为开源版
 
 - 影响范围：所有 Linux

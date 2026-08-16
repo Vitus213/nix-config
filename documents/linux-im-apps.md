@@ -1,6 +1,6 @@
-# Linux 微信与 QQ
+# Linux 微信、QQ 与飞书
 
-这份文档记录 NixOS 桌面上微信和 QQ 的当前安装方式、沙箱边界、验证和回滚方式。
+这份文档记录 NixOS 桌面上微信、QQ 和飞书的当前安装方式、沙箱边界、屏幕共享、验证和回滚方式。
 
 ## 当前结论
 
@@ -12,9 +12,14 @@
 - Linux GUI 会话默认自启动微信，不再默认自启动 Telegram；两者仍保留在用户包中。
 - 不把 Flatpak 作为主方案；Flatpak 只作为临时排障或对照方案。
 
+- 飞书使用主 `nixpkgs` 的 `pkgs.feishu 7.66.10`，保持 XWayland，并通过 `WebRTCPipeWireCapturer`
+  将屏幕共享切到 portal/PipeWire。
+
 ## 配置入口
 
 - `home/linux/gui/base/misc.nix`: 启用 `bwraps.wechat` 和 `nixpaks.qq`。
+- `home/linux/gui/base/misc.nix`: 对 `pkgs.feishu` 覆盖启动参数
+  `--enable-features=WebRTCPipeWireCapturer`。
 - `home/linux/gui/base/xdg/autostart.nix`: 将微信桌面条目加入 XDG
   autostart，并移除 Telegram 自启动条目。
 - `home/linux/gui/base/fcitx5/default.nix`: 禁用系统 Fcitx5 XDG autostart，只保留 Home
@@ -45,6 +50,14 @@ QQ:
 - 可读写 Documents、Downloads、Music、Videos、Pictures 这些常用用户目录。
 - 使用 Wayland 和 PipeWire socket，不启用 X11 socket。
 
+飞书:
+
+- 版本为 `7.66.10`，跟随主 `nixpkgs`。
+- 保持 XWayland；Nixpkgs 当前明确不启用原生 Wayland，避免上游已知崩溃。
+- 屏幕共享通过 `WebRTCPipeWireCapturer` 调用 xdg-desktop-portal 和 PipeWire。
+- 实测无该参数时整屏缩略图为黑屏；加入参数后 portal 能返回实时 Niri 桌面画面。
+- 详细反馈环、OBS 与腾讯会议对照见 [Wayland 屏幕共享](./wayland-screen-sharing.md)。
+
 ## 为什么这样选
 
 - Nixpkgs 已经包含 Linux WeChat `4.1.1.4`，来源是腾讯官方 Linux AppImage。
@@ -55,6 +68,8 @@ QQ:
 - Flathub 的 WeChat manifest 仍设置
   `QT_QPA_PLATFORM=xcb`，说明当前微信 Linux 客户端更适合按 X11/xcb 路径运行。
 - 微信和 QQ 都是闭源 IM，应限制其默认读取整个家目录的能力；本仓库已有 Nixpak/bubblewrap 结构，比直接安装裸包更符合当前加固习惯。
+- 飞书原生 Wayland 仍有上游崩溃风险，因此显示后端保持 XWayland；仅把捕获后端切到 portal/PipeWire，避免 X11
+  desktop capturer 无法看到 Wayland 桌面。
 - WeChat `4.1.1.4` 同时看到 Wayland 和 X11 环境时可能改走 Fcitx
   Portal；该路径的候选框坐标在 Niri/XWayland 下可能落到屏幕外。系统 XDG autostart 与 Home
   Manager 服务同时启动 Fcitx5 时，过早启动的实例也会导致 XIM 未注册，因此当前只保留 Home
@@ -72,6 +87,8 @@ QQ:
 - Flathub WeChat:
   <https://github.com/flathub/com.tencent.WeChat/blob/master/com.tencent.WeChat.yaml>
 - Flathub QQ: <https://github.com/flathub/com.qq.QQ/blob/master/com.qq.QQ.yaml>
+- Nixpkgs Feishu：
+  <https://github.com/NixOS/nixpkgs/blob/65179426c83bb3f6bc14898b42ea1c6f01d374b0/pkgs/by-name/fe/feishu/package.nix>
 
 ## 验证
 
@@ -81,6 +98,7 @@ QQ:
 nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.home.packages --show-trace
 nix eval --json --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.config.home-manager.users.vitus.xdg.autostart.entries' --impure
 nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); in flake.nixosConfigurations.apollo.config.home-manager.users.vitus.xdg.configFile."autostart/org.fcitx.Fcitx5.desktop".text' --impure
+nix eval --raw .#nixosConfigurations.apollo.pkgs.feishu.version
 ```
 
 完整构建验证：
@@ -104,6 +122,7 @@ fcitx5-diagnose
 
 - 微信能登录、收发文字和图片，文件保存到 `~/Documents/WeChat_Data`。
 - QQ 能登录，在 Niri/Wayland 下显示窗口，Fcitx/Rime 能输入中文。
+- 飞书能登录；进入会议后屏幕共享会打开 portal，选择显示器后远端画面持续更新。
 - Niri 窗口规则能把微信和 QQ 放到聊天工作区。
 - 登录桌面会话后微信会自动启动，Telegram 不会自动启动。
 - 微信聊天输入框能正常显示 Fcitx5/Rime 候选框，而不只是接受盲打后的上屏结果。
@@ -117,6 +136,8 @@ fcitx5-diagnose
 
 - 在 `home/linux/gui/base/misc.nix` 注释掉 `bwraps.wechat`。
 - 在 `home/linux/gui/base/misc.nix` 注释掉 `nixpaks.qq`。
+- 如需回滚飞书 PipeWire 捕获参数，将 `home/linux/gui/base/misc.nix` 中的 `feishu.override`
+  恢复为普通 `feishu`。
 - 如需回滚 Fcitx5 启动去重，移除 `home/linux/gui/base/fcitx5/default.nix` 中的用户级 `Hidden=true`
   autostart 覆盖；这会重新引入双实例竞争和 XIM 启动时序风险，不建议长期使用。
 

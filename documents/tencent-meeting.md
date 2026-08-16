@@ -33,8 +33,9 @@ wemeet
 - Wayland/X11 输入焦点崩溃修复；
 - 音频设备识别和文件传输兼容修复。
 
-默认先使用 `wemeet`。仅当默认模式无法正常显示窗口时，才用 `wemeet-xwayland`
-做对照；后者会强制 X11/xcb，不是当前默认入口。
+默认先使用 `wemeet`。仅当默认模式无法显示窗口、预览摄像头或共享屏幕时，才在退出默认实例后用
+`wemeet-xwayland` 做同会议对照；后者会强制 X11/xcb，不是当前默认入口。屏幕共享反馈环见
+[Wayland 屏幕共享](./wayland-screen-sharing.md)。
 
 Niri 按 `app-id="wemeetapp"` 匹配腾讯会议。主窗口、辅助窗口和音频接入方式窗口创建后都会自动进入
 `0other`；窗口规则不强制平铺或浮动，保留应用自身窗口类型。
@@ -51,9 +52,9 @@ Niri 按 `app-id="wemeetapp"` 匹配腾讯会议。主窗口、辅助窗口和�
 ## 版本与来源
 
 - 腾讯会议官网：<https://meeting.tencent.com/>
-- 当前 Nixpkgs 修订：`0c88e1f2bdb93d5999019e99cb0e61e1fe2af4c5`
+- 当前 Nixpkgs 修订：`65179426c83bb3f6bc14898b42ea1c6f01d374b0`
 - 对应 Nixpkgs 包定义：
-  <https://github.com/NixOS/nixpkgs/blob/0c88e1f2bdb93d5999019e99cb0e61e1fe2af4c5/pkgs/by-name/we/wemeet/package.nix>
+  <https://github.com/NixOS/nixpkgs/blob/65179426c83bb3f6bc14898b42ea1c6f01d374b0/pkgs/by-name/we/wemeet/package.nix>
 
 `wemeet` 是闭源、`unfree` 软件。仓库已有允许所需非自由软件的 Nixpkgs 策略，本次不新增许可证例外。
 
@@ -66,11 +67,12 @@ nix eval --raw --expr 'let f = builtins.getFlake (toString /home/vitus/nix-confi
 nix build .#nixosConfigurations.apollo.pkgs.wemeet --no-link --show-trace
 ```
 
-部署后还需要实际确认：
+运行时已确认默认 `wemeet` 创建原生 Wayland 窗口，`wemeet-xwayland` 创建 X11/xcb 窗口且加载屏幕共享
+`libhook.so`。客户端当前停在登录/同意条款页，未代替用户进入会议；部署后仍需实际确认：
 
 - 能登录并保持登录态；
 - 扬声器、麦克风和摄像头可用；
-- Niri/Wayland 下可以选择窗口或显示器并共享画面；
+- Niri/Wayland 下可以选择窗口或显示器并共享持续更新的画面；
 - Fcitx5/Rime 可以在聊天输入框输入中文；
 - 从其他工作区启动后，所有 `wemeetapp` 窗口进入 `0other`；
 - 文件发送和接收正常。

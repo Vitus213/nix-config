@@ -21,7 +21,10 @@
     nixpaks.telegram-desktop
     # qqmusic
     bwraps.wechat
-    feishu
+    # Keep Feishu on XWayland, but route screen sharing through portal/PipeWire.
+    (feishu.override {
+      commandLineArgs = "--enable-features=WebRTCPipeWireCapturer";
+    })
     # discord # update too frequently, use the web version instead
   ];
 
