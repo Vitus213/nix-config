@@ -90,29 +90,22 @@ pgrep -af "opt/bytedance/feishu/feishu" | rg -v "type=|crashpad"
 `93yrpg…`（wrapper 无该参数），故共享仍黑屏。kill 旧进程后由 niri 重新拉起，`/proc/<pid>/cmdline`
 即含该参数。
 
-portal 与视频帧返回已由同包 Chromium 探针验证；真实会议中远端画面仍需在已带参数的进程里确认。
+2026-08-16 真实会议复测（pw-mon 抓取 PipeWire 协商）结论：飞书桌面客户端在本机（NVIDIA +
+niri）**无法接收共享流**，属上游限制，配置无法绕过：
 
-### NVIDIA：强制 invalid modifier（2026-08-16 实测根因）
+- 提供方（niri）只发布 GPU DMA-BUF 缓冲（`BGRx + modifier`）。
+- 消费方（飞书 WebRTC，X11 路径）请求 BGRA/RGBA/BGRx/RGBx 但**不能导入 DMA-BUF**，交集为空，niri 报
+  `StartCast: Paused -> Error("no more input formats")`，流从未建立。
+- 飞书 7.66.10 二进制强制 X11：`--ozone-platform=wayland` 与 `NIXOS_OZONE_WL=1`
+  均不生效（进程无 wayland-1 fd，消费节点仍
+  `window.x11.display=:0`）；nixpkgs 因上游原生 Wayland 崩溃 bug 明确禁用，本仓库不覆盖。
+- 对照：OBS（`Screen Capture (PipeWire)`）与 Zen/Chromium 原生 Wayland 的 portal 路径都能导入 DMA-BUF，同一提供方下共享正常。
 
-飞书带参数后仍黑屏时，niri 日志出现：
+已证伪并回滚的尝试：`debug { force-pipewire-invalid-modifier; }`（只改 modifier 不改缓冲类型，且会把 niri 发布格式过滤到只剩 invalid，可能拖累 OBS）；`--ozone-platform=wayland`。保留
+`--enable-features=WebRTCPipeWireCapturer`（它把捕获切到 portal，是必要前提，且对 Zen/Chromium 有效）。
 
-```text
-StartCast: ... Connecting -> Paused -> Error("no more input formats")
-```
-
-这是 NVIDIA DRM 提供的 modifier 无法被 portal 客户端（飞书/Chromium
-WebRTC）导入，ScreenCast 在格式协商阶段失败。niri 官方 debug 选项可强制走 invalid（linear）modifier 路径。配置入口：`home/linux/gui/niri/conf/debug-nvidia.kdl`（由
-`config.kdl` include， `home/linux/gui/niri/default.nix` 链接到 `~/.config/niri/`）：
-
-```kdl
-debug {
-    force-pipewire-invalid-modifier
-}
-```
-
-该 flag 在每次 StartCast 会话建立时实时读取（`config.borrow()`），`niri msg action load-config-file`
-热重载后下一次共享即生效，无需重登录。多个 `debug` 节点会被 niri 合并（`m_merge!`），与
-`noctalia-shell.kdl` 的 debug 块并存不冲突。
+可行替代：需要共享屏幕时用
+**Zen（原生 Wayland）打开飞书网页版会议**，浏览器 portal 路径已验证可收到实时画面；或用 OBS 采集后推流。
 
 ## OBS
 

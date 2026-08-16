@@ -4,30 +4,28 @@
 
 ## 2026-08-16
 
-### Syllune 语音输入快捷键改为 Ctrl+Scroll_Lock / Scroll_Lock
+### Syllune 语音输入快捷键改为 Scroll_Lock / Ctrl+Scroll_Lock
 
 - 影响范围：Linux GUI 主机的 Syllune 语音输入覆盖层触发方式。
 - 配置入口：`home/linux/gui/niri/conf/keybindings.kdl`。
-- 变更内容：触发键由 `Scroll_Lock` / `Shift+Scroll_Lock` 改为 `Ctrl+Scroll_Lock`（切换覆盖层）/
-  `Scroll_Lock`（取消录音），与原方案同为独立按键、不占用滚轮。
+- 变更内容：`Scroll_Lock` 触发语音输入（`syllune-overlay-toggle`），`Ctrl+Scroll_Lock`
+  触发语音整理（`syllune-overlay-toggle prompt-optimize`），替代原 `Scroll_Lock` /
+  `Shift+Scroll_Lock` 方案，均为独立按键、不占用滚轮。
 - 验证方式：`niri validate` 通过，`niri msg action load-config-file` 热重载成功。
 - 关联文档：[Linux 语音输入](./linux-voice-input.md)。
 
-### 修复飞书屏幕共享仍黑屏：重启旧构建进程并强制 NVIDIA invalid modifier
+### 回滚飞书共享的无效 NVIDIA 修复并如实记录上游限制
 
-- 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的飞书屏幕共享。
-- 配置入口：`home/linux/gui/niri/conf/debug-nvidia.kdl`（新增）、
-  `home/linux/gui/niri/conf/config.kdl`（include）、`home/linux/gui/niri/default.nix` （链接新文件到
-  `~/.config/niri/`）、`documents/wayland-screen-sharing.md`。
-- 变更内容：两个叠加根因。其一，`just local` 部署后运行中的飞书仍是修复前旧构建（wrapper 无
-  `WebRTCPipeWireCapturer`），kill 后由 niri 重新拉起，新进程 cmdline 含参数。其二，带参数后 niri 日志仍报 ScreenCast
-  `Connecting -> Paused -> Error("no more input formats")`：NVIDIA DRM
-  modifier 无法被 portal 客户端导入，格式协商失败；新增 `debug { force-pipewire-invalid-modifier; }`
-  强制 linear 路径。该 flag 每次 StartCast 实时读取，热重载后下次共享生效，无需重登录。
-- 验证方式：`niri validate` 通过、`niri msg action load-config-file`
-  成功且日志无 include 报错；新飞书进程 `/proc/<pid>/cmdline` 含
-  `enable-features=WebRTCPipeWireCapturer`；niri 源码（v26.04）确认多 `debug`
-  节点合并、flag 在 StartCast 时读取。远端真实画面待会议内确认。
+- 影响范围：所有 Linux GUI 主机的飞书屏幕共享配置与文档。
+- 配置入口：`home/linux/gui/niri/conf/config.kdl`、`home/linux/gui/niri/default.nix` （移除
+  `debug-nvidia.kdl` 的 include 与链接）、`documents/wayland-screen-sharing.md`。
+- 变更内容：回滚
+  `debug { force-pipewire-invalid-modifier; }`（真实会议复测证伪：只改 modifier 不改缓冲类型，协商仍报
+  `no more input formats`，且可能拖累 OBS）。pw-mon 抓取 PipeWire 协商确认根因：niri 只发布 DMA-BUF，飞书（X11 强制，`--ozone-platform=wayland`
+  与 `NIXOS_OZONE_WL=1` 均不生效）不能导入 DMA-BUF，交集为空；属上游限制，配置无法绕过。保留
+  `WebRTCPipeWireCapturer`（portal 捕获前提，对 Zen/Chromium 有效）。替代方案：Zen 网页版会议共享或 OBS 推流。
+- 验证方式：`niri validate` 通过；pw-mon 实测提供方/消费方格式与
+  `window.x11.display=:0`；对照 OBS/Zen 同提供方共享正常。
 - 关联文档：[Wayland 屏幕共享](./wayland-screen-sharing.md)。
 
 ### 修复 Niri 下飞书屏幕共享黑屏并验证 portal 链路

@@ -1,7 +1,0 @@
-// NVIDIA：强制 PipeWire screencast 使用 invalid（linear）modifier。
-// 不启用时，portal 客户端（飞书/Chromium WebRTC）无法导入 NVIDIA DRM 的
-// modifier，ScreenCast 会话在协商阶段报 "no more input formats" 直接失败，
-// 表现为共享/录制无画面。见 niri wiki Configuration: Debug Options。
-debug {
-    force-pipewire-invalid-modifier
-}
