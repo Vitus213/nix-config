@@ -5,65 +5,61 @@ Manager 基础模块，也会进入使用该模块的同类桌面会话。
 
 ## 当前结论
 
-Type4Me 是 Niri 唯一的全局语音输入入口。
+Syllune 是 Niri 唯一的全局语音输入入口。
 
-- Type4Me flake 输入：`github:Vitus213/type4me-linux`，由 `flake.lock` 固定到已验证提交
+- Syllune flake 输入：`github:Vitus213/syllune`，由 `flake.lock` 固定到已验证提交
 - Home Manager 配置：`home/linux/gui/base/voice-input.nix`
 - Niri 快捷键：`home/linux/gui/niri/conf/keybindings.kdl`
-- Type4Me 版本：`0.1.0`
+- Syllune 版本：`0.1.0`
 - Niri 版本：`26.04`
 
-Type4Me 使用本地 SenseVoice、Silero VAD 和 Qwen3-ASR 模型，最终文本优先通过 `wtype`
-注入当前 Wayland 客户端，失败时回退到 `wl-copy`。
+Syllune 是 Rust 实现的本地实时转写工具，使用 sherpa-onnx 的 `streaming-paraformer-bilingual-zh-en`
+模型，最终文本优先通过 `wtype` 注入当前 Wayland 客户端，失败时回退到
+`wl-copy`；录音、注入工具由 Syllune 包的 wrapper 自带，无需另行安装。
 
 ## 当前行为
 
-Home Manager 安装 Type4Me、`wtype`、`wl-clipboard`、`libnotify` 和
-`playerctl`，并启动 Type4Me 用户服务：
+Home Manager 安装 Syllune、`eww`、`python3`，并声明两个随 Wayland 会话启动的用户服务：
 
-```bash
-systemctl --user status type4me-linux.service
-```
+- `eww-syllune-overlay.service`：`eww daemon`，承载 overlay pill 窗口
+- `syllune-web.service`：`syllune history serve`，历史记录 Web 控制台，默认监听 `127.0.0.1:8790`
 
-`type4me-linux.service` 在 Wayland 图形会话中执行：
+Niri 快捷键不直接调用 Syllune，而是调用 overlay 触发脚本：
 
-```text
-type4me-linux service
-```
-
-专用 `service` 入口以 Gio
-service 模式持有应用单例，避免 systemd 启动进程退化为已有 GUI 的远程客户端并以成功码退出。服务导出
-`io.github.vitus.Type4Me.Controller` D-Bus 接口。Niri 快捷键直接调用该接口：
-
-- `Scroll Lock`：调用 `Toggle`，开始或停止录音
-- `Shift + Scroll Lock`：调用 `Cancel`，取消当前录音
+- `Scroll Lock`：空闲时启动 `quick` 模式；识别中则停止会话并注入最终文本
+- `Ctrl + Scroll Lock`：空闲时启动 `prompt-optimize`（LLM 整理）模式；识别中不重复启动
 
 两个绑定都设置
 `repeat=false`。Niri 当前不提供按键松开动作，因此不配置按住说话；切换模式是该合成器上可确定实现的行为。
 
-## Portal 后备原因
+触发脚本拉起 Python overlay pump：pump 运行
+`syllune stream --json`，把实时识别文本经 FIFO 推给 eww 的
+`deflisten`，在屏幕底部中央显示一个 layer-shell pill，会话结束后自动关闭。
 
-Type4Me GUI 会优先请求 `org.freedesktop.portal.GlobalShortcuts`。当前会话的 Portal 前端报告版本
-`1`，但实际组合是 Niri 26.04、`xdg-desktop-portal-gnome` 和 `xdg-desktop-portal-gtk`。真实
-`CreateSession` 成功后，`BindShortcuts` 返回响应码
-`2`，即请求未完成；停止其他 Type4Me 会话后单独重试结果相同。
+## 仓库外依赖
 
-因此 Niri 使用 compositor 配置中的 D-Bus 绑定。它不模拟 Portal 授权，也不依赖 X11 键盘抓取。以后若 Portal 后端能成功绑定，可继续使用 GUI 中的“绑定快捷键”，Niri 后备绑定仍可保留。
+overlay 的配置与脚本位于 `~/.config/eww/`（独立 Git 仓库 `Vitus213` 名下），**不由本仓库管理**：
+
+- `syllune-overlay-toggle`：Niri 快捷键的入口脚本
+- `syllune-overlay.py`：`syllune stream` 与 eww 之间的 pump
+- `syllune-overlay-listen.sh`：eww `deflisten` feeder
+- `eww.yuck` / `eww.scss` / `syllune-overlay.conf`：pill 窗口与尺寸参数
+
+本仓库只安装运行时依赖（`eww`、`python3`）和 Syllune 本体。每台新桌面主机需要先克隆该仓库到
+`~/.config/eww/`，否则快捷键无响应。
 
 ## 模型
 
-Type4Me 的三个默认模型由应用自己的模型管理器安装和校验：
+模型由 Syllune 自己的模型管理器安装和校验：
 
 ```bash
-type4me-linux model install sensevoice-int8
-type4me-linux model install silero-vad
-type4me-linux model install qwen3-asr-0.6b-int8
-type4me-linux model list
-type4me-linux doctor
+syllune model list
+syllune model install streaming-paraformer-bilingual-zh-en
+syllune doctor
 ```
 
-模型进入 Type4Me 的 XDG 数据目录，不写入 Git 或 Nix
-store。GUI 的“模型”页面也提供同一套安装和状态检查功能。
+模型进入 `~/.local/share/syllune`，不写入 Git 或 Nix store。`syllune doctor` 检查
+`pw-record`、`wtype`、`wl-copy` 和数据目录是否就绪。
 
 ## 验证
 
@@ -71,40 +67,37 @@ store。GUI 的“模型”页面也提供同一套安装和状态检查功能�
 
 ```bash
 niri validate
-nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.systemd.user.services.type4me-linux.Service.ExecStart --json
+nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.systemd.user.services.syllune-web.Service.ExecStart --json
+nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.systemd.user.services.eww-syllune-overlay.Service.ExecStart --json
 ```
 
 运行时检查：
 
 ```bash
-systemctl --user is-active type4me-linux.service
-busctl --user introspect io.github.vitus.Type4Me \
-  /io/github/vitus/Type4Me io.github.vitus.Type4Me.Controller
+systemctl --user is-active eww-syllune-overlay.service syllune-web.service
 ```
 
-本次接入已确认：
+本次切换已确认：
 
-- Niri 接受两条新 KDL 绑定。
-- Apollo Home Manager 求值生成 Type4Me Nix store `ExecStart`。
-- Type4Me flake 包构建成功。
-- 当前会话服务为 `active`，D-Bus 导出 `Toggle`、`Cancel`、`HoldStart`、`HoldStop` 和 `ShowWindow`。
-- 实际调用一次 `Toggle` 和 `Cancel` 均成功返回。
+- Niri 接受两条 Scroll_Lock 绑定（`niri validate` 与热重载）。
+- Apollo Home Manager 求值生成 Syllune 与 eww 的 Nix store `ExecStart`。
+- Syllune flake 输入构建成功，服务集合不再包含 `type4me-linux`。
 
 ## 已知限制
 
-- `type4me-linux` 使用 GitHub flake 输入；更新应用前必须先推送提交，再更新
-  `flake.lock`，以便系统配置继续可复现。
-- 当前 Portal 后端不能完成 GlobalShortcuts 绑定，Niri 快捷键是主控制路径。
+- overlay 配置不在 nix-config 管理范围内，新主机需要手动克隆 `~/.config/eww`。
+- Syllune 使用 GitHub flake 输入；更新应用前必须先推送 syllune 仓库提交，再执行
+  `nix flake lock --update-input syllune`，以便系统配置继续可复现。
 - Niri 没有按键松开绑定，所以只提供切换与取消，不提供按住说话。
-- Type4Me 模型需要单独安装；缺少模型时 GUI 和控制服务仍可启动，但识别不能完成。
+- 模型需要单独安装；缺少模型时服务仍可启动，但识别不能完成。
 
 ## 回滚
 
-从 `flake.nix` 移除 `type4me-linux` 输入，从 `voice-input.nix` 移除 Type4Me 包和用户服务，并从
-`keybindings.kdl` 删除两条 Type4Me 绑定。重新部署后，系统将不再提供全局语音输入。
+从 `flake.nix` 移除 `syllune` 输入，将 `voice-input.nix` 恢复为 Type4Me 版本（见 Git 历史），并把
+`keybindings.kdl` 中两条 Scroll_Lock 绑定改回 Type4Me
+D-Bus 调用。重新部署后，系统将回到 Type4Me 全局语音输入。
 
 ## 参考资料
 
-- [Type4Me Linux](https://github.com/vitus/type4me-linux)
+- [Syllune](https://github.com/Vitus213/syllune)
 - [Niri 键绑定](https://github.com/niri-wm/niri/wiki/Configuration:-Key-Bindings)
-- [XDG Desktop Portal GlobalShortcuts](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html)

@@ -2,34 +2,47 @@
   lib,
   config,
   pkgs,
-  type4me-linux,
+  syllune,
   ...
 }:
-
 let
-  type4mePackage = type4me-linux.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  syllunePackage = syllune.packages.${pkgs.stdenv.hostPlatform.system}.syllune;
 in
 {
   home.packages = [
-    type4mePackage
-    pkgs.wtype
-    pkgs.wl-clipboard
-    pkgs.libnotify
-    pkgs.playerctl
+    syllunePackage
+    # overlay pill：eww daemon 常驻 + overlay pump 的 python3 解释器
+    pkgs.eww
+    pkgs.python3
   ];
 
-  systemd.user.services.type4me-linux = {
+  systemd.user.services.eww-syllune-overlay = {
     Unit = {
-      Description = "Type4Me resident voice input application";
+      Description = "eww daemon for the Syllune streaming overlay";
       PartOf = [ config.wayland.systemd.target ];
       After = [ config.wayland.systemd.target ];
     };
 
     Service = {
-      ExecStart = "${lib.getExe type4mePackage} service";
+      ExecStart = "${lib.getExe pkgs.eww} daemon";
       Restart = "on-failure";
-      RestartSec = 2;
-      TimeoutStopSec = 20;
+      RestartSec = 3;
+    };
+
+    Install.WantedBy = [ config.wayland.systemd.target ];
+  };
+
+  systemd.user.services.syllune-web = {
+    Unit = {
+      Description = "Syllune history web console";
+      PartOf = [ config.wayland.systemd.target ];
+      After = [ config.wayland.systemd.target ];
+    };
+
+    Service = {
+      ExecStart = "${lib.getExe syllunePackage} history serve";
+      Restart = "on-failure";
+      RestartSec = 3;
     };
 
     Install.WantedBy = [ config.wayland.systemd.target ];
