@@ -16,9 +16,14 @@ in
     syllunePackage
     # overlay pill：eww daemon 常驻 + overlay pump 的 python3 解释器
     pkgs.eww
-    pkgs.python3
+    # pump 脚本只需 PATH 上有任意 python3；降优先级让位给 editors 的
+    # python313.withPackages env，避免 home-manager-path buildEnv 同名冲突
+    (lib.lowPrio pkgs.python3)
     # 剪贴板注入：把文本镜像到 X11 剪贴板，供微信等 XWayland 应用粘贴
     pkgs.xsel
+    pkgs.xdotool
+    pkgs.wtype
+    pkgs.wl-clipboard
   ];
 
   systemd.user.services.eww-syllune-overlay = {
@@ -29,7 +34,9 @@ in
     };
 
     Service = {
-      ExecStart = "${lib.getExe pkgs.eww} daemon";
+      # --no-daemonize：eww 默认 fork 后台化，父进程退出后 systemd Type=simple
+      # 会误判服务已死；前台运行才能让 Restart=on-failure 真正生效
+      ExecStart = "${lib.getExe pkgs.eww} daemon --no-daemonize";
       Restart = "on-failure";
       RestartSec = 3;
     };

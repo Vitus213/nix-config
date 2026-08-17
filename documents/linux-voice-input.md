@@ -21,7 +21,9 @@ Syllune 是 Rust 实现的实时语音输入工具。当前配置走**云端链�
 
 ## 当前行为
 
-Home Manager 安装 Syllune（CPU 版）、`eww`、`python3`，并声明两个随 Wayland 会话启动的用户服务：
+Home Manager 安装 Syllune（CPU 版）、`eww`、`python3`（`lib.lowPrio`，仅为 overlay
+pump 提供解释器；PATH 冲突时让位给 editors 的完整 python
+env），并声明两个随 Wayland 会话启动的用户服务：
 
 - `eww-syllune-overlay.service`：`eww daemon`，承载 overlay pill 窗口
 - `syllune-web.service`：`syllune history serve`，历史记录 Web 控制台，默认监听 `127.0.0.1:8790`
