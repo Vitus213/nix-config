@@ -11,7 +11,17 @@
     playerctl
     pulsemixer
     imv # simple image viewer
-    sioyek # PDF viewer，键盘驱动，Wayland 原生（Qt）
+    # Qt6 wayland + NVIDIA EGL 建上下文失败（EGL_BAD_MATCH 3009），窗口永不
+    # commit；wrapper 强制 xcb 走 XWayland。名字保持 sioyek，desktop/xdg-open
+    # 的 PATH 解析同样命中 wrapper。
+    (pkgs.symlinkJoin {
+      name = "sioyek";
+      paths = [ pkgs.sioyek ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/sioyek --set QT_QPA_PLATFORM xcb
+      '';
+    })
 
     # video/audio tools
     libva-utils
