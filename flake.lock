@@ -718,11 +718,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786974831,
-        "narHash": "sha256-oj1OQZDgS1yj+9fKfT3ocl9FSMs7l31OGAC5u62YXxU=",
+        "lastModified": 1786968225,
+        "narHash": "sha256-n8PmM/RIv/47fbteOyJP0hVJDBOYRIh4yepNG7c3aUM=",
         "owner": "Vitus213",
         "repo": "syllune",
-        "rev": "1d2492002084d004b86a5319b03eec5350fff450",
+        "rev": "081d609643f3bdb7a772993f0855ec26323fbebd",
         "type": "github"
       },
       "original": {

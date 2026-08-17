@@ -77,6 +77,57 @@
   `programs.vscode`、macOS cask `visual-studio-code` 与 catppuccin-vscode 扩展均保留）。
 - 验证方式：`git fetch`/`git log` 核对远端基线；改动文件 `nixfmt`/`prettier`
   检查；apollo 配置求值（见文末）。
+## 2026-08-17
+
+### 更新 syllune 锁到 081d609（X11 剪贴板注入 schema）
+
+- 影响范围：所有 Linux GUI 主机的 Syllune 语音输入。
+- 配置入口：`flake.lock`（`syllune` 输入 `0c35b8e` → `081d609`）。
+- 变更内容：旧锁的 `[inject]` schema 不识别 `~/.config/syllune/config.toml` 的 `paste_command` /
+  `x11_clipboard_command`，`syllune stream`
+  直接退出，语音输入不可用。syllune 上游推送新 schema（X11 剪贴板注入、processing
+  api_key/prompt 入配置、asr 可选字段，CPU 栈测试全绿）后更新锁。
+- 验证方式：`nix flake lock --update-input syllune` 成功；`nix eval .#evalTests` =
+  true；apollo 切换后 `syllune stream` 输出 `{"type":"ready"}`，不再报 unknown configuration
+  field。本机另清理了 `nix profile` 里两个手工安装的旧 syllune 条目（shadow
+  PATH，挡住 HM 新版）；新主机不受影响。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
+### 修复 voice-input 裸 python3 与 editors python env 的 buildEnv 冲突
+
+- 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的 `home-manager-path` 构建。
+- 配置入口：`home/linux/gui/base/voice-input.nix`。
+- 变更内容：`65f32740` 引入的裸 `pkgs.python3` 与 editors 的 `python313.withPackages` env 在
+  `home-manager-path` buildEnv 中撞
+  `bin/python3-config`，导致 toplevel 构建失败。将 voice-input 的裸 `pkgs.python3` 包为
+  `lib.lowPrio`，冲突时让位给 editors 的完整 python env（功能超集）；overlay
+  pump 只需 PATH 上有任意 python3，行为不变。
+- 验证方式：`nix eval .#evalTests` =
+  true；`nix build .#nixosConfigurations.apollo.config.system.build.toplevel` 通过。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
+### Sioyek 强制 xcb 平台（Qt6 wayland + NVIDIA EGL 不兼容）
+
+- 影响范围：所有 Linux GUI 主机（apollo/athena/generic）的 Sioyek 启动方式。
+- 配置入口：`home/linux/gui/base/media.nix`。
+- 变更内容：Qt6.11 wayland 平台在 NVIDIA 驱动下 `QOpenGLWidget`
+  建 EGL 上下文失败（`EGL_BAD_MATCH 3009`），sioyek 窗口永不 commit、niri 不显示窗口；xcb 路径实测正常。用
+  `symlinkJoin` + `wrapProgram` 以同名 wrapper 安装 sioyek 并
+  `--set QT_QPA_PLATFORM xcb`，走 XWayland；desktop/xdg-open 的 PATH 解析同样命中 wrapper。2026-08-16「PDF 默认查看器」条目中「Qt 走 Wayland」的描述以此为准。
+- 验证方式：apollo 实测 `sioyek /tmp/...pdf` 1-2 秒内窗口出现并钉到
+  `9file`，渲染、状态栏正常；`xdg-mime query default application/pdf` = `sioyek.desktop`。
+- 关联文档：[应用版本审计](./application-version-audit.md)。
+
+### eww overlay 服务改前台运行
+
+- 影响范围：所有 Linux GUI 主机的 `eww-syllune-overlay.service`。
+- 配置入口：`home/linux/gui/base/voice-input.nix`。
+- 变更内容：`eww daemon` 默认 fork 后台化，父进程退出使 systemd `Type=simple`
+  误判服务已死（`is-active` 恒为 inactive，`Restart=on-failure` 失效）；改为 `daemon --no-daemonize`
+  前台运行。
+- 验证方式：apollo 实测切换后 `systemctl --user is-active eww-syllune-overlay` = active，进程为前台
+  `eww daemon --no-daemonize`。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
 
 ## 2026-08-16
 
