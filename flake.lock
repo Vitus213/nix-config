@@ -645,7 +645,7 @@
         "pre-commit-hooks": "pre-commit-hooks",
         "preservation": "preservation",
         "refind-minimal": "refind-minimal",
-        "syllune": "syllune",
+        "type4me": "type4me",
         "wallpapers": "wallpapers",
         "zen-browser": "zen-browser"
       }
@@ -690,27 +690,6 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "syllune": {
-      "inputs": {
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1786801908,
-        "narHash": "sha256-4SMF2cfeNvEsSxRcpCX0ccm8g/yneCX7Jaen7ye5kqQ=",
-        "owner": "Vitus213",
-        "repo": "syllune",
-        "rev": "0c35b8e5bfa1489102542ffecfbee1026e4d3292",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Vitus213",
-        "repo": "syllune",
         "type": "github"
       }
     },
@@ -830,6 +809,28 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "type4me": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784958832,
+        "narHash": "sha256-mEC5RuPyYB9rPo5PaG8L5oz+XUj/YyInyPV7MdB7Oc0=",
+        "owner": "Vitus213",
+        "repo": "type4me-linux",
+        "rev": "3e367432036bbbbb035dbaa6229ecb3ce94ee2d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Vitus213",
+        "repo": "type4me-linux",
+        "rev": "3e367432036bbbbb035dbaa6229ecb3ce94ee2d8",
         "type": "github"
       }
     },

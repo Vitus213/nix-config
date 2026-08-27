@@ -131,9 +131,9 @@
 
     ########################  My own repositories  #########################################
 
-    # Syllune 语音输入（替代 Type4Me），远程 flake 锁定已验证提交。
-    syllune = {
-      url = "github:Vitus213/syllune";
+    # Type4Me 语音输入（曾切换为 Syllune，本次换回并固定已验证提交）。
+    type4me = {
+      url = "github:Vitus213/type4me-linux/3e367432036bbbbb035dbaa6229ecb3ce94ee2d8";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

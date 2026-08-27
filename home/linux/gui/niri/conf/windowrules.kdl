@@ -16,21 +16,6 @@ window-rule {
 
 // Web browsers - open in workspace 2
 window-rule {
-    match app-id="firefox"
-    open-on-workspace "2browser"
-    open-maximized true
-}
-window-rule {
-    match app-id="google-chrome"
-    open-on-workspace "2browser"
-    open-maximized true
-}
-window-rule {
-    match app-id="chromium-browser"
-    open-on-workspace "2browser"
-    open-maximized true
-}
-window-rule {
     match app-id="zen"
     open-on-workspace "2browser"
     open-maximized true
@@ -204,11 +189,7 @@ window-rule {
 
 // Other applications - open in workspace 0
 window-rule {
-    match app-id="clash-verge"
-    open-on-workspace "0other"
-}
-window-rule {
-    match app-id="io.github.clash-verge-rev.clash-verge-rev"
+    match app-id="com.follow.clash" # FlClash (mihomo GUI)
     open-on-workspace "0other"
 }
 window-rule {

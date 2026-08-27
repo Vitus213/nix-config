@@ -14,9 +14,10 @@
 
     "${pkgs.stably-orca}/share/applications/orca.desktop"
 
-    # "${pkgs.clash-verge-rev}/share/applications/clash-verge.desktop"
+    # FlClash 不随登录自启动（应用内管理），需要时手动启动。
+    # 旧 clash-verge-rev 条目已随移除删除。
 
-    # 默认浏览器 Zen（替代原 nixpaks.firefox 条目）；desktop 文件随 flake input 提供，
+    # 默认浏览器 Zen；desktop 文件随 flake input 提供，
     # Exec=zen --name zen %U，zen 二进制在用户 profile PATH 中。
     "${zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/applications/zen.desktop"
     "${pkgs.bwraps.wechat}/share/applications/wechat.desktop"
@@ -25,10 +26,4 @@
     "${pkgs.obsidian}/share/applications/obsidian.desktop"
     "${pkgs.apostrophe}/share/applications/org.gnome.gitlab.somas.Apostrophe.desktop"
   ];
-  # ++ (
-  #   if pkgs.stdenv.isx86_64 then
-  #     [ "${pkgs.google-chrome}/share/applications/google-chrome.desktop" ]
-  #   else
-  #     [ "${pkgs.chromium}/share/applications/chromium-browser.desktop" ]
-  # );
 }

@@ -13,8 +13,9 @@ Zen Browser 是 Firefox 的开源分支，默认左侧垂直标签栏，面向�
 Actions 每日自动跟随 Zen 上游发布更新）安装官方 Linux 二进制，用 nixpkgs 风格的 `wrapFirefox`
 封装，版本固定于 `flake.lock`（当前 `1.21.14b`）。
 
-Firefox（NixPak 沙箱）与 Google
-Chrome 保持原有配置不变；Zen 是并存新增，未沙箱化，与 Chrome 的处理方式一致。
+Firefox 与 Google
+Chrome 已从本仓库移除；Zen 是唯一安装的浏览器（Linux：`youwen5/zen-browser-flake`；macOS：Homebrew
+cask `zen`）。未沙箱化。
 
 ## 安装入口
 
@@ -25,7 +26,9 @@ Chrome 保持原有配置不变；Zen 是并存新增，未沙箱化，与 Chrom
 - 工作区规则：`home/linux/gui/niri/conf/windowrules.kdl`，`app-id="zen"` 打开到 `2browser`
   工作区并最大化。
 
-该 flake 只提供 `x86_64-linux` / `aarch64-linux` 包，macOS（artemis）不受影响。
+该 flake 只提供 `x86_64-linux` / `aarch64-linux` 包；macOS（artemis）改经 Homebrew cask `zen`
+安装（`modules/darwin/apps.nix`），AeroSpace 按 bundle id `app.zen-browser.zen` 将窗口分配到
+`2Browser` 工作区。
 
 ## Wayland 行为
 
@@ -33,8 +36,7 @@ Chrome 保持原有配置不变；Zen 是并存新增，未沙箱化，与 Chrom
   `MOZ_ENABLE_WAYLAND=1` 与其兼容。
 - Wayland app-id 为 `zen`（来自 desktop 文件
   `StartupWMClass=zen`、`--name zen`）。niri 据此匹配窗口规则。
-- 中文输入（fcitx5-rime）候选框行为与现有 Firefox 一致；Chrome 因 Wayland 下候选框错位被强制 X11 后端（见
-  `browsers.nix` 注释），Firefox 内核没有这个问题。
+- 中文输入（fcitx5-rime）候选框行为正常：Firefox 内核没有 Wayland IME 候选框错位问题。
 
 ## 更新方式
 
@@ -58,33 +60,30 @@ nix build --no-link --print-out-paths 'github:youwen5/zen-browser-flake#zen-brow
 
 Zen 目前是默认浏览器，由两处声明式配置共同决定：
 
-- MIME 默认：`home/linux/gui/base/xdg/mime.nix` 的 `browser` 列表首位为
-  `zen.desktop`，Firefox/Chrome 保留为回退；该模块强制写入 `mimeapps.list`（`force = true`），运行时
-  `xdg-mime default` 的临时修改会在下次部署时被覆盖。
+- MIME 默认：`home/linux/gui/base/xdg/mime.nix` 的 `browser` 列表只有 `zen.desktop`；该模块强制写入
+  `mimeapps.list`（`force = true`），运行时 `xdg-mime default` 的临时修改会在下次部署时被覆盖。
 - `$BROWSER` 环境变量：`home/linux/base/shell.nix`，值为 `zen`。
 
-登录自启动也已切换为 Zen：`home/linux/gui/base/xdg/autostart.nix` 的 `xdg.autostart.entries` 用 Zen
-flake input 提供的 `zen.desktop` 替代了原 `nixpaks.firefox`
-条目（`Exec=zen --name zen %U`，zen 二进制在用户 profile
-PATH 中）。Firefox 不再随登录自启动，仍保留安装可手动使用。
-
-换回 Firefox：把 `browser` 列表首位改回 `firefox.desktop`、`BROWSER` 改回
-`firefox`，并把 autostart 条目换回
-`${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop`，再 `just local` 部署。
+登录自启动：`home/linux/gui/base/xdg/autostart.nix` 的 `xdg.autostart.entries` 使用 Zen flake
+input 提供的 `zen.desktop` （`Exec=zen --name zen %U`，zen 二进制在用户 profile PATH 中）。
 
 uBlock Origin 等扩展需首次启动后手动安装（Zen 支持 Firefox 全部附加组件）。
 
 ## 回滚
 
-1. 恢复默认浏览器为 Firefox：`home/linux/gui/base/xdg/mime.nix` 的 `browser` 列表首位改回
-   `firefox.desktop`，`home/linux/base/shell.nix` 的 `BROWSER` 改回 `firefox`
-2. 恢复自启动：`home/linux/gui/base/xdg/autostart.nix` 把 Zen 条目换回
-   `${pkgs.nixpaks.firefox}/share/applications/org.mozilla.firefox.desktop`，并移除该文件
-   `zen-browser` 参数
-3. 从 `home/linux/gui/base/browsers.nix` 的 `home.packages` 移除 zen-browser 条目
-4. 删除 `home/linux/gui/niri/conf/windowrules.kdl` 中的 `app-id="zen"` 规则
-5. `nix flake lock --update-input zen-browser` 不需要；直接 `just local` 即可
-6. flake input 与 lock 条目可一并删除（`git checkout` 对应文件段）
+需要恢复 Firefox/Chrome 时（当前已移除）：
+
+1. 恢复 MIME 默认浏览器：`home/linux/gui/base/xdg/mime.nix` 的 `browser` 列表加入
+   `firefox.desktop`/`google-chrome.desktop`
+2. 重新引入安装：Linux 在 `hardening/nixpaks/` 恢复 `firefox.nix` 并在
+   `hardening/nixpaks/default.nix` 的 `nixpaks` 集合注册，`home/linux/gui/base/browsers.nix` 的
+   `home.packages` 加入对应包；macOS 在 `modules/darwin/apps.nix` 的 casks 加入
+   `firefox`/`google-chrome`
+3. 恢复 `home/linux/gui/niri/conf/windowrules.kdl` 与 `home/darwin/aerospace/aerospace.toml`
+   中对应窗口规则
+4. 从 `home/linux/gui/base/browsers.nix` 的 `home.packages` 移除 zen-browser 条目、删除
+   `home/linux/gui/niri/conf/windowrules.kdl` 中的 `app-id="zen"` 规则
+5. 直接 `just local` 部署；`nix flake lock --update-input zen-browser` 不需要
 
 ## 参考
 

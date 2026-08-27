@@ -30,7 +30,6 @@ in
       nixpaks = {
         qq = pkgs.callPackage ./qq.nix (callArgs // { qq = qqPinned; });
         telegram-desktop = wrapper super ./telegram-desktop.nix;
-        firefox = wrapper super ./firefox.nix;
       };
     })
   ];

@@ -267,11 +267,7 @@ in
         # ======================================
         # browsers
         # ======================================
-        ".mozilla"
-        ".config/google-chrome"
-        ".cache/google-chrome"
-        ".config/chromium"
-        ".cache/chromium"
+        ".zen" # zen-browser profile (firefox-based)
 
         # ======================================
         # CLI data
@@ -294,9 +290,8 @@ in
         # Misc
         # ======================================
 
-        # Clash Verge Rev
-        ".local/share/io.github.clash-verge-rev.clash-verge-rev"
-        ".local/share/clash-verge"
+        # FlClash (mihomo GUI)
+        ".local/share/com.follow.clash"
 
         # Audio
         ".config/pulse"

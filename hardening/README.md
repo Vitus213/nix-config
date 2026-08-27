@@ -26,7 +26,6 @@ hardening/
 | 组件              | 状态   | 说明            |
 | ----------------- | ------ | --------------- |
 | AppArmor          | 整理中 | 基础结构已存在  |
-| Nixpak Firefox    | 使用中 | Firefox 沙箱    |
 | Nixpak QQ         | 使用中 | QQ 沙箱         |
 | Bubblewrap WeChat | 使用中 | WeChat 专用沙箱 |
 | 系统 profile      | 整理中 | 系统级加固配置  |

@@ -8,9 +8,9 @@
 {
   # wayland related
   home.sessionVariables = {
-    # Keep Firefox on Wayland.
+    # Keep Zen (firefox-based) on Wayland.
     # Electron backend is no longer forced globally; set per app instead.
-    "MOZ_ENABLE_WAYLAND" = "1"; # for firefox to run on wayland
+    "MOZ_ENABLE_WAYLAND" = "1"; # for zen/firefox-based browsers to run on wayland
     "MOZ_WEBRENDER" = "1";
     # misc
     "_JAVA_AWT_WM_NONREPARENTING" = "1";

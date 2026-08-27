@@ -13,7 +13,7 @@
 - Fcitx5 输入法
 - GTK 和 XDG 配置
 - Wayland 桌面工具
-- Syllune 语音输入
+- Type4Me 语音输入
 - 媒体、创作、笔记和开发工具
 - 游戏相关工具
 

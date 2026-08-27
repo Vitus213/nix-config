@@ -16,7 +16,7 @@
 | `dev-tools.nix`     | GUI 开发工具                            |
 | `editors.nix`       | GUI 编辑器                              |
 | `media.nix`         | 媒体应用                                |
-| `voice-input.nix`   | Syllune 语音输入与 overlay 服务         |
+| `voice-input.nix`   | Type4Me 语音输入常驻服务                |
 | `creative.nix`      | 创作软件                                |
 | `note-taking.nix`   | 笔记应用                                |
 | `misc.nix`          | Wayland 工具、截图、录屏、音频、Orca 等 |

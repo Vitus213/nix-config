@@ -212,7 +212,7 @@ if.app-id = 'org.alacritty'
 run = 'move-node-to-workspace 1Terminal'
 
 [[on-window-detected]]
-if.app-id = 'org.mozilla.firefox'
+if.app-id = 'app.zen-browser.zen'
 run = 'move-node-to-workspace 2Browser'
 
 [[on-window-detected]]
@@ -297,14 +297,6 @@ if.app-id = 'com.todesktop.230313mzl4w4u92' # Cursor AI Editor
 run = ['layout tiling', 'move-node-to-workspace 5Code']
 
 [[on-window-detected]]
-if.app-id = 'com.google.Chrome'
-run = 'move-node-to-workspace 2Browser'
-
-[[on-window-detected]]
-if.app-id = 'com.microsoft.edgemac'
-run = 'move-node-to-workspace 2Browser'
-
-[[on-window-detected]]
 if.app-id = 'com.apple.mail'
 run = 'move-node-to-workspace 7Mail'
 
@@ -350,9 +342,9 @@ run = ['layout floating', 'move-node-to-workspace 0Other']
 if.app-id = 'com.ccswitch.desktop'
 run = 'move-node-to-workspace 0Other'
 
-# Clash Verge - has problem with floating
+# FlClash (mihomo GUI) - has problem with floating
 [[on-window-detected]]
-if.app-id = 'io.github.clash-verge-rev.clash-verge-rev'
+if.app-id = 'com.follow.clash'
 run = ['move-node-to-workspace 0Other']
 
 [[on-window-detected]]

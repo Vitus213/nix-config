@@ -281,20 +281,20 @@ Shift + 方向键下    静音
 
 下面这张表是你这套配置的核心。
 
-| 工作区      | 语义           | 自动进入的应用                                               | 显示器绑定  |
-| ----------- | -------------- | ------------------------------------------------------------ | ----------- |
-| `1Terminal` | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                              | `main`      |
-| `2Browser`  | 浏览器         | `Chrome`、`Edge`、`Firefox`                                  | `main`      |
-| `3Docs`     | 文档笔记       | `Notion`、`Typora`、`Obsidian`                               | `main`      |
-| `4Codex`    | Codex GUI      | `ChatGPT`、`Claude` 等 AI 图形客户端                         | `main`      |
-| `5Code`     | 代码编辑器     | `VSCode`、`Zed`、`Cursor`                                    | `main`      |
-| `6Chat`     | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`、`企业微信`、`Slack`        | `secondary` |
-| `7Mail`     | 邮件日历       | `Mail`、`Calendar`                                           | `secondary` |
-| `8Music`    | 音乐           | QQ 音乐、网易云音乐                                          | `secondary` |
-| `9File`     | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`                       | `secondary` |
-| `0Other`    | 其他工具       | `Wireshark`、`LM Studio`、`CC Switch`、`Clash Verge`、`Zoom` | `secondary` |
-| `A`         | 备用           | 无                                                           | `main`      |
-| `B`         | 备用           | 无                                                           | `main`      |
+| 工作区      | 语义           | 自动进入的应用                                           | 显示器绑定  |
+| ----------- | -------------- | -------------------------------------------------------- | ----------- |
+| `1Terminal` | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                          | `main`      |
+| `2Browser`  | 浏览器         | `Zen`                                                    | `main`      |
+| `3Docs`     | 文档笔记       | `Notion`、`Typora`、`Obsidian`                           | `main`      |
+| `4Codex`    | Codex GUI      | `ChatGPT`、`Claude` 等 AI 图形客户端                     | `main`      |
+| `5Code`     | 代码编辑器     | `VSCode`、`Zed`、`Cursor`                                | `main`      |
+| `6Chat`     | 聊天沟通       | `Telegram`、`微信`、`Lark`、`QQ`、`企业微信`、`Slack`    | `secondary` |
+| `7Mail`     | 邮件日历       | `Mail`、`Calendar`                                       | `secondary` |
+| `8Music`    | 音乐           | QQ 音乐、网易云音乐                                      | `secondary` |
+| `9File`     | 文件/阅读/编辑 | `Finder`、`Books`、`Joplin`、`Preview`                   | `secondary` |
+| `0Other`    | 其他工具       | `Wireshark`、`LM Studio`、`CC Switch`、`FlClash`、`Zoom` | `secondary` |
+| `A`         | 备用           | 无                                                       | `main`      |
+| `B`         | 备用           | 无                                                       | `main`      |
 
 这里有几个重要细节:
 
@@ -302,7 +302,7 @@ Shift + 方向键下    静音
 - `ChatGPT`、`Claude` 等 AI 图形客户端会去 `4Codex`
 - `VSCode`、`Zed` 和 `Cursor` 现在会去 `5Code`，并以平铺方式打开
 - `0Other` 里的 `Wireshark` 和 `LM Studio` 会被显式配置成浮动
-- `CC Switch`、`Clash Verge` 和 `Zoom` 会去 `0Other`，但没有强制浮动
+- `CC Switch`、`FlClash` 和 `Zoom` 会去 `0Other`，但没有强制浮动
 - `SecurityAgent` 和 `System Settings` 被设置成浮动，但不强制移动工作区
 
 ## 6. 未命中规则的窗口会怎样

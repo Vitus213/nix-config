@@ -2,6 +2,82 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-08-28
+
+### 代理客户端由 Clash Verge Rev 切换为 FlClash
+
+- 影响范围：Linux GUI 主机（apollo/athena/generic）与 macOS（artemis）。
+- 配置入口：`modules/nixos/desktop/networking/flclash.nix`（新增，删除原
+  `clash-verge.nix`）、`home/linux/gui/niri/conf/windowrules.kdl`、`hosts/_shared/preservation.nix`、
+  `modules/darwin/apps.nix`、`home/darwin/aerospace/aerospace.toml`。
+- 变更内容：Clash Verge Rev 由 FlClash（`chen08209/FlClash`
+  0.8.96，mihomo 内核）替代。官方 nixpkgs 无包、Homebrew 无 cask，Linux 侧用官方 AppImage
+  `appimageTools.wrapType2` 打包（版本固定于 `flclash.nix`
+  的 URL/hash），macOS 侧移除 cask 并改为注释说明手动安装官方 dmg。快捷键/窗口规则按 FlClash app-id
+  `com.follow.clash` 更新；持久化保留
+  `~/.local/share/com.follow.clash`。端口核对：FlClash 默认 mixed-port `7890`，与
+  `home/darwin/proxy/proxychains.conf` 的 `socks5 127.0.0.1 7890` 一致，无需改端口。
+- 验证方式：`curl` 实测 AppImage 下载与 sha256（61.8MB）写入
+  `flclash.nix`；窗口规则与持久化条目静态核对；本次改动经 `nixfmt`/`prettier`
+  及 apollo 配置求值验证（见文末条目）。
+- 关联文档：[应用版本审计](./application-version-audit.md)、[Niri 工作区与窗口分配](./niri-workspaces.md)、
+  [AeroSpace 使用指南](./aerospace-usage.md)。
+
+### 浏览器统一为 Zen（移除 Firefox 与 Google Chrome）
+
+- 影响范围：所有 Linux GUI 主机（apollo/athena/generic）与 macOS（artemis）。
+- 配置入口：`home/linux/gui/base/browsers.nix`（移除 `nixpaks.firefox` 与
+  `programs.google-chrome`）、删除 `hardening/nixpaks/firefox.nix` 并更新
+  `hardening/nixpaks/default.nix`、`home/linux/gui/base/xdg/mime.nix`（`browser` 只留
+  `zen.desktop`，编辑器保留 VSCode 的 `code*.desktop` 与 `vscode://` handler）、
+  `home/linux/gui/base/xdg/autostart.nix`（浏览器自启动用 Zen desktop 文件）、
+  `home/linux/gui/niri/conf/windowrules.kdl`（移除 firefox/google-chrome/chromium 规则）、
+  `home/darwin/aerospace/aerospace.toml`（firefox/Chrome/Edge 规则移除，Zen 按 bundle id
+  `app.zen-browser.zen` 进 `2Browser`）、`hosts/_shared/preservation.nix`（浏览器段改为 `.zen`）、
+  `modules/darwin/apps.nix`（casks 移除 `firefox`/`google-chrome`）。
+- 变更内容：浏览器统一为 Zen（Linux 走 `youwen5/zen-browser-flake`，macOS 用 Homebrew cask
+  `zen`）；Firefox（含 NixPak 沙箱）与 Google Chrome/Chromium 移除。
+- 验证方式：改动文件经 `nixfmt`/`prettier`
+  检查；apollo 配置求值不再含 vscode 之外的浏览器包；`niri validate` 未受窗口规则删除影响。
+- 关联文档：[Zen Browser](./zen-browser.md)、[应用版本审计](./application-version-audit.md)、
+  [Niri 工作区与窗口分配](./niri-workspaces.md)、[AeroSpace 使用指南](./aerospace-usage.md)。
+
+### 语音输入由 Syllune 换回 Type4Me
+
+- 影响范围：Linux GUI 主机（apollo/athena/generic）。
+- 配置入口：`flake.nix`（input `syllune` →
+  `type4me`）、`flake.lock`（syllune 节点替换为 type4me 节点，沿用远端基线其余锁定）、`home/linux/gui/base/voice-input.nix`（Type4Me 版）、
+  `home/linux/gui/niri/conf/keybindings.kdl`、`documents/linux-voice-input.md`。
+- 变更内容：语音输入方案从 Syllune 换回 Type4Me（`github:Vitus213/type4me-linux` 固定
+  `3e367432036bbbbb035dbaa6229ecb3ce94ee2d8`，该仓库 main 已演进为 Syllune，故按提交锁定 Type4Me 版）。服务为
+  `type4me-linux.service`（`type4me-linux service`）；快捷键为 `Scroll Lock` → D-Bus
+  `Type4Me.Controller.Toggle`、`Shift+Scroll Lock` → `Controller.Cancel`。移除 eww overlay 依赖。
+- 验证方式：`nix eval` 反映 `type4me-linux` 服务与 `type4me` input；详情见
+  [Linux 语音输入](./linux-voice-input.md)。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)、[应用版本审计](./application-version-audit.md)。
+
+### Homebrew 镜像切至南京大学（nju）并启用本地代理链路
+
+- 影响范围：macOS（artemis）上 Homebrew 的 git 源、bottle/API 与 pip 索引，以及 darwin
+  activation 阶段 `brew bundle` 与本机手动 `brew install`。
+- 配置入口：`modules/darwin/apps.nix` 的 `homebrew_mirror_env` 与 `local_proxy_env`。
+- 变更内容：`mirrors.tuna.tsinghua.edu.cn` 与 `mirrors.bfsu.edu.cn` 的
+  `homebrew-bottles`（API/bottle）、`git/homebrew`（brew/homebrew-core）及 pypi 端点自 2026-08 起实测均返回 403，不可用；整体切至 nju（`mirror.nju.edu.cn`，bottles/git/pypi 各端点实测 200）。本地代理走 FlClash
+  mixed-port `http://127.0.0.1:7890`（与 proxychains 配置一致），随 `homebrew_env_script`
+  注入 activation 会话。
+- 验证方式：`curl` 实测 nju 各端点 200；`brew install` 手动验证见本机；配置求值经 `nixfmt` 检查。
+- 关联文档：无（tuna/bfsu 失效旧值保留在配置注释中，便于回滚）。
+
+### 仓库恢复 git 关联并重放本地修改
+
+- 影响范围：仓库整体。
+- 变更内容：`~/nix-config` 在恢复时丢失 `.git`，本次重新 `git init` 并以
+  `git@github.com:Vitus213/nix-config` 为 `origin`（HTTPS 可达），以远端 `main`
+  （`65f32740`，含 Syllune/Sioyek/壁纸等演进）为基线重建工作区，将本地存在的 FlClash、Type4Me 换回、浏览器精简与本轮 Homebrew 修改重放其上；VSCode 按用户要求保留安装（Linux
+  `programs.vscode`、macOS cask `visual-studio-code` 与 catppuccin-vscode 扩展均保留）。
+- 验证方式：`git fetch`/`git log` 核对远端基线；改动文件 `nixfmt`/`prettier`
+  检查；apollo 配置求值（见文末）。
+
 ## 2026-08-16
 
 ### PDF 默认查看器由浏览器切换为 Sioyek

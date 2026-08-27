@@ -25,31 +25,32 @@ let
   # Homebrew Mirror
   # NOTE: is only useful when you run `brew install` manually! (not via nix-darwin)
   homebrew_mirror_env = {
-    # tuna mirror
-    HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
-    HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles";
-    HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git";
-    HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git";
-    HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
+    # nju mirror（2026-08-28 起启用；tuna/bfsu 的 bottles/git/pypi 端点实测 403 已失效）
+    HOMEBREW_API_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles/api";
+    HOMEBREW_BOTTLE_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles";
+    HOMEBREW_BREW_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/brew.git";
+    HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
+    HOMEBREW_PIP_INDEX_URL = "https://mirror.nju.edu.cn/pypi/web/simple";
 
-    # bfsu mirror
+    # tuna mirror（已失效，保留便于回滚）
+    # HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
+    # HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles";
+    # HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git";
+    # HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git";
+    # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
+
+    # bfsu mirror（已失效，保留便于回滚）
     # HOMEBREW_API_DOMAIN = "https://mirrors.bfsu.edu.cn/homebrew-bottles/api";
     # HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.bfsu.edu.cn/homebrew-bottles";
     # HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.bfsu.edu.cn/git/homebrew/brew.git";
     # HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git";
     # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
-
-    # nju mirror
-    # HOMEBREW_API_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles/api";
-    # HOMEBREW_BOTTLE_DOMAIN = "https://mirror.nju.edu.cn/homebrew-bottles";
-    # HOMEBREW_BREW_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/brew.git";
-    # HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
-    # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
   };
 
+  # 走本地 FlClash（mihomo）mixed-port 7890，与 home/darwin/proxy/proxychains.conf 一致。
   local_proxy_env = {
-    # HTTP_PROXY = "http://127.0.0.1:7890";
-    # HTTPS_PROXY = "http://127.0.0.1:7890";
+    HTTP_PROXY = "http://127.0.0.1:7890";
+    HTTPS_PROXY = "http://127.0.0.1:7890";
   };
 
   homebrew_env_script = lib.attrsets.foldlAttrs (
@@ -148,12 +149,12 @@ in
     # `brew install --cask`
     casks = [
       "squirrel-app" # input method for Chinese, rime-squirrel
-      "firefox"
-      "google-chrome"
+      "zen" # browser - Zen Browser (Gecko based)
+      # "google-chrome"
 
       # code editor
       "visual-studio-code"
-      # "zed"
+      "zed"
       # "cursor" # cursor ai editor
       "nikitabobko/tap/aerospace" # an i3-like tiling window manager for macOS
       "ghostty" # terminal emulator
@@ -195,7 +196,9 @@ in
       # NOTE(vitus): Upstream NetEase Cloud Music DMG downloads are flaky and often break darwin activation.
       # Install manually when needed.
       # "neteasemusic" # music
-      "clash-verge-rev" # the same as mihomo-party
+      # FlClash（clash GUI，替代 clash-verge-rev）暂无 Homebrew cask，
+      # 手动从 https://github.com/chen08209/FlClash/releases 安装 macOS dmg。
+      # "flclash"
 
       # "insomnia" # REST client
       # NOTE(vitus): Homebrew cask install is currently failing when it tries to run the bundled pkg installers.
