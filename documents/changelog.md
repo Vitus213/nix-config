@@ -24,8 +24,8 @@
 - 影响范围：所有接入 `mainSshAuthorizedKeys` 的 PC、Macbook 与服务器。
 - 配置入口：`vars/default.nix`（`mainSshAuthorizedKeys`）。
 - 变更内容：新增 v2 macbook（macOS, artemis）的 ed25519 公钥，可 SSH 登录所有受管主机；注释区分旧
-  `root@VitusMac` key 与新 `artemis` key。
-- 验证方式：`nix eval .#evalTests`（数组追加，不影响 Nix 结构）。
+  `root@VitusMac` key 与新 `vitusartemis` key。
+- 验证方式：`just test` = true（公钥主体不变，仅 SSH key comment 标签修正）。
 - 关联文档：无（key 分发规则见 `vars/default.nix` 内注释）。
 
 ### 更新 syllune 锁到 1d249200（剪贴板注入保留原剪贴板）
