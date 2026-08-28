@@ -188,8 +188,9 @@ window-rule {
 }
 
 // Other applications - open in workspace 0
+// FlClash (mihomo GUI)
 window-rule {
-    match app-id="com.follow.clash" # FlClash (mihomo GUI)
+    match app-id="com.follow.clash"
     open-on-workspace "0other"
 }
 window-rule {

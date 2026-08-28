@@ -259,8 +259,8 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 
     // Utility shortcuts
-    Scroll_Lock repeat=false hotkey-overlay-title="Type4Me 语音输入" { spawn "gdbus" "call" "--session" "--dest" "io.github.vitus.Type4Me" "--object-path" "/io/github/vitus/Type4Me" "--method" "io.github.vitus.Type4Me.Controller.Toggle"; }
-    Shift+Scroll_Lock repeat=false hotkey-overlay-title="Type4Me 取消录音" { spawn "gdbus" "call" "--session" "--dest" "io.github.vitus.Type4Me" "--object-path" "/io/github/vitus/Type4Me" "--method" "io.github.vitus.Type4Me.Controller.Cancel"; }
+    Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音输入" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle"; }
+    Ctrl+Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音整理" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle prompt-optimize"; }
     Mod+Shift+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
     Mod+C { spawn "noctalia-shell" "ipc" "callx" "launcher" "calculator"; }
 

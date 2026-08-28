@@ -4,6 +4,21 @@
 
 ## 2026-08-28
 
+### 整合远端主线并保留 Syllune 语音输入
+
+- 影响范围：`main` 分支、所有 Linux GUI 主机的语音输入与 Niri 配置。
+- 配置入口：`flake.nix`、`flake.lock`、`home/linux/gui/base/voice-input.nix`、
+  `home/linux/gui/niri/conf/keybindings.kdl`、`home/linux/gui/niri/conf/windowrules.kdl`。
+- 变更内容：以远端 `1948b1cb` 为基线重放本地 9 个提交；保留 FlClash、Zen Browser、Homebrew
+  nju 镜像与本地代理改动，撤销该提交中换回 Type4Me 的部分。最终继续使用 Syllune
+  CPU 包、`eww-syllune-overlay` / `syllune-web` 服务与 Scroll Lock
+  overlay 快捷键；同时将 FlClash 窗口规则中 Niri 26.04 不接受的行尾 `#` 注释改为独立 `//` 注释。
+- 验证方式：`just test` = true；`niri 26.04 validate -c ~/.config/niri/config.kdl` =
+  `config is valid`；Apollo Home Manager 服务求值含 `syllune-web`、`eww-syllune-overlay`，不含
+  `type4me-linux`，Syllune ExecStart 解析到 `syllune-0.1.0`。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)、[应用版本审计](./application-version-audit.md)、
+  [Niri 工作区与窗口分配](./niri-workspaces.md)。
+
 ### 添加 artemis（v2 macbook）SSH key 授权
 
 - 影响范围：所有接入 `mainSshAuthorizedKeys` 的 PC、Macbook 与服务器。
@@ -20,8 +35,7 @@
 - 变更内容：上游新增
   `feat: 剪贴板注入保留原剪贴板 + paste_tool/focus_command 配置`。注入前备份并恢复原剪贴板内容，新增
   `paste_tool` / `focus_command` 配置项，剪贴板注入路径更可定制。
-- 验证方式：`nix flake lock --update-input syllune` 已解析到 `1d249200`；配置结构未变，待跑
-  `nix eval .#evalTests`。
+- 验证方式：`nix flake lock --update-input syllune` 已解析到 `1d249200`；`just test` = true。
 - 关联文档：[Linux 语音输入](./linux-voice-input.md)。
 
 ### 代理客户端由 Clash Verge Rev 切换为 FlClash
@@ -62,7 +76,7 @@
 - 关联文档：[Zen Browser](./zen-browser.md)、[应用版本审计](./application-version-audit.md)、
   [Niri 工作区与窗口分配](./niri-workspaces.md)、[AeroSpace 使用指南](./aerospace-usage.md)。
 
-### 语音输入由 Syllune 换回 Type4Me
+### 语音输入由 Syllune 换回 Type4Me（同日整合时已撤销）
 
 - 影响范围：Linux GUI 主机（apollo/athena/generic）。
 - 配置入口：`flake.nix`（input `syllune` →
@@ -75,6 +89,8 @@
 - 验证方式：`nix eval` 反映 `type4me-linux` 服务与 `type4me` input；详情见
   [Linux 语音输入](./linux-voice-input.md)。
 - 关联文档：[Linux 语音输入](./linux-voice-input.md)、[应用版本审计](./application-version-audit.md)。
+- 当前状态：本条仅记录远端 `1948b1cb` 的中间状态；同日整合后当前配置仍为 Syllune，Type4Me
+  input 与服务均已移除。
 
 ### Homebrew 镜像切至南京大学（nju）并启用本地代理链路
 
@@ -97,6 +113,7 @@
   `programs.vscode`、macOS cask `visual-studio-code` 与 catppuccin-vscode 扩展均保留）。
 - 验证方式：`git fetch`/`git log` 核对远端基线；改动文件 `nixfmt`/`prettier`
   检查；apollo 配置求值（见文末）。
+
 ## 2026-08-17
 
 ### 更新 syllune 锁到 081d609（X11 剪贴板注入 schema）
