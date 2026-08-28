@@ -4,6 +4,17 @@
 
 ## 2026-08-28
 
+### 更新 syllune 锁到 1d249200（剪贴板注入保留原剪贴板）
+
+- 影响范围：所有 Linux GUI 主机的 Syllune 语音输入。
+- 配置入口：`flake.lock`（`syllune` 输入 `081d609` → `1d249200`）。
+- 变更内容：上游新增
+  `feat: 剪贴板注入保留原剪贴板 + paste_tool/focus_command 配置`。注入前备份并恢复原剪贴板内容，新增
+  `paste_tool` / `focus_command` 配置项，剪贴板注入路径更可定制。
+- 验证方式：`nix flake lock --update-input syllune` 已解析到 `1d249200`；配置结构未变，待跑
+  `nix eval .#evalTests`。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
 ### 代理客户端由 Clash Verge Rev 切换为 FlClash
 
 - 影响范围：Linux GUI 主机（apollo/athena/generic）与 macOS（artemis）。
