@@ -24,7 +24,8 @@ outputs/
     │   ├── olympians-apollo.nix
     │   ├── olympians-athena.nix
     │   ├── olympians-generic.nix
-    │   └── olympians-hermes.nix
+    │   ├── olympians-hermes.nix
+    │   └── hestia.nix
     └── tests/
 ```
 

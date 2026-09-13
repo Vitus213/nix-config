@@ -2,6 +2,27 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-09-13
+
+### 新增 hestia（NixOS-WSL 终端主机）并完成首次部署
+
+- 影响范围：新增 WSL 终端主机 `hestia`；`flake.nix` 新增 `nixos-wsl` input；
+  `my-secrets` 新增 `hestia-wsl` recipient 并 rekey 全部 secrets。
+- 配置入口：`flake.nix`、`flake.lock`、`outputs/x86_64-linux/src/hestia.nix`、
+  `hosts/hestia/default.nix`、`hosts/hestia/home.nix`、
+  `hosts/README.md`、`documents/hestia-wsl.md`。
+- 变更内容：新增 WSL 专用终端主机 `hestia`：仅 WSL 模块 + 终端链
+  （`home/linux/tui.nix`），不导入桌面 / secrets / preservation / hardening；
+  `wsl.defaultUser = "vitus"`，主机名 `hestia`；保留 `bb` 服务并改为以 `vitus`
+  运行（目录迁至 `/home/vitus/bb-app`）；`dconf` 关闭、HM 激活不启动用户单元；
+  `nix.extraOptions` 引用手工放置的 `/etc/agenix/nix-access-tokens`（不进仓库）；
+  `my-secrets` 增加 `hestia-wsl` 公钥（`~/.ssh/id_ed25519`）并用 `master_key` rekey。
+- 验证方式：`nixos-rebuild switch --flake .#hestia` 成功（Generation 7，当前生效）；
+  `bb`、`home-manager-vitus` 均为 active；`my-secrets` 全部 5 个 `.age`
+  文件可用 `/home/vitus/.ssh/id_ed25519` 解密。
+  `lockscreen-pam` 回归测试收窄到桌面主机（终端主机无 noctalia 锁屏）。
+- 关联文档：[hestia WSL 主机](./hestia-wsl.md)、[主机配置](../hosts/README.md)。
+
 ## 2026-08-28
 
 ### 整合远端主线并保留 Syllune 语音输入

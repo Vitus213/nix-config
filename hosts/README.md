@@ -13,6 +13,12 @@
 | `generic` | NixOS | 部署前替换硬件配置          | 通用桌面模板             | 模板   |
 | `artemis` | macOS | MacBook Pro M4Pro 14" 48GB  | 工作机                   | 使用中 |
 
+### WSL 主机
+
+| 主机      | 平台      | 硬件 | 用途                              | 状态   |
+| --------- | --------- | ---- | --------------------------------- | ------ |
+| `hestia`  | NixOS-WSL | -    | Windows WSL 终端主机（无桌面）     | 使用中 |
+
 ### 其他入口
 
 - `hermes` 是 Ubuntu 上的独立 home-manager 配置
@@ -24,10 +30,15 @@
 - `apollo` / `artemis`: 当前主要物理机
 - `athena`: 第二台 NixOS 桌面配置，仍处于规划/迁移状态
 - `generic`: 不带个人 secrets 和 preservation 的通用 NixOS 桌面模板
+- `hestia`: NixOS-WSL 终端主机，无 GUI，用户 `vitus`，详见
+  [hestia WSL 主机](../documents/hestia-wsl.md)
 
 ## 添加新主机
 
 最稳妥的方式是复制一个相近主机目录，再逐项调整。不要只改 hostname 后直接部署。
+
+WSL 主机不需要 `hardware-configuration.nix`：改为导入 `nixos-wsl` 模块
+并设置 `wsl.enable` / `wsl.defaultUser`，参考 `hosts/hestia/`。
 
 ### 基本步骤
 

@@ -38,6 +38,9 @@
     # update via nix flake update nixpkgs --override-input nixpkgs github:NixOS/nixpkgs/<commit-hash>
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # for WSL (Windows Subsystem for Linux)
+    nixos-wsl.url = "github:nix-community/NixOS-WSL";
+
     # nixpkgs with some custom patches
     nixpkgs-patched.url = "github:ryan4yin/nixpkgs/nixos-unstable";
 
