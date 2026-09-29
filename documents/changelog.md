@@ -2,6 +2,21 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-09-28
+
+### 修复 home.activation 片段 exit 中断 Home Manager 激活（atuin/Nushell 报错）
+
+- 影响范围：artemis（aarch64-darwin）Home Manager 激活流程。
+- 配置入口：`home/base/core/git.nix`（`home.activation.backupExistingGithubToken`）。
+- 变更内容：当 `github_token` 已链接到 agenix 路径时，激活片段由 `exit 0`
+  改为空命令跳过——片段被内联进激活脚本顶层，`exit`
+  会终止整个激活，文件链接等后续步骤从未部署（Nushell 仍读旧 generation 的
+  `config.nu`，其 atuin 集成为旧版生成的 `job spawn -t atuin`，触发 Nushell
+  0.113.1 的 unknown_flag 报错）。排查细节见 `documents/nushell-zellij-startup.md`。
+- 验证方式：激活不再被提前终止；`~/.config/nushell/config.nu`
+  随下次 switch 部署为当前 generation 内容（静态核对激活脚本逻辑，未重建系统）。
+- 关联文档：[Nushell + Zellij 启动链路](./nushell-zellij-startup.md)。
+
 ## 2026-09-18
 
 ### 新增网申自动化方案文档（未落地配置）

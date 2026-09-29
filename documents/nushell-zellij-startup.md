@@ -98,3 +98,25 @@ Nushell 集成，可以重新评估是否需要限定名导入。
 
 当前不要回退到 `use modules/argx *`，否则会再次覆盖内建
 `parse`，导致 fzf 集成和 Nushell 启动链路失败。
+
+## 排查记录：HM 文件未部署导致 atuin/Nushell 报错（2026-09-08）
+
+现象：`darwin-rebuild switch` 后每次启动 Nushell 报
+
+```text
+Error: nu::parser::unknown_flag
+× The `job spawn` command doesn't have flag `-t`.
+```
+
+根因：`home/base/core/git.nix` 的 `home.activation.backupExistingGithubToken` 片段在
+`~/.config/agenix/github_token` 已正确链接到 agenix 路径时执行 `exit 0`。`home.activation`
+片段内联在激活脚本顶层，`exit` 会终止整个Home
+Manager 激活，文件链接等后续步骤全部跳过——系统闭包里的新 generation从未落到
+`$HOME`。Nushell 仍读取旧 generation 的
+`config.nu`，其 atuin 集成由旧版 atuin（18.12.1）生成，包含 Nushell 0.113.1 不支持的
+`job spawn -t atuin`。已改为空命令跳过已就绪场景，不再终止激活。
+
+判定文件是否真的部署：查看 `~/.config/nushell/config.nu`
+的修改时间。若停留在上一次成功激活的日期，说明 Home Manager 文件阶段未执行（可对比
+`~/.local/state/home-manager/gcroots/current-home` 指向的 generation 与 `/run/current-system`
+闭包内的 `home-manager-generation` 是否一致）。

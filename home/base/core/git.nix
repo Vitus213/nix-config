@@ -32,11 +32,11 @@ in
     target="${config.xdg.configHome}/agenix/github_token"
     expected="${githubTokenPath}"
 
+    # 注意：home.activation 片段会被内联进激活脚本顶层，`exit` 会终止整个激活。
+    # 这里不能用 exit，必须用空命令跳过已就绪场景。
     if [ -L "$target" ] && [ "$(${pkgs.coreutils}/bin/readlink "$target")" = "$expected" ]; then
-      exit 0
-    fi
-
-    if [ -e "$target" ] || [ -L "$target" ]; then
+      : # 已是本模块管理的链接，无需备份
+    elif [ -e "$target" ] || [ -L "$target" ]; then
       backup="$target.home-manager.backup"
       if [ -e "$backup" ] || [ -L "$backup" ]; then
         backup="$backup.$(${pkgs.coreutils}/bin/date +%s)"
