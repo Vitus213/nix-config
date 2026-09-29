@@ -42,20 +42,6 @@
   随下次 switch 部署为当前 generation 内容（静态核对激活脚本逻辑，未重建系统）。
 - 关联文档：[Nushell + Zellij 启动链路](./nushell-zellij-startup.md)。
 
-## 2026-09-18
-
-### 新增网申自动化方案文档（未落地配置）
-
-- 影响范围：无（方案设计阶段，未修改任何配置与包）。
-- 配置入口：`documents/resume-autofill.md`（新增）。
-- 变更内容：调研 browser-use/jev-ultrafast（JEV UltraFast）与网申场景的匹配度，结论是不引入 ——
-  frames（iframe 内嵌简历系统）与 uploads（简历附件）均为其 MVP 明确不支持的能力，且需 Chrome 远程调试（artemis 当前仅 Zen/Gecko）与付费 API
-  key。同步澄清「手机 ADB 无线调试」不适用于桌面浏览器网申链路。推荐路线：Tampermonkey/
-  Violentmonkey
-  userscript + 单份结构化简历 JSON，先跑通牛客及高频站点，人工动作收敛为扫码登录 → 文件选择 → 核对提交；附件上传受浏览器安全策略限制只能「自动点开 + 人工选一次」。待方案确认后实施并回写本 changelog。
-- 验证方式：静态检查（纯文档，未跑 nix 求值）。
-- 关联文档：[网申自动化填表方案](./resume-autofill.md)。
-
 ## 2026-09-15
 
 ### darwin（artemis）代理客户端由 Clash Verge 替换为 FlClash
