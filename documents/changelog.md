@@ -4,6 +4,21 @@
 
 ## 2026-09-28
 
+### 修复 herdr 0.7.1 macOS 构建：补齐 cctools/xcbuild/apple-sdk_15
+
+- 影响范围：artemis（aarch64-darwin）nix-darwin overlay。
+- 配置入口：`lib/macosSystem.nix`（overlay `herdr.overrideAttrs`）。
+- 变更内容：herdr 0.7.1 的 zig 构建经 `xcode-select --print-path` +
+  `xcrun --sdk macosx --show-sdk-path` 探测 macOS
+  SDK，但包定义未引入 cctools/xcbuild，构建环境缺这两个命令。补齐
+  `nativeBuildInputs`（cctools、xcbuild、apple-sdk_15）并在 `preConfigure` 显式导出
+  `DEVELOPER_DIR`/`SDKROOT` 兜底（\_\_structuredAttrs 环境下 setup
+  hook 不生效）。必须用 apple-sdk_15：zig 0.15.2 链接 build_runner 时与 SDK
+  26 的 libSystem.tbd 不兼容（undefined symbol），SDK 15 实测正常。nixpkgs 升级到含 herdr
+  0.8.2+（已补齐依赖）后可移除。
+- 验证方式：herdr 0.7.1 在 darwin 构建通过（build_runner 链接成功）；完整系统未重建。
+- 关联文档：无专题文档，约束记录在 `lib/macosSystem.nix` 注释内。
+
 ### 修复 home.activation 片段 exit 中断 Home Manager 激活（atuin/Nushell 报错）
 
 - 影响范围：artemis（aarch64-darwin）Home Manager 激活流程。
