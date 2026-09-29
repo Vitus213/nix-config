@@ -17,7 +17,7 @@
     enable = true;
     settings = {
       modelRoles = {
-        default = "bailian/deepseek-v4-flash-0731:high";
+        default = "bailian/glm-5.2-fast-preview:high";
         smol = "openai/gpt-5.5:xhigh";
         slow = "openai/gpt-5.5:xhigh";
       };
