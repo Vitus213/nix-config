@@ -72,6 +72,12 @@ in
     gnugrep # replacee macos's grep
     gnutar # replacee macos's tar
 
+    # Docker runtime for local containers —— hindsight memory 后端用 colima 跑本地容器。
+    # 不从 brew 装：colima/lima/qemu 依赖链用 nix 管理，与 flake 同源可回滚。
+    docker # docker CLI（daemon 由 colima 提供）
+    colima # lightweight docker daemon runtime for macOS (Lima + QEMU)
+    docker-compose # compose 编排 hindsight 容器
+
     # darwin only apps
     # utm # virtual machine
   ];
@@ -197,7 +203,10 @@ in
       # Install manually when needed.
       # "neteasemusic" # music
       # FlClash（clash GUI，替代 clash-verge-rev）暂无 Homebrew cask，
-      # 手动从 https://github.com/chen08209/FlClash/releases 安装 macOS dmg。
+      # 已手动安装官方 dmg（0.8.98 arm64，/Applications/FlClash.app，
+      # 见 2026-09-15 changelog 条目）。若需重装：
+      #   1. brew uninstall --cask clash-verge-rev（旧客户端）
+      #   2. 从 https://github.com/chen08209/FlClash/releases 下载 macOS arm64 dmg
       # "flclash"
 
       # "insomnia" # REST client

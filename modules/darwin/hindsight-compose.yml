@@ -1,0 +1,39 @@
+# Hindsight（agent memory 后端）本地容器编排。
+#
+# 前置条件：
+#   1. colima 运行中：`brew services start colima`（或 `colima start`）
+#   2. 凭据文件 /Users/vitus/.config/hindsight/hindsight.env（0600）：
+#      HINDSIGHT_API_LLM_API_KEY=<dashscope api key>
+#
+# 启动：
+#   docker compose up -d
+#
+# 验证：
+#   curl -s http://localhost:8888/api/health   # API 就绪
+#   http://localhost:9999                      # Web UI
+#
+# LLM 走 omp 的 bailian provider（DashScope OpenAI 兼容端点）qwen3.8-flash；
+# embeddings 用镜像内建本地模型（BAAI/bge-small-en-v1.5，默认 HINDSIGHT_API_EMBEDDINGS_PROVIDER=local），
+# 不依赖外部 embedding API。
+services:
+  hindsight:
+    image: ghcr.io/vectorize-io/hindsight:latest
+    container_name: hindsight
+    restart: unless-stopped
+    ports:
+      - "8888:8888" # REST API（omp memory backend 默认 http://localhost:8888）
+      - "9999:9999" # Web UI
+    env_file:
+      - /Users/vitus/.config/hindsight/hindsight.env
+    environment:
+      HINDSIGHT_API_LLM_PROVIDER: openai
+      HINDSIGHT_API_LLM_BASE_URL: https://dashscope.aliyuncs.com/compatible-mode/v1
+      HINDSIGHT_API_LLM_MODEL: qwen3.8-flash
+      # qwen3.8-flash 思考模式（dashscope 默认开启）不支持强制 tool_choice，
+      # hindsight 的 reflect/retain 走强制工具调用会 400 并重试 4 次；关闭 thinking。
+      HINDSIGHT_API_LLM_EXTRA_BODY: '{"chat_template_kwargs": {"enable_thinking": false}}'
+    volumes:
+      - hindsight-data:/home/hindsight/.pg0 # 嵌入式 PostgreSQL（pg0）数据
+
+volumes:
+  hindsight-data:

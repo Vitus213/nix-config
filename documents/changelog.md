@@ -2,6 +2,117 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-09-18
+
+### 新增网申自动化方案文档（未落地配置）
+
+- 影响范围：无（方案设计阶段，未修改任何配置与包）。
+- 配置入口：`documents/resume-autofill.md`（新增）。
+- 变更内容：调研 browser-use/jev-ultrafast（JEV UltraFast）与网申场景的匹配度，结论是不引入 ——
+  frames（iframe 内嵌简历系统）与 uploads（简历附件）均为其 MVP 明确不支持的能力，且需 Chrome 远程调试（artemis 当前仅 Zen/Gecko）与付费 API
+  key。同步澄清「手机 ADB 无线调试」不适用于桌面浏览器网申链路。推荐路线：Tampermonkey/
+  Violentmonkey
+  userscript + 单份结构化简历 JSON，先跑通牛客及高频站点，人工动作收敛为扫码登录 → 文件选择 → 核对提交；附件上传受浏览器安全策略限制只能「自动点开 + 人工选一次」。待方案确认后实施并回写本 changelog。
+- 验证方式：静态检查（纯文档，未跑 nix 求值）。
+- 关联文档：[网申自动化填表方案](./resume-autofill.md)。
+
+## 2026-09-15
+
+### darwin（artemis）代理客户端由 Clash Verge 替换为 FlClash
+
+- 影响范围：artemis（aarch64-darwin）代理 GUI 与命令行代理依赖。
+- 配置入口：`modules/darwin/apps.nix`（FlClash 安装说明注释）、
+  `home/darwin/proxy/default.nix`（移除 `clash-meta` 包）、
+  `home/darwin/proxy/proxychains.conf`（注释更新，端口不变）。
+- 变更内容：卸载 Homebrew cask `clash-verge-rev`（Clash Verge 2.5.2，备份于
+  `/opt/homebrew/Caskroom/clash-verge-rev`），改用手动安装官方FlClash 0.8.98（macOS arm64 dmg，
+  `https://github.com/chen08209/FlClash/releases`，sha256
+  `daaa8449f6b0e67ced7aa0472df2f15befbd5ed5944f36da4f90b0051a38ddb1`）。FlClash 无 Homebrew
+  cask、nixpkgs 无包，与 Linux 侧同源。 `home/darwin/proxy/default.nix` 中移除无实际用途的
+  `clash-meta` （mihomo 内核 CLI：无进程、无配置目录；FlClash 内置内核）。订阅沿用
+  `~/Library/Application Support/com.follow.clash`
+  既有 3 条（Selom/赔钱机场/一元机场），无需重配；将偏好 `flutter.config` 中
+  `appSettingProps.autoRun` 置 `true`，使内核服务随 FlClash 启动运行。mixed-port `7890`
+  与 proxychains `socks5 127.0.0.1 7890` 一致，AeroSpace 窗口规则（`com.follow.clash` →
+  `0Other`）沿用无需改动。
+- 验证方式：`brew uninstall --cask clash-verge-rev` 后 `/Applications/Clash Verge.app`
+  与进程均移除；FlClashCore 监听 `127.0.0.1:7890`；经 HTTP 与 SOCKS5 代理访问
+  `https://www.gstatic.com/generate_204` 实测均 204。
+- 关联文档：[应用版本审计](./application-version-audit.md)、
+  [AeroSpace 使用指南](./aerospace-usage.md)。
+
+## 2026-09-08
+
+### 新增 Hindsight 本地记忆后端（docker 容器），接入 omp memory.backend
+
+- 影响范围：artemis（aarch64-darwin）系统包、docker 运行时（colima）、hindsight 容器服务、omp memory
+  backend（`~/.omp/agent/config.yml` 改为声明式）。
+- 配置入口：`modules/darwin/apps.nix`（`environment.systemPackages` 用 nix 安装
+  `docker`/`colima`/`docker-compose`，不经过 brew）、 `modules/darwin/hindsight.nix`（launchd
+  agents： `hindsight-colima` 登录自启 colima、`hindsight-compose` RunAtLoad + 300s 兜底
+  `docker-compose up -d`）、`modules/darwin/hindsight/docker-compose.yml` （容器编排，nix 模块经
+  `builtins.readFile` 引用）、 `home/base/core/omp.nix`（`programs.omp.settings` 声明
+  `memory.backend = hindsight` 与 `hindsight.scoping = per-project-tagged`，迁移原手工 `config.yml`
+  的 `modelRoles`/`setupVersion`/`hideThinkingBlock`；旧文件备份为
+  `~/.omp/agent/config.yml.home-manager.backup`）、
+  `~/.config/hindsight/hindsight.env`（0600，dashscope API key，手工维护不入库）。
+- 变更内容：hindsight 服务端以 `ghcr.io/vectorize-io/hindsight:latest`
+  容器跑在 colima 本地 docker（REST API 8888 / Web UI 9999，嵌入式 pg0，数据卷
+  `hindsight-data`）。LLM 走 omp 的 bailian provider（DashScope OpenAI 兼容端点）
+  `qwen3.8-flash`（`HINDSIGHT_API_LLM_PROVIDER=openai` + `BASE_URL` +
+  `MODEL`），embeddings/reranker 用镜像内建本地模型，无外部 embedding API。
+  `HINDSIGHT_API_LLM_EXTRA_BODY={"chat_template_kwargs":{"enable_thinking":false}}`
+  关闭模型思考模式（qwen3.8-flash 思考模式禁止强制 `tool_choice`，hindsight
+  reflect/retain 会 400 并重试 4 次）。omp 每会话按 `per-project-tagged`
+  scoping 写共享 bank + 项目 tag（仓库主根 basename 小写，如
+  `project:nix-config`），recall 覆盖项目 tag 与未标记全局记忆。选型：全部 nix 声明式（工具链、服务生命周期、omp 配置），不依赖 brew
+  services 与手动命令；API key 不入库。实施阻点与解法：GitHub TLS 干扰/断流 → 镜像经
+  `ghcr.nju.edu.cn` 拉取后 tag 回官方名；colima VM 镜像经 ghfast.top 加速站下载（GitHub
+  release-assets 的 HEAD 解析被拒）；nix docker 客户端不注册 `docker compose`
+  插件，手动命令用独立二进制 `docker-compose`。
+- 验证方式：`nix eval` 确认 systemPackages 含 docker-29.6.0/colima-0.10.1/ docker-compose-5.2.0 与
+  `programs.omp.settings` 求值正确；`just local` 构建切换成功（含
+  `omp-config.yml.drv`）；hindsight 容器日志 `Connection verified: openai/qwen3.8-flash`；API
+  retain/recall/reflect 端到端 200（Rust 记忆可检索、reflect 综合回答正确、`thoughts_tokens=0`）；omp 会话自动创建
+  `omp` bank，`[REFLECT omp-<pid>]` 无 tool_choice 400。
+- 关联文档：[Hindsight Agent 记忆后端](./hindsight.md)。
+
+## 2026-08-29
+
+### 修复 home.activation 片段 `exit 0` 终止整个 HM 激活（artemis Nushell 启动报 job spawn unknown flag）
+
+- 影响范围：所有加载 `home/base/core/git.nix` 的主机；直接症状为 artemis 上 `darwin-rebuild switch`
+  后每次启动 Nushell 报 `The 'job spawn' command doesn't have flag '-t'`。
+- 配置入口：`home/base/core/git.nix` （`home.activation.backupExistingGithubToken`）。
+- 变更内容：该激活步骤在 `~/.config/agenix/github_token` 已是指向正确 agenix 路径的链接时执行
+  `exit 0`。`home.activation` 片段被内联进激活脚本顶层， `exit` 会终止整个 Home
+  Manager 激活，`checkLinkTargets`、文件链接等后续步骤全部跳过：系统闭包包含新 generation，但
+  `~/.config/nushell/config.nu` 等文件停留在旧 generation。Nushell 因此加载到 atuin 18.12.1 生成的
+  `job spawn -t atuin`（Nushell 0.113.1 已无 `-t` 标志）而报错。修复为用空命令（`:` +
+  `elif`）跳过已就绪场景，不再终止激活。
+- 验证方式：手动执行当前 generation 的
+  `activate`（临时移走 token 链接绕过旧逻辑）后文件全部重新链接；`env ZELLIJ=1 INSIDE_EMACS=1 nu -c 'print "nushell config ok"'`
+  通过；`nix eval .#evalTests` 通过；重新求值的激活片段中已无 `exit 0`。
+- 关联文档：[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)。
+
+## 2026-08-29
+
+### 修复 artemis（darwin）herdr 0.7.1 zig 构建缺少 macOS SDK
+
+- 影响范围：artemis（aarch64-darwin）系统与 Home Manager 构建/切换。
+- 配置入口：`lib/macosSystem.nix`（nixpkgs-darwin overlays 中的 `herdr` 覆盖）。
+- 变更内容：herdr 0.7.1 的 zig 构建（vendored libghostty-vt）通过 `xcode-select --print-path` +
+  `xcrun --sdk macosx --show-sdk-path` 探测 macOS SDK，但包定义 `nativeBuildInputs` 未含
+  `cctools`/`xcbuild`，构建环境缺少这两个命令而失败（`DarwinSdkNotFound`）。overlay 补齐
+  `cctools`、`xcbuild`、`apple-sdk_15` 并在 `preConfigure` 显式导出
+  `DEVELOPER_DIR`/`SDKROOT`。注意必须用 `apple-sdk_15`：zig
+  0.15.2 的 build 模式链接 build_runner 时与 SDK 26 的 `libSystem.tbd`
+  不兼容（`undefined symbol: _getcwd/_sigaction/...`），SDK 15 实测正常。nixpkgs 升级到含 herdr
+  0.8.2+（已补齐 cctools/xcbuild 依赖）后可移除该 overlay。
+- 验证方式：`nix build .#darwinConfigurations.artemis.system` 完整成功；宿主环境用 SDK 26.4 复现
+  `zig build` 失败、SDK 15.5 同例成功。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
 ## 2026-08-28
 
 ### 整合远端主线并保留 Syllune 语音输入
