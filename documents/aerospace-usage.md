@@ -284,7 +284,7 @@ Shift + 方向键下    静音
 | 工作区      | 语义           | 自动进入的应用                                           | 显示器绑定  |
 | ----------- | -------------- | -------------------------------------------------------- | ----------- |
 | `1Terminal` | 终端区         | `Ghostty`、`Kitty`、`Alacritty`                          | `main`      |
-| `2Browser`  | 浏览器         | `Zen`                                                    | `main`      |
+| `2Browser`  | 浏览器         | `Zen`、`Chrome`                                          | `main`      |
 | `3Docs`     | 文档笔记       | `Notion`、`Typora`、`Obsidian`                           | `main`      |
 | `4Codex`    | Codex GUI      | `ChatGPT`、`Claude` 等 AI 图形客户端                     | `main`      |
 | `5Code`     | 代码编辑器     | `VSCode`、`Zed`、`Cursor`                                | `main`      |

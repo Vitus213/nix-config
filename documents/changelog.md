@@ -4,6 +4,16 @@
 
 ## 2026-09-28
 
+### AeroSpace：Chrome 窗口自动归入 2Browser 工作区
+
+- 影响范围：artemis（aarch64-darwin）AeroSpace 窗口规则与使用文档。
+- 配置入口：`home/darwin/aerospace/aerospace.toml`（`on-window-detected`）、
+  `documents/aerospace-usage.md`（2Browser 应用表）。
+- 变更内容：新增 `com.google.Chrome` → `2Browser` 的 `on-window-detected`
+  规则，与 Zen 同区；文档同步标注。
+- 验证方式：规则语法静态检查；未重建系统，未对 AeroSpace 实例热重载验证。
+- 关联文档：[AeroSpace 使用指南](./aerospace-usage.md)。
+
 ### 修复 herdr 0.7.1 macOS 构建：补齐 cctools/xcbuild/apple-sdk_15
 
 - 影响范围：artemis（aarch64-darwin）nix-darwin overlay。

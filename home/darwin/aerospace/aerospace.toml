@@ -212,6 +212,10 @@ if.app-id = 'org.alacritty'
 run = 'move-node-to-workspace 1Terminal'
 
 [[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 2Browser'
+
+[[on-window-detected]]
 if.app-id = 'app.zen-browser.zen'
 run = 'move-node-to-workspace 2Browser'
 
