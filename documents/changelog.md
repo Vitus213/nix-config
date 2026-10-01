@@ -4,6 +4,35 @@
 
 ## 2026-10-01
 
+### slow/smol 模型角色切换为 qwen3.8-flash
+
+- 影响范围：artemis 用户级 omp 配置（`~/.omp/agent/config.yml`，未入库）。
+- 变更内容：`modelRoles.slow/smol` 由 `openai/gpt-5.5` 改为 `bailian/qwen3.8-flash`
+  （原指向的 openai 池处于 503 故障）；`default` 保持 `bailian/glm-5.2-fast-preview`。
+- 验证方式：角色引用一致性校验通过。
+
+### scitrace 账户通道上下文窗口实测（重点 gpt-6-astra）
+
+- 影响范围：`sci-pro-special` provider 4 个模型的 `contextWindow` 按实测更新。
+- 变更内容：实测确认账户通道上限 = 官方 `max input tokens`（非总窗口）：
+  gpt-6-astra / gpt-5.6-sol / gpt-5.6-terra ≈ **920K**（920008 OK / 922K OOW，
+  多次复现，与官方 922,000 max input 精确吻合）；gpt-5.5 仅 ≈ **268K**。
+  超限以 SSE `response.failed` + `context_length_exceeded` 拒绝，无静默截断。
+  对应模型 `contextWindow` 已写入 920000 / 260000；其余模型因池 503 未测得。
+- 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
+
+### omp 新增 scitrace 中转 provider（openai/anthropic/sci-plus/sci-pro-special）
+
+- 影响范围：`~/.omp/agent/models.yml`（后随本次迁移并入 nix-config 模板）的
+  provider 目录；API key 已迁入 my-secrets 加密管理。
+- 变更内容：新增 4 个 provider，统一 `baseUrl = https://sub.scitrace.cc`：
+  `openai`（8 个 GPT，sk-c515…）、`anthropic`（15 个 claude，`api: anthropic-messages`
+  原生协议，sk-1c07…）、`sci-plus`（12 个 GPT，sk-1d20…）、`sci-pro-special`
+  （11 个 GPT，sk-b659…）。健康状态：anthropic / sci-pro-special 可用，openai /
+  sci-plus 上游账户池 503（间歇性恢复）。
+- 验证方式：`/v1/models` 200；各池最小推理请求 OK；omp 端到端
+  `--model` 实测（claude-opus-5 / gpt-5.5 / gemini-3.1-pro-high 均通过）。
+
 ### omp models.yml 迁入 nix-config（软链接）+ API key 加密至 my-secrets
 
 - 影响范围：artemis（aarch64-darwin）用户级 omp 模型 catalog；`~/.omp/agent/models.yml`
