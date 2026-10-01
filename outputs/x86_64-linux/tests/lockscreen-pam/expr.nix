@@ -4,7 +4,8 @@
   outputs,
 }:
 # 锁屏 PAM 服务回归测试（背景见 documents/lockscreen-pam.md）：
-# 1. 每台 NixOS 主机都生成 /etc/pam.d/noctalia-lock
+# 1. 每台桌面 NixOS 主机都生成 /etc/pam.d/noctalia-lock
+#    （终端主机如 hestia 无 GUI 锁屏，不参与本测试）
 # 2. auth 段只有一次 pam_unix 验证 + deny（authLineCount = 2），
 #    没有 gnome-keyring、没有 nullok 探测（unix-early）
 # 3. noctalia-shell.service 注入 NOCTALIA_PAM_SERVICE=noctalia-lock
@@ -26,4 +27,4 @@ lib.mapAttrs (
     ) lines;
     pamServiceEnv = lib.elem "NOCTALIA_PAM_SERVICE=noctalia-lock" hmSvc.Environment;
   }
-) outputs.nixosConfigurations
+) (lib.filterAttrs (name: cfg: cfg.config.environment.etc ? "pam.d/noctalia-lock") outputs.nixosConfigurations)

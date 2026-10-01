@@ -60,6 +60,13 @@ in
           User = "vitus";
         };
 
+        # 13t - Tailscale 网段（100.64/10）主机，SSH 端口 8022
+        "13t" = {
+          HostName = "100.64.0.107";
+          User = "vitus";
+          Port = 8022;
+        };
+
         "athena" = {
           HostName = "100.104.233.76";
           User = "vitus";
