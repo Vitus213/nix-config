@@ -1,34 +1,44 @@
-{ omp, ... }:
 {
-  imports = [ omp.homeManagerModules.default ];
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  ompAgentDir = "${config.home.homeDirectory}/.omp/agent";
+  modelsTarget = "${ompAgentDir}/models.yml";
+  modelsGenerated = "${ompAgentDir}/.models.generated.yml";
+  modelsTemplate = ./omp-models.yml.in;
+  syncScript = ./omp-sync.py;
+  keysFile = "/run/agenix/omp-keys";
 
-  # Oh My Pi (omp) coding agent，由官方 flake 源码构建并固定版本于 flake.lock。
-  # 取代旧的用户级 `bun install -g @oh-my-pi/pi-coding-agent`。
-  #
-  # settings 为声明式来源：每次 home-manager switch 整体覆盖
-  # `~/.omp/agent/config.yml`（可写普通文件，omp 运行时可改写，下次 switch 恢复声明值）。
-  # 迁移自原手工 config.yml：modelRoles / setupVersion / hideThinkingBlock。
-  # `~/.omp/agent/models.yml`（provider 目录与 API key）仍为手工维护的用户级文件。
-  #
-  # memory: hindsight —— 远端 memory backend，服务端见 modules/darwin/hindsight/。
-  # scoping = per-project-tagged：写共享 bank + 项目 tag（仓库主根 basename 小写，
-  # 如 ~/code/General -> project:general），recall 覆盖项目 tag 与未标记全局记忆。
-  programs.omp = {
-    enable = true;
-    settings = {
-      modelRoles = {
-        default = "bailian/glm-5.2-fast-preview:high";
-        smol = "openai/gpt-5.5:xhigh";
-        slow = "openai/gpt-5.5:xhigh";
-      };
-      setupVersion = 1;
-      hideThinkingBlock = true;
+  # 从 agenix 解密出的 key 文件 + Nix store 模板，生成实际 models.yml（含明文 key，仅落用户目录）。
+  # 手动运行 `omp-sync-models` 可从模板重置本机配置（覆盖手改）。
+  ompSyncModels = pkgs.writeShellScriptBin "omp-sync-models" ''
+    set -euo pipefail
+    keys="${keysFile}"
+    gen="${modelsGenerated}"
+    tgt="${modelsTarget}"
+    mkdir -p "$(dirname "$gen")"
+    if [ ! -r "$keys" ]; then
+      echo "omp-sync-models: 缺少 $keys（agenix 未解密 omp-keys？）" >&2
+      exit 1
+    fi
+    ${pkgs.python3}/bin/python3 "${syncScript}" "$keys" "${modelsTemplate}" "$gen"
+    chmod 600 "$gen"
+    ln -sfn ".models.generated.yml" "$tgt"
+    echo "omp-sync-models: 已生成 $gen 并链接 $tgt"
+  '';
+in
+{
+  home.packages = [ ompSyncModels ];
 
-      memory.backend = "hindsight";
-      hindsight = {
-        apiUrl = "http://localhost:8888";
-        scoping = "per-project-tagged";
-      };
-    };
-  };
+  # B 模式：仅当目标缺失或不是软链接时从模板生成；重建/切换不覆盖用户手改。
+  home.activation.ompModels = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -e "${modelsTarget}" ] || [ ! -L "${modelsTarget}" ]; then
+      ${ompSyncModels}/bin/omp-sync-models || echo "ompModels: 生成失败，可稍后手动运行 omp-sync-models" >&2
+    else
+      echo "ompModels: ${modelsTarget} 已存在（用户文件优先，跳过）"
+    fi
+  '';
 }

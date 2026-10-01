@@ -95,6 +95,12 @@
         file = "${mysecrets}/alias-for-work.nushell.age";
       }
       // user_readable;
+
+      # omp 各 provider 的 API key（openai/anthropic/sci-plus/sci-pro-special/bailian/gemini）
+      "omp-keys" = {
+        file = "${mysecrets}/omp-keys.age";
+      }
+      // user_readable;
     };
 
   # place secrets in /etc/

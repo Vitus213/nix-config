@@ -1,0 +1,448 @@
+providers:
+  openai:
+    baseUrl: https://sub.scitrace.cc
+    apiKey: @OPENAI_KEY@
+    api: openai-responses
+    models:
+      - id: gpt-5.5
+        name: GPT-5.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6
+        name: GPT-5.6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-sol
+        name: GPT-5.6 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-terra
+        name: GPT-5.6 Terra
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6
+        name: GPT-6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6-astra
+        name: GPT-6 Astra
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6-sol
+        name: GPT-6 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6.1-sol
+        name: GPT-6.1 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+  anthropic:
+    baseUrl: https://sub.scitrace.cc
+    apiKey: @ANTHROPIC_KEY@
+    api: anthropic-messages
+    models:
+      - id: claude-fable-5
+        name: Claude Fable 5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-fable-5-1
+        name: Claude Fable 5.1
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-haiku-4-5
+        name: Claude Haiku 4.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 200000
+        maxTokens: 64000
+      - id: claude-haiku-4-5-20251001
+        name: Claude Haiku 4.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 200000
+        maxTokens: 64000
+      - id: claude-opus-4-5
+        name: Claude Opus 4.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 200000
+        maxTokens: 64000
+      - id: claude-opus-4-5-20251101
+        name: Claude Opus 4.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 200000
+        maxTokens: 64000
+      - id: claude-opus-4-6
+        name: Claude Opus 4.6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-opus-4-7
+        name: Claude Opus 4.7
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-opus-4-8
+        name: Claude Opus 4.8
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-opus-5
+        name: Claude Opus 5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-opus-5-5
+        name: Claude Opus 5.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-sonnet-4-5
+        name: Claude Sonnet 4.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 64000
+      - id: claude-sonnet-4-5-20250929
+        name: Claude Sonnet 4.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 64000
+      - id: claude-sonnet-4-6
+        name: Claude Sonnet 4.6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+      - id: claude-sonnet-5
+        name: Claude Sonnet 5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 128000
+  sci-plus:
+    baseUrl: https://sub.scitrace.cc
+    apiKey: @SCI_PLUS_KEY@
+    api: openai-responses
+    models:
+      - id: gpt-5.3-codex-spark
+        name: GPT-5.3 Codex Spark
+        reasoning: true
+        input: [text, image]
+        contextWindow: 128000
+        maxTokens: 32000
+      - id: gpt-5.4
+        name: GPT-5.4
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.4-mini
+        name: GPT-5.4 mini
+        reasoning: true
+        input: [text, image]
+        contextWindow: 400000
+        maxTokens: 128000
+      - id: gpt-5.5
+        name: GPT-5.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6
+        name: GPT-5.6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-luna
+        name: GPT-5.6 Luna
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-sol
+        name: GPT-5.6 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-terra
+        name: GPT-5.6 Terra
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6-astra
+        name: GPT-6 Astra
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6-luna
+        name: GPT-6 Luna
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6-sol
+        name: GPT-6 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6.1-sol
+        name: GPT-6.1 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+  sci-pro-special:
+    baseUrl: https://sub.scitrace.cc
+    apiKey: @SCI_PRO_SPECIAL_KEY@
+    api: openai-responses
+    models:
+      - id: gpt-5.2
+        name: GPT-5.2
+        reasoning: true
+        input: [text, image]
+        contextWindow: 400000
+        maxTokens: 128000
+      - id: gpt-5.3-codex-spark
+        name: GPT-5.3 Codex Spark
+        reasoning: true
+        input: [text, image]
+        contextWindow: 128000
+        maxTokens: 32000
+      - id: gpt-5.4
+        name: GPT-5.4
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.4-mini
+        name: GPT-5.4 mini
+        reasoning: true
+        input: [text, image]
+        contextWindow: 400000
+        maxTokens: 128000
+      - id: gpt-5.5
+        name: GPT-5.5
+        reasoning: true
+        input: [text, image]
+        contextWindow: 260000
+        maxTokens: 128000
+      - id: gpt-5.6
+        name: GPT-5.6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-luna
+        name: GPT-5.6 Luna
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-5.6-sol
+        name: GPT-5.6 Sol
+        reasoning: true
+        input: [text, image]
+        contextWindow: 920000
+        maxTokens: 128000
+      - id: gpt-5.6-terra
+        name: GPT-5.6 Terra
+        reasoning: true
+        input: [text, image]
+        contextWindow: 920000
+        maxTokens: 128000
+      - id: gpt-6
+        name: GPT-6
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1050000
+        maxTokens: 128000
+      - id: gpt-6-astra
+        name: GPT-6 Astra
+        reasoning: true
+        input: [text, image]
+        contextWindow: 920000
+        maxTokens: 128000
+  bailian:
+    baseUrl: https://dashscope.aliyuncs.com/compatible-mode/v1
+    apiKey: @BAILIAN_KEY@
+    api: openai-completions
+    compat:
+      supportsReasoningEffort: false
+      maxTokensField: max_tokens
+    models:
+      - id: deepseek-v4-flash-0731
+        name: DeepSeek V4 Flash 0731
+        reasoning: true
+        input: [text]
+        contextWindow: 1048576
+        maxTokens: 32768
+      - id: qwen3.8-flash
+        name: Qwen 3.8 Flash
+        reasoning: true
+        input: [text]
+        contextWindow: 1000000
+        maxTokens: 131072
+      - id: qwen3.8-max
+        name: Qwen 3.8 Max
+        reasoning: true
+        input: [text]
+        contextWindow: 1000000
+        maxTokens: 131072
+      - id: glm-5.2
+        name: GLM 5.2
+        reasoning: true
+        input: [text]
+        contextWindow: 1048576
+        maxTokens: 131072
+      - id: glm-5.2-fast-preview
+        name: GLM 5.2 Fast Preview
+        reasoning: true
+        input: [text]
+        contextWindow: 1048576
+        maxTokens: 131072
+  gemini:
+    baseUrl: https://sub.scitrace.cc
+    apiKey: @GEMINI_KEY@
+    api: openai-responses
+    models:
+      - id: gemini-3.1-pro-high
+        name: Gemini 3.1 Pro High
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.1-pro-low
+        name: Gemini 3.1 Pro Low
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.7-flash-high
+        name: Gemini 3.7 Flash High
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.7-flash-medium
+        name: Gemini 3.7 Flash Medium
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.7-flash-low
+        name: Gemini 3.7 Flash Low
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.6-flash-high
+        name: Gemini 3.6 Flash High
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.6-flash-medium
+        name: Gemini 3.6 Flash Medium
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.6-flash-low
+        name: Gemini 3.6 Flash Low
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.6-flash-tiered
+        name: Gemini 3.6 Flash Tiered
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.1-flash-lite
+        name: Gemini 3.1 Flash Lite
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-2.5-flash
+        name: Gemini 2.5 Flash
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-2.5-flash-lite
+        name: Gemini 2.5 Flash Lite
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-2.5-flash-thinking
+        name: Gemini 2.5 Flash Thinking
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3-flash
+        name: Gemini 3 Flash
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.5-flash-lite
+        name: Gemini 3.5 Flash Lite
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.8-flash-high
+        name: Gemini 3.8 Flash High
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.8-flash-low
+        name: Gemini 3.8 Flash Low
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536
+      - id: gemini-3.8-flash-medium
+        name: Gemini 3.8 Flash Medium
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1048576
+        maxTokens: 65536

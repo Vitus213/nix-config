@@ -2,6 +2,82 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-01
+
+### omp models.yml 迁入 nix-config（软链接）+ API key 加密至 my-secrets
+
+- 影响范围：artemis（aarch64-darwin）用户级 omp 模型 catalog；`~/.omp/agent/models.yml`
+  由用户直写文件改为 nix-config 管理的软链接；6 个 provider（openai/anthropic/sci-plus/
+  sci-pro-special/bailian/gemini）的 API key 不再明文落盘于仓库之外的点，改由 age 加密。
+- 配置入口：`home/base/core/omp.nix`（`home.activation.ompModels` 生成逻辑 +
+  `omp-sync-models` 命令）、`home/base/core/omp-models.yml.in`（模型模板，key 为
+  `@XXX_KEY@` 占位符）、`secrets/darwin.nix`（`age.secrets."omp-keys"`，解密至
+  `/run/agenix/omp-keys`）、my-secrets 仓库的 `omp-keys.age` 与 `secrets.nix`。
+- 变更内容：模板（无 key）进 Nix store；key 由 agenix 运行时注入，生成
+  `~/.omp/agent/.models.generated.yml`，`models.yml` 为指向它的软链接。B 模式：
+  仅当目标缺失或非软链时生成，重建不覆盖用户手改；手动 `omp-sync-models` 可从模板重置。
+- 验证方式：`ls -l ~/.omp/agent/models.yml` 为软链接；生成文件无 `@…@` 残留；
+  `omp --model anthropic/claude-opus-5 -p` 真实推理通过；`omp --version` 无
+  Permission denied；Nix store 无 key 明文。
+- 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
+
+### omp 部署 sudo 自动化（sudoers 白名单）
+
+- 影响范围：artemis（aarch64-darwin）；无 tty 场景（omp agent / 脚本）下
+  `darwin-rebuild switch`（`just local`）免人工输密码。
+- 配置入口：`/etc/sudoers.d/nix-darwin`（一条 NOPASSWD 规则，仅放行
+  `darwin-rebuild switch`，通配 store 哈希）。
+- 变更内容：sudoers 白名单只对 `darwin-rebuild switch` 开放免密，其余 sudo
+  照旧要求密码（最小权限，区别于全量 NOPASSWD/Keychain askpass 方案）。
+- 验证方式：`just local`（darwin-rebuild switch）无 tty 下全程无需输密码；
+  其他 sudo 命令仍提示密码。
+- 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md#一键部署的-sudo-自动化sudoers-白名单)。
+
+### omp 新增 gemini provider（scitrace 中转 Gemini 系列）
+
+- 影响范围：artemis（aarch64-darwin）用户级 omp 模型 catalog，不涉及 `modelRoles`。
+- 配置入口：`~/.omp/agent/models.yml`（新增 `gemini` provider，备份
+  `~/.omp/agent/models.yml.bak-20261001-gemini`）。
+- 变更内容：新增 `gemini` provider，`baseUrl = https://sub.scitrace.cc`（无 `/v1`、无尾斜杠）、
+  `api = openai-responses`、独立 API key。中转 `/v1/models` 列出 18 个 gemini
+  id，逐个实测后只写入 10 个可用模型（`gemini-3.1-pro-high/-low`、`gemini-3.7-flash-high/-medium/-low`、
+  `gemini-3.6-flash-high/-medium/-low/-tiered`、`gemini-3.1-flash-lite`），统一按 1M 输入 /
+  64K 输出、text+image 配置；其余 8 个（3.8-flash 全系、`gemini-3-flash`、`gemini-3.5-flash-lite`、2.5 系列）返回 503
+  `No available accounts ... (channel pricing restriction)`，不入库。
+- 验证方式：`GET /v1/models` = 200；`gemini-3.1-pro-high` 在 `/v1/responses` 与
+  `/v1/chat/completions` 均 200，流式 SSE 到 `response.completed`，工具调用分别返回 `function_call`
+  / `tool_calls`，图片输入正确识别颜色；`omp models gemini` 列出 10 个模型；
+  `omp --model gemini/gemini-3.1-pro-high --no-tools -p "只输出 OK"` 输出 `OK`；带工具会话跑
+  `echo gemini-tool-ok` 返回
+  `gemini-tool-ok`。窗口实测（10 个模型全测）：约 1.05M 输入对每个模型都返回 400 并点名
+  `1048576`，`pro-high` 另测 100K/300K/600K/900K 唯一输入均 200；输出上限约 `65532`，由
+  `pro-high`（407s）与
+  `3.6-flash-high`（776s）撞到且数值一致，其余 8 个模型提示词逼不到上限（自行收尾于几百~2 万 tokens），但
+  `max_output_tokens: 65536` 对 10/10 返回 200。 `max_output_tokens`
+  网关完全不校验（填 1M 回 200，填 200 时 10/10 实际输出 2285~15630 超限），且截断仍报
+  `status: completed`、`incomplete_details: null`。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
+## 2026-09-30
+
+### omp 解绑 nix-config：改用户级 bun 全局安装
+
+- 影响范围：artemis（aarch64-darwin）用户级 omp 安装/配置/PATH。
+- 配置入口：删除 `home/base/core/omp.nix` 与 `flake.nix`/`flake.lock` 的 `omp` input；
+  `home/base/core/shells/default.nix`、`home/base/core/shells/config.nu`（PATH 加
+  `~/.cache/.bun/bin`）；`~/.omp/agent/config.yml`（由 home-manager store
+  symlink 转回用户级可写普通文件，内容保留 memory/hindsight 与 modelRoles）。
+- 变更内容：`programs.omp` 声明式管理生成的 config.yml 位于 nix store 只读路径，omp 启动写
+  `config.yml.lock` 报 Permission denied（os error 13）；且 omp 更新绑定 `nix flake update omp` +
+  `just local`，构建慢。现改为官方推荐的 bun 全局安装
+  `@oh-my-pi/pi-coding-agent`（当前 18.4.4），更新走 `bun update -g`，与 nix-config 解耦。
+- 验证方式：`omp --smoke-test` = ok；config.yml 为普通文件且 .lock 可写；
+  `nix eval .#debugAttrs.allSystems.aarch64-darwin.evalTests` = `{ }`（注：顶层
+  `nix eval .#evalTests` 在 darwin 上因 x86_64-linux 主机 catppuccin-starship
+  install-hook 构建失败，为预存问题，与本次改动无关）。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)、
+  [应用版本审计](./application-version-audit.md)、[Hindsight 记忆后端](./hindsight.md)。
+
 ## 2026-09-28
 
 ### AeroSpace：Chrome 窗口自动归入 2Browser 工作区
