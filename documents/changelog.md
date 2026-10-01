@@ -4,6 +4,27 @@
 
 ## 2026-10-01
 
+### sci-plus 移除无效模型条目（gpt-5.3-codex-spark / gpt-5.4）
+
+- 影响范围：`~/.omp/agent/models.yml`（runtime）与
+  `home/base/core/omp-models.yml.in`（nix-config 模板）；sci-plus 池模型 12 → 10 个。
+- 变更内容：实测发现这两个模型 ID 不在 scitrace 网关 `/v1/models`
+  列表中，调用必然模型不存在；从 sci-plus 移除（sci-pro-special 池中同名的两个模型在网关列表中有效，保留）。
+- 验证方式：runtime 与模板的 sci-plus 区块逐行 diff 一致（仅 key 处为占位符/明文之分）；`omp models`
+  正常列出 10 个模型。
+- 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
+
+### omp /model 选择器隐藏未配置 provider
+
+- 影响范围：artemis 用户级 omp 配置 `~/.omp/agent/config.yml`（未入库）。
+- 变更内容：新增 `disabledProviders`
+  黑名单（35 个 omp 内置目录 provider，含 apple/azure/cerebras/groq/xai 等），模型选择器与
+  `omp models` 列表仅显示实际配置的 6 个 provider（openai/anthropic/sci-plus/sci-pro-special/
+  bailian/gemini）。`enabledProviders` 白名单实测不生效，故采用黑名单方案。
+- 验证方式：`omp models --json`
+  由 8 个 provider（含未配置的 moonshot、zhipu-coding-plan）降为 6 个配置 provider。
+- 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
+
 ### slow/smol 模型角色切换为 qwen3.8-flash
 
 - 影响范围：artemis 用户级 omp 配置（`~/.omp/agent/config.yml`，未入库）。
@@ -14,40 +35,40 @@
 ### scitrace 账户通道上下文窗口实测（重点 gpt-6-astra）
 
 - 影响范围：`sci-pro-special` provider 4 个模型的 `contextWindow` 按实测更新。
-- 变更内容：实测确认账户通道上限 = 官方 `max input tokens`（非总窗口）：
-  gpt-6-astra / gpt-5.6-sol / gpt-5.6-terra ≈ **920K**（920008 OK / 922K OOW，
-  多次复现，与官方 922,000 max input 精确吻合）；gpt-5.5 仅 ≈ **268K**。
-  超限以 SSE `response.failed` + `context_length_exceeded` 拒绝，无静默截断。
-  对应模型 `contextWindow` 已写入 920000 / 260000；其余模型因池 503 未测得。
+- 变更内容：实测确认账户通道上限 = 官方 `max input tokens`（非总窗口）：gpt-6-astra / gpt-5.6-sol /
+  gpt-5.6-terra ≈ **920K**（920008 OK / 922K OOW，多次复现，与官方 922,000 max
+  input 精确吻合）；gpt-5.5 仅 ≈ **268K**。超限以 SSE `response.failed` + `context_length_exceeded`
+  拒绝，无静默截断。对应模型 `contextWindow` 已写入 920000 / 260000；其余模型因池 503 未测得。
 - 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
 
 ### omp 新增 scitrace 中转 provider（openai/anthropic/sci-plus/sci-pro-special）
 
-- 影响范围：`~/.omp/agent/models.yml`（后随本次迁移并入 nix-config 模板）的
-  provider 目录；API key 已迁入 my-secrets 加密管理。
+- 影响范围：`~/.omp/agent/models.yml`（后随本次迁移并入 nix-config 模板）的 provider 目录；API
+  key 已迁入 my-secrets 加密管理。
 - 变更内容：新增 4 个 provider，统一 `baseUrl = https://sub.scitrace.cc`：
   `openai`（8 个 GPT，sk-c515…）、`anthropic`（15 个 claude，`api: anthropic-messages`
   原生协议，sk-1c07…）、`sci-plus`（12 个 GPT，sk-1d20…）、`sci-pro-special`
   （11 个 GPT，sk-b659…）。健康状态：anthropic / sci-pro-special 可用，openai /
   sci-plus 上游账户池 503（间歇性恢复）。
-- 验证方式：`/v1/models` 200；各池最小推理请求 OK；omp 端到端
-  `--model` 实测（claude-opus-5 / gpt-5.5 / gemini-3.1-pro-high 均通过）。
+- 验证方式：`/v1/models` 200；各池最小推理请求 OK；omp 端到端 `--model` 实测（claude-opus-5 /
+  gpt-5.5 / gemini-3.1-pro-high 均通过）。
 
 ### omp models.yml 迁入 nix-config（软链接）+ API key 加密至 my-secrets
 
 - 影响范围：artemis（aarch64-darwin）用户级 omp 模型 catalog；`~/.omp/agent/models.yml`
   由用户直写文件改为 nix-config 管理的软链接；6 个 provider（openai/anthropic/sci-plus/
   sci-pro-special/bailian/gemini）的 API key 不再明文落盘于仓库之外的点，改由 age 加密。
-- 配置入口：`home/base/core/omp.nix`（`home.activation.ompModels` 生成逻辑 +
-  `omp-sync-models` 命令）、`home/base/core/omp-models.yml.in`（模型模板，key 为
-  `@XXX_KEY@` 占位符）、`secrets/darwin.nix`（`age.secrets."omp-keys"`，解密至
+- 配置入口：`home/base/core/omp.nix`（`home.activation.ompModels` 生成逻辑 + `omp-sync-models`
+  命令）、`home/base/core/omp-models.yml.in`（模型模板，key 为 `@XXX_KEY@`
+  占位符）、`secrets/darwin.nix`（`age.secrets."omp-keys"`，解密至
   `/run/agenix/omp-keys`）、my-secrets 仓库的 `omp-keys.age` 与 `secrets.nix`。
 - 变更内容：模板（无 key）进 Nix store；key 由 agenix 运行时注入，生成
-  `~/.omp/agent/.models.generated.yml`，`models.yml` 为指向它的软链接。B 模式：
-  仅当目标缺失或非软链时生成，重建不覆盖用户手改；手动 `omp-sync-models` 可从模板重置。
+  `~/.omp/agent/.models.generated.yml`，`models.yml`
+  为指向它的软链接。B 模式：仅当目标缺失或非软链时生成，重建不覆盖用户手改；手动 `omp-sync-models`
+  可从模板重置。
 - 验证方式：`ls -l ~/.omp/agent/models.yml` 为软链接；生成文件无 `@…@` 残留；
-  `omp --model anthropic/claude-opus-5 -p` 真实推理通过；`omp --version` 无
-  Permission denied；Nix store 无 key 明文。
+  `omp --model anthropic/claude-opus-5 -p` 真实推理通过；`omp --version` 无 Permission denied；Nix
+  store 无 key 明文。
 - 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
 
 ### omp 部署 sudo 自动化（sudoers 白名单）
@@ -56,10 +77,9 @@
   `darwin-rebuild switch`（`just local`）免人工输密码。
 - 配置入口：`/etc/sudoers.d/nix-darwin`（一条 NOPASSWD 规则，仅放行
   `darwin-rebuild switch`，通配 store 哈希）。
-- 变更内容：sudoers 白名单只对 `darwin-rebuild switch` 开放免密，其余 sudo
-  照旧要求密码（最小权限，区别于全量 NOPASSWD/Keychain askpass 方案）。
-- 验证方式：`just local`（darwin-rebuild switch）无 tty 下全程无需输密码；
-  其他 sudo 命令仍提示密码。
+- 变更内容：sudoers 白名单只对 `darwin-rebuild switch`
+  开放免密，其余 sudo 照旧要求密码（最小权限，区别于全量 NOPASSWD/Keychain askpass 方案）。
+- 验证方式：`just local`（darwin-rebuild switch）无 tty 下全程无需输密码；其他 sudo 命令仍提示密码。
 - 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md#一键部署的-sudo-自动化sudoers-白名单)。
 
 ### omp 新增 gemini provider（scitrace 中转 Gemini 系列）
