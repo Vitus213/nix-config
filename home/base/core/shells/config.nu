@@ -168,6 +168,7 @@ const NU_PLUGIN_DIRS = [
 # The `path add` function from the Standard Library also provides
 # a convenience method for prepending to the path:
 use std/util "path add"
+path add "~/.cache/.bun/bin"
 path add "~/.local/bin"
 
 # You can remove duplicate directories from the path using:

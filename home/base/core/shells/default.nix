@@ -12,6 +12,7 @@ let
   };
 
   localBin = "${config.home.homeDirectory}/.local/bin";
+  bunBin = "${config.home.homeDirectory}/.cache/.bun/bin";
   goBin = "${config.home.homeDirectory}/go/bin";
   rustBin = "${config.home.homeDirectory}/.cargo/bin";
   npmBin = "${config.home.homeDirectory}/.npm/bin";
@@ -21,7 +22,7 @@ in
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:${localBin}:${goBin}:${rustBin}:${npmBin}"
+      export PATH="$PATH:${localBin}:${bunBin}:${goBin}:${rustBin}:${npmBin}"
     '';
   };
 

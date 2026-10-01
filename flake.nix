@@ -114,10 +114,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Oh My Pi (omp) coding agent, installed via its official Home Manager module
-    # instead of the previous user-level `bun install -g`.
-    omp.url = "github:can1357/oh-my-pi";
-
     # Zen Browser —— 垂直标签栏 Firefox 开源分支，社区 flake 打包（上游每日自动更新）。
     # 仅提供 x86_64-linux / aarch64-linux，用于 home/linux GUI 链。
     zen-browser = {
