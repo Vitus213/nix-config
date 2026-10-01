@@ -4,6 +4,19 @@
 
 ## 2026-10-01
 
+### darwin 开启 nix 自动 gc
+
+- 影响范围：artemis（aarch64-darwin）nix 存储； `modules/darwin/nix-core.nix`。
+- 变更内容：新增 `launchd.user.agents."nix-gc"` 定时任务（每周日 03:00 执行
+  `nix-collect-garbage --delete-older-than 7d`），策略与 NixOS 侧（`modules/nixos/base/nix.nix`）对齐。不用 nix-darwin 的
+  `nix.gc` 模块：artemis 由 Determinate Nix 接管 daemon（`nix.enable = false`）， `nix.gc.automatic`
+  断言要求 `nix.enable` 且 `nix.gc.dates` 已废弃； `auto-optimise-store`
+  保持关闭（NixOS/nix#7273）。
+- 验证方式：`darwin-rebuild build --flake .#artemis` 通过；手动执行
+  `nix-collect-garbage --delete-older-than 7d` 删除 4579 个死路径，释放 14.5 GB（`/nix/store` 49G →
+  34G）。
+- 关联文档：[nix 自动垃圾回收（gc）策略](./nix-gc.md)。
+
 ### sci-plus 移除无效模型条目（gpt-5.3-codex-spark / gpt-5.4）
 
 - 影响范围：`~/.omp/agent/models.yml`（runtime）与
