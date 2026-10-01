@@ -56,7 +56,7 @@
 
 - 主 `nixpkgs`: `nixos-unstable`，当前求值版本 `26.11.20260702.6517942`
 - `home-manager`: 跟随主 `nixpkgs`
-- `omp`: Oh My Pi 编码代理，官方 flake 源码构建，经 Home Manager `programs.omp` 安装
+- `omp`: Oh My Pi 编码代理，用户级 bun 全局安装（官方 flake 构建不再使用，更新与系统解耦）
 - `preservation`: 管理 `/persistent` 持久化映射
 - `agenix`: 管理 secrets 解密和 `/etc/agenix/*`
 - `mysecrets`: private flake input，不在本仓库保存明文

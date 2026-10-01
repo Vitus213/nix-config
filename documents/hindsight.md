@@ -77,9 +77,8 @@ docker tag ghcr.nju.edu.cn/vectorize-io/hindsight:latest ghcr.io/vectorize-io/hi
 
 ## omp 集成（per-project-tagged）
 
-启用配置在 `home/base/core/omp.nix` 的 `programs.omp.settings`（声明式，每次 home-manager
-switch 覆盖 `~/.omp/agent/config.yml`；omp 运行时的 `/settings`
-改动会在下次 switch 时恢复为声明值）：
+启用配置在用户级 `~/.omp/agent/config.yml`（手工维护，不再由 home-manager 声明；每次切换
+`programs.omp` 时代生成的 store 只读副本已废弃，config.yml 是可写普通文件）：
 
 ```yaml
 memory:
@@ -143,7 +142,7 @@ omp 每会话首轮自动召回（`hindsight.autoRecall`），每 3 轮用户消
    `docker volume rm hindsight-data`）。
 2. 自启：注释/删除 `modules/darwin/hindsight.nix` 后重新 `just local`，launchd agent
    `hindsight-colima` / `hindsight-compose` 即被卸载。
-3. omp 配置回滚：删除 `home/base/core/omp.nix` 中的 `memory`/`hindsight` 段（或 `memory.backend`
-   改回 `off`），重新 switch 即恢复无记忆状态。
+3. omp 配置回滚：编辑用户级 `~/.omp/agent/config.yml`，删除 `memory`/`hindsight` 段（或
+   `memory.backend` 改回 `off`）即恢复无记忆状态。
 4. 移除 docker 工具链：删除 `modules/darwin/apps.nix` 中 `docker`/`colima`/`docker-compose`
    三个 systemPackages 条目并重新 switch。
