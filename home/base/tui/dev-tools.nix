@@ -18,7 +18,9 @@
   home.packages = with pkgs; [
     just
     colmena # nixos's remote deployment tool
-    herdr # persistent terminal runtime for coding agents
+    # herdr 二进制改用官方安装（curl -fsSL https://herdr.dev/install.sh | sh，
+    # 装至 ~/.local/bin），更新走 `herdr update` 自管理，不在 nix 里固化。
+    # 配置仍由下方 xdg.configFile 管理。
 
     tokei # count lines of code, alternative to cloc
 
