@@ -4,6 +4,20 @@
 
 ## 2026-10-07
 
+### darwin-rebuild 裸 switch 可用（/etc/nix-darwin 指向仓库 flake）
+
+- 影响范围：artemis 本机部署工作流（`/etc/nix-darwin/flake.nix`）。
+- 变更内容：`/etc/nix-darwin/flake.nix` 是 2025-11 的 nix-darwin 示例 flake 残留，裸
+  `darwin-rebuild switch`（NOPASSWD 白名单只放行无参数形式）会构建它并报
+  `undefined variable 'system'`。已将原文件改名为 `flake.nix.orig-2025-11`，新建符号链接指向
+  `/Users/vitus/nix-config/flake.nix`；darwin-rebuild 通过 `readlink -f`
+  解析到真实 flake，`scutil LocalHostName=artemis` 匹配 `darwinConfigurations.artemis`。此后无参数
+  `darwin-rebuild switch` 即可构建当前仓库配置，无需手动输密码，也无需 `--flake .#artemis`。
+- 验证方式：`sudo darwin-rebuild switch` 成功构建并切换 artemis（222s）；新终端
+  `env -i nu -c "source /run/agenix/alias-for-work.nushell"`
+  验证 openai 指向 scitrace、kimi 变量零注入。
+- 关联文档：[omp 模型配置（models.yml）管理](./omp-models.md)。
+
 ### 移除 kimi 固定 API，openai/anthropic 统一走 scitrace（models.yml 同源）
 
 - 影响范围：`my-secrets/alias-for-work.nushell.age`（nushell 启动注入的环境变量）、
