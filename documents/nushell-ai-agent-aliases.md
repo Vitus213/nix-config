@@ -130,6 +130,22 @@ oy run "帮我检查这个仓库"
 
 这两个命令都适合只在可信工作区使用。
 
+## AI 通道环境变量（alias-for-work.nushell）
+
+本机 nushell 启动时会 `source /run/agenix/alias-for-work.nushell` （密文来自
+`my-secrets/alias-for-work.nushell.age`，经 agenix 解密），向 shell 注入默认的 AI 通道环境变量：
+
+- `OPENAI_API_KEY` / `OPENAI_BASE_URL`：scitrace 中转（`https://sub.scitrace.cc`），key 与
+  `~/.omp/agent/models.yml` 的 openai provider 一致。
+- `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_API_KEY` /
+  `ANTHROPIC_BASE_URL`：scitrace 中转的 anthropic 通道，key 与 models.yml 的 anthropic
+  provider 一致（claude code / opencode 默认走这里）。
+- 其他通道（anyrouter / agentrouter / glm / claude samuka）仅以独立变量 + 手动 `use-any` /
+  `use-agent` / `use-glm` / `use-claude` 函数切换的形式存在，不参与默认注入。
+
+修改这份密文需在 `my-secrets` 仓库解密、编辑并重新加密，再在目标机 `darwin-rebuild switch`
+重新解密生效。
+
 ## 验证
 
 ```bash

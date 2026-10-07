@@ -2,6 +2,27 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-07
+
+### 移除 kimi 固定 API，openai/anthropic 统一走 scitrace（models.yml 同源）
+
+- 影响范围：`my-secrets/alias-for-work.nushell.age`（nushell 启动注入的环境变量）、
+  `home/base/tui/shell/default.nix`（移除 kimi 注释示例）、本机 `~/.claude/settings.json`。
+- 变更内容：
+  - `alias-for-work.nushell` 删除全部 kimi 环境变量（`KIMI_API_KEY` / `KIMI_BASE_URL` /
+    `KIMI_ANTHROPIC_*`）与 `use-kimi` 切换函数；`OPENAI_API_KEY` / `ANTHROPIC_AUTH_TOKEN` /
+    `ANTHROPIC_BASE_URL` 默认固定为 scitrace 中转（`https://sub.scitrace.cc`），key 与
+    `~/.omp/agent/models.yml` 中 openai / anthropic provider 完全一致；
+  - `~/.claude/settings.json` 的 `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_BASE_URL` 从 `timicc.com`
+    改为 scitrace（key 同 models.yml anthropic）。
+- 密文已用 `my-secrets/secrets.nix` 的 8 个 recipients 重新加密，`master_key` 解密往返验证一致。
+- 验证方式：`nu -c "source /tmp/alias-for-work.new.nu"` 语法通过且无 kimi 残留；旧
+  `alias-for-work.nushell.age` 备份于 `/tmp/alias-for-work.nushell.age.bak`；
+  `~/.claude/settings.json` JSON 校验通过。生效需 `darwin-rebuild switch`（重新解密
+  `/run/agenix/alias-for-work.nushell`）后新开终端。
+- 关联文档：[nushell AI agent 快捷命令](./nushell-ai-agent-aliases.md)、
+  [omp 模型配置管理](./omp-models.md)。
+
 ## 2026-10-01
 
 ### darwin 开启 nix 自动 gc
