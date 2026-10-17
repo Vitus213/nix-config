@@ -346,15 +346,9 @@ run = ['layout floating', 'move-node-to-workspace 0Other']
 if.app-id = 'com.ccswitch.desktop'
 run = 'move-node-to-workspace 0Other'
 
-# FlClash (mihomo GUI) - has problem with floating
-[[on-window-detected]]
-if.app-id = 'com.follow.clash'
-run = ['move-node-to-workspace 0Other']
-
 [[on-window-detected]]
 if.app-id = 'us.zoom.xos'
 run = 'move-node-to-workspace 0Other'
-
 
 # Auth UI - do not move it
 [[on-window-detected]]

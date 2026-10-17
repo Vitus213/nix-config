@@ -47,16 +47,10 @@ let
     # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
   };
 
-  # 走本地 FlClash（mihomo）mixed-port 7890，与 home/darwin/proxy/proxychains.conf 一致。
-  local_proxy_env = {
-    HTTP_PROXY = "http://127.0.0.1:7890";
-    HTTPS_PROXY = "http://127.0.0.1:7890";
-  };
-
   homebrew_env_script = lib.attrsets.foldlAttrs (
     acc: name: value:
     acc + "\nexport ${name}=${value}"
-  ) "" (homebrew_mirror_env // local_proxy_env);
+  ) "" homebrew_mirror_env;
 in
 {
   # Install packages from nix's official package repository.

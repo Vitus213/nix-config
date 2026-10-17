@@ -21,21 +21,21 @@ backend 的接入与使用。
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- 容器编排：`modules/darwin/hindsight/docker-compose.yml`
+- 容器编排：`modules/darwin/hindsight-compose.yml`（`hindsight.nix` 经 `builtins.readFile`
+  转 store 路径供 launchd 引用）
 - 运行时与 CLI：`docker` / `colima` / `docker-compose` 通过 nix 安装（`modules/darwin/apps.nix` 的
   `environment.systemPackages`），不经过 brew。
 - 数据持久化：docker 卷 `hindsight-data` 挂载到容器内 `/home/hindsight/.pg0`。
 
 ## LLM 与 Embedding 配置
 
-| 项                             | 值                                                     | 说明                                                                                                                        |
-| ------------------------------ | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `HINDSIGHT_API_LLM_PROVIDER`   | `openai`                                               | OpenAI 兼容协议                                                                                                             |
-| `HINDSIGHT_API_LLM_BASE_URL`   | `https://dashscope.aliyuncs.com/compatible-mode/v1`    | 阿里云百炼兼容端点                                                                                                          |
-| `HINDSIGHT_API_LLM_MODEL`      | `qwen3.8-flash`                                        | 与 omp `~/.omp/agent/models.yml` 的 bailian provider 中 `qwen3.8-flash` 同款                                                |
-| `HINDSIGHT_API_LLM_API_KEY`    | `~/.config/hindsight/hindsight.env`                    | 0600 文件，手工维护，不入库                                                                                                 |
-| `HINDSIGHT_API_LLM_EXTRA_BODY` | `{"chat_template_kwargs": {"enable_thinking": false}}` | qwen3.8-flash 思考模式禁止强制 `tool_choice`，hindsight 的 reflect/retain 走强制工具调用会 400 并重试 4 次，故关闭 thinking |
-| Embeddings                     | 默认 `local`                                           | 镜像内建 ONNX 本地模型（BAAI/bge-small-en-v1.5），无外部 embedding API 依赖                                                 |
+| 项                           | 值                                  | 说明                                                                                                          |
+| ---------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `HINDSIGHT_API_LLM_PROVIDER` | `openai`                            | OpenAI 兼容协议                                                                                               |
+| `HINDSIGHT_API_LLM_BASE_URL` | `https://sub.scitrace.cc/v1`        | scitrace relay OpenAI 兼容中转（2026-10-17 起；bailian/DashScope 两把 key 均已吊销）                          |
+| `HINDSIGHT_API_LLM_MODEL`    | `gemini-3.1-flash-lite`             | 与 omp `~/.omp/agent/models.yml` 的 gemini provider 同款；切换当日 relay 上 gpt 系 502/503，gemini 系实测 200 |
+| `HINDSIGHT_API_LLM_API_KEY`  | `~/.config/hindsight/hindsight.env` | 0600 文件，手工维护，不入库；当前存 relay key（与 omp gemini provider 同源）                                  |
+| Embeddings                   | 默认 `local`                        | 镜像内建 ONNX 本地模型（BAAI/bge-small-en-v1.5），无外部 embedding API 依赖                                   |
 
 API key 文件格式（`~/.config/hindsight/hindsight.env`）：
 
@@ -59,8 +59,8 @@ agenix（需要可用的 GitHub token 写私有 secrets 仓库）。
 插件命令）：
 
 ```bash
-cd modules/darwin/hindsight && docker-compose up -d      # 启动
-cd modules/darwin/hindsight && docker-compose down       # 停止（数据卷保留）
+cd modules/darwin && docker-compose -p hindsight -f hindsight-compose.yml up -d  # 启动
+cd modules/darwin && docker-compose -p hindsight -f hindsight-compose.yml down   # 停止（数据卷保留）
 ```
 
 容器配置了 `restart: unless-stopped`。状态查看： `docker ps` / `docker-compose logs -f hindsight`。
@@ -117,24 +117,24 @@ UI（:9999）或 API。
 ```bash
 curl -s http://localhost:8888/api/health   # 服务端就绪
 curl -s http://localhost:8888/banks?limit=5 # 查看已建 bank（应出现项目 tag 相关 bank）
-docker compose logs -f hindsight           # 容器日志（LLM 调用失败会在此可见）
+docker logs -f hindsight                        # 容器日志（LLM 调用失败会在此可见）
 ```
 
 omp 每会话首轮自动召回（`hindsight.autoRecall`），每 3 轮用户消息自动保留（`hindsight.retainEveryNTurns`）。
 
 ## 故障排查
 
-- 容器起不来 / API 无响应：`docker compose logs`
-  看启动错误；首次启动会做 embedding 维度探测与 LLM 连通性校验，DashScope 不通会卡在 initialize。
-- LLM 4xx（如 400 model 不存在）：确认 `HINDSIGHT_API_LLM_MODEL=qwen3.8-flash` 与
-  `~/.omp/agent/models.yml` 中 bailian provider 的模型 id 一致。
-- `tool_choice ... does not support ... in thinking mode`（400，reflect/retain 重试）：模型思考模式与强制工具调用冲突，确认
-  `HINDSIGHT_API_LLM_EXTRA_BODY` 含 `{"chat_template_kwargs": {"enable_thinking": false}}`
-  后重建容器。
-- dashscope 拒绝 `response_format` 时，可启用
+- 容器起不来 / API 无响应：`docker logs hindsight`
+  看启动错误；首次启动会做 embedding 维度探测与 LLM 连通性校验，relay 不通会记 4xx/5xx 但服务仍启动（LLM 相关操作降级）。
+- 容器反复重启（Restarting (3)）：多为容器内代理不可达导致启动期外联失败。检查
+  `docker inspect hindsight --format '{{json .Config.Env}}'` 是否被 `~/.docker/config.json` 的
+  `proxies` 段注入了死代理（2026-10-17 已移除该段，容器直连即可）。
+- LLM 4xx（如 400 model 不存在）：确认 `HINDSIGHT_API_LLM_MODEL` 是 relay 当前可用模型（以 omp
+  `~/.omp/agent/models.yml` 各 provider 列表为准），改后 `--force-recreate` 重建。
+- 中转模型拒绝 `response_format` 时，可启用
   `HINDSIGHT_API_LLM_STRUCTURED_OUTPUT_FORCED_TOOL=true`（强制工具调用式结构化输出）。
-- colima 拉镜像慢：`HTTPS_PROXY=http://127.0.0.1:7890 docker compose up -d` （colima
-  VM 内拉取 ghcr.io 走本地代理）。
+- 拉镜像慢/失败：当前经软路由透明代理直连即可；历史上 `HTTPS_PROXY=http://127.0.0.1:7890`
+  走本地 FlClash 的方案已随 FlClash 下线废弃，勿再启用。
 
 ## 回滚
 

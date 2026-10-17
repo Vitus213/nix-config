@@ -9,7 +9,6 @@
 - `terminal.nix`: 终端相关配置
 - `rime-squirrel.nix`: Rime Squirrel 输入法配置
 - `aerospace/`: AeroSpace 平铺窗口管理器配置
-- `proxy/`: 代理和 proxychains 配置
 
 ## 相关文档
 

@@ -4,6 +4,36 @@
 
 ## 2026-10-17
 
+### 网络切换软路由透明代理，清理本地 7890 残留并恢复 hindsight 记忆后端
+
+- 影响范围：全机出网路径（不再依赖本地代理进程）；brew 激活环境；docker 容器环境注入；omp 记忆后端（hindsight）可用性；proxychains 使用者。
+- 配置入口：`modules/darwin/apps.nix`（移除注入 brew 环境的
+  `local_proxy_env`，只保留 nju 镜像）、`modules/darwin/hindsight-compose.yml`（LLM 由失效 DashScope
+  `qwen3.8-flash` 切至relay `gemini-3.1-flash-lite`，删除 qwen 专属
+  `HINDSIGHT_API_LLM_EXTRA_BODY`）、删除 `home/darwin/proxy/` 与
+  `scripts/darwin_set_proxy.py`（指向已下线的 `192.168.5.101`）；仓库外：`~/.docker/config.json`
+  移除 `proxies` 段、`~/.config/hindsight/hindsight.env` 换存relay
+  key、`~/work/shopping-console/.env.local` 删 `HTTP(S)_PROXY`；`Justfile` 删除引用已删脚本的
+  `darwin-set-proxy` 目标。
+- 变更内容：FlClash 停用后四处配置仍指向 `127.0.0.1:7890`，其中 `~/.docker/config.json` 的
+  `proxies.default` 给 hindsight 容器注入死代理（`host.docker.internal:7890`）导致 crash
+  loop、omp 报 "Unable to connect"；重建容器后恢复，其 DashScope
+  key 已被吊销（401），随 bailian 全线退役切至 relay（当日 relay
+  gpt 系 502/503，gemini 实测 200）。出网由软路由透明代理承担（IPv6 软路由侧已关闭），此后网络设置变更必须先与用户同步。
+- 验证方式：hindsight `/health` 200、日志
+  `Connection verified: openai/gemini-3.1-flash-lite`、omp 会话内 recall 实测返回记忆；`nix eval .#debugAttrs.allSystems.aarch64-darwin.evalTests`
+  = `{ }`（`just test` 全系统通道在 HEAD 干净副本同样失败于 hermes
+  x86_64-linux 存量问题，与本次改动无关）。
+- 后续清理（同日）：`/Applications/FlClash.app` 与 `~/Library/Application Support/com.follow.clash`
+  （37M，含订阅）移入 `~/.Trash/flclash-cleanup-20261017/`（可恢复）；`aerospace.toml` 删除
+  `com.follow.clash` 窗口规则并同步
+  `aerospace-usage.md`；`nix-collect-garbage --delete-older-than 7d`
+  清理 16920 个旧 store 路径（复检 0 残留）；`brew cleanup` 清空 44M 缓存；docker 无悬空镜像。
+- 部署状态：`darwin-rebuild switch` 已执行（generation
+  `26.11.4cff07d`），brew 激活环境确认无 proxy 导出，`~/.proxychains`
+  已被 home-manager 清理；`~/.aerospace.toml` 为符号链接，AeroSpace 自动重载新规则。
+- 关联文档：[网络与代理策略](./network-proxy.md)、[Hindsight 记忆后端](./hindsight.md)。
+
 ### 移除已吊销的 bailian provider，Codex 切回 scitrace relay
 
 - 影响范围：omp 可用 provider 列表（少 bailian）；Codex CLI 后端与鉴权。
