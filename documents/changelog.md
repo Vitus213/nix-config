@@ -4,6 +4,23 @@
 
 ## 2026-10-17
 
+### omp models.yml 新增 glm provider（GLM Coding Plan key 入 my-secrets）
+
+- 影响范围：omp 可选模型（新增 `glm/glm-5.3`、`glm/glm-5.3-flash`、`glm/glm-5.2`）；my-secrets
+  `omp-keys.age`（第 6 个 key）。
+- 配置入口：`my-secrets/omp-keys.age`（追加 `glm:` 行，`30d3295`）、
+  `home/base/core/omp-models.yml.in`（glm provider 块，baseUrl
+  `https://open.bigmodel.cn/api/coding/paas/v4`，`api: openai-completions`）、
+  `home/base/core/omp-sync.py`（占位符校验加 `@GLM_KEY@`）、`flake.lock`（mysecrets 锁定）。
+- 变更内容：GLM Coding
+  Plan 的 key 由用户直接提供并入密钥库；模板/同步脚本/文档同步。此后新增模型统一走
+  [omp 模型配置管理](./omp-models.md) 的标准流程。
+- 验证方式：`omp models find glm` 列出 3 个模型；curl 实测 bigmodel 端点 `glm-5.3` 返回正常；生成的
+  `.models.generated.yml` glm 块 key 注入完整、零残留占位符。
+- 注意：`agenix -e`
+  在非交互 stdin 下会把明文写空（本次踩坑，已从 git 恢复），必须在真实 TTY/PTY 中执行；已写入 omp-models.md 标准流程。
+- 关联文档：[omp 模型配置管理](./omp-models.md)。
+
 ### 网络切换软路由透明代理，清理本地 7890 残留并恢复 hindsight 记忆后端
 
 - 影响范围：全机出网路径（不再依赖本地代理进程）；brew 激活环境；docker 容器环境注入；omp 记忆后端（hindsight）可用性；proxychains 使用者。
