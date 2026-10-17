@@ -4,18 +4,18 @@
 
 ## 当前配置
 
-Herdr 通过 `home/base/tui/dev-tools.nix` 加入 Home Manager 的 `home.packages`。
+Herdr 二进制改为官方安装（`curl -fsSL https://herdr.dev/install.sh | sh`，装至
+`~/.local/bin`，更新走 `herdr update` 自管理），仓库只通过 `home/base/tui/dev-tools.nix` 管理
+`~/.config/herdr/config.toml`。
 
-当前 `apollo` 配置求值结果：
+当前运行版本与 `apollo` 配置求值结果：
 
 | 组件    | 版本      | 来源                                       |
 | ------- | --------- | ------------------------------------------ |
-| Herdr   | `0.7.1`   | 主 `nixpkgs` 的 `pkgs.herdr`               |
-| Nushell | `0.113.1` | Home Manager 的 `programs.nushell.package` |
+| Herdr   | `0.9.3`   | `~/.local/bin` 官方安装（自管理）          |
+| Nushell | `0.116.1` | Home Manager 的 `programs.nushell.package` |
 
-Herdr 属于普通 CLI/TUI 工具，默认跟随主 `nixpkgs`
-输入更新，不单独引入上游 flake 或第二套 Nixpkgs。部署 Home
-Manager 配置后，Linux 与 macOS 的共享 TUI 配置都会提供 `herdr` 命令。
+Linux 与 macOS 的共享 TUI 配置都会生成同一份 Herdr 配置文件。
 
 同一模块还通过 Home Manager 管理
 `~/.config/herdr/config.toml`，让 Herdr 新建的交互式 Pane 与其他终端一致使用登录 Nushell：
@@ -24,7 +24,7 @@ Manager 配置后，Linux 与 macOS 的共享 TUI 配置都会提供 `herdr` 命
 onboarding = false
 
 [terminal]
-default_shell = "<Home Manager 管理的 Nushell>/bin/nu"
+default_shell = "/etc/profiles/per-user/vitus/bin/nu"
 shell_mode = "login"
 
 [ui.toast]
@@ -32,7 +32,11 @@ delivery = "herdr"
 delay_seconds = 1
 ```
 
-Herdr 的 `default_shell` 只接受可执行文件名或路径，不接受带参数的命令行。`shell_mode = "login"`
+Herdr 的 `default_shell` 只接受可执行文件名或路径，不接受带参数的命令行。这里刻意使用
+`${config.home.profileDirectory}/bin/nu`（两台主机均解析为
+`/etc/profiles/per-user/vitus/bin/nu`）这类跨 rebuild 稳定的 profile 路径，而不是 Nushell 的 store 绝对路径：长驻的 herdr
+server 只在启动或 `reload-config`
+时读取配置，store 路径会在 Nushell 升级后指向已被替换的旧二进制。`shell_mode = "login"`
 负责以登录 Shell 方式启动 Nushell；已有 Pane 会保留当前进程，直到手动替换 Shell 或重建 Pane。
 
 ## 启动与持久会话
@@ -110,6 +114,35 @@ herdr
 
 停止 server 会结束其中的 Pane 进程。
 
+## 排查记录：Pane 启动 Nushell 报 str lowercase 解析错误（2026-10-17）
+
+现象：artemis 上 Herdr 新建 Pane 时 Nushell 打印启动报错，之后仍进入提示符：
+
+```text
+Error: nu::parser::extra_positional
+× Extra positional argument.
+  ╭─[/nix/store/…-nushell-fzf-integration.nu:313:45]
+  | where {|it| ($it | str lowercase | str starts-with 'host') … }
+  help: Usage: str
+```
+
+根因：Home Manager（master）生成的 fzf 集成脚本使用了 Nushell `0.114.0` 才引入的 `str lowercase`
+无参数管道写法（脚本内自带 NOTE 说明），而报错 Pane 的 Nushell 是 `0.113.1`——herdr
+server 自 10-06 起长驻运行，内存中仍持有旧配置的
+`default_shell = /nix/store/…-nushell-0.113.1/bin/nu`（store 绝对路径）。10-07 的 switch 把系统 Nushell 升到
+`0.115.1` 并部署了新 fzf 集成脚本，旧二进制解析新 `config.nu`
+即报此错。普通终端（Ghostty 等经 PATH 启动 nu）不受影响。
+
+修复：
+
+1. `herdr server reload-config`：server 重读配置（已指向 nushell-0.115.1），只影响新建 Pane；
+2. `terminal.default_shell` 改为 `/etc/profiles/per-user/vitus/bin/nu`
+   稳定 profile 路径，即使 server 未来忘记 reload，该路径也在每次 spawn 时解析到当前 generation 的 nu。
+
+验证：`nu --config ~/.config/nushell/config.nu -c 'print ok'`（0.115.1）解析通过；用 0.113.1 二进制加载同一配置可复现原报错。apollo 侧的同源风险已随主
+`nixpkgs` 更新（Nushell `0.116.1`）解除，见
+[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md) 的版本约束说明。
+
 ## 通知与 Agent 集成（OMP）
 
 Herdr 可以在后台 Workspace 的 Agent 完成或需要输入时弹出通知。当前配置为：
@@ -179,8 +212,8 @@ printf "┌─┬─┐ │ 中文  │ └─┴─┘\n"
 
 ## 更新与回滚
 
-更新 Herdr 时正常更新主 `nixpkgs` 输入和锁文件，不使用
-`herdr update`。Nix 安装由 Nix 管理，Herdr 自带更新器不负责该安装来源。
+Herdr 二进制为官方安装、自管理更新：本机直接运行 `herdr update`，与仓库 `nixpkgs`
+输入无关；仓库只负责 `~/.config/herdr/config.toml` 的声明式生成。
 
 只回滚本次 Shell 修复时，从 `home/base/tui/dev-tools.nix` 移除 `xdg.configFile."herdr/config.toml"`
 配置并重新构建 Home Manager；之后新 Pane 会重新回退到 `$SHELL`。完整移除 Herdr 时，还要从同一文件的
@@ -193,7 +226,7 @@ herdr server stop
 
 ## 参考
 
-- [Herdr `0.7.1` 配置文档](https://herdr.dev/docs/0.7.1/configuration/)
+- [Herdr `0.9.3` 配置文档](https://herdr.dev/docs/0.9.3/configuration/)
 - [Herdr 安装文档](https://herdr.dev/docs/install/)
 - [Herdr 工作方式与手机 SSH 接入](https://herdr.dev/docs/how-to-work/)
 - [Herdr 持久化与远程连接](https://herdr.dev/docs/persistence-remote/)

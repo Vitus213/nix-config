@@ -8,12 +8,18 @@
 
 | 组件    | 版本      | 来源                           |
 | ------- | --------- | ------------------------------ |
-| Nushell | `0.113.1` | 主 `nixpkgs` 的 `pkgs.nushell` |
-| Zellij  | `0.44.3`  | 主 `nixpkgs` 的 `pkgs.zellij`  |
-| fzf     | `0.73.1`  | 主 `nixpkgs` 的 `pkgs.fzf`     |
-| Atuin   | `18.16.1` | 主 `nixpkgs` 的 `pkgs.atuin`   |
+| Nushell | `0.116.1` | 主 `nixpkgs` 的 `pkgs.nushell` |
+| Zellij  | `0.45.1`  | 主 `nixpkgs` 的 `pkgs.zellij`  |
+| fzf     | `0.74.5`  | 主 `nixpkgs` 的 `pkgs.fzf`     |
+| Atuin   | `18.23.0` | 主 `nixpkgs` 的 `pkgs.atuin`   |
 
-这些组件默认跟随主 `nixpkgs` 输入更新，不在仓库内单独固定版本。
+这些组件默认跟随主 `nixpkgs` 输入更新，不在仓库内单独固定版本。artemis 走 `nixpkgs-darwin`
+输入（nixpkgs-unstable），当前为 Nushell `0.115.1`，与 apollo 的更新节奏不同。
+
+注意：Home Manager（master）生成的 fzf 集成脚本使用 Nushell `0.114.0` 引入的 `str lowercase`
+语法，要求 Nushell ≥0.114。主 `nixpkgs` 已于 2026-10-17 更新（6517942 2026-07-02 → 55bfb4d
+2026-10-14），apollo 的 Nushell 升至
+`0.116.1`，此前"升级 nixpkgs 前不要在 apollo 执行 rebuild"的限制已解除。
 
 ## 配置入口
 
@@ -120,3 +126,17 @@ Manager 激活，文件链接等后续步骤全部跳过——系统闭包里的
 的修改时间。若停留在上一次成功激活的日期，说明 Home Manager 文件阶段未执行（可对比
 `~/.local/state/home-manager/gcroots/current-home` 指向的 generation 与 `/run/current-system`
 闭包内的 `home-manager-generation` 是否一致）。
+
+## 排查记录：herdr 旧 default_shell 用 0.113.1 解析新 fzf 集成（2026-10-17）
+
+现象：artemis 的 Herdr 新建 Pane 时 Nushell 报
+`nu::parser::extra_positional`（`str lowercase`，位于 HM 生成的 `nushell-fzf-integration.nu:313`）。
+
+根因：herdr server 长驻且只在启动/`reload-config` 时读配置，其内存中的 `default_shell`
+是旧 generation 的 nushell-0.113.1 store 绝对路径；10-07
+switch 后系统 Nushell 为 0.115.1、fzf 集成脚本需要 ≥0.114，旧二进制解析新 `config.nu`
+报错。普通终端经 PATH 启动 nu，不受影响。
+
+修复：`herdr server reload-config`（立即生效）＋ `terminal.default_shell` 改为
+`/etc/profiles/per-user/vitus/bin/nu` 稳定 profile 路径。详见 [Herdr Agent 终端运行时](./herdr.md)
+的排查记录。

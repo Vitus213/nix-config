@@ -2,6 +2,50 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-17
+
+### 修复 herdr Pane 启动 Nushell 报 str lowercase 解析错误（default_shell 改稳定路径）
+
+- 影响范围：所有主机（artemis / apollo）Herdr 交互式 Pane 的 shell 来源；artemis 上已触发的
+  `nu::parser::extra_positional` 启动报错。
+- 配置入口：`home/base/tui/dev-tools.nix`（herdr `terminal.default_shell`）。
+- 变更内容：HM（master）生成的 fzf 集成脚本使用 Nushell `0.114.0` 才引入的 `str lowercase`
+  语法；10-06 启动的 herdr server 内存中仍持有旧配置的 nushell-0.113.1
+  store 绝对路径，新 Pane 用旧二进制解析 10-07 switch 后的新 `config.nu` 而报错。已对本机执行
+  `herdr server reload-config`（返回 applied，立即修复新 Pane）； `default_shell` 由
+  `${config.programs.nushell.package}/bin/nu` 改为
+  `${config.home.profileDirectory}/bin/nu`（两台主机均求值为
+  `/etc/profiles/per-user/vitus/bin/nu`），跨 rebuild 始终指向当前 generation 的 nu。另查明：apollo（主
+  `nixpkgs`，nushell
+  0.113.1）在升级该输入前执行 rebuild 会让全部新 shell 复现同样报错，最新 nixos-unstable 的 nushell 已为 0.116.1，需先
+  `nix flake update nixpkgs` 再 rebuild。
+- 验证方式：0.115.1 的 `nu --config ~/.config/nushell/config.nu -c 'print ok'`
+  解析通过；用 0.113.1 二进制加载同一配置复现原报错；两主机
+  `xdg.configFile."herdr/config.toml".text` 求值均为稳定 profile 路径；`nixfmt` 通过；
+  `nix eval .#debugAttrs.allSystems.aarch64-darwin.evalTests` = `{ }`（顶层 `.#evalTests`
+  撞 x86_64-linux catppuccin-starship 预存问题，与本次无关）。仓库改动生效需
+  `darwin-rebuild switch`，未自动执行。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)、
+  [Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)。
+
+### 主 nixpkgs 输入更新至 2026-10-14（apollo nushell 0.116.1，解除 rebuild 限制）
+
+- 影响范围：走主 `nixpkgs` 的全部 NixOS 主机（apollo / hestia 等）包集；artemis 走 `nixpkgs-darwin`
+  输入，不受影响。
+- 配置入口：`flake.lock`（单输入 `nix flake update nixpkgs`：6517942 2026-07-02 → 55bfb4d
+  2026-10-14）。
+- 变更内容：HM（master）的 fzf 集成脚本要求 Nushell ≥0.114（`str lowercase`），apollo 原 nushell
+  0.113.1 直接 rebuild 会让全部新 shell 报
+  `extra positional argument`（见上一条记录）。更新后 apollo 求值：Nushell `0.116.1`、Zellij
+  `0.45.1`、fzf `0.74.5`、Atuin `18.23.0`，rebuild 限制解除；herdr `default_shell`
+  仍为稳定 profile 路径。
+- 验证方式：`flake.lock` diff 仅 nixpkgs 一个节点（±1 行 rev），无其他输入漂移；
+  `nix eval .#debugAttrs.allSystems.aarch64-darwin.evalTests` =
+  `{ }`（x86_64-linux 域在本机被 catppuccin-install-hook 交叉构建预存问题挡住，与 2026-09-30 记录同类，非本次回归）；同源 fzf 集成脚本已在 artemis
+  Nushell 0.115.1 上实测解析通过。未在 apollo 上执行 rebuild（需到主机操作或远程部署）。
+- 关联文档：[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)、
+  [Herdr Agent 终端运行时](./herdr.md)。
+
 ## 2026-10-07
 
 ### darwin-rebuild 裸 switch 可用（/etc/nix-darwin 指向仓库 flake）

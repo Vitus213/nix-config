@@ -34,7 +34,9 @@
     onboarding = false
 
     [terminal]
-    default_shell = "${config.programs.nushell.package}/bin/nu"
+    # 用稳定 profile 路径而非 nushell 的 store 绝对路径：长驻的 herdr server
+    # 只在启动/重载时读配置，store 路径会在 nushell 升级后指向旧二进制。
+    default_shell = "${config.home.profileDirectory}/bin/nu"
     shell_mode = "login"
 
     # 后台 agent 完成/需要输入时的通知；herdr = 应用内 toast。
