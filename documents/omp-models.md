@@ -9,7 +9,7 @@
 | 位置                                          | 内容                                                                 | 是否含明文 key |
 | --------------------------------------------- | -------------------------------------------------------------------- | -------------- |
 | `nix-config/home/base/core/omp-models.yml.in` | 全部 provider / 模型定义，key 处为占位符（`@OPENAI_KEY@` 等）        | 否             |
-| `my-secrets/omp-keys.age`                     | 6 个 API key 的 age 加密包（recipients 见 `my-secrets/secrets.nix`） | 否（密文）     |
+| `my-secrets/omp-keys.age`                     | 5 个 API key 的 age 加密包（recipients 见 `my-secrets/secrets.nix`） | 否（密文）     |
 | `~/.omp/agent/models.yml`                     | 上面两处合成后的实际配置（symlink → `.models.generated.yml`）        | 是（仅本机）   |
 
 **生成链路：**

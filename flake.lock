@@ -246,11 +246,11 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1791364073,
-        "narHash": "sha256-+7WlEzoshfDst/MAq4+RBf6RfLy/nOYnQNGeY6tjmXU=",
+        "lastModified": 1792224903,
+        "narHash": "sha256-LhhhW+/r2PypWmji8QvMG6NjmeY2ptH+ad8+bMRA29A=",
         "ref": "refs/heads/main",
-        "rev": "75fc4670631e9c9c479d1b6ae80dc04709d84d87",
-        "revCount": 33,
+        "rev": "37ad990aed75409056a2a3e141fe59ec0f9cdccb",
+        "revCount": 34,
         "type": "git",
         "url": "https://github.com/Vitus213/my-secrets.git"
       },
@@ -439,11 +439,11 @@
     "nu_scripts": {
       "flake": false,
       "locked": {
-        "lastModified": 1762863367,
-        "narHash": "sha256-oxnXzxQkNccCs36j+aMzg4QGHDcX7niJruqxCkeg0LM=",
+        "lastModified": 1789906887,
+        "narHash": "sha256-LKONPdLlXfDZ03tEHiJ7rH49vwPHaiFIE0Zvi3bh+UY=",
         "owner": "ryan4yin",
         "repo": "nu_scripts",
-        "rev": "ff8092707054ad091d67bd408374a39977e33c1b",
+        "rev": "a571833566d71671151566e1a2cda4e6338f27bb",
         "type": "github"
       },
       "original": {

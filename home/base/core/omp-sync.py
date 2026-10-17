@@ -26,7 +26,6 @@ missing = [
         "@ANTHROPIC_KEY@",
         "@SCI_PLUS_KEY@",
         "@SCI_PRO_SPECIAL_KEY@",
-        "@BAILIAN_KEY@",
         "@GEMINI_KEY@",
     )
     if chunk in content

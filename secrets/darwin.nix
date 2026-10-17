@@ -96,7 +96,7 @@
       }
       // user_readable;
 
-      # omp 各 provider 的 API key（openai/anthropic/sci-plus/sci-pro-special/bailian/gemini）
+      # omp 各 provider 的 API key（openai/anthropic/sci-plus/sci-pro-special/gemini）
       "omp-keys" = {
         file = "${mysecrets}/omp-keys.age";
       }

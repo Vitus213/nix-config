@@ -4,6 +4,41 @@
 
 ## 2026-10-17
 
+### 移除已吊销的 bailian provider，Codex 切回 scitrace relay
+
+- 影响范围：omp 可用 provider 列表（少 bailian）；Codex CLI 后端与鉴权。
+- 配置入口：`home/base/core/omp-models.yml.in`（删 bailian 段）、
+  `home/base/core/omp-sync.py`（占位符校验列表去掉 `@BAILIAN_KEY@`）、
+  `secrets/darwin.nix`（注释）；本机 `~/.omp/agent/.models.generated.yml` 已重新生成、
+  `~/.codex/config.toml`（custom provider → `https://sub.scitrace.cc/v1`，模型
+  `gpt-5.5`）、`~/.codex/auth.json`（relay key，旧 key 备份为 `auth.json.bak-bailian-20261017`）。
+- 变更内容：bailian（DashScope 直连）key 被吊销，旧新两把 key 在百炼均报
+  `InvalidApiKey`/`invalid_api_key`；Codex 原配置把 relay 的 sk-ws key 发给百炼导致 401"API-key is
+  blocked"（TUI 显示 Unable to connect）。已将 Codex 后端切回 scitrace relay（openai
+  key 鉴权验证通过）。
+- 验证方式：`codex exec` 实测请求已打到 `sub.scitrace.cc/v1/responses`
+  且鉴权通过，当前仅剩 relay 上游 503（scitrace 服务端临时故障，恢复后即通）；重新生成的 models.yml 含 5 个 provider、key 完整；`nix eval .#debugAttrs.allSystems.aarch64-darwin.evalTests`
+  = `{ }`。
+- 后续处置（同日完成）：my-secrets 仓库已删除 bailian 行并重新加密推送（omp-keys.age 75fc467 →
+  37ad990，nix-config 同步
+  `nix flake update mysecrets`）；sudoers 免密规则已安装，`darwin-rebuild switch` 已执行并激活。
+- 关联文档：[omp 模型配置管理](./omp-models.md)。
+
+### 更新 nu_scripts 输入修复 Nushell str downcase 弃用警告
+
+- 影响范围：所有主机 Nushell 启动时加载的 `nu_scripts`
+  模块（git 补全/别名、eza/bat 别名、argx、lg、kubernetes）；artemis 上每次开 shell 报
+  `nu::parser::deprecated: str downcase was deprecated in 0.114.0`。
+- 配置入口：`flake.lock`（单输入 `nix flake update nu_scripts`：ryan4yin fork ff80927 2025-11-11 →
+  a571833 2026-09-20）。
+- 变更内容：锁定 rev 的 `modules/kubernetes/env.nu` 仍用 `str downcase`（Nushell
+  ≥0.114 弃用，未来版本移除）；新版 fork 已同步上游改为
+  `str lowercase`，同时带来 git 补全等例行更新。本仓库 `use` 的 7 个模块路径在新 rev 均存在。
+- 验证方式：本地 Nushell 0.115.1 `nu -n -c 'use ...'` 加载全部 7 个模块无任何弃用警告；
+  `nix eval .#debugAttrs.allSystems.aarch64-darwin.evalTests` = `{ }`；同日已
+  `darwin-rebuild switch` 激活，`nu --config ~/.config/nushell/config.nu` 完整加载零弃用警告。
+- 关联文档：[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)。
+
 ### 修复 herdr Pane 启动 Nushell 报 str lowercase 解析错误（default_shell 改稳定路径）
 
 - 影响范围：所有主机（artemis / apollo）Herdr 交互式 Pane 的 shell 来源；artemis 上已触发的
