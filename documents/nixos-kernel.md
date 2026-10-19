@@ -7,7 +7,7 @@
 - 主 `nixpkgs` 输入跟踪 `nixos-unstable`，具体锁定版本以 `flake.lock` 为准。
 - `apollo` 和 `generic` 显式固定到 **6.18 LTS**：`pkgs.linuxPackages_6_18`。2026-10-19 求值版本为
   `6.18.56`，NVIDIA 驱动 `595.104.02`。
-- rEFInd 当前只保留最新 1 个 NixOS generation；内核升级测试前应临时调高（见下文“验证方式”）。
+- rEFInd 当前保留最近 3 个 NixOS generation，换内核后起不来时可在启动菜单选旧 generation 回滚。
 - `nixos-unstable` 更新移除了旧的 `services.kmscon.fonts` 和 `services.kmscon.extraConfig`
   选项；当前仓库已迁移到 `services.kmscon.config.font-name`、`font-size` 和 `hwaccel`。
 - `nixos-unstable` 更新移除了 `nodePackages`
@@ -88,8 +88,8 @@ sudo nixos-rebuild boot --flake .#apollo
 uname -r
 ```
 
-如果需要在启动菜单保留旧内核回滚入口，可在内核测试前临时把 `boot.loader.refind.maxGenerations`
-调高。
+`boot.loader.refind.maxGenerations`
+当前为 3，启动菜单里保留旧内核的回滚入口。若曾改回 1，内核升级前应先调高。
 
 ## 回滚方式
 

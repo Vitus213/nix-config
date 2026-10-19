@@ -52,7 +52,7 @@ boot.loader = {
   systemd-boot.enable = false;
   refind = {
     enable = true;
-    maxGenerations = 1;
+    maxGenerations = 3;
     extraConfig = ''
       include themes/rEFInd-minimal/theme.conf
       scanfor manual
@@ -75,7 +75,9 @@ boot.loader = {
 
 `scanfor manual`
 只启用手动菜单项和 NixOS 模块生成的 generation 菜单项，避免 rEFInd 自动扫描出额外 EFI
-loader。`maxGenerations = 1` 让 NixOS generation 在主菜单中只保留最新一项。
+loader。`maxGenerations = 3` 让主菜单保留最近 3 个 NixOS
+generation：NixOS 模块按从新到旧排列，最新一项始终紧跟 Windows 排在第 2 位，所以默认启动不受影响，旧的两项作为内核或配置出问题时的回滚入口。2026-10 切换 6.18
+LTS 内核前从 1 调到 3；确认稳定后如果嫌菜单长，可以改回 1。
 
 NixOS rEFInd 模块会把 `extraConfig` 放在生成配置前面，并在后面追加自己的 `default_selection 2`。当前
 `extraConfig` 里只有 1 个手动 Windows 项，NixOS 生成项排在第 2 位，因此最终默认进入 NixOS。

@@ -4,6 +4,16 @@
 
 ## 2026-10-19
 
+### apollo rEFInd 保留 generation 数 1 → 3
+
+- 影响范围：apollo 启动菜单；下一次 `nixos-rebuild boot/switch` 后生效。
+- 配置入口：`hosts/olympians-apollo/default.nix`（`boot.loader.refind.maxGenerations`）。
+- 变更内容：为切换 6.18 LTS 内核保留回滚入口。NixOS
+  rEFInd 模块按从新到旧排列 generation，最新项仍排第 2 位， `default_selection 2` 默认启动不变。
+- 验证方式：`nixosConfigurations.apollo.config.boot.loader.refind.maxGenerations` 求值为
+  `3`；核对 nixpkgs `refind-install.py` 的排序逻辑。
+- 关联文档：[rEFInd 引导方案](./refind-boot.md)、[NixOS 内核策略](./nixos-kernel.md)。
+
 ### 内核从已删除的 7.0 切到 6.18 LTS，修复 CI 与 apollo rebuild
 
 - 影响范围：`apollo`、`generic` 的内核（及随内核构建的 NVIDIA 模块）；下一次 rebuild + 重启生效。

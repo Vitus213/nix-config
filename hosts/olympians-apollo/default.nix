@@ -46,7 +46,8 @@ in
     systemd-boot.enable = false;
     refind = {
       enable = true;
-      maxGenerations = 1;
+      # 保留 3 个 generation 作回滚入口；最新项仍排第 2 位、默认启动
+      maxGenerations = 3;
       extraConfig = ''
         include themes/rEFInd-minimal/theme.conf
         scanfor manual
