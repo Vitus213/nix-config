@@ -268,6 +268,12 @@ in
         # browsers
         # ======================================
         ".zen" # zen-browser profile (firefox-based)
+        ".local/share/webapps" # Chromium 网页 App（Notion、Linear）的独立登录态
+
+        # ======================================
+        # Work / Collaboration
+        # ======================================
+        ".config/Slack"
 
         # ======================================
         # CLI data

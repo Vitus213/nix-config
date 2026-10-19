@@ -41,6 +41,17 @@ window-rule {
     open-on-workspace "3docs"
     open-maximized true
 }
+// Notion / Linear: Chromium web apps launched with --class (home/linux/gui/base/work-apps.nix)
+window-rule {
+    match app-id="^notion$"
+    open-on-workspace "3docs"
+    open-maximized true
+}
+window-rule {
+    match app-id="^linear$"
+    open-on-workspace "3docs"
+    open-maximized true
+}
 
 // Codex GUI and AI desktop clients - open in workspace 4
 window-rule {
@@ -98,6 +109,10 @@ window-rule {
 }
 
 // Chat applications - open in workspace 6
+window-rule {
+    match app-id="^[Ss]lack$"
+    open-on-workspace "6chat"
+}
 window-rule {
     match app-id="org.telegram.desktop"
     open-on-workspace "6chat"
