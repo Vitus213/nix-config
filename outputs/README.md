@@ -22,7 +22,6 @@ outputs/
     ├── default.nix
     ├── src/
     │   ├── olympians-apollo.nix
-    │   ├── olympians-athena.nix
     │   ├── olympians-generic.nix
     │   ├── olympians-hermes.nix
     │   └── hestia.nix
@@ -41,15 +40,15 @@ outputs/
 
 当前主要 output:
 
-| output 类型            | 名称                          | 来源文件                                        |
-| ---------------------- | ----------------------------- | ----------------------------------------------- |
-| `nixosConfigurations`  | `apollo`、`athena`、`generic` | `outputs/x86_64-linux/src/olympians-*.nix`      |
-| `nixosConfigurations`  | `hestia`（NixOS-WSL）         | `outputs/x86_64-linux/src/hestia.nix`           |
-| `darwinConfigurations` | `artemis`                     | `outputs/aarch64-darwin/src/artemis.nix`        |
-| `homeConfigurations`   | `hermes`                      | `outputs/x86_64-linux/src/olympians-hermes.nix` |
-| `packages.<system>`    | 主机 ISO 等包输出             | 各平台 `src/*.nix` 中的 `packages`              |
-| `checks.<system>`      | eval tests、pre-commit check  | `outputs/default.nix`                           |
-| `devShells.<system>`   | 默认开发 shell                | `outputs/default.nix`                           |
+| output 类型            | 名称                         | 来源文件                                        |
+| ---------------------- | ---------------------------- | ----------------------------------------------- |
+| `nixosConfigurations`  | `apollo`、`generic`          | `outputs/x86_64-linux/src/olympians-*.nix`      |
+| `nixosConfigurations`  | `hestia`（NixOS-WSL）        | `outputs/x86_64-linux/src/hestia.nix`           |
+| `darwinConfigurations` | `artemis`                    | `outputs/aarch64-darwin/src/artemis.nix`        |
+| `homeConfigurations`   | `hermes`                     | `outputs/x86_64-linux/src/olympians-hermes.nix` |
+| `packages.<system>`    | 主机 ISO 等包输出            | 各平台 `src/*.nix` 中的 `packages`              |
+| `checks.<system>`      | eval tests、pre-commit check | `outputs/default.nix`                           |
+| `devShells.<system>`   | 默认开发 shell               | `outputs/default.nix`                           |
 
 新增主机时优先复制相近主机文件，再改 `name`、模块列表和必要的主机差异。
 

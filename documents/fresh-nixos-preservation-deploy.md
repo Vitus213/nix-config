@@ -6,7 +6,7 @@
 当前关键约束:
 
 - 默认用户名来自 `vars/default.nix`，当前是 `vitus`
-- desktop 主机配置参考 `hosts/olympians-apollo/` 或 `hosts/olympians-athena/`
+- desktop 主机配置参考 `hosts/olympians-apollo/`
 - preservation 共享配置在 `hosts/_shared/preservation.nix`，由启用它的主机 `default.nix` 导入
 - agenix 的 NixOS 配置在 `secrets/nixos.nix`
 - preservation 开启时，agenix 解密 identity 使用 `/home/vitus/.ssh/id_ed25519`
@@ -170,7 +170,7 @@ modules.secrets.desktop.enable = true;
 
 ## 5. 确认 preservation 配置
 
-主机配置需要导入 preservation（当前 apollo/athena 都使用共享文件）:
+主机配置需要导入 preservation（当前 apollo 使用共享文件）:
 
 ```nix
 imports = [

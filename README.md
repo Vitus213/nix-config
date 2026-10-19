@@ -81,12 +81,12 @@ flake.nix
 
 当前主要输出:
 
-- NixOS 桌面: `apollo`、`athena`、`generic`
+- NixOS 桌面: `apollo`、`generic`（模板）
 - NixOS-WSL 终端: `hestia`
 - macOS 桌面: `artemis`
 - 独立 home-manager: `hermes`
 
-`apollo` 是当前主力 NixOS 桌面。`athena` 是第二台 NixOS 桌面配置，仍处于规划/迁移状态。`generic`
+`apollo` 是当前主力 NixOS 桌面。`generic`
 是不启用个人 secrets 和 preservation 的通用桌面模板。`hestia` 是 Windows
 WSL 里的无桌面 NixOS。`artemis` 是自用的 MacBook Air M1（nix-darwin）。`hermes`
 是 Ubuntu 上的独立 home-manager 配置。
@@ -105,9 +105,9 @@ npm 全局安装，与系统更新解耦，见
 
 ## 新 NixOS 机器最快流程
 
-新机器不要一上来执行 `just local`。`apollo`、`athena` 这类配置会把
-`~/nix-config`、`~/.ssh`、`/etc/agenix` 等路径交给 preservation 管理；如果 `/persistent`
-没准备好，或者 private secrets 没 rekey，第一次切换后很容易看到 `nix-config` 目录变空、`/etc/agenix`
+新机器不要一上来执行 `just local`。`apollo` 这类配置会把 `~/nix-config`、`~/.ssh`、`/etc/agenix`
+等路径交给 preservation 管理；如果 `/persistent` 没准备好，或者 private
+secrets 没 rekey，第一次切换后很容易看到 `nix-config` 目录变空、`/etc/agenix`
 创建失败、`/run/agenix.d/*.tmp` 不存在等问题。
 
 最短成功路径:

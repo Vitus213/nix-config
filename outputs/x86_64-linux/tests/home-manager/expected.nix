@@ -8,7 +8,6 @@ let
 in
 {
   apollo = mk true;
-  athena = mk true;
   generic = mk false;
   hermes = mk true;
 }

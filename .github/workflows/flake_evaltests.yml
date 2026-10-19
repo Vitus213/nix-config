@@ -36,7 +36,16 @@ jobs:
 
       - name: Run Nix Flake Eval Tests
         run: |
-          echo 'Flake Eval Tests'
-          # stack overflow...
-          # nix eval .#checks --show-trace --print-build-logs --verbose
-          nix eval .#evalTests --show-trace --print-build-logs --verbose
+          # 结果写 result.txt，日志写 eval.log（同时回显到控制台）
+          if ! nix eval .#evalTests --show-trace --print-build-logs \
+              > result.txt 2> >(tee eval.log >&2); then
+            # 求值失败：把日志尾部写成 annotation，Actions 摘要页可直接看到报错
+            msg=$(grep -v '^\s*$' eval.log | tail -n 60 | sed -e 's/%/%25/g' | sed -e ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=nix eval .#evalTests failed::${msg}"
+            exit 1
+          fi
+          # evalTests 是布尔值：断言不通过时 nix eval 仍以 0 退出，必须检查结果
+          if [ "$(cat result.txt)" != "true" ]; then
+            echo "::error title=evalTests returned false::有 eval test 断言不通过，本地运行 nix eval .#debugAttrs.allSystems.x86_64-linux.evalTests 查看失败项"
+            exit 1
+          fi

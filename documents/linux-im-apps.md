@@ -105,7 +105,7 @@ nix eval --raw .#nixosConfigurations.apollo.pkgs.feishu.version
 
 ```bash
 nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace
-nix build .#nixosConfigurations.athena.config.system.build.toplevel --no-link --show-trace
+nix build .#nixosConfigurations.generic.config.system.build.toplevel --no-link --show-trace
 ```
 
 运行时确认 Fcitx5 服务与 XIM：

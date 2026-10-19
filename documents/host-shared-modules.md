@@ -29,8 +29,8 @@
 
 多台 NixOS 主机复用的文件统一放 `hosts/_shared/`，主机 `default.nix` 用相对路径导入：
 
-- `hosts/_shared/preservation.nix`：`/persistent` 持久化映射（apollo、athena 共用；generic 未启用）
-- `hosts/_shared/nvidia.nix`：NVIDIA 驱动与图形配置（apollo 启用；athena、generic 注释保留，按需解开）
+- `hosts/_shared/preservation.nix`：`/persistent` 持久化映射（apollo 使用；generic 未启用）
+- `hosts/_shared/nvidia.nix`：NVIDIA 驱动与图形配置（apollo 启用；generic 注释保留，按需解开）
 - `hosts/_shared/netdev-mount.nix`：davfs 支持（三台主机共用）
 
 新增主机时只复制硬件差异文件（`hardware-configuration.nix`、`home.nix`、

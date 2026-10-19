@@ -28,7 +28,6 @@
     # v2 macbook (macOS, artemis) — 2026-08-28 confirmed key, distributed to all servers
     # NOTE: root@VitusMac above is an OLD different key; vitusartemis uses the line below
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsJsNMjCqrCdB1dItRvB6pbDjbLwnPYlTmunAqcJX18 vitusartemis"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPXxlTTqqEIle9IHXImZggeobIekrqVdxvyzn52KTrs7 vitus@athena"
     # OnePlus 13T (PKX110), Termux, daily carry phone
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBXiRk7RVa7uV+v1PQKcpETytESuz8nH7lQbq/GpCJFT oneplus-a0288f4a-to-computers"
   ];

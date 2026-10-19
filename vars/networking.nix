@@ -28,14 +28,6 @@ rec {
       gateway = "192.168.100.1";
       gateway6 = "fe80::5";
     };
-    athena = {
-      # Desktop PC (placeholder values)
-      iface = "eno1";
-      ipv4 = "192.168.199.178";
-      ipv6 = "fe80::101"; # Link-local Address
-      gateway = "192.168.199.1";
-      gateway6 = "fe80::5";
-    };
   };
 
   hostsInterface = lib.attrsets.mapAttrs (key: val: {

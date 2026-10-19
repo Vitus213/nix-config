@@ -4,6 +4,23 @@
 
 ## 2026-10-19
 
+### 删除 athena 主机；CI 暴露求值报错并检查测试结果
+
+- 影响范围：移除 `nixosConfigurations.athena`；所有 NixOS 主机的 `authorized_keys` 不再包含
+  `vitus@athena` 公钥；ssh 配置去掉 `athena` 别名。其余主机配置不变。
+- 背景：athena 源自上游
+  `idols-ai`，2026-03 换成一台 AMD 笔记本（提交中称 vitus8500）短暂使用，4 月后无维护；其网络仍是上游的 systemd-networkd 静态 IP（`eno1`
+  占位地址），按现状部署会断网，README 也是上游 GPU 主机的磁盘布局。
+- 配置入口：删除 `hosts/olympians-athena/`、`outputs/x86_64-linux/src/olympians-athena.nix`；
+  `outputs/x86_64-linux/tests/{home-manager,hostname}`
+  去掉 athena 断言；`vars/networking.nix`（`hostsAddr.athena`）、
+  `vars/default.nix`（公钥）、`home/base/tui/ssh.nix`（别名）；相关专题文档同步去掉 athena。
+  `my-secrets` 未把 athena 公钥作为 recipient，无需 rekey。
+- CI：`.github/workflows/flake_evaltests.yml` 求值失败时把日志尾部写成 annotation；并检查
+  `evalTests` 结果必须为 `true`（此前断言失败时 `nix eval` 仍以 0 退出，CI 不会变红）。
+- 验证方式：所有 `.nix` 语法解析通过；CI 脚本用模拟 `nix` 验证报错 / false / true 三种分支。
+- 关联文档：[主机配置](../hosts/README.md)。
+
 ### 仓库结构梳理：清理 fork 遗留物、去重配置、新增文档索引
 
 - 影响范围：仓库结构与文档；唯一的配置行为变化是删除了重复的 zellij 模块（最终生效配置不变）。

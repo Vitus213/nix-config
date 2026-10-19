@@ -29,7 +29,7 @@ daemon 使用的绝对 shell 路径，并将实际 shell 传播到子进程环�
 Orca AppImage 通过 nixpkgs 的 `appimageTools.wrapAppImage` 运行在 `buildFHSEnv`
 创建的 FHS 环境中。该环境会重新创建 `/etc`，因此默认看不到宿主机的 `/etc/agenix`。当前 overlay 使用
 `--ro-bind-try`，把宿主机的整个 `/etc/agenix`
-只读映射到 FHS 环境中的相同路径，保证 Apollo 和 Athena 的 Nushell 配置可以继续 `source`
+只读映射到 FHS 环境中的相同路径，保证 Apollo 的 Nushell 配置可以继续 `source`
 工作 alias。Orca 及其内置终端可以读取该目录中所有由当前用户权限允许读取的 secrets；未提供该目录的主机仍可正常启动 Orca。
 
 Niri 会按窗口的 `app-id="orca"` 将 Orca 默认打开到 `5code` 工作区并最大化。窗口规则位于

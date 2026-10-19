@@ -66,11 +66,6 @@ in
           User = "vitus";
           Port = 8022;
         };
-
-        "athena" = {
-          HostName = "100.104.233.76";
-          User = "vitus";
-        };
       }
       // lib.optionalAttrs cfg.homelab.enable {
         "192.168.*" = {

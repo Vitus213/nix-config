@@ -23,7 +23,6 @@ let
 in
 {
   apollo = check (hmUser "apollo");
-  athena = check (hmUser "athena");
   generic = check (hmUser "generic");
   hermes = check outputs.homeConfigurations.hermes.config;
 }

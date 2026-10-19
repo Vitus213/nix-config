@@ -36,7 +36,6 @@
 - `nixos-installer/README.md`：旧的 Btrfs 安装示例。
 - `hosts/_shared/preservation.nix`：关于 Btrfs/ZFS rollback 的注释。
 - `documents/fresh-nixos-preservation-deploy.md`：说明可以选择 Btrfs subvolume 作为 `/persistent`。
-- `hosts/olympians-athena/README.md`：历史 Btrfs 布局记录。
 
 ## 验证
 

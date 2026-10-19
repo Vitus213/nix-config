@@ -36,7 +36,6 @@ Niri 是动态工作区模型，工作区的显示顺序不是静态编号。`ni
 主机级输出和工作区显示器绑定:
 
 - `hosts/olympians-apollo/niri-hardware.kdl`
-- `hosts/olympians-athena/niri-hardware.kdl`
 
 Home Manager 会把这些配置链接到 `~/.config/niri/`。
 

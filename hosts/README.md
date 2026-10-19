@@ -9,7 +9,6 @@
 | 主机      | 平台  | 硬件                        | 用途                     | 状态   |
 | --------- | ----- | --------------------------- | ------------------------ | ------ |
 | `apollo`  | NixOS | Ryzen 5 5600 + RTX 3070 LHR | 主力桌面、游戏、日常使用 | 使用中 |
-| `athena`  | NixOS | 待补充                      | 第二台桌面               | 规划中 |
 | `generic` | NixOS | 部署前替换硬件配置          | 通用桌面模板             | 模板   |
 | `artemis` | macOS | MacBook Air M1              | 自用笔记本               | 使用中 |
 
@@ -25,12 +24,12 @@
 
 ## 命名规则
 
-| 目录前缀      | 含义                               | 例子                                   |
-| ------------- | ---------------------------------- | -------------------------------------- |
-| `olympians-*` | 以希腊神话命名的 Linux 主机        | `olympians-apollo`、`olympians-athena` |
-| `darwin-*`    | macOS（nix-darwin）主机            | `darwin-artemis`                       |
-| 无前缀        | 特殊形态主机                       | `hestia`（NixOS-WSL）                  |
-| `_shared/`    | 多台主机共享的片段，不对应具体机器 | `preservation.nix`、`nvidia.nix`       |
+| 目录前缀      | 含义                               | 例子                                    |
+| ------------- | ---------------------------------- | --------------------------------------- |
+| `olympians-*` | 以希腊神话命名的 Linux 主机        | `olympians-apollo`、`olympians-generic` |
+| `darwin-*`    | macOS（nix-darwin）主机            | `darwin-artemis`                        |
+| 无前缀        | 特殊形态主机                       | `hestia`（NixOS-WSL）                   |
+| `_shared/`    | 多台主机共享的片段，不对应具体机器 | `preservation.nix`、`nvidia.nix`        |
 
 flake output 名去掉前缀：`hosts/olympians-apollo` → `.#apollo`，`hosts/darwin-artemis` →
 `.#artemis`。
