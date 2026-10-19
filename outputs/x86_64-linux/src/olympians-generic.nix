@@ -8,7 +8,6 @@
   mylib,
   system,
   genSpecialArgs,
-  niri,
   ...
 }@args:
 let

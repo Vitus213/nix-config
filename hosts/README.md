@@ -15,9 +15,9 @@
 
 ### WSL 主机
 
-| 主机      | 平台      | 硬件 | 用途                              | 状态   |
-| --------- | --------- | ---- | --------------------------------- | ------ |
-| `hestia`  | NixOS-WSL | -    | Windows WSL 终端主机（无桌面）     | 使用中 |
+| 主机     | 平台      | 硬件 | 用途                           | 状态   |
+| -------- | --------- | ---- | ------------------------------ | ------ |
+| `hestia` | NixOS-WSL | -    | Windows WSL 终端主机（无桌面） | 使用中 |
 
 ### 其他入口
 
@@ -25,20 +25,26 @@
 
 ## 命名规则
 
-- `olympians-*`: 希腊神话命名的 NixOS 桌面主机
-- `darwin-*`: macOS 主机
-- `apollo` / `artemis`: 当前主要物理机
-- `athena`: 第二台 NixOS 桌面配置，仍处于规划/迁移状态
-- `generic`: 不带个人 secrets 和 preservation 的通用 NixOS 桌面模板
-- `hestia`: NixOS-WSL 终端主机，无 GUI，用户 `vitus`，详见
-  [hestia WSL 主机](../documents/hestia-wsl.md)
+| 目录前缀      | 含义                               | 例子                                   |
+| ------------- | ---------------------------------- | -------------------------------------- |
+| `olympians-*` | 以希腊神话命名的 Linux 主机        | `olympians-apollo`、`olympians-athena` |
+| `darwin-*`    | macOS（nix-darwin）主机            | `darwin-artemis`                       |
+| 无前缀        | 特殊形态主机                       | `hestia`（NixOS-WSL）                  |
+| `_shared/`    | 多台主机共享的片段，不对应具体机器 | `preservation.nix`、`nvidia.nix`       |
+
+flake output 名去掉前缀：`hosts/olympians-apollo` → `.#apollo`，`hosts/darwin-artemis` →
+`.#artemis`。
+
+注意 `olympians-hermes/` 只有 `home.nix`：`hermes`
+是 Ubuntu 上的**独立 home-manager**，不是 NixOS，由 `outputs/x86_64-linux/src/olympians-hermes.nix`
+生成 `homeConfigurations.hermes`。
 
 ## 添加新主机
 
 最稳妥的方式是复制一个相近主机目录，再逐项调整。不要只改 hostname 后直接部署。
 
-WSL 主机不需要 `hardware-configuration.nix`：改为导入 `nixos-wsl` 模块
-并设置 `wsl.enable` / `wsl.defaultUser`，参考 `hosts/hestia/`。
+WSL 主机不需要 `hardware-configuration.nix`：改为导入 `nixos-wsl` 模块并设置 `wsl.enable` /
+`wsl.defaultUser`，参考 `hosts/hestia/`。
 
 ### 基本步骤
 
@@ -58,16 +64,18 @@ WSL 主机不需要 `hardware-configuration.nix`：改为导入 `nixos-wsl` 模�
 
 ## 分布式构建
 
-我通常在 `apollo`
-上发起构建，再由 Nix 分发到其他 NixOS 机器。对 riscv64、aarch64 或缓存缺失的包，这能减少主力机负担。
+`modules/nixos/base/remote-building.nix` 打开了 `nix.distributedBuilds`，但 `nix.buildMachines`
+目前为空（原有构建机条目继承自上游仓库，已全部注释），所以**实际上所有构建都在本机进行**。
 
-![](/_img/nix-distributed-building.webp)
-
-![](/_img/nix-distributed-building-log.webp)
+需要远程构建时，在该文件里添加构建机条目，并在 `vars/networking.nix` 的 `hostsAddr`
+中补充对应主机地址；SSH 密钥使用 agenix 下发的 `/etc/agenix/ssh-key-romantic`，见
+[Homelab SSH Key](../documents/homelab-ssh-key-romantic.md)。
 
 ## 相关文档
 
 - [全新 NixOS + preservation 部署流程](../documents/fresh-nixos-preservation-deploy.md)
 - [通用 NixOS 桌面 Host](../documents/generic-nixos-host.md)
+- [hestia（NixOS-WSL 终端主机）](../documents/hestia-wsl.md)
+- [主机共享模块 `_shared/`](../documents/host-shared-modules.md)
 - [rEFInd 启动配置](../documents/refind-boot.md)
 - [NixOS 内核策略](../documents/nixos-kernel.md)

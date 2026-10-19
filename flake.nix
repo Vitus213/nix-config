@@ -1,5 +1,5 @@
 {
-  description = "Ryan Yin's nix configuration for both NixOS & macOS";
+  description = "Vitus213's nix configuration for NixOS, nix-darwin and home-manager";
 
   ##################################################################################################################
   #
@@ -45,7 +45,6 @@
     nixpkgs-patched.url = "github:ryan4yin/nixpkgs/nixos-unstable";
 
     # for macos
-    # nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-25.11-darwin";
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nix-darwin = {
       url = "github:lnl7/nix-darwin";
@@ -55,7 +54,6 @@
     # home-manager, used for managing user configuration
     home-manager = {
       url = "github:nix-community/home-manager/master";
-      # url = "github:nix-community/home-manager/release-25.11";
 
       # The `follows` keyword in inputs is used for inheritance.
       # Here, `inputs.nixpkgs` of home-manager is kept consistent with the `inputs.nixpkgs` of the current flake,
@@ -150,18 +148,5 @@
       url = "github:Vitus213/wallpapers";
       flake = false;
     };
-
-    # my-asahi-firmware = {
-    #   url = "git+ssh://git@github.com/ryan4yin/asahi-firmware.git?shallow=1";
-    #   flake = false;
-    # };
-
-    # nur-ryan4yin = {
-    #   url = "github:ryan4yin/nur-packages";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-
-    # for waydroid
-    # nur-ataraxiasjel.url = "github:AtaraxiaSjel/nur";
   };
 }

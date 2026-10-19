@@ -44,6 +44,7 @@ outputs/
 | output 类型            | 名称                          | 来源文件                                        |
 | ---------------------- | ----------------------------- | ----------------------------------------------- |
 | `nixosConfigurations`  | `apollo`、`athena`、`generic` | `outputs/x86_64-linux/src/olympians-*.nix`      |
+| `nixosConfigurations`  | `hestia`（NixOS-WSL）         | `outputs/x86_64-linux/src/hestia.nix`           |
 | `darwinConfigurations` | `artemis`                     | `outputs/aarch64-darwin/src/artemis.nix`        |
 | `homeConfigurations`   | `hermes`                      | `outputs/x86_64-linux/src/olympians-hermes.nix` |
 | `packages.<system>`    | 主机 ISO 等包输出             | 各平台 `src/*.nix` 中的 `packages`              |

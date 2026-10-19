@@ -19,47 +19,89 @@
 这个仓库是我的个人 Nix 配置，用来维护 NixOS、nix-darwin 和 home-manager 环境。它包含个人硬件配置、`/persistent`
 持久化布局、private `mysecrets` input 和 agenix secrets，不适合作为通用模板直接套到陌生机器上。
 
-主机清单见 [hosts](./hosts)。密钥管理见 [secrets](./secrets)。全新 NixOS + preservation 部署流程见
-[documents/fresh-nixos-preservation-deploy.md](./documents/fresh-nixos-preservation-deploy.md)。
+**快速导航**：[主机清单](./hosts) · [密钥管理](./secrets) · [文档索引](./documents/README.md) ·
+[变更记录](./documents/changelog.md) · [新机部署](./documents/fresh-nixos-preservation-deploy.md)
 
 ## 仓库架构
 
-| 路径               | 作用                                                                |
-| ------------------ | ------------------------------------------------------------------- |
-| `flake.nix`        | flake inputs、缓存配置和统一 outputs 入口                           |
-| `flake.lock`       | 锁定 nixpkgs、home-manager、preservation、agenix、mysecrets 等输入  |
-| `outputs/`         | 生成 `nixosConfigurations`、`darwinConfigurations`、packages 等输出 |
-| `hosts/`           | 每台机器的系统入口、硬件配置、网络、preservation 和主机专用模块     |
-| `modules/`         | 可复用的 NixOS / nix-darwin 系统级模块                              |
-| `home/`            | 可复用的 home-manager 用户配置，区分 Linux、Darwin、TUI、GUI 层     |
-| `secrets/`         | agenix 模块定义；密文本体来自 private `mysecrets` flake input       |
-| `vars/`            | 用户名、网络等跨模块变量                                            |
-| `overlays/`        | 局部 package overlay 和对应说明                                     |
-| `hardening/`       | NixPak、bubblewrap、AppArmor 等沙箱和加固配置                       |
-| `documents/`       | 中文配置文档、排障记录和主线变更记录                                |
-| `nixos-installer/` | 旧版 ISO 安装辅助入口；当前新机部署优先看 fresh preservation 文档   |
-| `infra/`           | homelab、对象存储、监控等基础设施配置说明                           |
-| `templates/`       | 开发模板                                                            |
-| `Justfile`         | 常用命令入口，例如 `just local`、`just test`、`just local-host ...` |
+| 路径               | 作用                                                                                   |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `flake.nix`        | flake inputs、二进制缓存配置；`outputs` 直接转交给 `outputs/`                          |
+| `flake.lock`       | 锁定 nixpkgs、home-manager、preservation、agenix、mysecrets 等输入                     |
+| `outputs/`         | 按平台生成 `nixosConfigurations`、`darwinConfigurations`、eval tests 等输出            |
+| `lib/`             | `nixosSystem` / `macosSystem` 生成器和 `scanPaths`、`relativeToRoot` 等工具            |
+| `hosts/`           | 每台机器的系统入口、硬件配置、网络、preservation 和主机专用模块                        |
+| `modules/`         | 可复用的 NixOS / nix-darwin **系统级**模块                                             |
+| `home/`            | 可复用的 home-manager **用户级**配置，分 `base`（共享）/ `linux` / `darwin`            |
+| `secrets/`         | agenix 模块定义；密文本体来自 private `mysecrets` flake input                          |
+| `vars/`            | 用户名、网络地址等跨模块变量（以 `myvars` 注入所有模块）                               |
+| `overlays/`        | 局部 package overlay，每个子目录自带 README 说明原因和移除条件                         |
+| `hardening/`       | NixPak、bubblewrap、AppArmor 等沙箱和加固配置                                          |
+| `documents/`       | **唯一的文档目录**：专题文档、排障记录、变更记录，入口是 [索引](./documents/README.md) |
+| `nixos-installer/` | 旧版 ISO 安装辅助入口；新机部署优先看 fresh preservation 文档                          |
+| `infra/`           | homelab 对象存储（MinIO / Loki）的 Terraform 配置                                      |
+| `certs/`           | 自用私有 CA 的公开证书和生成脚本                                                       |
+| `templates/`       | `nix flake init` 开发模板                                                              |
+| `scripts/`         | 仓库自检脚本，例如禁止引入 stable/master nixpkgs 的策略检查                            |
+| `Justfile`         | 常用命令入口，例如 `just local`、`just test`、`just local-host ...`                    |
+| `AGENTS.md`        | 自动化代理（和人）在本仓库工作时的约定：验证方式、文档同步、changelog 规则             |
+
+### 一台主机是怎么拼出来的
+
+```text
+flake.nix
+  └─ outputs/default.nix            注入 mylib / myvars / 全部 inputs（specialArgs）
+       └─ outputs/<system>/default.nix   haumea 自动加载 src/ 下每个主机文件
+            └─ outputs/<system>/src/<host>.nix
+                 ├─ nixos-modules : secrets/*.nix + modules/nixos/desktop.nix + hosts/<host>/
+                 └─ home-modules  : home/linux/gui.nix（或 tui.nix）+ hosts/<host>/home.nix
+                      └─ lib/nixosSystem.nix 组装成 nixosConfigurations.<host>
+```
+
+`modules/` 和 `home/` 下的聚合目录（如
+`modules/nixos/desktop/`、`home/base/tui/`、`home/linux/gui/base/`）的 `default.nix` 使用
+`mylib.scanPaths ./.`：**在这些目录里新增的 `.nix`
+文件和子目录会被自动导入**，不需要手动登记；删除文件即取消导入。 `hosts/` 和 `outputs/`
+则是显式列出导入。
+
+### 想改某样东西，去哪里
+
+| 想改的东西                          | 位置                                                                 |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| 只影响某一台机器                    | `hosts/<host>/default.nix`（系统）或 `hosts/<host>/home.nix`（用户） |
+| 所有 Linux 桌面的系统服务           | `modules/nixos/desktop/`                                             |
+| 所有 NixOS 机器的基础设置           | `modules/nixos/base/`                                                |
+| NixOS 和 macOS 共享的系统设置       | `modules/base/`                                                      |
+| shell、git、编辑器等终端工具        | `home/base/core/`、`home/base/tui/`                                  |
+| Niri、Noctalia、输入法等 Linux GUI  | `home/linux/gui/`                                                    |
+| AeroSpace、Squirrel 等 macOS 用户层 | `home/darwin/`                                                       |
+| 新增或修改一个 secret               | `secrets/*.nix` + private `mysecrets` 仓库，见 [secrets](./secrets)  |
+| IP、网关、SSH 别名                  | `vars/networking.nix`                                                |
+| 给某个包打补丁 / 换版本             | `overlays/<pkg>/`                                                    |
 
 当前主要输出:
 
 - NixOS 桌面: `apollo`、`athena`、`generic`
+- NixOS-WSL 终端: `hestia`
 - macOS 桌面: `artemis`
 - 独立 home-manager: `hermes`
 
 `apollo` 是当前主力 NixOS 桌面。`athena` 是第二台 NixOS 桌面配置，仍处于规划/迁移状态。`generic`
-是不启用个人 secrets 和 preservation 的通用桌面模板。`artemis` 是 nix-darwin 工作机。`hermes`
+是不启用个人 secrets 和 preservation 的通用桌面模板。`hestia` 是 Windows
+WSL 里的无桌面 NixOS。`artemis` 是 nix-darwin 工作机。`hermes`
 是 Ubuntu 上的独立 home-manager 配置。
 
 当前关键输入和版本:
 
-- 主 `nixpkgs`: `nixos-unstable`，当前求值版本 `26.11.20260702.6517942`
-- `home-manager`: 跟随主 `nixpkgs`
-- `omp`: Oh My Pi 编码代理，用户级 bun 全局安装（官方 flake 构建不再使用，更新与系统解耦）
+- 主 `nixpkgs`: `nixos-unstable`；macOS 使用 `nixpkgs-unstable`
+- `home-manager`: `master`，跟随主 `nixpkgs`
 - `preservation`: 管理 `/persistent` 持久化映射
 - `agenix`: 管理 secrets 解密和 `/etc/agenix/*`
 - `mysecrets`: private flake input，不在本仓库保存明文
+
+更新频繁的 AI Agent CLI（omp、bb 等）不走 flake input，而是用户级 bun /
+npm 全局安装，与系统更新解耦，见
+[Nushell AI Agent 快捷命令](./documents/nushell-ai-agent-aliases.md)。
 
 ## 新 NixOS 机器最快流程
 
@@ -135,7 +177,7 @@ just local
 just local debug
 ```
 
-相关文档:
+相关文档（全部专题见 [文档索引](./documents/README.md)）:
 
 - [全新 NixOS + preservation 部署流程](./documents/fresh-nixos-preservation-deploy.md)
 - [通用 NixOS 桌面 host](./documents/generic-nixos-host.md)

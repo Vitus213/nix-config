@@ -10,7 +10,7 @@
   - `modules/`：系统级模块
   - `home/`：用户级配置
   - `home/darwin/aerospace/`：macOS AeroSpace 配置
-  - `documents/`：中文说明文档
+  - `documents/`：中文说明文档（唯一文档目录，入口 `documents/README.md` 分类索引）
   - `Justfile`：常用操作入口
 
 ## 2. 工作原则
@@ -53,7 +53,7 @@
 
 - 影响用户操作方式的改动，应同步更新 `README.md` 或 `documents/` 下对应说明。
 - 所有新增、修改或移除配置的变更，都要留下完整文档记录；已有专题文档时同步更新，没有时在
-  `documents/` 下新增对应文档。
+  `documents/` 下新增对应文档，并把它加入 `documents/README.md` 的对应分类。
 - 必须维护 `documents/changelog.md`
   作为主线变更记录。每次配置变更都要按时间倒序追加记录，并引用对应的具体配置文档。
 - `documents/changelog.md`

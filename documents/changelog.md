@@ -4,6 +4,28 @@
 
 ## 2026-10-19
 
+### 仓库结构梳理：清理 fork 遗留物、去重配置、新增文档索引
+
+- 影响范围：仓库结构与文档；唯一的配置行为变化是删除了重复的 zellij 模块（最终生效配置不变）。
+- 配置入口：
+  - `home/base/core/zellij/`：删除。它是 `home/base/tui/zellij/` 的子集（`core` 与 `tui`
+    在所有平台都成对导入），别名 `zj` 与 `programs.zellij.enable` 仍由 `tui/zellij` 提供。
+  - `outputs/x86_64-linux/src/olympians-{apollo,athena,generic}.nix`：删除签名里未使用的 `niri`
+    参数（flake 没有 `niri` 输入；haumea 惰性传参所以过去不会报错，但会误导读者）。
+  - `flake.nix`：description 改为本仓库；删除已失效的 asahi / nur 注释输入和旧版本 URL 注释。
+  - `outputs/default.nix`：删除注释掉的 `pkgs-unstable` 代码块。
+- 仓库清理：删除 14 张未被引用、继承自上游 ryan4yin 仓库的 `_img/` 图片；删除指向 ryan4yin 的
+  `.github/FUNDING.yml` 和推送到上游 Gitee 的已禁用 `mirror_to_gitee.yml`；`docs/` 合并进
+  `documents/`（`homebrew-tuna-troubleshooting.md` 移入，执行完的计划移到 `documents/plans/`）。
+- 文档：新增 [文档索引](./README.md)；根 `README.md`
+  补齐目录表（`lib/`、`certs/`、`scripts/`、`AGENTS.md`），新增“一台主机是怎么拼出来的”和“想改某样东西去哪里”速查；`hosts/README.md`
+  的命名规则改为表格并说明 `hermes` 的特殊性，分布式构建一节改为如实描述（`buildMachines` 为空）；
+  `outputs/README.md` 补上 `hestia`；`AGENTS.md` 要求新文档加入索引。
+- 验证方式：所有 `.nix` 文件 `nix-instantiate --parse`
+  通过；Markdown 相对链接检查无新增死链。沙箱无法拉取 private `mysecrets`，未运行完整
+  `just test`，需要在本机补跑。
+- 关联文档：[文档索引](./README.md)、[主机配置](../hosts/README.md)。
+
 ### omp 新增 DeepSeek 官方 provider，key 沿用现有 age 加密包
 
 - 影响范围：OMP 新增 `deepseek/deepseek-flash`、`deepseek/deepseek-v4-pro` 两个模型；
