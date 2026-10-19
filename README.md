@@ -88,7 +88,7 @@ flake.nix
 
 `apollo` 是当前主力 NixOS 桌面。`athena` 是第二台 NixOS 桌面配置，仍处于规划/迁移状态。`generic`
 是不启用个人 secrets 和 preservation 的通用桌面模板。`hestia` 是 Windows
-WSL 里的无桌面 NixOS。`artemis` 是 nix-darwin 工作机。`hermes`
+WSL 里的无桌面 NixOS。`artemis` 是自用的 MacBook Air M1（nix-darwin）。`hermes`
 是 Ubuntu 上的独立 home-manager 配置。
 
 当前关键输入和版本:
