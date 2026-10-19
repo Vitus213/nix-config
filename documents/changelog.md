@@ -2,6 +2,29 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-19
+
+### omp 新增 DeepSeek 官方 provider，key 沿用现有 age 加密包
+
+- 影响范围：OMP 新增 `deepseek/deepseek-flash`、`deepseek/deepseek-v4-pro` 两个模型；
+  `my-secrets/omp-keys.age` 新增第 7 个 provider key，原有 6 个 key 与 8 个 recipients 保持不变。
+- 配置入口：`home/base/core/omp-models.yml.in`（官方端点 `https://api.deepseek.com`，
+  `api: openai-completions`）、`home/base/core/omp-sync.py`（增加 `@DEEPSEEK_KEY@` 缺失校验）、
+  `secrets/darwin.nix`（同步密钥说明）、`my-secrets/omp-keys.age`（追加 `deepseek:` 后重新加密）。
+- 密钥版本：`my-secrets` 已发布提交 `78defe1`，`flake.lock` 的 `mysecrets` input 同步锁定该提交。
+- 变更内容：沿用模板占位符、agenix 解密与 `omp-sync-models` 生成链路，不改变默认模型或角色映射。新增
+  `home/base/core/test_omp_sync.py`，防止缺少 DeepSeek key 时生成未替换的配置。
+- 验证方式：age 加密回读一致且旧 key 保留；官方 `GET /models`
+  返回 200 及上述两个名称；实际生成配置无残留占位符、权限 `0600`；`omp models find deepseek`
+  能识别新增模型；隔离 agent 目录中的 OMP
+  17.3.4 分别以 Flash 推理模式和 Pro 非推理模式发送短请求，均正常响应；
+  `python3 home/base/core/test_omp_sync.py` 通过。
+- 验证限制：完整 `nix eval .#evalTests` 在 Catppuccin `whiskers-2.9.0`
+  依赖构建/测试阶段达到 240 秒超时，未得到完整求值结果；本次 Nix 文件仅更新注释，独立语法解析通过。
+- 发布状态：密钥已提交推送，`mysecrets` 锁定已更新；未切换系统或覆盖本机
+  `models.yml`。目标主机重建并重新解密后，仍需运行 `omp-sync-models` 同步模型配置。
+- 关联文档：[omp 模型配置管理](./omp-models.md#deepseek-provider)、`my-secrets/README.md`。
+
 ## 2026-10-17
 
 ### omp models.yml 新增 glm provider（GLM Coding Plan key 入 my-secrets）

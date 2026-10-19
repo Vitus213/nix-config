@@ -96,7 +96,7 @@
       }
       // user_readable;
 
-      # omp 各 provider 的 API key（openai/anthropic/sci-plus/sci-pro-special/gemini）
+      # omp 各 provider 的 API key（与 omp-models.yml.in 的占位符对应）
       "omp-keys" = {
         file = "${mysecrets}/omp-keys.age";
       }

@@ -6,11 +6,11 @@
 
 `models.yml` 是三部分合成的产物，由 nix-config 与 my-secrets 两个仓库协同管理：
 
-| 位置                                          | 内容                                                                         | 是否含明文 key |
-| --------------------------------------------- | ---------------------------------------------------------------------------- | -------------- |
-| `nix-config/home/base/core/omp-models.yml.in` | 全部 provider / 模型定义，key 处为占位符（`@OPENAI_KEY@` 等）                | 否             |
-| `my-secrets/omp-keys.age`                     | 6 个 API key 的 age 加密包（含 glm；recipients 见 `my-secrets/secrets.nix`） | 否（密文）     |
-| `~/.omp/agent/models.yml`                     | 上面两处合成后的实际配置（symlink → `.models.generated.yml`）                | 是（仅本机）   |
+| 位置                                          | 内容                                                                                   | 是否含明文 key |
+| --------------------------------------------- | -------------------------------------------------------------------------------------- | -------------- |
+| `nix-config/home/base/core/omp-models.yml.in` | 全部 provider / 模型定义，key 处为占位符（`@OPENAI_KEY@` 等）                          | 否             |
+| `my-secrets/omp-keys.age`                     | 7 个 API key 的 age 加密包（含 glm、deepseek；recipients 见 `my-secrets/secrets.nix`） | 否（密文）     |
+| `~/.omp/agent/models.yml`                     | 上面两处合成后的实际配置（symlink → `.models.generated.yml`）                          | 是（仅本机）   |
 
 **生成链路：**
 
@@ -48,6 +48,36 @@ my-secrets/omp-keys.age ──agenix──▶ /run/agenix/omp-keys（本机解�
 
 当前 glm provider：`https://open.bigmodel.cn/api/coding/paas/v4`（GLM Coding Plan，
 `api: openai-completions`），模型 `glm-5.3` / `glm-5.3-flash` / `glm-5.2`，选择器 `glm/<model>`。
+
+## DeepSeek provider
+
+DeepSeek 直连官方 `https://api.deepseek.com`，使用 `api: openai-completions`。模板登记的模型与官方
+`GET /models` 返回的名称一致：
+
+| 选择器                     | 模型                | 输入       | 推理 |
+| -------------------------- | ------------------- | ---------- | ---- |
+| `deepseek/deepseek-flash`  | DeepSeek V4.1 Flash | 文本、图片 | 支持 |
+| `deepseek/deepseek-v4-pro` | DeepSeek V4 Pro     | 文本       | 支持 |
+
+两个模型的上下文预算均配置为 `1000000` tokens，最大输出为 `393216`
+tokens。OMP 会合并内置模型，所以模型列表中也可能出现内置的 DeepSeek 兼容别名。添加此 provider 不改变默认模型或角色映射。
+
+密钥以 `deepseek:` 行保存在 `my-secrets/omp-keys.age`，对应模板占位符
+`@DEEPSEEK_KEY@`。重新加密时沿用 `secrets.nix` 中 `"omp-keys.age".publicKeys`
+的全部 recipients，保留其他 provider 的 key；同步脚本在缺少 DeepSeek key 时拒绝生成未替换的配置。
+
+按上面的标准流程推送密钥、更新 `mysecrets` input 并在目标机器重新解密后，运行
+`omp-sync-models`，再用 `omp models find deepseek` 查看，或通过 `/model` 选择上述完整选择器。已有
+`models.yml` 不会在系统重建时被自动覆盖，仍需手动同步。
+
+验证占位符缺失保护：`python3 home/base/core/test_omp_sync.py`。实际接入验证应从加密文件解密并生成临时配置，在隔离的 OMP
+agent 目录中列出模型并发送短请求，勿覆盖正在使用的本机配置。
+
+回滚：移除模板中的 `deepseek` 块、`omp-sync.py` 的 `@DEEPSEEK_KEY@` 校验项，以及密钥包中的
+`deepseek:` 行并重新加密；提交密钥、更新 input、重新解密后运行 `omp-sync-models`。
+
+官方文档：[接入入口](https://api-docs.deepseek.com/)、[模型能力](https://api-docs.deepseek.com/quick_start/pricing)、
+[输出上限与请求参数](https://api-docs.deepseek.com/api/create-chat-completion)。
 
 ## 修改 key
 
