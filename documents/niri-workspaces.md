@@ -7,11 +7,11 @@
 | 工作区      | 语义       | 自动进入的应用                                |
 | ----------- | ---------- | --------------------------------------------- |
 | `1terminal` | 终端       | `foot`、`Alacritty`、`Ghostty`                |
-| `2browser`  | 浏览器     | `Zen`                                         |
-| `3docs`     | 文档笔记   | `Obsidian`、`Apostrophe`                      |
+| `2browser`  | 浏览器     | `Zen`、`Chrome`                               |
+| `3docs`     | 文档笔记   | `Obsidian`、`Apostrophe`、Notion、Linear      |
 | `4codex`    | Codex GUI  | `ChatGPT`、`Codex`、`Claude` 等 AI 图形客户端 |
 | `5code`     | 代码编辑器 | `VSCode`、`Cursor`、`Zed`                     |
-| `6chat`     | 聊天沟通   | `Telegram`、飞书、微信、QQ                    |
+| `6chat`     | 聊天沟通   | `Slack`、`Telegram`、飞书、微信、QQ           |
 | `8music`    | 音乐       | QQ 音乐、网易云音乐                           |
 | `9file`     | 文件/阅读  | `Foliate`、`Dolphin`、`Sioyek`                |
 | `0other`    | 其他工具   | `FlClash`、`Zoom`、腾讯会议                   |

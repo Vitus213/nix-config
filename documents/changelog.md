@@ -4,6 +4,22 @@
 
 ## 2026-10-19
 
+### 浏览器定为 Zen + Chrome；apollo 新增 Slack、Notion、Linear 并分配工作区
+
+- 影响范围：所有 Linux 桌面新增 Google Chrome；apollo 新增 Slack 与 Notion / Linear 网页 App。
+- 配置入口：`home/linux/gui/base/browsers.nix`（Chrome，forceX11Compat 时走 X11）；新增
+  `home/linux/gui/base/work-apps.nix`（`modules.desktop.workApps`，apollo 的 `home.nix` 开启）；
+  `home/linux/gui/niri/conf/windowrules.kdl`（Chrome → `2browser`，Notion / Linear → `3docs`，Slack
+  → `6chat`）；
+  `hosts/_shared/preservation.nix`（`.config/google-chrome`、`.local/share/webapps`、`.config/Slack`）。
+- 变更内容：Notion、Linear 没有官方 Linux 客户端，用 Chrome `--app` + 独立 `--user-data-dir` +
+  `--class` 打开官方网页，不使用第三方 Electron 包装。不安装 Chromium。
+- 验证方式：apollo `home.packages` 含
+  `slack-4.51.180`、`google-chrome-155.0.8059.79`，不含 Chromium；generic 只含 Chrome；`desktopEntries.{notion,linear}.exec`
+  求值正确；GitHub Actions eval。窗口 app-id 需部署后用 `niri msg windows` 实测确认。
+- 待办：Claude Desktop 官方 Linux Beta 仅提供 `.deb`，待自行打包。
+- 关联文档：[浏览器与工作协作应用](./work-apps.md)、[Niri 工作区与窗口分配](./niri-workspaces.md)。
+
 ### 删除剩余的上游 ryan4yin 内容：图片、头像、外部链接
 
 - 影响范围：noctalia 头像改为读取 `~/.face`（原指向上游作者的个人照片
