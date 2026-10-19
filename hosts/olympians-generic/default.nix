@@ -21,7 +21,8 @@ in
     # ../_shared/preservation.nix
   ];
 
-  boot.kernelPackages = pkgs.linuxPackages_7_0;
+  # 固定到 LTS 系列：非 LTS 内核 EOL 后会被 nixpkgs 直接删除，导致求值失败
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
 
   boot.loader = {
     grub.enable = false;

@@ -4,36 +4,37 @@
 
 ## 当前方案
 
-- 主 `nixpkgs` 输入使用 `github:nixos/nixpkgs/nixos-unstable`。
-- 当前 `flake.lock` 将主 `nixpkgs` 固定到 `0c88e1f2bdb93d5999019e99cb0e61e1fe2af4c5`。
-- 这个 `nixpkgs` 求值出的 NixOS 版本是 `26.11.20260702.6517942`。
-- `home-manager` 输入跟随主 `nixpkgs`，当前固定到 `abfad3d2958c9e6300a883bd443512c55dfeb1be`。更新主
-  `nixpkgs` 时应同步更新它，避免模块 API 与包集合不匹配。
-- `apollo` 显式使用 `pkgs.linuxPackages_7_0`。
-- 当前 `apollo` 求值出的内核版本是 `7.0.14`。
-- rEFInd 当前只保留最新 1 个 NixOS
-  generation，避免启动菜单长期显示旧 generation；内核升级测试前可临时调高。
+- 主 `nixpkgs` 输入跟踪 `nixos-unstable`，具体锁定版本以 `flake.lock` 为准。
+- `apollo` 和 `generic` 显式固定到 **6.18 LTS**：`pkgs.linuxPackages_6_18`。2026-10-19 求值版本为
+  `6.18.56`，NVIDIA 驱动 `595.104.02`。
+- rEFInd 当前只保留最新 1 个 NixOS generation；内核升级测试前应临时调高（见下文“验证方式”）。
 - `nixos-unstable` 更新移除了旧的 `services.kmscon.fonts` 和 `services.kmscon.extraConfig`
   选项；当前仓库已迁移到 `services.kmscon.config.font-name`、`font-size` 和 `hwaccel`。
 - `nixos-unstable` 更新移除了 `nodePackages`
-  别名；当前仓库已将编辑器工具和 devShell 中的 Node 工具迁移到顶层包名，例如
-  `yaml-language-server`、`typescript-language-server` 和 `prettier`。
+  别名；当前仓库已将编辑器工具和 devShell 中的 Node 工具迁移到顶层包名。
 
-`kernel.org` 在 2026-07-04 的状态：
+### 为什么固定 LTS 系列
 
-- 最新 stable 是 `7.1.2`。
-- `7.0.14` 已标记为 EOL。
+nixpkgs 会在内核系列 EOL 后**直接删除**它（把 `linuxPackages_X_Y` 改成 `throw`）。2026-10 之前
+`apollo` 固定在非 LTS 的 `7.0`，主 nixpkgs 更新后 `linuxPackages_7_0`
+被删，导致所有 NixOS 主机求值失败、CI 持续报错、apollo 无法 rebuild。
 
-当前不直接使用 `pkgs.linuxPackages_latest`，因为它会跟随 nixpkgs 中最新主线内核分支移动。`apollo`
-带 NVIDIA 闭源/开源内核模块与日常桌面负载，短期固定到 `linuxPackages_7_0` 更利于回滚和排查；但由于
-`7.0.14` 已 EOL，下一次内核维护应优先评估升级到当前 nixpkgs 中仍受维护的内核系列。
+固定 LTS 系列（当前 6.18，nixpkgs 默认内核）同时满足两点：版本明确、便于回滚排查；维护周期长，不会因为 nixpkgs 更新突然失效。不使用
+`linuxPackages_latest`，因为它会随 nixpkgs 跨大版本跳动。
+
+当前 nixpkgs 中可用系列可以这样查看：
+
+```bash
+nix eval --raw .#nixosConfigurations.apollo.pkgs.linuxPackages.kernel.version   # nixpkgs 默认（LTS）
+nix eval --raw .#nixosConfigurations.apollo.pkgs.linuxPackages_latest.kernel.version
+```
 
 ## 配置入口
 
-`hosts/olympians-apollo/default.nix`：
+`hosts/olympians-apollo/default.nix`、`hosts/olympians-generic/default.nix`：
 
 ```nix
-boot.kernelPackages = pkgs.linuxPackages_7_0;
+boot.kernelPackages = pkgs.linuxPackages_6_18;
 ```
 
 NixOS 的 `boot.kernelPackages` 会同时切换内核以及依赖当前内核构建的包。`hosts/_shared/nvidia.nix`
@@ -54,7 +55,6 @@ nix flake update home-manager
 
 ```bash
 nix eval --raw .#nixosConfigurations.apollo.config.boot.kernelPackages.kernel.version
-nix eval --raw .#nixosConfigurations.apollo.pkgs.linuxPackages_7_0.kernel.version
 ```
 
 如果将来要改到最新主线内核，把 `apollo` 配置改为：
@@ -63,8 +63,7 @@ nix eval --raw .#nixosConfigurations.apollo.pkgs.linuxPackages_7_0.kernel.versio
 boot.kernelPackages = pkgs.linuxPackages_latest;
 ```
 
-如果只想继续使用
-`7.0.x`，需要先确认 nixpkgs 中是否仍提供安全更新。不要直接手写内核 tarball，除非确实要维护自定义内核构建。
+下一个 LTS 系列进入 nixpkgs 后，再评估是否把固定版本切过去。不要直接手写内核 tarball，除非确实要维护自定义内核构建。
 
 ## 验证方式
 

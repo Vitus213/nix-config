@@ -4,6 +4,21 @@
 
 ## 2026-10-19
 
+### 内核从已删除的 7.0 切到 6.18 LTS，修复 CI 与 apollo rebuild
+
+- 影响范围：`apollo`、`generic` 的内核（及随内核构建的 NVIDIA 模块）；下一次 rebuild + 重启生效。
+- 根因：2026-10-17 主 nixpkgs 更新到 `55bfb4d` 后，`linuxPackages_7_0` 因上游 EOL 被删除（变为
+  `throw`），所有 NixOS 主机求值失败。自那以后 GitHub Actions
+  eval 持续失败，apollo 也无法 rebuild。报错由上一条新增的 CI annotation 暴露。
+- 配置入口：`hosts/olympians-apollo/default.nix`、`hosts/olympians-generic/default.nix`：
+  `pkgs.linuxPackages_7_0` → `pkgs.linuxPackages_6_18`。
+- 验证方式：`nixosConfigurations.{apollo,generic}.config.boot.kernelPackages.kernel.version` 求值为
+  `6.18.56`；apollo `hardware.nvidia.package` 求值为 `nvidia-x11-595.104.02`；GitHub Actions
+  eval 复跑。
+- 部署注意：apollo 的 rEFInd 只保留 1 个 generation，重启前先临时调高
+  `boot.loader.refind.maxGenerations` 以保留旧内核回滚入口。
+- 关联文档：[NixOS 内核策略](./nixos-kernel.md)。
+
 ### 删除 athena 主机；CI 暴露求值报错并检查测试结果
 
 - 影响范围：移除 `nixosConfigurations.athena`；所有 NixOS 主机的 `authorized_keys` 不再包含
