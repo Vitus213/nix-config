@@ -17,12 +17,6 @@ let
     // {
       inherit mylib myvars;
 
-      pkgs-patched = import inputs.nixpkgs-patched {
-        inherit system;
-        # to use chrome, we need to allow the installation of non-free software
-        config.allowUnfree = true;
-      };
-
       pkgs-x64 = import nixpkgs {
         system = "x86_64-linux";
 

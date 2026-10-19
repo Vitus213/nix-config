@@ -32,19 +32,7 @@ in
     # See the “Environment variables” section of pass(1) and the extension man pages for more information about the available keys.
     settings = {
       PASSWORD_STORE_DIR = passwordStoreDir;
-      # Overrides the default gpg key identification set by init.
-      # Hexadecimal key signature is recommended.
-      # Multiple keys may be specified separated by spaces.
-      PASSWORD_STORE_KEY = lib.strings.concatStringsSep " " [
-        "EF824EB73CFD6CC7" # E - Ryan Yin (For pass & ssh only) <ryan4yin@linux.com>
-      ];
-      # all .gpg-id files and non-system extension files must be signed using a detached signature using the GPG key specified by
-      #   the full 40 character upper-case fingerprint in this variable.
-      # If multiple fingerprints are specified, each separated by a whitespace character, then signatures must match at least one.
-      # The init command will keep signatures of .gpg-id files up to date.
-      PASSWORD_STORE_SIGNING_KEY = lib.strings.concatStringsSep " " [
-        "C2A313F98166C942" # S - Ryan Yin (For pass & ssh only) <ryan4yin@linux.com>
-      ];
+      # 加密用的 GPG key 由 `pass init <你的 key ID>` 写入密码库的 .gpg-id，不在这里固定。
       PASSWORD_STORE_CLIP_TIME = "60";
       PASSWORD_STORE_GENERATED_LENGTH = "12";
       PASSWORD_STORE_ENABLE_EXTENSIONS = "true";

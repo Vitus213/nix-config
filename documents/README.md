@@ -14,6 +14,7 @@
 | [通用 NixOS 桌面 Host](./generic-nixos-host.md)                            | `generic`：不带个人 secrets / preservation 的桌面模板 |
 | [hestia（NixOS-WSL）](./hestia-wsl.md)                                     | WSL 终端主机的部署与使用                              |
 | [主机共享模块与仓库清理](./host-shared-modules.md)                         | `hosts/_shared/` 的设计与 2026-08 的主机层去重        |
+| [LUKS + Btrfs 分区示例](./luks-btrfs-layout.md)                            | 需要整盘加密或 Btrfs 子卷时替换默认 ext4 分区步骤     |
 | [rEFInd 引导方案](./refind-boot.md)                                        | `apollo` 上 NixOS 与 Windows 双系统引导               |
 | [NixOS 内核策略](./nixos-kernel.md)                                        | 内核版本选择方式                                      |
 

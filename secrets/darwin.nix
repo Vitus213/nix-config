@@ -29,47 +29,12 @@
 
   age.secrets =
     let
-      noaccess = {
-        mode = "0000";
-        owner = "root";
-      };
-      high_security = {
-        mode = "0500";
-        owner = "root";
-      };
       user_readable = {
         mode = "0500";
         owner = myvars.username;
       };
     in
     {
-      # NOTE(vitus): bootstrap minimal desktop secrets first.
-      # Re-enable the following secrets after the darwin migration is complete.
-      #
-      # # ---------------------------------------------
-      # # no one can read/write this file, even root.
-      # # ---------------------------------------------
-      #
-      # # .age means the decrypted file is still encrypted by age(via a passphrase)
-      # "ryan4yin-gpg-subkeys.priv.age" = {
-      #   file = "${mysecrets}/ryan4yin-gpg-subkeys-2024-01-27.priv.age.age";
-      # }
-      # // noaccess;
-      #
-      # # ---------------------------------------------
-      # # only root can read this file.
-      # # ---------------------------------------------
-      #
-      # "wg-business.conf" = {
-      #   file = "${mysecrets}/wg-business.conf.age";
-      # }
-      # // high_security;
-      #
-      # "rclone.conf" = {
-      #   file = "${mysecrets}/rclone.conf.age";
-      # }
-      # // high_security;
-
       "nix-access-tokens" = {
         file = "${mysecrets}/nix-access-tokens.age";
       }
@@ -80,15 +45,6 @@
         file = "${mysecrets}/github_token.age";
       }
       // user_readable;
-
-      # ---------------------------------------------
-      # user can read this file.
-      # ---------------------------------------------
-
-      # "ssh-key-romantic" = {
-      #   file = "${mysecrets}/ssh-key-romantic.age";
-      # }
-      # // user_readable;
 
       # alias-for-work
       "alias-for-work.nushell" = {
@@ -106,27 +62,6 @@
   # place secrets in /etc/
   # NOTE: this will fail for the first time. cause it's running before "activate-agenix"
   environment.etc = {
-    # NOTE(vitus): bootstrap minimal desktop secrets first.
-    # Re-enable the following mappings after the darwin migration is complete.
-    #
-    # # wireguard config used with `wg-quick up wg-business`
-    # # Fix DNS for WireGuard on macOS: https://github.com/ryan4yin/nix-config/issues/5
-    # "wireguard/wg-business.conf" = {
-    #   source = config.age.secrets."wg-business.conf".path;
-    # };
-    #
-    # "agenix/rclone.conf" = {
-    #   source = config.age.secrets."rclone.conf".path;
-    # };
-    #
-    # "agenix/ssh-key-romantic" = {
-    #   source = config.age.secrets."ssh-key-romantic".path;
-    # };
-    #
-    # "agenix/ryan4yin-gpg-subkeys.priv.age" = {
-    #   source = config.age.secrets."ryan4yin-gpg-subkeys.priv.age".path;
-    # };
-    #
     # nix-access-tokens is consumed directly by modules/darwin/nix-core.nix via
     # `config.age.secrets.nix-access-tokens.path`, so it does not need an /etc mount.
 

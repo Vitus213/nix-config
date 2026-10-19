@@ -4,6 +4,40 @@
 
 ## 2026-10-19
 
+### 清除上游 ryan4yin 遗留：根证书信任、GPG key、nixpkgs fork 与无主配置
+
+- 影响范围：所有 NixOS / macOS 主机不再信任 `Ryan4Yin's Root CA 1`；noctalia-shell `4.4.3` →
+  `4.7.7`；pass 不再固定 Ryan 的 GPG key；GPG 公钥环改为可写；`nix.distributedBuilds`
+  关闭（构建机列表原本为空）。
+- 安全：`modules/base/security.nix`
+  曾把上游作者的私有根证书（私钥不在本仓库，有效期至 2034）加入系统信任库，持有该私钥者可签发本机信任的任意 TLS 证书，现已移除并删除
+  `certs/`。
+- 配置入口：
+  - 删除
+    `modules/base/security.nix`、`certs/`、`modules/nixos/base/remote-building.nix`、`infra/`（上游 homelab
+    MinIO Terraform）、`nixos-installer/`（引用已不存在的
+    `hosts/olympians-apollo/preservation.nix`，无法求值）。
+  - `secrets/nixos.nix`：删除从未启用的 `modules.secrets.server.*` 六个选项及其引用的十余个不存在于
+    `my-secrets` 的密钥；删除注释掉的上游 GPG / WireGuard / rclone /
+    SMB 条目。桌面生效的 5 个 secret 不变。 `secrets/darwin.nix` 同样清理注释条目。`my-secrets`
+    仓库未改动。
+  - `home/base/tui/password-store/default.nix`：删除 `PASSWORD_STORE_KEY` /
+    `PASSWORD_STORE_SIGNING_KEY` （上游作者的 key
+    ID）；`home/base/tui/gpg/default.nix`：`mutableKeys` / `mutableTrust` 改为 `true`。
+  - `flake.nix`：删除 `nixpkgs-patched`（ryan4yin/nixpkgs fork，停在 2026-02）；noctalia 改用
+    `pkgs.noctalia-shell`。 `nu_scripts` 改指向上游 `nushell/nu_scripts`，锁定 rev `a571833`
+    本身在上游历史中，内容不变。
+  - `modules/nixos/base/monitoring.nix`：node exporter 排除规则里写死的 `home/ryan` 改为
+    `myvars.username`。
+  - `Justfile`：`up-nix` 去掉已删除的 `nixpkgs-patched`；删除触发上游仓库 workflow 的 `pkg-review`
+    系列命令。
+  - `LICENSE` 保留原作者 MIT 版权声明并追加本仓库作者；README 注明 fork 来源。
+  - 旧安装器中的 LUKS + Btrfs 示例迁移为 [LUKS + Btrfs 分区示例](./luks-btrfs-layout.md)。
+- 验证方式：apollo 求值 `home.packages` 含 `noctalia-shell-4.7.7`；`age.secrets` 为原 5 项；
+  `security.pki.certificateFiles` 为空；所有改动的 `.nix` 语法解析通过；GitHub Actions eval。
+- 后续：如需使用 pass，在本机 `gpg --full-generate-key` 生成自己的 key 后执行 `pass init <key ID>`。
+- 关联文档：[文档索引](./README.md)、[应用版本审计](./application-version-audit.md)。
+
 ### apollo rEFInd 保留 generation 数 1 → 3
 
 - 影响范围：apollo 启动菜单；下一次 `nixos-rebuild boot/switch` 后生效。

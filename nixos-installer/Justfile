@@ -1,8 +1,0 @@
-# List all the just commands
-default:
-    @just --list
-
-# Enter a shell session which has all the necessary tools for this flake
-[linux]
-test:
-  nix build ".#nixosConfigurations.apollo.config.system.build.toplevel" --show-trace --verbose

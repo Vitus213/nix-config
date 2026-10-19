@@ -100,7 +100,7 @@ in
         #
         # [user]
         #   email = "xxx@xxx.com"
-        #   name = "Ryan Yin"
+        #   name = "Your Name"
         path = "~/work/.gitconfig";
         condition = "gitdir:~/work/";
       }
@@ -123,9 +123,6 @@ in
       #   "ssh://git@github.com/${ghUser}" = {
       #     insteadOf = "https://github.com/${ghUser}";
       #   };
-      #   # "ssh://git@bitbucket.com/ryan4yin" = {
-      #   #   insteadOf = "https://bitbucket.com/ryan4yin";
-      #   # };
       # };
 
       credential = {

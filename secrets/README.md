@@ -75,7 +75,7 @@ nix shell github:ryantm/agenix#agenix
 或者使用 ragenix:
 
 ```bash
-nix shell github:ryan4yin/ragenix#ragenix
+nix shell github:yaxitech/ragenix#ragenix
 ```
 
 在 private secrets 仓库的 `secrets.nix` 中为新文件添加 recipients，例如:

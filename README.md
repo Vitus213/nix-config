@@ -19,32 +19,32 @@
 这个仓库是我的个人 Nix 配置，用来维护 NixOS、nix-darwin 和 home-manager 环境。它包含个人硬件配置、`/persistent`
 持久化布局、private `mysecrets` input 和 agenix secrets，不适合作为通用模板直接套到陌生机器上。
 
+本仓库最初 fork 自
+[ryan4yin/nix-config](https://github.com/ryan4yin/nix-config)，之后按自己的机器和需求改写；原作者的主机、密钥、证书和私有依赖已全部移除。
+
 **快速导航**：[主机清单](./hosts) · [密钥管理](./secrets) · [文档索引](./documents/README.md) ·
 [变更记录](./documents/changelog.md) · [新机部署](./documents/fresh-nixos-preservation-deploy.md)
 
 ## 仓库架构
 
-| 路径               | 作用                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------- |
-| `flake.nix`        | flake inputs、二进制缓存配置；`outputs` 直接转交给 `outputs/`                          |
-| `flake.lock`       | 锁定 nixpkgs、home-manager、preservation、agenix、mysecrets 等输入                     |
-| `outputs/`         | 按平台生成 `nixosConfigurations`、`darwinConfigurations`、eval tests 等输出            |
-| `lib/`             | `nixosSystem` / `macosSystem` 生成器和 `scanPaths`、`relativeToRoot` 等工具            |
-| `hosts/`           | 每台机器的系统入口、硬件配置、网络、preservation 和主机专用模块                        |
-| `modules/`         | 可复用的 NixOS / nix-darwin **系统级**模块                                             |
-| `home/`            | 可复用的 home-manager **用户级**配置，分 `base`（共享）/ `linux` / `darwin`            |
-| `secrets/`         | agenix 模块定义；密文本体来自 private `mysecrets` flake input                          |
-| `vars/`            | 用户名、网络地址等跨模块变量（以 `myvars` 注入所有模块）                               |
-| `overlays/`        | 局部 package overlay，每个子目录自带 README 说明原因和移除条件                         |
-| `hardening/`       | NixPak、bubblewrap、AppArmor 等沙箱和加固配置                                          |
-| `documents/`       | **唯一的文档目录**：专题文档、排障记录、变更记录，入口是 [索引](./documents/README.md) |
-| `nixos-installer/` | 旧版 ISO 安装辅助入口；新机部署优先看 fresh preservation 文档                          |
-| `infra/`           | homelab 对象存储（MinIO / Loki）的 Terraform 配置                                      |
-| `certs/`           | 自用私有 CA 的公开证书和生成脚本                                                       |
-| `templates/`       | `nix flake init` 开发模板                                                              |
-| `scripts/`         | 仓库自检脚本，例如禁止引入 stable/master nixpkgs 的策略检查                            |
-| `Justfile`         | 常用命令入口，例如 `just local`、`just test`、`just local-host ...`                    |
-| `AGENTS.md`        | 自动化代理（和人）在本仓库工作时的约定：验证方式、文档同步、changelog 规则             |
+| 路径         | 作用                                                                                   |
+| ------------ | -------------------------------------------------------------------------------------- |
+| `flake.nix`  | flake inputs、二进制缓存配置；`outputs` 直接转交给 `outputs/`                          |
+| `flake.lock` | 锁定 nixpkgs、home-manager、preservation、agenix、mysecrets 等输入                     |
+| `outputs/`   | 按平台生成 `nixosConfigurations`、`darwinConfigurations`、eval tests 等输出            |
+| `lib/`       | `nixosSystem` / `macosSystem` 生成器和 `scanPaths`、`relativeToRoot` 等工具            |
+| `hosts/`     | 每台机器的系统入口、硬件配置、网络、preservation 和主机专用模块                        |
+| `modules/`   | 可复用的 NixOS / nix-darwin **系统级**模块                                             |
+| `home/`      | 可复用的 home-manager **用户级**配置，分 `base`（共享）/ `linux` / `darwin`            |
+| `secrets/`   | agenix 模块定义；密文本体来自 private `mysecrets` flake input                          |
+| `vars/`      | 用户名、网络地址等跨模块变量（以 `myvars` 注入所有模块）                               |
+| `overlays/`  | 局部 package overlay，每个子目录自带 README 说明原因和移除条件                         |
+| `hardening/` | NixPak、bubblewrap、AppArmor 等沙箱和加固配置                                          |
+| `documents/` | **唯一的文档目录**：专题文档、排障记录、变更记录，入口是 [索引](./documents/README.md) |
+| `templates/` | `nix flake init` 开发模板                                                              |
+| `scripts/`   | 仓库自检脚本，例如禁止引入 stable/master nixpkgs 的策略检查                            |
+| `Justfile`   | 常用命令入口，例如 `just local`、`just test`、`just local-host ...`                    |
+| `AGENTS.md`  | 自动化代理（和人）在本仓库工作时的约定：验证方式、文档同步、changelog 规则             |
 
 ### 一台主机是怎么拼出来的
 
@@ -181,7 +181,7 @@ just local debug
 
 - [全新 NixOS + preservation 部署流程](./documents/fresh-nixos-preservation-deploy.md)
 - [通用 NixOS 桌面 host](./documents/generic-nixos-host.md)
-- [旧版 ISO 安装辅助入口](./nixos-installer/)
+- [LUKS + Btrfs 分区示例](./documents/luks-btrfs-layout.md)
 - [NixOS 内核策略](./documents/nixos-kernel.md)
 - [rEFInd 启动配置](./documents/refind-boot.md)
 

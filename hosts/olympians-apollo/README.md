@@ -4,7 +4,6 @@
 
 相关文档:
 
-- [nixos-installer](../../nixos-installer/README.md)
 - [全新 NixOS + preservation 部署流程](../../documents/fresh-nixos-preservation-deploy.md)
 
 ## 待办

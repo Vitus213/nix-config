@@ -6,8 +6,8 @@
   #  echo $XDG_DATA_DIRS
   # the system-level desktop entries can be list by command:
   #   ls -l /run/current-system/sw/share/applications/
-  # the user-level desktop entries can be list by command(user ryan):
-  #  ls /etc/profiles/per-user/ryan/share/applications/
+  # the user-level desktop entries can be list by command:
+  #  ls /etc/profiles/per-user/$USER/share/applications/
   xdg.mimeApps = {
     enable = true;
     # let `xdg-open` to open the url with the correct application.

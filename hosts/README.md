@@ -61,15 +61,6 @@ WSL 主机不需要 `hardware-configuration.nix`：改为导入 `nixos-wsl` 模�
 - macOS: 参考 `darwin-artemis/`
 - preservation: 参考 `hosts/_shared/preservation.nix`
 
-## 分布式构建
-
-`modules/nixos/base/remote-building.nix` 打开了 `nix.distributedBuilds`，但 `nix.buildMachines`
-目前为空（原有构建机条目继承自上游仓库，已全部注释），所以**实际上所有构建都在本机进行**。
-
-需要远程构建时，在该文件里添加构建机条目，并在 `vars/networking.nix` 的 `hostsAddr`
-中补充对应主机地址；SSH 密钥使用 agenix 下发的 `/etc/agenix/ssh-key-romantic`，见
-[Homelab SSH Key](../documents/homelab-ssh-key-romantic.md)。
-
 ## 相关文档
 
 - [全新 NixOS + preservation 部署流程](../documents/fresh-nixos-preservation-deploy.md)

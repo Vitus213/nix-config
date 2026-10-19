@@ -14,7 +14,7 @@ in
   config = {
     # list all dbus services:
     #   ls -al /run/current-system/sw/share/dbus-1/services/
-    #   ls -al /etc/profiles/per-user/ryan/share/dbus-1/services/
+    #   ls -al /etc/profiles/per-user/$USER/share/dbus-1/services/
     dbus = {
       # `--see`: The bus name can be enumerated by the application.
       # `--talk`: The application can send messages to, and receive replies and signals from, the bus name.

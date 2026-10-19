@@ -105,8 +105,8 @@ mkdir -p /mnt/boot /mnt/persistent
 mount /dev/disk/by-label/ESP /mnt/boot
 ```
 
-如果你要用 LUKS 或 btrfs subvolume，可以参考 `nixos-installer/README.md`，但要保留一个最终挂载到
-`/persistent` 的持久化位置。
+如果你要用 LUKS 或 btrfs subvolume，可以参考
+[LUKS + Btrfs 分区示例](./luks-btrfs-layout.md)，但要保留一个最终挂载到 `/persistent` 的持久化位置。
 
 挂载完成后立刻检查:
 

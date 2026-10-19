@@ -41,9 +41,6 @@
     # for WSL (Windows Subsystem for Linux)
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
 
-    # nixpkgs with some custom patches
-    nixpkgs-patched.url = "github:ryan4yin/nixpkgs/nixos-unstable";
-
     # for macos
     nixpkgs-darwin.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     nix-darwin = {
@@ -86,8 +83,6 @@
     agenix = {
       # lock with git commit at May 18, 2025
       url = "github:ryantm/agenix/4835b1dc898959d8547a871ef484930675cb47f1";
-      # replaced with a type-safe reimplementation to get a better error message and less bugs.
-      # url = "github:ryan4yin/ragenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -122,7 +117,7 @@
     ########################  Some non-flake repositories  #########################################
 
     nu_scripts = {
-      url = "github:ryan4yin/nu_scripts";
+      url = "github:nushell/nu_scripts";
       flake = false;
     };
 

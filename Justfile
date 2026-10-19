@@ -100,7 +100,7 @@ repair-store *paths:
 # Update all Nixpkgs inputs
 [group('nix')]
 up-nix:
-  nix flake update --commit-lock-file nixpkgs nixpkgs-darwin nixpkgs-patched
+  nix flake update --commit-lock-file nixpkgs nixpkgs-darwin
 
 # override nixpkgs's commit hash
 [group('nix')]
@@ -210,33 +210,7 @@ list-failed:
 list-systemd:
   systemctl list-units systemd-*
 
-
-# =================================================
-#
-# Nixpkgs Review via Github Action
-# https://github.com/ryan4yin/nixpkgs-review-gha
-#
-# =================================================
-
 [linux]
-[group('nixpkgs')]
+[group('github')]
 gh-login:
   gh auth login -h github.com --skip-ssh-key --git-protocol https --web
-
-# Run nixpkgs-review for PR
-[linux]
-[group('nixpkgs')]
-pkg-review pr:
-  gh workflow run review.yml --repo ryan4yin/nixpkgs-review-gha -f x86_64-darwin=no -f post-result=true -f pr={{pr}}
-
-# Run package tests for PR
-[linux]
-[group('nixpkgs')]
-pkg-test pr pname:
-  gh workflow run review.yml --repo ryan4yin/nixpkgs-review-gha -f x86_64-darwin=no -f post-result=true -f pr={{pr}} -f extra-args="-p {{pname}}.passthru.tests"
-
-# View the summary of a workflow
-[linux]
-[group('nixpkgs')]
-pkg-summary:
-  gh workflow view review.yml --repo ryan4yin/nixpkgs-review-gha

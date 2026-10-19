@@ -388,22 +388,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-patched": {
-      "locked": {
-        "lastModified": 1771008912,
-        "narHash": "sha256-gf2AmWVTs8lEq7z/3ZAsgnZDhWIckkb+ZnAo5RzSxJg=",
-        "owner": "ryan4yin",
-        "repo": "nixpkgs",
-        "rev": "a82ccc39b39b621151d6732718e3e250109076fa",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ryan4yin",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-syllune": {
       "locked": {
         "lastModified": 1782467914,
@@ -441,13 +425,13 @@
       "locked": {
         "lastModified": 1789906887,
         "narHash": "sha256-LKONPdLlXfDZ03tEHiJ7rH49vwPHaiFIE0Zvi3bh+UY=",
-        "owner": "ryan4yin",
+        "owner": "nushell",
         "repo": "nu_scripts",
         "rev": "a571833566d71671151566e1a2cda4e6338f27bb",
         "type": "github"
       },
       "original": {
-        "owner": "ryan4yin",
+        "owner": "nushell",
         "repo": "nu_scripts",
         "type": "github"
       }
@@ -538,7 +522,6 @@
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-darwin": "nixpkgs-darwin",
-        "nixpkgs-patched": "nixpkgs-patched",
         "nixpkgs-syllune": "nixpkgs-syllune",
         "nu_scripts": "nu_scripts",
         "nuenv": "nuenv",
