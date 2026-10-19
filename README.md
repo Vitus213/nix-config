@@ -19,9 +19,6 @@
 这个仓库是我的个人 Nix 配置，用来维护 NixOS、nix-darwin 和 home-manager 环境。它包含个人硬件配置、`/persistent`
 持久化布局、private `mysecrets` input 和 agenix secrets，不适合作为通用模板直接套到陌生机器上。
 
-本仓库最初 fork 自
-[ryan4yin/nix-config](https://github.com/ryan4yin/nix-config)，之后按自己的机器和需求改写；原作者的主机、密钥、证书和私有依赖已全部移除。
-
 **快速导航**：[主机清单](./hosts) · [密钥管理](./secrets) · [文档索引](./documents/README.md) ·
 [变更记录](./documents/changelog.md) · [新机部署](./documents/fresh-nixos-preservation-deploy.md)
 
@@ -151,14 +148,6 @@ secrets 没 rekey，第一次切换后很容易看到 `nix-config` 目录变空�
 | 文件系统和加密             | tmpfs `/`、Btrfs 子卷、LUKS 加密、`/persistent` 持久化                                         |
 | Secure Boot                | 当前未启用（历史方案为 [lanzaboote][lanzaboote]，已随主机清理移除）                            |
 
-## 截图
-
-![desktop](./_img/2026-01-05_niri-noctalia_desktop.webp)
-
-![overview](./_img/2026-01-04_niri-noctalia_overview.webp)
-
-![nvim](./_img/2026-01-04_niri-noctalia_nvim.webp)
-
 ## 部署
 
 NixOS:
@@ -201,27 +190,14 @@ just local-host artemis
 just local debug
 ```
 
-## 学习资料
+## 参考文档
 
-- [NixOS & Nix Flakes Book](https://github.com/ryan4yin/nixos-and-flakes-book)
-- [nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter)
-
-## 参考仓库
-
-- [NixOS-CN/NixOS-CN-telegram](https://github.com/NixOS-CN/NixOS-CN-telegram)
-- [notusknot/dotfiles-nix](https://github.com/notusknot/dotfiles-nix)
-- [xddxdd/nixos-config](https://github.com/xddxdd/nixos-config)
-- [bobbbay/dotfiles](https://github.com/bobbbay/dotfiles)
-- [gytis-ivaskevicius/nixfiles](https://github.com/gytis-ivaskevicius/nixfiles)
-- [davidtwco/veritas](https://github.com/davidtwco/veritas)
-- [gvolpe/nix-config](https://github.com/gvolpe/nix-config)
-- [Ruixi-rebirth/flakes](https://github.com/Ruixi-rebirth/flakes)
-- [fufexan/dotfiles](https://github.com/fufexan/dotfiles)
-- [nix-community/srvos](https://github.com/nix-community/srvos)
-- [hlissner/dotfiles](https://github.com/hlissner/dotfiles)
-- [viperML/dotfiles](https://github.com/viperML/dotfiles)
-- [maxbrunet/dotfiles](https://github.com/maxbrunet/dotfiles)
-- [1amSimp1e/dots](https://github.com/1amSimp1e/dots)
+- [NixOS Manual](https://nixos.org/manual/nixos/unstable/)
+- [Nix Reference Manual](https://nix.dev/manual/nix/latest/)
+- [nix.dev](https://nix.dev/)
+- [Home Manager Manual](https://nix-community.github.io/home-manager/)
+- [nix-darwin Manual](https://nix-darwin.github.io/nix-darwin/manual/)
+- [NixOS Wiki](https://wiki.nixos.org/)
 
 [Niri]: https://github.com/YaLTeR/niri
 [Kitty]: https://github.com/kovidgoyal/kitty

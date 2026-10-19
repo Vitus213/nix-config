@@ -4,6 +4,23 @@
 
 ## 2026-10-19
 
+### 删除剩余的上游 ryan4yin 内容：图片、头像、外部链接
+
+- 影响范围：noctalia 头像改为读取 `~/.face`（原指向上游作者的个人照片
+  `_img/myself.jpg`）；其余为文档与注释。
+- 配置入口：删除 `_img/`（5 张图均为上游作者提交，包括 README 中的桌面截图和个人照片）；
+  `home/linux/gui/base/noctalia/config/settings.json`（`avatarImage`）；README 删除截图、上游的参考仓库列表和 fork 说明，“学习资料”改为 NixOS
+  / Nix / Home Manager / nix-darwin 官方文档；`flake.nix`、`overlays/README.md`、
+  `modules/darwin/README.md`、`home/base/tui/gpg/README.md`
+  中指向上游作者书籍和博客的链接改为官方文档或删除；neovim `astrocore.lua`
+  注释改为直接说明原因；`hosts/olympians-apollo/README.md` 删除上游 GPU 服务器的 DCGM 待办。
+- 保留：`LICENSE` 中原作者的 MIT 版权声明（协议要求衍生作品保留）；`agenix`
+  输入的作者 ryantm 是 agenix 官方维护者，不是上游作者。
+- 后续：把自己的头像放到 `~/.face`，noctalia 即显示；文件不存在时显示默认头像。
+- 验证方式：`flake.nix` 语法解析、`settings.json`
+  JSON 校验通过；全仓库检索无剩余上游作者引用（LICENSE 与历史记录除外）。
+- 关联文档：[文档索引](./README.md)。
+
 ### 清除上游 ryan4yin 遗留：根证书信任、GPG key、nixpkgs fork 与无主配置
 
 - 影响范围：所有 NixOS / macOS 主机不再信任 `Ryan4Yin's Root CA 1`；noctalia-shell `4.4.3` →

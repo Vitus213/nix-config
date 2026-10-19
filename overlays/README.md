@@ -22,4 +22,4 @@ overlays/
 
 ## 参考
 
-- [Overlays - NixOS & Flakes Book](https://nixos-and-flakes.thiscute.world/nixpkgs/overlays)
+- [Overlays - NixOS Wiki](https://wiki.nixos.org/wiki/Overlays)

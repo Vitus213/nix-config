@@ -3,10 +3,6 @@
 当前 Neovim 配置基于 [AstroNvim](https://github.com/AstroNvim/AstroNvim)。更多基础用法见
 [AstroNvim 文档](https://astronvim.com/)。
 
-## 截图
-
-![](/_img/astronvim_2023-07-13_00-39.webp)
-
 ## 配置结构
 
 | 内容                        | 标准位置                    | 当前方式                |

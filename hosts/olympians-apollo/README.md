@@ -6,10 +6,6 @@
 
 - [全新 NixOS + preservation 部署流程](../../documents/fresh-nixos-preservation-deploy.md)
 
-## 待办
-
-1. 安装 DCGM-Exporter，用于监控 NVIDIA GPU 状态。
-
 ## 当前硬件
 
 - CPU: AMD Ryzen 5 5600

@@ -1,18 +1,10 @@
 {
   description = "Vitus213's nix configuration for NixOS, nix-darwin and home-manager";
 
-  ##################################################################################################################
-  #
-  # Want to know Nix in details? Looking for a beginner-friendly tutorial?
-  # Check out https://github.com/ryan4yin/nixos-and-flakes-book !
-  #
-  ##################################################################################################################
-
   outputs = inputs: import ./outputs inputs;
 
   # the nixConfig here only affects the flake itself, not the system configuration!
-  # for more information, see:
-  #     https://nixos-and-flakes.thiscute.world/nix-store/add-binary-cache-servers
+  # https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-flake#flake-format
   nixConfig = {
     # substituers will be appended to the default substituters when fetching packages
     extra-substituters = [

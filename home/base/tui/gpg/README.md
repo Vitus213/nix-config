@@ -21,7 +21,6 @@ GnuPG 是 OpenPGP 标准的实现，用于管理 PGP key、签名、验证、加
 ## 基础密码学资料
 
 - <https://github.com/nakov/Practical-Cryptography-for-Developers-Book>
-- <https://thiscute.world/tags/cryptography/>
 
 ## GPG 如何保护私钥
 

@@ -13,5 +13,5 @@
 - `users.nix`: 用户设置
 - darwin 不兼容包的移除 overlay 统一定义在 `lib/macosSystem.nix`
 
-更完整的 nix-darwin 入门说明可参考
-[nix-darwin-kickstarter](https://github.com/ryan4yin/nix-darwin-kickstarter)。
+更完整的 nix-darwin 说明见官方 [nix-darwin](https://github.com/nix-darwin/nix-darwin) 仓库和
+[选项手册](https://nix-darwin.github.io/nix-darwin/manual/)。

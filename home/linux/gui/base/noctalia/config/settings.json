@@ -392,7 +392,7 @@
     "animationDisabled": false,
     "animationSpeed": 1,
     "autoStartAuth": false,
-    "avatarImage": "~/nix-config/_img/myself.jpg",
+    "avatarImage": "~/.face",
     "boxRadiusRatio": 1,
     "clockFormat": "hh\\nmm",
     "clockStyle": "custom",
