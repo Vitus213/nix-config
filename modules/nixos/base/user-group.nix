@@ -47,6 +47,9 @@
       "wireshark"
       "adbusers" # android debugging
       "libvirtd" # virt-viewer / qemu
+      # Voiceless 按住说话：daemon 只读 /dev/input 里的 ScrollLock（不抢占按键）。
+      # 代价：本用户的任何进程都能读取键盘事件。
+      "input"
     ];
   };
 

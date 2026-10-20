@@ -388,7 +388,7 @@
         "type": "github"
       }
     },
-    "nixpkgs-syllune": {
+    "nixpkgs-voiceless": {
       "locked": {
         "lastModified": 1782467914,
         "narHash": "sha256-pGvFkM8N0xEkIIXDe5YYfbEAvHrk4IxBrjB/x8OomhE=",
@@ -522,13 +522,13 @@
         "nixpak": "nixpak",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-darwin": "nixpkgs-darwin",
-        "nixpkgs-syllune": "nixpkgs-syllune",
+        "nixpkgs-voiceless": "nixpkgs-voiceless",
         "nu_scripts": "nu_scripts",
         "nuenv": "nuenv",
         "pre-commit-hooks": "pre-commit-hooks",
         "preservation": "preservation",
         "refind-minimal": "refind-minimal",
-        "syllune": "syllune",
+        "voiceless": "voiceless",
         "wallpapers": "wallpapers",
         "zen-browser": "zen-browser"
       }
@@ -552,27 +552,6 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "syllune": {
-      "inputs": {
-        "flake-utils": "flake-utils_2",
-        "nixpkgs": [
-          "nixpkgs-syllune"
-        ]
-      },
-      "locked": {
-        "lastModified": 1786974831,
-        "narHash": "sha256-oj1OQZDgS1yj+9fKfT3ocl9FSMs7l31OGAC5u62YXxU=",
-        "owner": "Vitus213",
-        "repo": "syllune",
-        "rev": "1d2492002084d004b86a5319b03eec5350fff450",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Vitus213",
-        "repo": "syllune",
         "type": "github"
       }
     },
@@ -618,6 +597,27 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "voiceless": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": [
+          "nixpkgs-voiceless"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792489293,
+        "narHash": "sha256-E5y5aSlgiDMx7+BhmTDO2+6+BV0zfN2r+keGxkUSjOw=",
+        "owner": "Vitus213",
+        "repo": "voiceless",
+        "rev": "e48eec0cf0916ca794b926f4f114bb27531004a4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Vitus213",
+        "repo": "voiceless",
         "type": "github"
       }
     },

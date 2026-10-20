@@ -259,8 +259,10 @@ binds {
     Mod+Shift+P { power-off-monitors; }
 
     // Utility shortcuts
-    Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音输入" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle"; }
-    Ctrl+Scroll_Lock repeat=false hotkey-overlay-title="Syllune 语音整理" { spawn-sh "$HOME/.config/eww/syllune-overlay-toggle prompt-optimize"; }
+    // Voiceless：ScrollLock 由 voiceless daemon 直接读 evdev（[hotkey] key），
+    // 按住说话 / 短按切换，Ctrl+ScrollLock 为整理模式；niri 不支持松开事件，故不在此绑定。
+    // 应急：Mod+Shift+D 切换开始/停止（不依赖 input 组）。
+    Mod+Shift+D repeat=false hotkey-overlay-title="Voiceless 语音输入" { spawn "voiceless" "ctl" "toggle"; }
     Mod+Shift+V { spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; }
     Mod+C { spawn "noctalia-shell" "ipc" "callx" "launcher" "calculator"; }
 

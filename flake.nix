@@ -115,14 +115,14 @@
 
     ########################  My own repositories  #########################################
 
-    # Syllune 语音输入（替代 Type4Me），远程 flake 锁定已验证提交。
-    # nixpkgs-syllune 固定到 syllune 自身 flake.lock 验证过的提交，避免主仓库
+    # Voiceless 语音输入（替代 Type4Me），远程 flake 锁定已验证提交。
+    # nixpkgs-voiceless 固定到 voiceless 自身 flake.lock 验证过的提交，避免主仓库
     # nixpkgs 更新时 sherpa-onnx/onnxruntime 依赖漂移、本机源码重编译。
-    syllune = {
-      url = "github:Vitus213/syllune";
-      inputs.nixpkgs.follows = "nixpkgs-syllune";
+    voiceless = {
+      url = "github:Vitus213/voiceless";
+      inputs.nixpkgs.follows = "nixpkgs-voiceless";
     };
-    nixpkgs-syllune.url = "github:NixOS/nixpkgs/e73de5be04e0eff4190a1432b946d469c794e7b4";
+    nixpkgs-voiceless.url = "github:NixOS/nixpkgs/e73de5be04e0eff4190a1432b946d469c794e7b4";
 
     # my private secrets repository.
     mysecrets = {
