@@ -2,7 +2,145 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-20
+
+### apollo 登录后自启动 Slack
+
+- 影响范围：开启 `modules.desktop.workApps` 的主机（apollo）；rebuild 后下次登录生效。
+- 配置入口：`home/linux/gui/base/work-apps.nix`（`xdg.autostart.entries` 加入 `slack.desktop`）。
+- 验证方式：`nix eval .#nixosConfigurations.apollo.config.home-manager.users.vitus.xdg.autostart.entries`
+  包含 `slack-4.51.180/share/applications/slack.desktop`。未执行 rebuild。
+- 关联文档：[浏览器与工作协作应用](./work-apps.md)。
+
+### Voiceless 重构：GPU 识别、常驻 daemon、输入框内预编辑、ScrollLock 按住说话
+
+- 影响范围：apollo；rebuild 后需重新登录一次（input 组生效）。
+- 配置入口：`home/linux/gui/base/voice-input.nix`（改用 voiceless 自带 Home Manager 模块：
+  `programs.voiceless` 的 CUDA 包、`service.enable`、`overlay.enable`；fcitx5 桥接 0.2）、
+  `modules/nixos/base/user-group.nix`（用户加入 `input` 组）、
+  `home/linux/gui/niri/conf/keybindings.kdl`（去掉 Scroll_Lock 绑定，新增应急 `Mod+Shift+D` →
+  `voiceless ctl toggle`）。
+- 变更内容：Qwen3-ASR 1.7B 在 RTX
+  3070 上本地识别（8 秒语音约 0.2 秒）；daemon 常驻显存，快捷键到开始录音约 15–70
+  ms；识别中的文字以预编辑显示在输入框，说完由 fcitx5 上屏；ScrollLock 由 daemon 读 evdev，按住说话 / 短按切换，Ctrl+ScrollLock 为整理模式；录音时暂停媒体播放。旧的
+  `~/.config/eww` 浮层与 `eww-voiceless-overlay` 服务已不再使用（浮层改为
+  `~/.config/eww-voiceless`）。
+- 验证方式：`nix build .#nixosConfigurations.apollo.config.home-manager.users.vitus.home.activationPackage`
+  构建通过，其中 voiceless 为 2a73053 的 CUDA 构建（含 `ctl`、cublas 依赖）。未执行 rebuild。
+- 手动步骤：rebuild 后运行收尾脚本（迁移历史录音路径、删除兼容符号链接、把配置切到 `local-offline` +
+  `inject.prefer = "fcitx5"` +
+  `[hotkey] key = "KEY_SCROLLLOCK"`、重启 fcitx5 与 daemon），再重新登录。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
+### 语音输入 Syllune 更名为 Voiceless，新增 Fcitx5 桥接上屏
+
+- 影响范围：apollo；rebuild 后生效。
+- 配置入口：`flake.nix`（input `voiceless` → `github:Vitus213/voiceless`，`nixpkgs-voiceless`）、
+  `home/linux/gui/base/voice-input.nix`（`voiceless-cpu`、`voiceless-web`、`eww-voiceless-overlay`）、
+  `home/linux/gui/niri/conf/keybindings.kdl`（`voiceless-overlay-toggle`）。
+- 变更内容：上游仓库与二进制更名；数据目录迁到 `~/.config/voiceless`、`~/.local/share/voiceless`、
+  `~/.cache/voiceless`，旧路径暂留符号链接。rebuild 后需手动把 `~/.config/eww/syllune-overlay*`
+  改名为 `voiceless-overlay*`、删除旧符号链接和 `~/.config/systemd/user/syllune-web.service.d`。
+- 同时新增 Fcitx5 桥接模块：`voice-input.nix` 把 `voiceless-fcitx5-bridge`（用本机 pkgs 构建）加入
+  `i18n.inputMethod.fcitx5.addons`；rebuild 并重启 fcitx5 后，把 `~/.config/voiceless/config.toml`
+  的 `inject.prefer` 改为 `"fcitx5"`，文本经输入法直接上屏，剪贴板仅作兜底。
+- 验证方式：`nix build .#nixosConfigurations.apollo.config.system.build.toplevel --dry-run`
+  求值通过；构建出的 `fcitx5-with-addons-5.1.23`
+  已包含桥接模块，并在私有 D-Bus 会话中通过端到端提交测试。未执行 rebuild。
+- 网页控制台：daemon 在 http://127.0.0.1:8790/
+  提供七页控制台（实时、识别引擎、词库、模式与提示词、快捷键与上屏、历史、诊断），原 `voiceless-web`
+  服务（`history serve`）已删除，避免端口冲突。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
+### 清理 ANTHROPIC_* / CLAUDE_CODE_* 环境变量与中转通道；Herdr 升级到 0.9.5
+
+- 影响范围：所有 source `alias-for-work.nushell` 的主机（apollo / artemis / hermes）；更新
+  `mysecrets` 并 rebuild 后新开 shell 生效。
+- 配置入口：`my-secrets/alias-for-work.nushell.age`：删除
+  `ANTHROPIC_AUTH_TOKEN`、`ANTHROPIC_BASE_URL`、`ANTHROPIC_API_KEY`、
+  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`、`CLAUDE_CODE_ATTRIBUTION_HEADER`，以及 anyrouter /
+  agentrouter / glm / claude 四个中转通道的 token、base URL 和 `use-any` / `use-agent` / `use-glm` /
+  `use-claude` 切换函数。
+- 变更内容：这些变量让 Claude Code 提示 "claude.ai connectors are disabled because ANTHROPIC_API_KEY
+  ... is set"，清理后 Claude Code 只使用 claude.ai 登录。Herdr 通过官方脚本重装为
+  `0.9.5`（`~/.local/bin`，不由仓库管理）。
+- 验证方式：用 `master_key` 解密新密文，确认已没有
+  `ANTHROPIC|CLAUDE_|ANYROUTER|AGENT_|GLM_|use-`；recipients 与原密文一致（8 个）；
+  `herdr --version` 为 `0.9.5`。未执行 rebuild。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)、[Herdr Agent 终端运行时](./herdr.md)。
+
+### NixOS 主机解密 omp-keys，自动生成 omp models.yml
+
+- 影响范围：开启 `modules.secrets.desktop` 的 NixOS 主机（apollo）；rebuild 后
+  `~/.omp/agent/models.yml` 由模板重新生成。
+- 配置入口：`secrets/nixos.nix`（新增 `age.secrets."omp-keys"`，与 darwin 一致）。
+- 变更内容：此前只有 `secrets/darwin.nix` 声明了 `omp-keys`，apollo 的 home-manager 激活时找不到
+  `/run/agenix/omp-keys` 而跳过生成，本机一直用 8 月的手写 `models.yml`。旧文件已备份为
+  `~/.omp/agent/models.yml.bak-20261020-manual`。用户级 `config.yml` 的角色、`enabledModels`
+  与 fallback 同步改为模板 provider（default `openai/gpt-5.6-sol`，slow/plan
+  `deepseek/deepseek-v4-pro`，advisor/review `anthropic/claude-opus-5-5`，smol
+  `deepseek/deepseek-flash`），旧版备份为 `config.yml.bak-20261020-manual`。
+- 验证方式：`just test` 通过；`age.secrets.omp-keys.path` 求值为 `/run/agenix/omp-keys`，owner 为
+  `vitus`。未执行 rebuild。
+- 关联文档：[omp 模型配置](./omp-models.md)、[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
+### 修复 Alt+Space 无法唤起 Noctalia launcher
+
+- 影响范围：Linux 桌面（Niri + Noctalia）；rebuild 后需执行
+  `systemctl --user restart noctalia-shell`。
+- 配置入口：`home/linux/gui/base/noctalia/default.nix`（服务 `QT_QPA_PLATFORM` 由 `wayland;xcb` 改为
+  `wayland`）。
+- 变更内容：noctalia-qs 0.0.12 的 ipc 按 `QT_QPA_PLATFORM`
+  推导的 display 过滤实例，服务与会话取值不一致导致 `noctalia-shell ipc call ...` 报
+  `No running instances`，Alt+Space 等快捷键失效。
+- 验证方式：`just test`；运行中实测 `QT_QPA_PLATFORM=wayland` 时 `noctalia-shell list`
+  为空，与服务一致时可找到实例。未执行 rebuild。
+- 关联文档：[Noctalia IPC 与服务环境](./noctalia-ipc.md)。
+
+### 恢复 bun，修复 omp 命令丢失
+
+- 影响范围：所有主机的用户环境；rebuild 后需手动执行一次
+  `bun install -g @oh-my-pi/pi-coding-agent`。
+- 配置入口：`home/base/core/npm.nix`（`home.packages` 加回 `bun`）。
+- 变更内容：8 月迁到 omp flake 时移除了 `bun`，10 月删除 omp
+  input 改回 bun 全局安装时没有加回，导致 generation 56 之后 `omp` 消失（`~/.cache/.bun/bin`
+  为空，且缺少 `bun` 运行时）。
+- 验证方式：`just test` 通过；`home-manager.users.vitus.home.packages` 含 `bun`。未执行 rebuild。
+- 关联文档：[Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)。
+
+### 平台判断迁移到 `stdenv.hostPlatform.*`
+
+- 影响范围：所有主机求值；无行为变化，只消除 nixpkgs 的弃用 warning。
+- 配置入口：`home/` 下 9 个模块与 `templates/bevy/flake.nix`，`stdenv.isLinux/isDarwin/isx86_64`
+  改为 `stdenv.hostPlatform.*`。
+- 验证方式：`just test` 通过；apollo toplevel 求值后，本仓库不再产生该 warning。剩余 1 条
+  `stdenv.isLinux` 来自 home-manager 上游 `modules/systemd.nix`，需等待上游修复后更新 input。
+- 关联文档：[NixOS 内核策略](./nixos-kernel.md)（nixpkgs unstable 弃用项迁移记录）。
+
+### apollo rEFInd 只保留最新 generation，显示文字标签并补齐图标
+
+- 影响范围：apollo 启动菜单；下一次 `nixos-rebuild boot/switch` 后生效。
+- 配置入口：`hosts/olympians-apollo/default.nix`（`boot.loader.refind.maxGenerations`、`extraConfig`、`additionalFiles`）。
+- 变更内容：`maxGenerations` 3 → 1，主菜单只剩最新 NixOS 与 Windows；`theme.conf` 改为内联并从
+  `hideui` 去掉 `label`，选中项下方显示文字；把 `pkgs.refind` 官方 `icons/`
+  复制到 ESP，修复主题缺失图标显示异常。
+- 验证方式：求值 `maxGenerations` 为 `1`，`extraConfig` 不再含 `include` 与
+  `label`，`additionalFiles` 含 `icons/func_*.png`；未执行 rebuild。
+- 关联文档：[rEFInd 引导方案](./refind-boot.md)、[NixOS 内核策略](./nixos-kernel.md)。
+
 ## 2026-10-19
+
+### 更新 my-secrets 并导入 Apollo GPG key
+
+- 影响范围：`apollo` 本机 GnuPG keyring 与 `mysecrets` flake input；不执行系统切换。
+- 配置入口：`flake.lock`（`mysecrets` 锁定到
+  `3c47898ec321b636611b08168f6407fb695d4988`）；本机密钥导入到 `~/.gnupg`，不写入仓库。
+- 变更内容：从 `/home/vitus/my-secrets` 拉取最新提交，使用仓库 `master_key` 解密
+  `gpg-secret-key.asc.age` 并导入当前用户 GnuPG；password-store 目录为空，因此没有旧 Ryan
+  key 或密码条目需要重加密。
+- 验证方式：新 key 指纹为 `28B6E6EE83AD27206FFD7B9B34722BF3D1BD2EDC`；GPG 加解密往返与 `apollo`
+  配置求值通过。`nixos-rebuild build --flake .#apollo` 因 QQ 下载源返回 404 失败，未执行 `switch`。
+- 关联文档：[Secrets 管理](../secrets/README.md)、[密码仓库说明](../home/base/tui/password-store/README.md)。
 
 ### 浏览器定为 Zen + Chrome；apollo 新增 Slack、Notion、Linear 并分配工作区
 
