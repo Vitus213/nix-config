@@ -5,10 +5,9 @@
 ## 当前结论
 
 - 微信使用官方 Linux WeChat AppImage `4.1.1.4`，通过 `bwraps.wechat` 封装后安装。
-- QQ 使用官方 Linux QQ `3.2.29-2026-05-28`，通过 `nixpaks.qq` 封装后安装。
-- QQ 的封装从主 `nixpkgs` 的 `pkgs.qq` 派生，并在 `hardening/nixpaks/default.nix`
-  中局部固定官方 deb 的 URL 和 hash。
-- 两者都在 `home/linux/gui/base/misc.nix` 进入 Home Manager 用户包列表。
+- QQ 当前暂停安装，不从 Home
+  Manager 用户包列表引入；对应 Nixpak 包装源码暂保留，避免影响后续重新启用。
+- 微信进入 `home/linux/gui/base/misc.nix` 的 Home Manager 用户包列表。
 - Linux GUI 会话默认自启动微信，不再默认自启动 Telegram；两者仍保留在用户包中。
 - 不把 Flatpak 作为主方案；Flatpak 只作为临时排障或对照方案。
 
@@ -17,16 +16,14 @@
 
 ## 配置入口
 
-- `home/linux/gui/base/misc.nix`: 启用 `bwraps.wechat` 和 `nixpaks.qq`。
-- `home/linux/gui/base/misc.nix`: 对 `pkgs.feishu` 覆盖启动参数
-  `--enable-features=WebRTCPipeWireCapturer`。
+- `home/linux/gui/base/misc.nix`: 启用 `bwraps.wechat`，并对 `pkgs.feishu` 覆盖启动参数
+  `--enable-features=WebRTCPipeWireCapturer`；QQ 当前不在用户包列表中。
 - `home/linux/gui/base/xdg/autostart.nix`: 将微信桌面条目加入 XDG
   autostart，并移除 Telegram 自启动条目。
 - `home/linux/gui/base/fcitx5/default.nix`: 禁用系统 Fcitx5 XDG autostart，只保留 Home
   Manager 服务。
 - `hardening/bwraps/wechat.nix`: 固定微信 AppImage 版本、下载源和 bubblewrap 参数。
-- `hardening/nixpaks/qq.nix`: 基于局部固定后的 `pkgs.qq` 生成 QQ 的 Nixpak 封装。
-- `hardening/nixpaks/default.nix`: 只对 `nixpaks.qq` 固定 QQ `3.2.29-2026-05-28` 源和 hash。
+- `hardening/nixpaks/qq.nix`、`hardening/nixpaks/default.nix`: 保留 QQ 包装实现，但当前不接入用户包列表。
 
 ## 当前行为
 
