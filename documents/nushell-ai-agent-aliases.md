@@ -14,15 +14,12 @@
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
 - `~/.omp/agent/models.yml`：OMP 模型 catalog。由 nix-config 模板 `home/base/core/omp-models.yml.in`
   生成并软链接（key 经 my-secrets/agenix 注入；直接编辑可即时覆盖，`omp-sync-models`
-  重置为模板版）。`bailian` provider 包含
-  `qwen3.8-max`、`deepseek-v4-flash-0731`、`deepseek-v4-pro`、`deepseek-v4-pro-0813`、
-  `glm-5.2-fast-preview`；`gemini` provider 走 scitrace 中转的 Gemini 系列（最强可用为
-  `gemini-3.1-pro-high`）；另有 `scitrace`、`ccsci`、`sub2test`、`test-otel` 自定义 provider 与官方
-  `deepseek`。
+  重置为模板版）。provider 以模板为准：`openai`、`anthropic`、`sci-plus`、`sci-pro-special`、`gemini`
+  （均走 scitrace 中转）、`glm`（GLM Coding Plan）与官方 `deepseek`，详见
+  [omp 模型配置](./omp-models.md)。
 - `~/.omp/agent/config.yml`：OMP 用户级角色配置（可写普通文件，曾由 home-manager `programs.omp`
-  声明式接管，因 store 只读导致 omp 写 `.lock` 失败已解绑）。`enabledModels` 覆盖 `bailian/*`
-  与 scitrace/ccsci/sub2test/test-otel 各 provider；`bailian/*` 的 fallback 链为
-  `scitrace/gpt-5.6-sol`。
+  声明式接管，因 store 只读导致 omp 写 `.lock` 失败已解绑）。`enabledModels` 与 `modelProviderOrder`
+  覆盖上述 7 个模板 provider；`deepseek/*` 的 fallback 链为 `openai/gpt-5.6-sol`。
 
 ## 安装和更新
 
@@ -56,14 +53,17 @@ opencode --version
 
 ## 当前 OMP 模型
 
-| 角色                 | 当前模型                             |
-| -------------------- | ------------------------------------ |
-| `slow` / `plan`      | `bailian/deepseek-v4-pro-0813:max`   |
-| `advisor` / `review` | `bailian/qwen3.8-max:max`            |
-| `smol`               | `bailian/deepseek-v4-flash-0731:max` |
+| 角色                 | 当前模型                        |
+| -------------------- | ------------------------------- |
+| `default`            | `openai/gpt-5.6-sol:max`        |
+| `slow` / `plan`      | `deepseek/deepseek-v4-pro:max`  |
+| `advisor` / `review` | `anthropic/claude-opus-5-5:max` |
+| `smol`               | `deepseek/deepseek-flash:max`   |
 
-以上角色均走 `bailian` provider（百炼 DashScope 兼容模式），`bailian/*` 的 fallback 链为
-`scitrace/gpt-5.6-sol`。模型元数据以 `~/.omp/agent/models.yml` 为准。
+角色配置在
+`~/.omp/agent/config.yml`，只引用模板（`home/base/core/omp-models.yml.in`）中存在的 provider；2026-10-20 前的手写版（bailian
+/ scitrace / ccsci 等）备份为 `config.yml.bak-20261020-manual` 与
+`models.yml.bak-20261020-manual`。模型元数据以生成的 `~/.omp/agent/models.yml` 为准。
 
 ## Gemini provider（scitrace 中转）
 
@@ -156,9 +156,9 @@ nixfmt --check home/base/core/npm.nix home/base/core/shells/default.nix home/bas
 nu -c 'alias cy = codex --dangerously-bypass-approvals-and-sandbox; help aliases | where name == cy'
 nu -c 'def --wrapped oy [...rest] { with-env { OPENCODE_PERMISSION: "{\"*\":\"allow\"}" } { print $env.OPENCODE_PERMISSION; print $rest } }; oy test'
 omp --version
-omp models bailian
+omp models deepseek
 omp config get modelRoles --json
-omp --model bailian/deepseek-v4-pro-0813 --thinking low --no-tools --no-session -p "只输出 OK"
+omp --model deepseek/deepseek-v4-pro --thinking low --no-tools --no-session -p "只输出 OK"
 omp models gemini
 omp --model gemini/gemini-3.1-pro-high --thinking low --no-tools --no-session -p "只输出 OK"
 omp --model gemini/gemini-3.1-pro-high --thinking high --no-session -p "用 bash 跑 'echo gemini-tool-ok'，然后只输出命令的 stdout"

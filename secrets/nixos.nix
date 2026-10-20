@@ -68,6 +68,12 @@ in
         file = "${mysecrets}/totp-secrets.conf.age";
       }
       // user_readable;
+
+      # omp 各 provider 的 API key（与 omp-models.yml.in 的占位符对应）
+      "omp-keys" = {
+        file = "${mysecrets}/omp-keys.age";
+      }
+      // user_readable;
     };
 
     # place secrets in /etc/

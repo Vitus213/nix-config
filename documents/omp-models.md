@@ -42,8 +42,8 @@ my-secrets/omp-keys.age ──agenix──▶ /run/agenix/omp-keys（本机解�
    `api` / models），同时在 `omp-sync.py` 的占位符校验列表加
    `@XXX_KEY@`（provider 名连字符→下划线）。
 3. **提交推送**：先 my-secrets，再 nix-config `nix flake update mysecrets` 锁定新提交。
-4. **生效**：`darwin-rebuild switch`（重新解密 `/run/agenix/omp-keys`）→ `omp-sync-models`
-   重新生成。
+4. **生效**：`darwin-rebuild switch` / `nixos-rebuild switch`（重新解密 `/run/agenix/omp-keys`）→
+   `omp-sync-models` 重新生成。
 5. **验证**：`omp models find <名>` 能列出模型；必要时 curl 对应端点确认 key。
 
 当前 glm provider：`https://open.bigmodel.cn/api/coding/paas/v4`（GLM Coding Plan，
@@ -85,14 +85,18 @@ agent 目录中列出模型并发送短请求，勿覆盖正在使用的本机�
    `secrets.nix` 的 `systems`）。
 2. 提交推送 my-secrets。
 3. nix-config 更新 `mysecrets` flake input。
-4. 目标机器重新解密（`darwin-rebuild switch` 触发 activate-agenix）后运行 `omp-sync-models`。
+4. 目标机器重新解密（`darwin-rebuild switch` / `nixos-rebuild switch` 触发 agenix）后运行
+   `omp-sync-models`。
 
 ## 约束与注意事项
 
 - **key 不进 Nix store**：模板只含占位符；含明文 key 的文件只存在于用户目录，勿提交到任何 git 仓库。
 - **不要硬链接到 store**：omp 需要在其 agent 目录写锁；`models.yml.lock`
   为目录内独立文件，指向用户目录生成文件的软链接不受影响。
-- 幂等保护：`home.activation.ompModels` 仅在 `models.yml` 缺失或非软链接时生成；已存在则跳过。
+- 幂等保护：`home.activation.ompModels` 在 `models.yml`
+  缺失或不是软链接时生成（普通文件会被替换为软链接）；已是软链接则跳过。
+- NixOS 主机需开启 `modules.secrets.desktop.enable`（apollo 已开启）才会解密
+  `omp-keys`；缺少该文件时激活只打印警告，不阻断 rebuild。
 
 ## 一键部署的 sudo 自动化（sudoers 白名单）
 
@@ -119,5 +123,6 @@ agent 无需人工输密码即可部署，仅对这条命令开放免密（最�
 
 - `home/base/core/omp.nix`：activation 生成逻辑 + `omp-sync-models` 脚本
 - `home/base/core/omp-models.yml.in`：模型模板
-- `secrets/darwin.nix`：`age.secrets."omp-keys"` 声明（解密至 `/run/agenix/omp-keys`）
+- `secrets/darwin.nix`、`secrets/nixos.nix`：`age.secrets."omp-keys"` 声明（解密至
+  `/run/agenix/omp-keys`，owner 为用户）
 - `my-secrets/secrets.nix`：`"omp-keys.age".publicKeys`
