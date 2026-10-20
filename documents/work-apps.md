@@ -25,6 +25,12 @@
 | Notion | Chrome `--app` 网页 App    | 官方只有 macOS / Windows 客户端                     |
 | Linear | Chrome `--app` 网页 App    | 官方只有 macOS / Windows 客户端，Linux 不在路线图上 |
 
+Slack 默认随登录自启动：模块把 `slack.desktop` 加入 `xdg.autostart.entries`（与
+`home/linux/gui/base/xdg/autostart.nix` 的列表合并）。Notion / Linear 不自启动。
+
+Notion / Linear 的启动器由 Home Manager `xdg.desktopEntries` 生成 `notion.desktop` /
+`linear.desktop`，可在应用启动器中搜索打开。
+
 不使用 `notion-electron` 等第三方包装：它们由第三方维护，不比官方网页更可控。
 
 网页 App 的启动命令形如：

@@ -36,6 +36,9 @@ in
       pkgs.slack # 官方客户端；未设置 NIXOS_OZONE_WL 时默认走 X11
     ];
 
+    # 登录后自启动 Slack；与 xdg/autostart.nix 的条目列表合并
+    xdg.autostart.entries = [ "${pkgs.slack}/share/applications/slack.desktop" ];
+
     xdg.desktopEntries = {
       notion = mkWebApp {
         id = "notion";
