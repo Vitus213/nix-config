@@ -12,7 +12,7 @@ let
       # an easy flow for updating passwords
       exts.pass-update
     ]
-    ++ lib.optionals (!pkgs.stdenv.isDarwin) [
+    ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
       # pass-import currently pulls a Python dependency chain that fails on Darwin.
       exts.pass-import
     ];

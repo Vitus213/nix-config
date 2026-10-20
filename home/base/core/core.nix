@@ -18,7 +18,7 @@
       gnupg
       caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
     ])
-    ++ lib.optionals (!pkgs.stdenv.isDarwin) (
+    ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
       with pkgs;
       [
         # A fast and polyglot tool for code searching, linting, rewriting at large scale

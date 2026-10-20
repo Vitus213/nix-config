@@ -59,7 +59,7 @@
                 cargo-watch
               ]
               # https://github.com/bevyengine/bevy/blob/v0.14.2/docs/linux_dependencies.md#nix
-              ++ (lib.optionals pkgs.stdenv.isLinux [
+              ++ (lib.optionals pkgs.stdenv.hostPlatform.isLinux [
                 udev
                 alsa-lib
                 vulkan-loader
@@ -70,7 +70,7 @@
                 libxkbcommon
                 wayland # To use the wayland feature
               ])
-              ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin [
+              ++ (pkgs.lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
                 # https://discourse.nixos.org/t/the-darwin-sdks-have-been-updated/55295/1
                 apple-sdk_15
               ]);

@@ -22,7 +22,7 @@
     "${zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/applications/zen.desktop"
     "${pkgs.bwraps.wechat}/share/applications/wechat.desktop"
   ]
-  ++ lib.optionals pkgs.stdenv.isx86_64 [
+  ++ lib.optionals pkgs.stdenv.hostPlatform.isx86_64 [
     "${pkgs.obsidian}/share/applications/obsidian.desktop"
     "${pkgs.apostrophe}/share/applications/org.gnome.gitlab.somas.Apostrophe.desktop"
   ];

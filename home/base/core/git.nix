@@ -9,7 +9,10 @@ let
   ghUser = myvars.githubUsername or myvars.username;
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
   githubTokenPath =
-    if pkgs.stdenv.isDarwin then "/run/agenix/github_token" else "/etc/agenix/github_token";
+    if pkgs.stdenv.hostPlatform.isDarwin then
+      "/run/agenix/github_token"
+    else
+      "/etc/agenix/github_token";
 in
 {
   # Unified token path for gh auth generation.

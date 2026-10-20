@@ -43,7 +43,7 @@ in
 {
   programs.foot = {
     # foot 只支持 Linux
-    enable = pkgs.stdenv.isLinux;
+    enable = pkgs.stdenv.hostPlatform.isLinux;
 
     # server 模式下由一个常驻进程托管所有窗口，footclient 只负责开窗，
     # 降低内存占用并加快新窗口启动。
@@ -89,7 +89,7 @@ in
   };
 
   # macOS 上 Ghostty 通过 Homebrew cask 安装，配置文件直接写入 XDG 目录。
-  xdg.configFile."ghostty/config" = lib.mkIf pkgs.stdenv.isDarwin {
+  xdg.configFile."ghostty/config" = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
     text = renderSettings config.programs.ghostty.settings;
   };
 }

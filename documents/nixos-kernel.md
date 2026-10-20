@@ -12,6 +12,8 @@
   选项；当前仓库已迁移到 `services.kmscon.config.font-name`、`font-size` 和 `hwaccel`。
 - `nixos-unstable` 更新移除了 `nodePackages`
   别名；当前仓库已将编辑器工具和 devShell 中的 Node 工具迁移到顶层包名。
+- `nixos-unstable` 弃用了 `stdenv.isLinux` / `isDarwin` / `isx86_64`；当前仓库统一使用
+  `stdenv.hostPlatform.*`。剩余的同类 warning 来自 home-manager 上游，不在本仓库修复。
 
 ### 为什么固定 LTS 系列
 
