@@ -8,7 +8,7 @@
 - `apps.nix`: macOS 应用
 - `nix-core.nix`: Nix 基础配置
 - `security.nix`: 安全设置
-- `ssh.nix`: SSH 配置
+- `ssh.nix`: SSH 配置；[入站登录与系统默认文件恢复](../../documents/darwin-ssh.md)
 - `system.nix`: 系统设置
 - `users.nix`: 用户设置
 - darwin 不兼容包的移除 overlay 统一定义在 `lib/macosSystem.nix`

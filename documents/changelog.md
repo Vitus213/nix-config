@@ -4,6 +4,18 @@
 
 ## 2026-10-20
 
+### 恢复 artemis 入站 SSH 的系统默认配置
+
+- 影响范围：artemis 的 SSH 入站连接；保持 TCP 22、现有密码与公钥认证策略不变。
+- 配置入口：本机 `/usr/share/openssh/default-configuration.tar.bz2`；恢复
+  `/etc/ssh/sshd_config`、`sshd_config.d/100-macos.conf`、`crypto.conf`、`crypto/` 两份策略文件及
+  `moduli`，共六个缺失目标。
+- 变更内容：选择性恢复 Apple 默认服务端文件，不覆盖现有 Nix
+  SSH 文件，不重新生成主机密钥，不修改客户端配置、防火墙或代理；本机直接生效，未执行 rebuild 或重启服务。
+- 验证方式：实际系统 `sshd -t`、`sshd -T` 通过；回环地址及 apollo 到 artemis 的真实密码登录均返回
+  `vitus`、`artemis`，退出码为 0；六个现有 Nix SSH 文件与四组主机公钥恢复前后校验和一致。
+- 关联文档：[macOS 入站 SSH](./darwin-ssh.md)。
+
 ### apollo 登录后自启动 Slack
 
 - 影响范围：开启 `modules.desktop.workApps` 的主机（apollo）；rebuild 后下次登录生效。
