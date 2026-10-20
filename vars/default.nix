@@ -30,6 +30,8 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsJsNMjCqrCdB1dItRvB6pbDjbLwnPYlTmunAqcJX18 vitusartemis"
     # OnePlus 13T (PKX110), Termux, daily carry phone
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBXiRk7RVa7uV+v1PQKcpETytESuz8nH7lQbq/GpCJFT oneplus-a0288f4a-to-computers"
+    # apollo (NixOS workstation) ~/.ssh/id_ed25519, generated 2026-06-21
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUqUa+dbnW9E7TUJcZTDTcFOM4ZjIcH8NGhaMRp1wFA apollo"
   ];
   secondaryAuthorizedKeys = [
     # the backup ssh keys for disaster recovery
