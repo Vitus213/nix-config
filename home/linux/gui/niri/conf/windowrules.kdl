@@ -41,11 +41,6 @@ window-rule {
     match title="^Obsidian"
     open-on-workspace "3docs"
 }
-window-rule {
-    match app-id="org.gnome.gitlab.somas.Apostrophe"
-    open-on-workspace "3docs"
-    open-maximized true
-}
 // Notion / Linear: Chrome web apps launched with --class (home/linux/gui/base/work-apps.nix)
 window-rule {
     match app-id="^notion$"

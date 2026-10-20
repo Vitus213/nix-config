@@ -24,6 +24,5 @@
   ]
   ++ lib.optionals pkgs.stdenv.hostPlatform.isx86_64 [
     "${pkgs.obsidian}/share/applications/obsidian.desktop"
-    "${pkgs.apostrophe}/share/applications/org.gnome.gitlab.somas.Apostrophe.desktop"
   ];
 }
