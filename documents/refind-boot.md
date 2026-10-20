@@ -27,7 +27,8 @@
 - NixOS 由 rEFInd 生成的最新 NixOS generation 菜单项启动，主菜单只保留 1 个 NixOS 项。
 - Windows 通过手动菜单项启动，直接指向 ZHITAI ESP 的 `\EFI\Microsoft\Boot\bootmgfw.efi`。
 - rEFInd 主题使用开源项目 `evanpurkhiser/rEFInd-minimal`。
-- rEFInd 主菜单只显示 NixOS 与 Windows 两个启动项，默认选择 NixOS。
+- rEFInd 主菜单只显示 NixOS 与 Windows 两个启动项，默认选择 NixOS；选中项下方显示文字标签。
+- 工具行只保留关机按钮；rEFInd 官方图标随包复制到 ESP，主题缺失的图标自动回退到官方图标。
 - NixOS 与 Windows 一样把硬件 RTC 视为本地时间，避免双系统切换后时间偏移。
 - 当前 NixOS 求值使用的 rEFInd 包版本是 `0.14.2`；rEFInd 官方配置文档当前也引用 `0.14.2`。
 
@@ -52,9 +53,15 @@ boot.loader = {
   systemd-boot.enable = false;
   refind = {
     enable = true;
-    maxGenerations = 3;
+    maxGenerations = 1;
     extraConfig = ''
-      include themes/rEFInd-minimal/theme.conf
+      hideui singleuser,hints,arrows,badges
+      icons_dir themes/rEFInd-minimal/icons
+      banner themes/rEFInd-minimal/background.png
+      banner_scale fillscreen
+      selection_big themes/rEFInd-minimal/selection_big.png
+      selection_small themes/rEFInd-minimal/selection_small.png
+      showtools shutdown
       scanfor manual
 
       # Keep this as the only manual boot entry before generated NixOS entries.
@@ -65,6 +72,7 @@ boot.loader = {
         loader /EFI/Microsoft/Boot/bootmgfw.efi
       }
     '';
+    additionalFiles = refindStockIconFiles // refindMinimalThemeFiles;
   };
   efi = {
     canTouchEfiVariables = true;
@@ -75,12 +83,20 @@ boot.loader = {
 
 `scanfor manual`
 只启用手动菜单项和 NixOS 模块生成的 generation 菜单项，避免 rEFInd 自动扫描出额外 EFI
-loader。`maxGenerations = 3` 让主菜单保留最近 3 个 NixOS
-generation：NixOS 模块按从新到旧排列，最新一项始终紧跟 Windows 排在第 2 位，所以默认启动不受影响，旧的两项作为内核或配置出问题时的回滚入口。2026-10 切换 6.18
-LTS 内核前从 1 调到 3；确认稳定后如果嫌菜单长，可以改回 1。
+loader。`maxGenerations = 1` 让 NixOS
+generation 在主菜单中只保留最新一项。代价是菜单里没有旧 generation 可回滚；内核升级等高风险变更前，可临时调高该值，确认稳定后再改回 1。
 
 NixOS rEFInd 模块会把 `extraConfig` 放在生成配置前面，并在后面追加自己的 `default_selection 2`。当前
 `extraConfig` 里只有 1 个手动 Windows 项，NixOS 生成项排在第 2 位，因此最终默认进入 NixOS。
+
+主题配置没有 `include` 上游 `theme.conf`，而是内联到 `extraConfig`。上游 `theme.conf` 的 `hideui`
+包含 `label`，会隐藏选中项下方的文字标签；当前内联版本去掉了
+`label`，其余选项与上游一致。上游主题更新 `theme.conf` 时需要手动对照同步。
+
+NixOS rEFInd 模块只把 `refind_x64.efi` 安装到 ESP，不会安装 rEFInd 自带的 `icons/`。主题只提供
+`func_exit`、`func_reset`、`func_shutdown` 三个功能图标，缺失的图标会显示异常。当前配置通过
+`refindStockIconFiles` 把 `pkgs.refind` 的 `share/refind/icons/` 复制到
+`/boot/efi/refind/icons/`；rEFInd在 `icons_dir` 找不到图标时会回退到这个默认目录。
 
 主题通过 `boot.loader.refind.additionalFiles` 复制到
 `/boot/efi/refind/themes/rEFInd-minimal/`。不要在 ESP 上手工下载主题文件。NixOS 模块生成的 generation 项按 Linux
@@ -160,6 +176,8 @@ sudo find /boot/efi/refind -maxdepth 4 -type f -print
 - NixOS 可正常启动。
 - Windows 可正常启动。
 - `rEFInd-minimal` 主题生效。
+- 选中项下方显示文字标签（`NixOS default profile Generation N` / `Windows`）。
+- 工具行图标显示正常。
 
 ## 回滚方式
 

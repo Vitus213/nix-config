@@ -25,6 +25,11 @@ let
     // {
       "themes/rEFInd-minimal/icons/os_linux.png" = refindMinimalTheme + "/icons/os_nixos.png";
     };
+  # NixOS 模块只安装 refind_x64.efi；补上官方 icons/，主题缺的图标会回退到这里
+  refindStockIcons = pkgs.refind + "/share/refind/icons";
+  refindStockIconFiles = lib.mapAttrs' (
+    name: _: lib.nameValuePair "icons/${name}" (refindStockIcons + "/${name}")
+  ) (builtins.readDir refindStockIcons);
 in
 {
   imports = [
@@ -46,10 +51,16 @@ in
     systemd-boot.enable = false;
     refind = {
       enable = true;
-      # 保留 3 个 generation 作回滚入口；最新项仍排第 2 位、默认启动
-      maxGenerations = 3;
+      maxGenerations = 1;
+      # 内联 rEFInd-minimal 的 theme.conf，去掉 hideui 里的 label 以显示选中项文字
       extraConfig = ''
-        include themes/rEFInd-minimal/theme.conf
+        hideui singleuser,hints,arrows,badges
+        icons_dir themes/rEFInd-minimal/icons
+        banner themes/rEFInd-minimal/background.png
+        banner_scale fillscreen
+        selection_big themes/rEFInd-minimal/selection_big.png
+        selection_small themes/rEFInd-minimal/selection_small.png
+        showtools shutdown
         scanfor manual
 
         # Keep this as the only manual boot entry before generated NixOS entries.
@@ -60,7 +71,7 @@ in
           loader /EFI/Microsoft/Boot/bootmgfw.efi
         }
       '';
-      additionalFiles = refindMinimalThemeFiles;
+      additionalFiles = refindStockIconFiles // refindMinimalThemeFiles;
     };
     efi = {
       canTouchEfiVariables = true;
