@@ -45,4 +45,11 @@
       stdenv.cc.cc
     ];
   };
+
+  # NixOS only ships /bin/sh and /usr/bin/env; many scripts and Makefiles hard-code
+  # /bin/bash (e.g. `SHELL := /bin/bash`). Point it at the current system's bash so
+  # the link survives rebuilds and garbage collection.
+  systemd.tmpfiles.rules = [
+    "L+ /bin/bash - - - - /run/current-system/sw/bin/bash"
+  ];
 }
