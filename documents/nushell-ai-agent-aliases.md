@@ -140,14 +140,12 @@ oy run "帮我检查这个仓库"
 
 - `OPENAI_API_KEY` / `OPENAI_BASE_URL`：scitrace 中转（`https://sub.scitrace.cc`），key 与
   `~/.omp/agent/models.yml` 的 openai provider 一致。
-- `ANTHROPIC_AUTH_TOKEN` / `ANTHROPIC_API_KEY` /
-  `ANTHROPIC_BASE_URL`：scitrace 中转的 anthropic 通道，key 与 models.yml 的 anthropic
-  provider 一致（claude code / opencode 默认走这里）。
-- 其他通道（anyrouter / agentrouter / glm / claude samuka）仅以独立变量 + 手动 `use-any` /
-  `use-agent` / `use-glm` / `use-claude` 函数切换的形式存在，不参与默认注入。
+- 不设置任何 `ANTHROPIC_*` / `CLAUDE_CODE_*` 变量，也没有中转通道切换函数：这些变量会让 Claude
+  Code 优先走 API key 认证并禁用 claude.ai connectors。Claude Code 只使用 `claude /login`
+  的 claude.ai 账号。
 
-修改这份密文需在 `my-secrets` 仓库解密、编辑并重新加密，再在目标机 `darwin-rebuild switch`
-重新解密生效。
+修改这份密文需在 `my-secrets` 仓库解密、编辑并重新加密，再在目标机 `darwin-rebuild switch` /
+`nixos-rebuild switch` 重新解密生效。
 
 ## 验证
 

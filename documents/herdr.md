@@ -12,7 +12,7 @@ Herdr 二进制改为官方安装（`curl -fsSL https://herdr.dev/install.sh | s
 
 | 组件    | 版本      | 来源                                       |
 | ------- | --------- | ------------------------------------------ |
-| Herdr   | `0.9.3`   | `~/.local/bin` 官方安装（自管理）          |
+| Herdr   | `0.9.5`   | `~/.local/bin` 官方安装（自管理）          |
 | Nushell | `0.116.1` | Home Manager 的 `programs.nushell.package` |
 
 Linux 与 macOS 的共享 TUI 配置都会生成同一份 Herdr 配置文件。
