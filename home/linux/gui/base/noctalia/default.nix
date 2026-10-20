@@ -50,7 +50,9 @@ in
       Restart = "on-failure";
 
       Environment = [
-        "QT_QPA_PLATFORM=wayland;xcb"
+        # 必须与会话的 QT_QPA_PLATFORM 一致：noctalia-qs 的 ipc 按它推导的 display 过滤实例，
+        # 不一致时 `noctalia-shell ipc call ...`（Alt+Space、锁屏等）会报 No running instances。
+        "QT_QPA_PLATFORM=wayland"
         "QT_QPA_PLATFORMTHEME=qt6ct"
         "QT_AUTO_SCREEN_SCALE_FACTOR=1"
         # 锁屏认证走专用精简 PAM 服务（定义在 modules/nixos/desktop/security.nix），

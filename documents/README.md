@@ -42,6 +42,7 @@
 | -------------------------------------------------------- | ---------------------------------------------- |
 | [Niri 工作区与窗口分配](./niri-workspaces.md)            | 工作区命名、快捷键、窗口规则                   |
 | [Niri 显示缩放](./niri-display-scaling.md)               | 多显示器缩放                                   |
+| [Noctalia IPC 与服务环境](./noctalia-ipc.md)             | 快捷键 IPC 失效排查、`QT_QPA_PLATFORM` 约束    |
 | [Wayland 屏幕共享](./wayland-screen-sharing.md)          | portal、PipeWire 与应用级屏幕共享              |
 | [Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md) | 输入法配置、验证与回滚                         |
 | [Esc 与 Caps Lock 键位](./keyboard-layout.md)            | NixOS 与 macOS 的键位行为                      |
