@@ -6,6 +6,7 @@
 }:
 {
   home.packages = with pkgs; [
+    bun # omp 等用户级 `bun install -g` 的运行时
     pnpm
   ];
 

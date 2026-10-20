@@ -4,7 +4,8 @@
 
 配置入口：
 
-- `home/base/core/npm.nix`：安装 `pnpm`，并配置 `npm install -g` 的用户级安装前缀为 `~/.npm`。
+- `home/base/core/npm.nix`：安装 `bun`（OMP 运行时，`cli.js` shebang 为 `#!/usr/bin/env bun`）与
+  `pnpm`，并配置 `npm install -g` 的用户级安装前缀为 `~/.npm`。
 - **OMP（bun 全局安装）**：`bun install -g @oh-my-pi/pi-coding-agent`，更新用
   `bun update -g @oh-my-pi/pi-coding-agent`，与 nix-config 解耦。全局 bin 在
   `~/.cache/.bun/bin`（bun 1.3.x 默认位置）。
@@ -32,8 +33,10 @@ bun install -g @oh-my-pi/pi-coding-agent     # 安装
 bun update -g @oh-my-pi/pi-coding-agent      # 更新
 ```
 
-无需 `nix flake update omp` 或 `just local`。全局二进制位于 `~/.cache/.bun/bin/omp`，shell `PATH`
-已含该目录（nushell `config.nu` / bash `default.nix`）。
+`bun` 本身由 `home/base/core/npm.nix` 安装；去掉它会让 `omp` 无法启动。全局安装只需在首次或
+`~/.cache/.bun/bin/omp` 丢失时执行。OMP 版本更新无需 `nix flake update omp` 或
+`just local`。全局二进制位于 `~/.cache/.bun/bin/omp`，shell `PATH` 已含该目录（nushell `config.nu` /
+bash `default.nix`）。
 
 OpenCode 使用 npm 安装或更新（更新频繁，不通过 Nix 固定）：
 
