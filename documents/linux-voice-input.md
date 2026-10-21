@@ -133,7 +133,11 @@ D-Bus 调用。重新部署后，系统将回到 Type4Me 全局语音输入。
   VAD 按停顿切句，当前句每 0.5 秒在 GPU 上重算一次作为实时显示，松手后得到最终结果。
 - **常驻 daemon**：`voiceless.service`（`voiceless daemon`）启动时把模型加载进显存；快捷键只调用
   `voiceless ctl toggle|start|stop|cancel`，或由 daemon 直接读 ScrollLock（`[hotkey] key`，需
-  `input` 组）。
+  `input` 组且重新登录后生效；在此之前用 niri 的 `Mod+Shift+D`）。
+- **命令行
+  `voiceless stream`**：daemon 在运行且配置为本地后端时，会话交给 daemon 执行（复用显存里那一份模型，8
+  GB 显卡放不下第二份），输出、Ctrl-C 停止/取消与退出码不变，`--no-inject` 同样生效；带 `--config`
+  或 `--backend` 时独立运行。
 - **上屏**：`inject.prefer = "fcitx5"`，识别中的文字经桥接模块显示为输入框内的预编辑，最终文本由 fcitx5 提交；失败时回退剪贴板。
 - **浮层**：`voiceless-overlay-eww.service` + `voiceless-overlay.service`，配置在
   `~/.config/eww-voiceless`。

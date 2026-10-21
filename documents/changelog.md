@@ -4,6 +4,19 @@
 
 ## 2026-10-21
 
+### Voiceless 升级到 0417c78：`stream` 复用 daemon 的本地模型
+
+- 影响范围：apollo 的 `voiceless` 包与 `voiceless.service`；switch 后服务重启生效。
+- 配置入口：`flake.lock`（`voiceless` input `e48eec0` →
+  `0417c78`）；`home/linux/gui/base/voice-input.nix` 未改。
+- 变更内容：包含 `156f6a4`（`doctor` 不再在 tokio 线程上 panic）与 `0417c78`（daemon 运行时
+  `voiceless stream` 通过新 D-Bus 方法 `StartSession`
+  交给 daemon 执行，不再二次加载 GPU 模型导致 CUDA OOM）。
+- 验证方式：voiceless 仓库 `just test`（155 通过）/ `just lint` 通过；本地构建的 CUDA 包以假
+  `pw-record` 回放历史录音，委托识别、`--no-inject`、两次 Ctrl-C 取消（130）、忙碌拒绝、`--backend`
+  独立运行、无 daemon 独立运行均通过，显存始终只有一份模型；switch 后见关联文档复验。
+- 关联文档：[Linux 语音输入](./linux-voice-input.md)。
+
 ### SSH 客户端：局域网追加 id_ed25519，修正 apollo / artemis 地址
 
 - 影响范围：启用 `modules.ssh.homelab` 的主机（apollo 等）生成的 `~/.ssh/config`；rebuild 后生效。
