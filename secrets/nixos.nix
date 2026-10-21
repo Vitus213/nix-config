@@ -74,6 +74,12 @@ in
         file = "${mysecrets}/omp-keys.age";
       }
       // user_readable;
+
+      # WakaTime API key，经 /etc/agenix 供 wakatime-cli 的 api_key_vault_cmd 读取
+      "wakatime-api-key" = {
+        file = "${mysecrets}/wakatime-api-key.age";
+      }
+      // user_readable;
     };
 
     # place secrets in /etc/
@@ -105,6 +111,12 @@ in
       # Used by noctalia TOTP scripts via ~/.config/totp/secrets.conf symlink.
       "agenix/totp-secrets.conf" = {
         source = config.age.secrets."totp-secrets.conf".path;
+        mode = "0400";
+        user = myvars.username;
+      };
+
+      "agenix/wakatime-api-key" = {
+        source = config.age.secrets."wakatime-api-key".path;
         mode = "0400";
         user = myvars.username;
       };

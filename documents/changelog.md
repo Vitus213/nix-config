@@ -2,6 +2,27 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-22
+
+### AI agent 用量卡片与 WakaTime 接入
+
+- 影响范围：所有启用 `home/base` 的主机（新增 `agent-usage-report`
+  与每小时定时任务、`ccusage`、`wakatime-api-key`）；启用 `modules.secrets` 的 NixOS /
+  darwin 主机新增 `wakatime-api-key` secret。需 `just local` 生效。
+- 配置入口：`home/base/tui/agent-usage/`、`overlays/ccusage/`、`secrets/nixos.nix`、`secrets/darwin.nix`、`flake.lock`
+  （`mysecrets` → `ce0ed1b`，新增 `wakatime-api-key.age`）。
+- 变更内容：统计 Claude Code / Codex /
+  omp 的活跃时长、token 与按 LiteLLM 标价折算的成本，每小时推送到 `Vitus213/Vitus213` 的
+  `agent-usage` 分支，并渲染有额度、无额度两张卡片；`ccusage`
+  固定为 20.0.39（nixpkgs 的 20.0.17 多算 Codex token）；WakaTime key 改由 agenix 提供，通过
+  `api_key_vault_cmd` 读取。profile README 改为 810 全宽布局，并删除每天 403 的 `Waka Readme`
+  workflow。本机手动安装 `claude-code-wakatime` 插件，并把 `cleanupPeriodDays` 改为 3650。
+- 验证方式：`just test` 通过；`apollo` toplevel 构建通过，`hestia` / `generic` / `hermes`
+  求值通过；`artemis` 的 launchd agent、secret 路径和 `ccusage`
+  drv 求值通过（完整 toplevel 因既有 catppuccin IFD 无法在 Linux 求值）。实际运行
+  `agent-usage-report` 推送成功，omp token 总数与 `ccusage pi` 一致，Codex 与 ccusage 20.0.39 一致。
+- 关联文档：[AI Agent 用量统计与 WakaTime](./agent-usage.md)。
+
 ## 2026-10-21
 
 ### Voiceless 升级到 0417c78：`stream` 复用 daemon 的本地模型

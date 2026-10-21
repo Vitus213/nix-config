@@ -7,6 +7,7 @@
 ```text
 overlays/
 ├── default.nix
+├── ccusage/
 ├── croc/
 ├── fcitx5/
 └── stably-orca/
@@ -15,6 +16,8 @@ overlays/
 ## 当前 overlay
 
 - `default.nix`: overlays 入口，导入当前目录下的 overlay
+- `ccusage/`: 固定 ccusage `20.0.39` 官方 npm 静态二进制，替换 nixpkgs
+  `20.0.17`（缺少 Codex/Claude 去重修复），供 agent-usage 统计
 - `croc/`: 临时修正 `croc 10.4.5` GitHub source archive hash drift，保证系统 build 可通过
 - `fcitx5/`: 为 Rime 提供雾凇拼音 Rime Ice 数据，供 Linux 的 `fcitx5-rime` 和 macOS 的 Squirrel 使用
 - `stably-orca/`: 固定 StablyAI Orca `1.4.137` 官方 Linux AppImage，并以 `pkgs.stably-orca`

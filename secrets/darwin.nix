@@ -57,6 +57,12 @@
         file = "${mysecrets}/omp-keys.age";
       }
       // user_readable;
+
+      # WakaTime API key，home 侧直接读 /run/agenix/wakatime-api-key
+      "wakatime-api-key" = {
+        file = "${mysecrets}/wakatime-api-key.age";
+      }
+      // user_readable;
     };
 
   # place secrets in /etc/
