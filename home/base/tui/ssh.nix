@@ -51,12 +51,12 @@ in
         };
 
         "apollo" = {
-          HostName = "100.108.175.44";
+          HostName = "100.64.0.89";
           User = "vitus";
         };
 
         "artemis" = {
-          HostName = "100.83.91.107";
+          HostName = "100.64.0.14";
           User = "vitus";
         };
 
@@ -72,8 +72,12 @@ in
           # "allow to securely use local SSH agent to authenticate on the remote machine."
           # "It has the same effect as adding cli option `ssh -A user@host`"
           ForwardAgent = true;
-          # "romantic holds my homelab~"
-          IdentityFile = "/etc/agenix/ssh-key-romantic";
+          # "romantic holds my homelab~"；局域网电脑（如 artemis）只授权
+          # mainSshAuthorizedKeys，需再带上本机 id_ed25519
+          IdentityFile = [
+            "/etc/agenix/ssh-key-romantic"
+            "~/.ssh/id_ed25519"
+          ];
           IdentitiesOnly = true;
         };
       };

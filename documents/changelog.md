@@ -2,6 +2,20 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-21
+
+### SSH 客户端：局域网追加 id_ed25519，修正 apollo / artemis 地址
+
+- 影响范围：启用 `modules.ssh.homelab` 的主机（apollo 等）生成的 `~/.ssh/config`；rebuild 后生效。
+- 配置入口：`home/base/tui/ssh.nix`。
+- 变更内容：`Host 192.168.*` 在 `ssh-key-romantic` 之后追加
+  `~/.ssh/id_ed25519`（artemis 等局域网电脑只授权 `mainSshAuthorizedKeys`，此前 `IdentitiesOnly`
+  只给 romantic 导致 `Permission denied`）；`Host apollo` `100.108.175.44` →
+  `100.64.0.89`，`Host artemis` `100.83.91.107` → `100.64.0.14`（headscale 当前地址）。
+- 验证方式：构建 `home.file.".ssh/config".source`，以 `ssh -F` 实测 `vitus@192.168.100.159`（返回
+  `artemis`）与 `root@192.168.100.1` 免密登录成功；`ssh artemis` 因 artemis Tailscale 离线超时。
+- 关联文档：[Homelab SSH Key](./homelab-ssh-key-romantic.md)。
+
 ## 2026-10-20
 
 ### 恢复 artemis 入站 SSH 的系统默认配置

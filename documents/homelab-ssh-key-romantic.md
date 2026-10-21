@@ -10,10 +10,15 @@
 
 ```sshconfig
 Host 192.168.*
-  IdentityFile /etc/agenix/ssh-key-romantic
-  IdentitiesOnly yes
   ForwardAgent yes
+  IdentitiesOnly yes
+  IdentityFile /etc/agenix/ssh-key-romantic
+  IdentityFile ~/.ssh/id_ed25519
 ```
+
+局域网里的电脑（如 artemis `192.168.100.159`）只授权 `vars/default.nix` 的
+`mainSshAuthorizedKeys`，不含 `ssh-key-romantic`，因此 `192.168.*` 依次尝试 `ssh-key-romantic`
+与本机 `~/.ssh/id_ed25519`。
 
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
 
