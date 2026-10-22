@@ -428,6 +428,58 @@ def render(agg: dict, with_quota: bool, updated: str) -> str:
     return "\n".join(out) + "\n"
 
 
+def render_compact(agg: dict, with_quota: bool, updated: str) -> str:
+    # 400x190：与 github-readme-stats top-langs（compact、card_width=400、8 种语言）同尺寸，README 里并排放
+    W, H = 400, 190
+    active_agents = [a for a in AGENTS if agg["all"][a]["tokens"] or agg["all"][a]["active_seconds"]] or list(AGENTS)
+    if with_quota:
+        cols = [("Active", 205, "end"), ("Tokens", 290, "end"), ("Cost", 375, "end")]
+    else:
+        cols = [("7d", 205, "end"), ("30d", 290, "end"), ("Total", 375, "end")]
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="AI agent usage">',
+           "<style>text{font-family:'Segoe UI',Ubuntu,'Helvetica Neue',Sans-Serif}"
+           f".t{{font-size:18px;font-weight:600;fill:{COLORS['title']}}}.s{{font-size:11px;fill:{COLORS['muted']}}}"
+           f".h{{font-size:11px;font-weight:600;fill:{COLORS['muted']}}}.c{{font-size:13px;fill:{COLORS['text']}}}"
+           f".b{{font-size:13px;font-weight:600;fill:{COLORS['strong']}}}.f{{font-size:10px;fill:{COLORS['muted']}}}</style>",
+           f'<rect width="{W}" height="{H}" rx="4.5" fill="{COLORS["bg"]}"/>',
+           f'<text x="25" y="35" class="t">{"AI Agent Usage" if with_quota else "AI Agent Time"}</text>',
+           f'<text x="{W - 25}" y="35" class="s" text-anchor="end">{"last 30 days" if with_quota else "active time"}</text>']
+    top = 62
+    for name, x, anchor in cols:
+        out.append(f'<text x="{x}" y="{top}" class="h" text-anchor="{anchor}">{name}</text>')
+    rows = active_agents + ["__total__"]
+    row_h = min(22, (H - 26 - top - 8) // len(rows))
+    note = False
+    for i, agent in enumerate(rows):
+        y = top + 22 + i * row_h
+        total = agent == "__total__"
+        agents = active_agents if total else [agent]
+
+        def val(win, key):
+            return sum(agg[win][a][key] for a in agents)
+
+        if total:
+            out.append(f'<line x1="25" x2="{W - 25}" y1="{y - 15}" y2="{y - 15}" stroke="{COLORS["grid"]}"/>')
+            out.append(f'<text x="25" y="{y}" class="b">Total</text>')
+        else:
+            out.append(f'<circle cx="30" cy="{y - 4.5}" r="4.5" fill="{AGENTS[agent]["color"]}"/>')
+            out.append(f'<text x="42" y="{y}" class="c">{AGENTS[agent]["label"]}</text>')
+        if with_quota:
+            unpriced = val("d30", "unpriced_tokens")
+            note = note or unpriced > 0
+            cells = [fmt_dur(val("d30", "active_seconds")), fmt_tokens(val("d30", "tokens")),
+                     fmt_cost(val("d30", "cost")) + ("*" if unpriced else "")]
+        else:
+            cells = [fmt_dur(val(w, "active_seconds")) for w in ("d7", "d30", "all")]
+        for (_, x, anchor), text in zip(cols, cells):
+            out.append(f'<text x="{x}" y="{y}" class="{"b" if total else "c"}" text-anchor="{anchor}">{text}</text>')
+    foot = ("Cost = API list price, not billing" + (" · * partly unpriced" if note else "")) if with_quota else "gaps ≤ 15 min"
+    out.append(f'<text x="25" y="{H - 12}" class="f">{esc(foot)}</text>')
+    out.append(f'<text x="{W - 25}" y="{H - 12}" class="f" text-anchor="end">{esc(updated)}</text>')
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 # ---------------------------------------------------------------- git
 
 
@@ -457,8 +509,8 @@ BRANCH_README = """# agent-usage
 由 nix-config 的 `agent-usage-report`（home-manager 定时任务）自动生成，分支只保留一个提交。
 
 - `data/<host>.json`：每台主机的每日统计历史（Claude Code / Codex / omp）
-- `agent-usage.svg`：活跃时长 + token + 折算成本（有额度版本）
-- `agent-time.svg`：仅活跃时长（无额度版本）
+- `agent-usage-compact.svg` / `agent-usage.svg`：活跃时长 + token + 折算成本（有额度，400×190 / 810 宽）
+- `agent-time-compact.svg` / `agent-time.svg`：仅活跃时长（无额度，400×190 / 810 宽）
 - `summary.json`：汇总结果
 """
 
@@ -467,6 +519,8 @@ def write_outputs(target: Path, host_files: list[dict], today: dt.date, updated:
     agg = aggregate(host_files, today)
     (target / "agent-usage.svg").write_text(render(agg, True, updated))
     (target / "agent-time.svg").write_text(render(agg, False, updated))
+    (target / "agent-usage-compact.svg").write_text(render_compact(agg, True, updated))
+    (target / "agent-time-compact.svg").write_text(render_compact(agg, False, updated))
     summary = {k: agg[k] for k in ("d7", "d30", "all", "since")}
     summary["updated"] = updated
     (target / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n")

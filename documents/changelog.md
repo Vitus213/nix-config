@@ -4,6 +4,16 @@
 
 ## 2026-10-22
 
+### profile README：语言卡与 AI agent 用量卡并排
+
+- 影响范围：`Vitus213/Vitus213` README 第二行；`agent-usage-report` 额外输出两张 400×190 卡片，需
+  `just local` 后定时任务才会刷新它们。
+- 配置入口：`home/base/tui/agent-usage/agent_usage.py`（`render_compact`）。
+- 变更内容：新增 `agent-usage-compact.svg`、`agent-time-compact.svg`。README 中 top-langs 改为
+  `tokyonight`、宽 400，与有额度紧凑卡并排；810 宽完整版保留在分支上。
+- 验证方式：本地渲染后与 top-langs 拼图核对尺寸和背景；推送后 README 中除 komarev 访问计数（第三方服务当前 404）外，其余图片均返回 200。
+- 关联文档：[AI Agent 用量统计与 WakaTime](./agent-usage.md)。
+
 ### AI agent 用量卡片与 WakaTime 接入
 
 - 影响范围：所有启用 `home/base` 的主机（新增 `agent-usage-report`

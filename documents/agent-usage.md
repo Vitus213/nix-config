@@ -12,7 +12,7 @@ agent 用量卡片的数据来源，以及 WakaTime 在本仓库中的接入方�
 | `overlays/ccusage/`                        | 把 `pkgs.ccusage` 固定为官方 `20.0.39` 静态二进制                                             |
 | `my-secrets/wakatime-api-key.age`          | WakaTime API key（单行）                                                                      |
 | `secrets/nixos.nix` / `secrets/darwin.nix` | 解密 `wakatime-api-key`；NixOS 额外复制到 `/etc/agenix/wakatime-api-key`                      |
-| profile 仓库 `agent-usage` 分支            | `data/<host>.json` 历史、`agent-usage.svg`、`agent-time.svg`、`summary.json`                  |
+| profile 仓库 `agent-usage` 分支            | `data/<host>.json` 历史、四张卡片 SVG、`summary.json`                                         |
 
 ## 统计口径
 
@@ -42,12 +42,21 @@ agent 用量卡片的数据来源，以及 WakaTime 在本仓库中的接入方�
   `agent-usage-report`（每 3600 秒，日志在 `~/Library/Logs/agent-usage-report.log`）。
 - 手动运行：`agent-usage-report`。只在本地渲染、不推送：`agent-usage-report --render-only /tmp/agent-usage`。
 - 推送：读取 `/etc/agenix/github_token`（NixOS）或 `/run/agenix/github_token`（darwin），把
-  `data/<本机>.json` 合并进 `agent-usage` 分支，重新汇总所有主机后渲染两张卡片，再用
+  `data/<本机>.json` 合并进 `agent-usage` 分支，重新汇总所有主机后渲染卡片，再用
   `--force-with-lease` 推成单个提交。多台主机同时推送时 lease 失败会自动重试 3 次。
-- 两张卡片：
-  - 有额度：`https://raw.githubusercontent.com/Vitus213/Vitus213/agent-usage/agent-usage.svg`（30 天/累计的活跃时长、token、成本，以及每日 token 柱状图）
-  - 无额度：`https://raw.githubusercontent.com/Vitus213/Vitus213/agent-usage/agent-time.svg`（7 天/30 天/累计活跃时长，以及每日时长柱状图）
-  - profile README 默认用有额度版本，无额度版本以注释形式写在它下面，切换时替换那一行即可。
+- 卡片（均在 `https://raw.githubusercontent.com/Vitus213/Vitus213/agent-usage/<文件名>`）：
+
+  | 文件                      | 尺寸    | 内容                                                  |
+  | ------------------------- | ------- | ----------------------------------------------------- |
+  | `agent-usage-compact.svg` | 400×190 | 有额度：30 天活跃时长、token、成本（README 当前使用） |
+  | `agent-time-compact.svg`  | 400×190 | 无额度：7 天 / 30 天 / 累计活跃时长                   |
+  | `agent-usage.svg`         | 810 宽  | 有额度完整版：30 天与累计数据，外加每日 token 柱状图  |
+  | `agent-time.svg`          | 810 宽  | 无额度完整版：外加每日活跃时长柱状图                  |
+  - profile README 第二行是 top-langs（`theme=tokyonight`、`card_width=400`、8 种语言，高 190）和
+    `agent-usage-compact.svg`
+    并排，两张卡尺寸与背景色一致。语言数改了的话，top-langs 高度会变（每多一种约 +12.5px），要同步改
+    `render_compact` 的高度。
+  - 无额度版本以注释形式写在它下面，切换时替换那一行即可。
 
 ## WakaTime
 
