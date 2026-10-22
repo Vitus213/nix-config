@@ -4,6 +4,28 @@
 
 ## 2026-10-22
 
+### 清理构建告警：home-manager 升级、LibreOffice 别名、光标显式启用
+
+- 影响范围：所有主机的 home-manager 模块（apollo 实际闭包差异仅 fzf
+  Nushell 集成方式与 HM 文档）；apollo 的 LibreOffice 包名。需 `just local` 生效。
+- 配置入口：`flake.lock`（`home-manager` `b885baa` 2026-07-04 → `ab97a5d`
+  2026-10-21）、`home/linux/gui/base/editors.nix`、`home/linux/gui/base/gtk.nix`。
+- 变更内容：
+  - 旧 home-manager 的 `modules/systemd.nix` 使用
+    `pkgs.stdenv.isLinux`，触发 nixpkgs 弃用告警；上游已改为
+    `hostPlatform`，因此升级 home-manager 输入。
+  - `libreoffice-fresh` 改为 `libreoffice`：nixpkgs
+    2026-08-11 起前者只是告警别名，两者是同一个 drv（26.8.0.3）。
+  - 新 home-manager 要求 `home.pointerCursor.enable = true` 显式开启；补上后系统闭包不变。
+  - `/root/.nix-defexpr/channels`、`/nix/var/nix/profiles/per-user/root/channels`
+    是 26.05 安装镜像遗留的 channel，仓库已
+    `nix.channel.enable = false`，但 nixpkgs 不会自动清理，需要手动删除一次（见下方说明）。
+- 验证方式：`just test` 通过；apollo toplevel 构建无 evaluation warning；hestia / generic /
+  hermes 求值无告警；`nix store diff-closures`
+  确认仅 fzf 集成与 HM 文档变化，Ctrl-R 仍由 Atuin 负责。
+- 手动步骤：`sudo rm -f /nix/var/nix/profiles/per-user/root/channels /nix/var/nix/profiles/per-user/root/channels-1-link && sudo rm -rf /root/.nix-defexpr/channels`。
+- 关联文档：[Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)、[应用版本审计](./application-version-audit.md)。
+
 ### profile 卡片统一 gruvbox 主题与 15px 圆角
 
 - 影响范围：`Vitus213/Vitus213` README 四张卡；`agent-usage-report` 输出的卡片配色与圆角，需

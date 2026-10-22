@@ -16,10 +16,11 @@
 这些组件默认跟随主 `nixpkgs` 输入更新，不在仓库内单独固定版本。artemis 走 `nixpkgs-darwin`
 输入（nixpkgs-unstable），当前为 Nushell `0.115.1`，与 apollo 的更新节奏不同。
 
-注意：Home Manager（master）生成的 fzf 集成脚本使用 Nushell `0.114.0` 引入的 `str lowercase`
-语法，要求 Nushell ≥0.114。主 `nixpkgs` 已于 2026-10-17 更新（6517942 2026-07-02 → 55bfb4d
-2026-10-14），apollo 的 Nushell 升至
-`0.116.1`，此前"升级 nixpkgs 前不要在 apollo 执行 rebuild"的限制已解除。
+Home Manager（master，2026-10-20 起）的 fzf Nushell 集成直接 `source` fzf 包自带的
+`share/fzf/key-bindings.nu` 与 `completion.nu`（需 fzf ≥0.73），不再生成
+`nushell-fzf-integration.nu`。 `programs.fzf.historyWidget.command = ""` 会写入
+`$env.FZF_CTRL_R_COMMAND = ""`，上游脚本据此不绑定 Ctrl-R；Atuin 的集成在 `config.nu`
+中排在 fzf 之后，Ctrl-R 仍由 Atuin 负责。
 
 ## 配置入口
 
