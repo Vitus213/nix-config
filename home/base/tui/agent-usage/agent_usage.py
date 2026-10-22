@@ -340,6 +340,35 @@ def esc(s: str) -> str:
 
 
 COLORS = {"bg": "#1a1b27", "title": "#70a5fd", "text": "#a9b1d6", "muted": "#565f89", "strong": "#c0caf5", "grid": "#2a2e42"}
+RADIUS = 4.5
+# github-readme-stats 主题的 (bg, title, text)，让卡片与 README 里其他卡同色
+THEMES = {
+    "tokyonight": None,  # 保留上面针对 tokyonight 调过的配色
+    "github_dark": ("0d1117", "58a6ff", "c3d1d9"),
+    "dracula": ("282a36", "ff6e96", "f8f8f2"),
+    "catppuccin_mocha": ("1e1e2e", "94e2d5", "cdd6f4"),
+    "nord": ("2e3440", "81a1c1", "d8dee9"),
+    "gruvbox": ("282828", "fabd2f", "8ec07c"),
+    "rose_pine": ("191724", "9ccfd8", "e0def4"),
+    "onedark": ("282c34", "e4bf7a", "df6d74"),
+    "radical": ("141321", "fe428e", "a9fef7"),
+}
+
+
+def blend(a: str, b: str, t: float) -> str:
+    x = [int(a[i:i + 2], 16) for i in (0, 2, 4)]
+    y = [int(b[i:i + 2], 16) for i in (0, 2, 4)]
+    return "#" + "".join(f"{round(p * (1 - t) + q * t):02x}" for p, q in zip(x, y))
+
+
+def apply_theme(name: str, radius: float) -> None:
+    global RADIUS
+    RADIUS = radius
+    pal = THEMES[name]
+    if pal:
+        bg, title, text = pal
+        COLORS.update(bg=f"#{bg}", title=f"#{title}", text=f"#{text}", strong=f"#{text}",
+                      muted=blend(text, bg, 0.45), grid=blend(text, bg, 0.82))
 
 
 def render(agg: dict, with_quota: bool, updated: str) -> str:
@@ -360,7 +389,7 @@ def render(agg: dict, with_quota: bool, updated: str) -> str:
            f".t{{font-size:18px;font-weight:600;fill:{COLORS['title']}}}.s{{font-size:12px;fill:{COLORS['muted']}}}"
            f".h{{font-size:12px;font-weight:600;fill:{COLORS['muted']}}}.c{{font-size:14px;fill:{COLORS['text']}}}"
            f".b{{font-size:14px;font-weight:600;fill:{COLORS['strong']}}}.f{{font-size:11px;fill:{COLORS['muted']}}}</style>",
-           f'<rect width="{W}" height="{H}" rx="6" fill="{COLORS["bg"]}"/>',
+           f'<rect width="{W}" height="{H}" rx="{RADIUS}" fill="{COLORS["bg"]}"/>',
            f'<text x="30" y="36" class="t">{"AI Agent Usage" if with_quota else "AI Agent Time"}</text>',
            f'<text x="{W - 30}" y="36" class="s" text-anchor="end">since {agg["since"]} · updated {esc(updated)}</text>']
     for name, x, anchor in cols:
@@ -441,7 +470,7 @@ def render_compact(agg: dict, with_quota: bool, updated: str) -> str:
            f".t{{font-size:18px;font-weight:600;fill:{COLORS['title']}}}.s{{font-size:11px;fill:{COLORS['muted']}}}"
            f".h{{font-size:11px;font-weight:600;fill:{COLORS['muted']}}}.c{{font-size:13px;fill:{COLORS['text']}}}"
            f".b{{font-size:13px;font-weight:600;fill:{COLORS['strong']}}}.f{{font-size:10px;fill:{COLORS['muted']}}}</style>",
-           f'<rect width="{W}" height="{H}" rx="4.5" fill="{COLORS["bg"]}"/>',
+           f'<rect width="{W}" height="{H}" rx="{RADIUS}" fill="{COLORS["bg"]}"/>',
            f'<text x="25" y="35" class="t">{"AI Agent Usage" if with_quota else "AI Agent Time"}</text>',
            f'<text x="{W - 25}" y="35" class="s" text-anchor="end">{"last 30 days" if with_quota else "active time"}</text>']
     top = 62
@@ -538,6 +567,8 @@ def main() -> int:
     p.add_argument("--state-dir", default="~/.local/state/agent-usage")
     p.add_argument("--cache-dir", default="~/.cache/agent-usage")
     p.add_argument("--token-file", action="append", default=[])
+    p.add_argument("--theme", default="tokyonight", choices=sorted(THEMES))
+    p.add_argument("--radius", type=float, default=4.5, help="卡片圆角（px）")
     p.add_argument("--render-only", metavar="DIR", help="只在本地目录渲染，不读写远端")
     args = p.parse_args()
 
@@ -546,6 +577,7 @@ def main() -> int:
     now = dt.datetime.now(tz)
     today = now.date()
     updated = now.strftime("%Y-%m-%d %H:%M %Z")
+    apply_theme(args.theme, args.radius)
     fresh = collect(args)
     if not fresh["days"]:
         log("本机没有任何 agent 数据，跳过")

@@ -52,10 +52,20 @@ agent 用量卡片的数据来源，以及 WakaTime 在本仓库中的接入方�
   | `agent-time-compact.svg`  | 400×190 | 无额度：7 天 / 30 天 / 累计活跃时长                   |
   | `agent-usage.svg`         | 810 宽  | 有额度完整版：30 天与累计数据，外加每日 token 柱状图  |
   | `agent-time.svg`          | 810 宽  | 无额度完整版：外加每日活跃时长柱状图                  |
-  - profile README 第二行是 top-langs（`theme=tokyonight`、`card_width=400`、8 种语言，高 190）和
-    `agent-usage-compact.svg`
-    并排，两张卡尺寸与背景色一致。语言数改了的话，top-langs 高度会变（每多一种约 +12.5px），要同步改
-    `render_compact` 的高度。
+  - 配色与圆角：`agent-usage-report` 传入
+    `--theme gruvbox --radius 15`（`home/base/tui/agent-usage/default.nix`）。 `--theme`
+    可选 github-readme-stats 的
+    `tokyonight`、`github_dark`、`dracula`、`catppuccin_mocha`、`nord`、`gruvbox`、
+    `rose_pine`、`onedark`、`radical`，配色取自它们的 bg / title / text。
+  - profile README 四张卡统一使用 gruvbox：
+    - 第一行是 stats 和 streak。stats 的最小宽度是 437（rank 圆环和图标），`card_width=400`
+      不起作用，所以 streak 也用
+      `card_width=437&card_height=220`，两张都按 437→400 缩放到 400×201。圆角写 `16.4`（15 × 437 /
+      400），缩放后与第二行一致。
+    - 第二行是 top-langs（`card_width=400`、8 种语言，高 190，`border_radius=15`）和
+      `agent-usage-compact.svg`
+      并排，两张同尺寸。语言数改了的话，top-langs 高度会变（每多一种约 +12.5px），要同步改
+      `render_compact` 的高度。
   - 无额度版本以注释形式写在它下面，切换时替换那一行即可。
 
 ## WakaTime

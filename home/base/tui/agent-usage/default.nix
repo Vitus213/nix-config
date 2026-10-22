@@ -36,6 +36,7 @@ let
     text = ''
       exec ${pkgs.python3}/bin/python3 -I ${./agent_usage.py} \
         --ccusage ${lib.getExe pkgs.ccusage} \
+        --theme gruvbox --radius 15 \
         ${lib.optionalString (hostName != "") "--host ${hostName}"} \
         ${lib.concatMapStringsSep " " (p: "--token-file ${p}") (secretPaths "github_token")} \
         "$@"

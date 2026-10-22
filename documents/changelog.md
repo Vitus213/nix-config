@@ -4,6 +4,16 @@
 
 ## 2026-10-22
 
+### profile 卡片统一 gruvbox 主题与 15px 圆角
+
+- 影响范围：`Vitus213/Vitus213` README 四张卡；`agent-usage-report` 输出的卡片配色与圆角，需
+  `just local` 后定时任务才按新配色刷新。
+- 配置入口：`home/base/tui/agent-usage/agent_usage.py`（`--theme`、`--radius`、`THEMES`）、`home/base/tui/agent-usage/default.nix`。
+- 变更内容：脚本支持 github-readme-stats 的 9 个主题和自定义圆角，当前使用
+  `gruvbox`、15px。README 中 stats 与 streak 都改成 437×220 再缩放到 400，修正第一行高度差，圆角写 16.4 以抵消缩放。
+- 验证方式：新脚本推送成功；按 README 实际 URL 抓取四张卡并缩放到 400 宽拼图，第一行两张均为 400×202，第二行两张均为 400×190。
+- 关联文档：[AI Agent 用量统计与 WakaTime](./agent-usage.md)。
+
 ### profile README：语言卡与 AI agent 用量卡并排
 
 - 影响范围：`Vitus213/Vitus213` README 第二行；`agent-usage-report` 额外输出两张 400×190 卡片，需
