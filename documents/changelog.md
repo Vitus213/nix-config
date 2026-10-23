@@ -4,6 +4,38 @@
 
 ## 2026-10-22
 
+### Herdr：auto-title 插件、Claude/OMP 集成、foot 去标题栏
+
+- 影响范围：foot 不再自绘标题栏（所有 Linux 主机）；Herdr 新建 tab 不再弹命名框；apollo 用户级安装 auto-title 插件与 claude/omp 集成。foot 与 Herdr 配置需
+  `just local`，foot 还需重启 `foot.service`。
+- 配置入口：`home/base/gui/terminal/terminals.nix`（`csd.preferred`）、`home/base/tui/dev-tools.nix`（`prompt_new_tab_name`）。
+- 变更内容：标题栏文字 `apollo: nix-config` 来自 Herdr 默认的
+  `ui.window_title`，这一点保留；niri 未开
+  `prefer-no-csd`，foot 会自绘一条标题栏，现在只关掉 foot 的。tab 名改由 auto-title 按会话或目录/分支生成。
+- 验证方式：home-manager activationPackage 构建通过，`foot.ini` 含
+  `[csd] preferred=none`；`herdr tab list` 显示自动命名；`herdr integration status` 显示 claude
+  v11、omp v10 为 current。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)、[终端说明](../home/base/gui/terminal/README.md)。
+
+### Herdr 侧边栏改用 herdr-radar 插件，config.toml 改为可写
+
+- 影响范围：所有主机的 `~/.config/herdr/config.toml` 从 Home
+  Manager 只读 symlink 改为激活时生成的可写文件；新增 radar 快捷键 `prefix+a`、`prefix+,`，显式设置
+  `[theme] name = "catppuccin"`。需 `just local` 后手动安装插件。
+- 配置入口：`home/base/tui/dev-tools.nix`（`herdrBaseConfig`、`home.activation.herdrConfig`）。
+- 变更内容：内置 Agents 面板只用圆点区分状态、`done` 很快变回
+  `idle`；herdr-radar 用颜色和标记区分 working / blocked / done /
+  idle，done 保持到看过为止。插件会改写
+  `config.toml`，所以激活时用 Nix 基础内容加上旧文件中 radar 的托管块重新生成该文件。
+- 验证方式：home-manager activationPackage 构建通过；在沙箱中用 radar 自身的
+  `managed-config.apply()` 写入托管块，再跑激活片段合并，`tomllib`
+  解析通过、结果与插件直写的结构一致；apollo `just local` 后安装 radar
+  `1.4.9`（`3e72fe2`），`configure` 输出 `theme (dark)`，`herdr agent list` 各 pane 均带 radar
+  token。
+- 手动步骤：`herdr plugin install hhdebb/herdr-radar`，然后
+  `herdr plugin action invoke hhdebb.herdr-radar.configure` 和 `…state-start`。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
 ### 清理构建告警：home-manager 升级、LibreOffice 别名、光标显式启用
 
 - 影响范围：所有主机的 home-manager 模块（apollo 实际闭包差异仅 fzf

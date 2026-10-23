@@ -61,15 +61,15 @@
 
 ## 终端与 AI Agent 工具
 
-| 文档                                                       | 内容                                         |
-| ---------------------------------------------------------- | -------------------------------------------- |
-| [Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)  | 启动关系与低风险排障方法                     |
-| [Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md) | Agent CLI 的安装与快捷命令                   |
-| [omp 模型配置管理](./omp-models.md)                        | `models.yml` 的生成、新增 provider 流程      |
-| [Hindsight 记忆后端](./hindsight.md)                       | Agent 长期记忆服务的部署                     |
-| [Herdr Agent 终端运行时](./herdr.md)                       | Herdr 与 Zellij 的关系、手机 SSH 接入        |
-| [bb Agent IDE](./bb.md)                                    | 安装来源、更新与回滚                         |
-| [AI Agent 用量统计与 WakaTime](./agent-usage.md)           | profile 用量卡片、ccusage 口径、WakaTime key |
+| 文档                                                       | 内容                                                |
+| ---------------------------------------------------------- | --------------------------------------------------- |
+| [Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)  | 启动关系与低风险排障方法                            |
+| [Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md) | Agent CLI 的安装与快捷命令                          |
+| [omp 模型配置管理](./omp-models.md)                        | `models.yml` 的生成、新增 provider 流程             |
+| [Hindsight 记忆后端](./hindsight.md)                       | Agent 长期记忆服务的部署                            |
+| [Herdr Agent 终端运行时](./herdr.md)                       | Herdr 与 Zellij 的关系、radar 侧边栏、手机 SSH 接入 |
+| [bb Agent IDE](./bb.md)                                    | 安装来源、更新与回滚                                |
+| [AI Agent 用量统计与 WakaTime](./agent-usage.md)           | profile 用量卡片、ccusage 口径、WakaTime key        |
 
 ## 历史与计划
 

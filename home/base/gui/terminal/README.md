@@ -7,7 +7,8 @@
 按平台保留两个终端：
 
 - **Linux**:
-  - `foot`: 主终端（`Mod+Return`），Wayland 原生、启动快、内存低，server 模式常驻
+  - `foot`: 主终端（`Mod+Return`），Wayland 原生、启动快、内存低，server 模式常驻；`csd.preferred = none`
+    不画标题栏
   - `alacritty`: 备用终端（`Mod+Shift+Return`），Rust 实现
 - **macOS**:
   - `ghostty`: Homebrew cask 安装的终端

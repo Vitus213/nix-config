@@ -5,20 +5,31 @@
 ## 当前配置
 
 Herdr 二进制改为官方安装（`curl -fsSL https://herdr.dev/install.sh | sh`，装至
-`~/.local/bin`，更新走 `herdr update` 自管理），仓库只通过 `home/base/tui/dev-tools.nix` 管理
-`~/.config/herdr/config.toml`。
+`~/.local/bin`，更新走 `herdr update` 自管理）。仓库只通过 `home/base/tui/dev-tools.nix` 的
+`home.activation.herdrConfig` 生成 `~/.config/herdr/config.toml`。
 
 当前运行版本与 `apollo` 配置求值结果：
 
-| 组件    | 版本      | 来源                                       |
-| ------- | --------- | ------------------------------------------ |
-| Herdr   | `0.9.5`   | `~/.local/bin` 官方安装（自管理）          |
-| Nushell | `0.116.1` | Home Manager 的 `programs.nushell.package` |
+| 组件        | 版本      | 来源                                       |
+| ----------- | --------- | ------------------------------------------ |
+| Herdr       | `0.9.5`   | `~/.local/bin` 官方安装（自管理）          |
+| herdr-radar | `1.4.9`   | `herdr plugin install`（用户级，自管理）   |
+| auto-title  | `0.14.0`  | `herdr plugin install`（用户级，Go 构建）  |
+| Nushell     | `0.116.1` | Home Manager 的 `programs.nushell.package` |
 
 Linux 与 macOS 的共享 TUI 配置都会生成同一份 Herdr 配置文件。
 
-同一模块还通过 Home Manager 管理
-`~/.config/herdr/config.toml`，让 Herdr 新建的交互式 Pane 与其他终端一致使用登录 Nushell：
+`config.toml` 是**可写的普通文件**，不是 Home
+Manager 的只读 symlink：herdr-radar 插件和 Herdr 自身（例如侧边栏排序切换）都会改写它。每次 Home
+Manager 激活时按以下规则重新生成：
+
+1. 写入 Nix 声明的基础内容（下方代码块）；
+2. 从旧文件中取出 `# >>> herdr-radar {tab-bar,theme,sidebar} block` 到对应 `# <<<`
+   的托管块，按 tab-bar、theme、sidebar 顺序追加到末尾；
+3. 其余手工改动（含 Herdr 设置界面写入的键）会被基础内容覆盖。要长期保留，就写进 `dev-tools.nix`。
+
+基础内容中 `[ui]` 必须是最后一个表：radar 的 tab-bar 块是 `[ui]` 下的裸键，追加到末尾时才会落在
+`[ui]` 里；radar 也要求文件中显式存在 `[ui]` 表，否则拒绝写入。
 
 ```toml
 onboarding = false
@@ -27,9 +38,25 @@ onboarding = false
 default_shell = "/etc/profiles/per-user/vitus/bin/nu"
 shell_mode = "login"
 
+[theme]
+name = "catppuccin"
+
+[[keys.command]]
+key = "prefix+a"
+type = "plugin_action"
+command = "hhdebb.herdr-radar.view-flip"
+
+[[keys.command]]
+key = "prefix+comma"
+type = "plugin_action"
+command = "hhdebb.herdr-radar.settings"
+
 [ui.toast]
 delivery = "herdr"
 delay_seconds = 1
+
+[ui]
+prompt_new_tab_name = false
 ```
 
 Herdr 的 `default_shell` 只接受可执行文件名或路径，不接受带参数的命令行。这里刻意使用
@@ -171,6 +198,109 @@ herdr pane list                   # 目标 Pane 应显示 "agent":"omp"
 herdr notification show "测试"    # 前台 Pane 繁忙时返回 reason: busy
 ```
 
+## 侧边栏 Agent 状态：herdr-radar 插件
+
+Herdr 内置的 Agents 面板只用小圆点颜色区分状态，`done` 被看过后很快回落为
+`idle`，问你问题的 agent 和闲置很久的 agent 看起来差不多。这里改用社区插件
+[hhdebb/herdr-radar](https://github.com/hhdebb/herdr-radar) 重绘侧边栏：
+
+| 状态    | 标题颜色 | 标题前标记                |
+| ------- | -------- | ------------------------- |
+| working | 厂商色   | 盲文转轮动画              |
+| blocked | 红       | 闪烁的 `?`，等你确认/选择 |
+| done    | 绿       | `✓`，保持到你聚焦该 pane  |
+| idle    | 渐变     | 圆环；超过 2 小时整行变暗 |
+
+此外同一项目的 agent 归在一个表头下，按活跃度排序，Spaces 列使用相同配色。
+
+Claude Code 的状态仍由 Herdr 读屏判断（`herdr integration install claude`
+只提供会话恢复，不上报状态）；radar 只负责把状态显示得更醒目、更持久。
+
+### 安装（一次性，用户级）
+
+插件不由 Nix 管理，与 Herdr 二进制一样自管理。需要 Node 18+（`home/base/tui/editors/packages.nix`
+已提供 `nodejs_22`）。先部署本仓库配置，让 `config.toml` 变成可写文件，再安装：
+
+```bash
+just local                                   # 或 darwin 对应命令
+herdr plugin install hhdebb/herdr-radar      # 构建步骤写入托管块、安装图标字体
+herdr plugin action invoke hhdebb.herdr-radar.configure    # 托管块未写入时补写并重载
+herdr plugin action invoke hhdebb.herdr-radar.state-start  # 启动状态守护进程
+```
+
+不要为此执行 `herdr server stop`，它会结束所有 pane 中的进程。
+
+### 主题与字体
+
+- 读不到桌面明暗（Linux 上没有 `gsettings`）时，radar 按 `[theme] name`
+  选配色，未设置会回退浅色配色、在深色终端里看不清。因此基础配置显式写
+  `name = "catppuccin"`（深色）。
+- 图标字体 `Herdr Agent Icons Max` 装到 `~/.local/share/fonts`，占用 `U+E1A0`
+  起的两段私有区码位。`Maple Mono NF CN`
+  不覆盖这两段，foot/alacritty 会通过 fontconfig 自动回退，Linux 上不需要改终端配置。foot 以 server 模式常驻，只在启动时读取字体列表；首次装字体后需
+  `systemctl --user restart foot.service`（会关闭所有 foot 窗口，herdr
+  server 不受影响）再重开窗口，否则图标显示为方块。macOS 的 Ghostty 配置是 Home
+  Manager 只读文件，插件写不进码位映射；如果 logo 显示成方块，就在
+  `home/base/gui/terminal/terminals.nix` 的 ghostty settings 中加 `font-codepoint-map`。
+- 上游 README 标注 Linux 尚未实测；异常时先看
+  `herdr plugin log list --plugin hhdebb.herdr-radar --limit 20`。
+
+### 快捷键与设置
+
+- `prefix+a`（默认 `ctrl+b a`）：Agents 排序在 active（分组）与 recent（扁平）之间切换。
+- `prefix+,`：打开 radar 设置弹窗（`done_hold`、`activity_stale_minutes` 等）。设置保存在
+  `$(herdr plugin config-dir hhdebb.herdr-radar)/config.toml`，不由 Nix 管理。
+
+### 更新与移除
+
+```bash
+herdr plugin update hhdebb.herdr-radar
+herdr plugin action invoke hhdebb.herdr-radar.state-stop
+herdr plugin action invoke hhdebb.herdr-radar.state-start
+```
+
+移除时先清托管块，再卸载：
+
+```bash
+herdr plugin action invoke hhdebb.herdr-radar.unconfigure
+herdr plugin action invoke hhdebb.herdr-radar.uninstall-font
+herdr plugin uninstall hhdebb.herdr-radar
+```
+
+不用插件时，基础配置中的两个 `keys.command` 只是失效按键，可从 `dev-tools.nix` 删掉。
+
+## Tab 自动命名：auto-title 插件
+
+[kryptamine/herdr-auto-title](https://github.com/kryptamine/herdr-auto-title)
+按 tab 里的工作命名 tab 与 pane，例如
+`1 · herdr agents 状态显示`、`2 · legacy › vmm-chipset › PR 2064…`：agent 的 tab 用会话标题，普通 Shell 用目录与分支。手动改过名的 tab/pane 不再被接管，清空名字即交还。
+
+基础配置设置
+`prompt_new_tab_name = false`：新建 tab 时弹框里输入的名字会被视为手动命名，插件就不再接管。
+
+插件安装时用 Go 从源码构建，本机未全局安装 Go，并且 `proxy.golang.org`
+访问超时，因此临时提供 Go 并改用国内代理：
+
+```bash
+GOPROXY=https://goproxy.cn,direct nix shell nixpkgs#go -c \
+  herdr plugin install kryptamine/herdr-auto-title --ref v0.14.0 --yes
+herdr plugin action invoke herdr.auto-title.restart
+```
+
+升级时把 `--ref` 换成新 release tag 重跑这两行；移除用
+`herdr plugin uninstall herdr.auto-title`。插件只通过 Herdr socket 读写标签，不联网。
+
+## Agent 集成
+
+已安装 `claude`（v11）与 `omp`（v10）集成，`herdr integration status` 可查看：
+
+- `claude`：在 `~/.claude/hooks/herdr-agent-state.sh` 安装 hook，并在 `~/.claude/settings.json`
+  注册（该文件不由 Nix 管理）。作用是上报会话 ID，使 Herdr
+  server 重启或升级后能恢复原 Claude 会话；auto-title 也据此按会话命名。Claude 的状态仍由读屏判断。
+- `omp`：见上文“通知与 Agent 集成”。
+
+Herdr 升级后若 `integration status` 显示 `outdated`，重新执行 `herdr integration install <name>`。
+
 ## 从手机连接
 
 Herdr 不要求手机安装专用 App。手机使用任意 SSH 客户端登录运行 Agent 的主机，再运行 Herdr：
@@ -192,7 +322,6 @@ TUI 会适配窄屏。手机与主机需要先具备可用的 SSH 路径；使�
 ```bash
 nix eval --raw .#nixosConfigurations.apollo.pkgs.herdr.version
 nix eval --raw .#nixosConfigurations.apollo.config.home-manager.users.vitus.programs.nushell.package.version
-nix eval --raw '.#nixosConfigurations.apollo.config.home-manager.users.vitus.xdg.configFile."herdr/config.toml".text'
 nix build .#nixosConfigurations.apollo.config.home-manager.users.vitus.home.activationPackage --no-link --print-build-logs
 nix eval .#evalTests --show-trace --print-build-logs --verbose
 ```
@@ -215,9 +344,10 @@ printf "┌─┬─┐ │ 中文  │ └─┴─┘\n"
 Herdr 二进制为官方安装、自管理更新：本机直接运行 `herdr update`，与仓库 `nixpkgs`
 输入无关；仓库只负责 `~/.config/herdr/config.toml` 的声明式生成。
 
-只回滚本次 Shell 修复时，从 `home/base/tui/dev-tools.nix` 移除 `xdg.configFile."herdr/config.toml"`
-配置并重新构建 Home Manager；之后新 Pane 会重新回退到 `$SHELL`。完整移除 Herdr 时，还要从同一文件的
-`home.packages` 中移除 `herdr`。删除软件包或配置不会主动停止已经运行的 Herdr
+如需回到只读 symlink 部署，把 `home.activation.herdrConfig` 换回
+`xdg.configFile."herdr/config.toml".text = …`，部署前先删除可写的
+`~/.config/herdr/config.toml`，否则 Home
+Manager 会因目标已存在而拒绝链接；此后 radar 将无法写入托管块。删除软件包或配置不会主动停止已经运行的 Herdr
 server；如需结束会话，先确认 Pane 内没有需要保留的进程，再执行：
 
 ```bash
@@ -226,7 +356,9 @@ herdr server stop
 
 ## 参考
 
-- [Herdr `0.9.3` 配置文档](https://herdr.dev/docs/0.9.3/configuration/)
+- [Herdr `0.9.5` 配置文档](https://herdr.dev/docs/configuration/)
+- [Herdr 插件市场](https://herdr.dev/docs/marketplace/)
+- [herdr-radar](https://github.com/hhdebb/herdr-radar)
 - [Herdr 安装文档](https://herdr.dev/docs/install/)
 - [Herdr 工作方式与手机 SSH 接入](https://herdr.dev/docs/how-to-work/)
 - [Herdr 持久化与远程连接](https://herdr.dev/docs/persistence-remote/)

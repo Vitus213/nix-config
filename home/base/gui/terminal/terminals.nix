@@ -64,6 +64,11 @@ in
       mouse = {
         hide-when-typing = "yes";
       };
+
+      # niri 未启用 prefer-no-csd，foot 会自绘标题栏；平铺下无用，只关 foot 的。
+      csd = {
+        preferred = "none";
+      };
     };
   };
 
