@@ -93,6 +93,27 @@ in
     rm -f "$herdr_tmp"
   '';
 
+  # herdr server 独立成 systemd 用户服务，不再挂在启动它的终端窗口的 cgroup 下。
+  # 停止该服务会结束所有 pane 进程，因此 HM 切换时不自动重启。
+  systemd.user.services.herdr = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+    Unit = {
+      Description = "Herdr session server";
+      Documentation = [ "https://herdr.dev/docs/cli-reference/" ];
+      # 需要 graphical-session 导入的 WAYLAND_DISPLAY 等变量，pane 继承服务环境。
+      After = [ "graphical-session.target" ];
+      X-RestartIfChanged = false;
+    };
+    Service = {
+      # 已有 server（如终端里手动启动的）在跑时跳过，避免抢 socket。
+      ExecCondition = "${pkgs.bash}/bin/sh -c '! ${config.home.homeDirectory}/.local/bin/herdr status server | ${pkgs.gnugrep}/bin/grep -q \"^status: running\"'";
+      ExecStart = "${config.home.homeDirectory}/.local/bin/herdr server";
+      # `herdr server stop` 也会被拉起并恢复会话；真正停止用 systemctl --user stop herdr。
+      Restart = "always";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   programs = {
     direnv = {
       enable = true;

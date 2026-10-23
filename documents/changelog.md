@@ -4,6 +4,17 @@
 
 ## 2026-10-22
 
+### Herdr server 改为 systemd 用户服务
+
+- 影响范围：Linux 主机的 herdr 后台 server。需
+  `just local`，并按文档手动迁移一次（会结束当前所有 pane 进程）。
+- 配置入口：`home/base/tui/dev-tools.nix`（`systemd.user.services.herdr`）。
+- 变更内容：server 原先挂在首次启动它的终端所属 cgroup 下（apollo 上是
+  `app-Alacritty@autostart.service`），那个 unit 一停就会连带结束所有 agent。现在改为独立服务：随 graphical-session 启动，已有 server 时跳过，`Restart=always`，HM 切换时不重启。
+- 验证方式：activationPackage 构建通过；`systemd-analyze --user verify` 通过；`ExecCondition`
+  在已有 server 时返回 1（跳过），无 server 时返回 0。
+- 关联文档：[Herdr Agent 终端运行时](./herdr.md)。
+
 ### Herdr：auto-title 插件、Claude/OMP 集成、foot 去标题栏
 
 - 影响范围：foot 不再自绘标题栏（所有 Linux 主机）；Herdr 新建 tab 不再弹命名框；apollo 用户级安装 auto-title 插件与 claude/omp 集成。foot 与 Herdr 配置需

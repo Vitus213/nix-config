@@ -74,7 +74,7 @@ server 只在启动或 `reload-config`
 herdr
 ```
 
-Herdr 会启动或连接默认后台会话。分离客户端后，Herdr 后台服务器、Pane 和 Agent 进程继续运行：
+Herdr 会连接默认后台会话；Linux 上该会话由 systemd 用户服务提供（见下节），服务未运行时客户端才会自行拉起 server。分离客户端后，Herdr 后台服务器、Pane 和 Agent 进程继续运行：
 
 ```text
 Ctrl+B Q
@@ -85,6 +85,42 @@ Ctrl+B Q
 ```bash
 herdr server stop
 ```
+
+## 后台 server：systemd 用户服务（Linux）
+
+Linux 上 herdr server 由 `home/base/tui/dev-tools.nix` 的 `systemd.user.services.herdr` 托管：
+
+- `ExecStart = ~/.local/bin/herdr server`（官方文档建议服务式部署使用该子命令），随
+  `graphical-session.target` 启动，从而继承 niri 导入的 `WAYLAND_DISPLAY`、`PATH`
+  等环境，pane 内的剪贴板、浏览器登录等照常工作。
+- **原因**：此前 server 由第一次运行 `herdr` 的终端拉起，落在该终端的 cgroup 中（曾在
+  `app-Alacritty@autostart.service`
+  下）。一旦那个 unit 被停止，systemd 会连带杀掉 server 和所有 agent。独立服务后，终端窗口只是客户端。
+- `ExecCondition`：已有 server 在运行（`herdr status server` 输出
+  `status: running`）时跳过启动，避免抢 socket。
+- `Restart = always`：`herdr server stop` 后 3 秒自动拉起，并按快照恢复布局与 agent 会话。真正停止用
+  `systemctl --user stop herdr`。
+- `X-RestartIfChanged = false`：重启服务会结束所有 pane，因此 Home Manager 切换时不自动重启。
+
+### 首次迁移
+
+部署后旧 server 仍挂在原终端下，服务会被 `ExecCondition` 跳过。等手头 agent 告一段落后：
+
+```bash
+herdr server stop               # 结束旧 server（会结束所有 pane 进程）
+systemctl --user start herdr    # 由 systemd 启动新 server，恢复布局
+herdr                           # 重新连接
+systemctl --user status herdr   # 应为 active (running)
+```
+
+在集成安装之前启动的 Claude 会话没有登记会话 ID，迁移后不会自动恢复，需要在对应目录手动
+`claude --resume`。
+
+### 升级
+
+`herdr update` 只替换二进制，旧 server 继续运行；需要新 server 时执行
+`systemctl --user restart herdr`（结束所有 pane，按快照恢复）。不要使用
+`herdr update --handoff`：它会换掉 server 进程，和 systemd 的主进程跟踪冲突。
 
 ## 与 Zellij 的关系
 
