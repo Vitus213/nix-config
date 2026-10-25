@@ -40,7 +40,7 @@ let
     delay_seconds = 1
 
     [ui]
-    # 新 tab 不弹命名框：手动起的名字会让 auto-title 插件不再接管该 tab。
+    # 新 tab 不弹命名框：未命名的 tab 显示位置编号。
     prompt_new_tab_name = false
   '';
 in

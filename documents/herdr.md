@@ -327,14 +327,29 @@ herdr plugin uninstall hhdebb.herdr-radar
 
 不用插件时，基础配置中的两个 `keys.command` 只是失效按键，可从 `dev-tools.nix` 删掉。
 
-## Tab 自动命名：auto-title 插件
+## Pane 自动命名：auto-title 插件
 
 [kryptamine/herdr-auto-title](https://github.com/kryptamine/herdr-auto-title)
-按 tab 里的工作命名 tab 与 pane，例如
-`1 · herdr agents 状态显示`、`2 · legacy › vmm-chipset › PR 2064…`：agent 的 tab 用会话标题，普通 Shell 用目录与分支。手动改过名的 tab/pane 不再被接管，清空名字即交还。
+按 pane 里的工作命名 pane（goto 面板、侧边栏可见）并上报工作区 topic：agent 用会话标题，普通 Shell 用目录与分支。手动改过名的 pane 不再被接管，清空名字即交还。
 
-基础配置设置
-`prompt_new_tab_name = false`：新建 tab 时弹框里输入的名字会被视为手动命名，插件就不再接管。
+**本机补丁：不命名 tab。** tab 栏只显示 Herdr 默认的位置编号
+`1`、`2`、`3`…。插件没有关闭 tab 命名的配置项，因此在本地 checkout 的 `internal/app/app.go` 的
+`nameTab` 开头加了无条件 `return` 并重新编译（pane 命名与 topic 走 `namePanes` /
+`reportTopics`，不受影响）。补丁不在本仓库内，重装或升级插件后需要重新打：
+
+```bash
+cd ~/.config/herdr/plugins/github-installations/herdr.auto-title-*/*/checkout
+# 在 nameTab 的 `if pass.TabLocked(tab.ID) {` 之前加：if true { return }
+nix shell nixpkgs#go -c go build -o herdr-auto-title ./cmd/herdr-auto-title
+herdr plugin action invoke herdr.auto-title.restart
+```
+
+Herdr 0.9.5 无法清除 tab 的自定义名，插件写过名字的旧 tab 需要手动
+`herdr tab rename <tab_id> <位置>`
+改成编号；这类名字是固定的，关掉前面的 tab 后不会自动重排，新建的 tab 则始终显示实时位置。
+`herdr plugin disable` 不会结束已运行的插件进程，需配合 restart 或重启 server。
+
+基础配置设置 `prompt_new_tab_name = false`：新建 tab 不弹命名框，直接显示位置编号。
 
 插件安装时用 Go 从源码构建，本机未全局安装 Go，并且 `proxy.golang.org`
 访问超时，因此临时提供 Go 并改用国内代理：

@@ -4,6 +4,17 @@
 
 ## 2026-10-26
 
+### Herdr tab 栏只显示编号
+
+- 影响范围：本机（apollo）Herdr tab 栏，tab 名由 `1 · 会话标题` 改为
+  `1`、`2`、`3`…；pane 命名与工作区 topic 不变。
+- 配置入口：auto-title 插件本地 checkout 的
+  `internal/app/app.go`（不在仓库内）；`home/base/tui/dev-tools.nix` 仅改注释。
+- 变更内容：auto-title 无关闭 tab 命名的选项，本地给 `nameTab`
+  加提前返回并重编译、restart；现有 tab 手动改名为位置编号。重装/升级插件后需按文档重打补丁。
+- 验证方式：`herdr tab list` 标签为纯编号且多次轮询不被改回；`herdr pane list` 仍有自动命名。
+- 关联文档：[Herdr](./herdr.md) 的“Pane 自动命名：auto-title 插件”。
+
 ### Noctalia 系统监控 Disk 显示 0 GB
 
 - 影响范围：Linux 桌面 Noctalia 顶栏 SystemMonitor 与系统监控面板的 Disk 行。保存即热加载，无需部署。
