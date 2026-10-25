@@ -118,7 +118,7 @@
         },
         {
           "compactMode": false,
-          "diskPath": "/persistent",
+          "diskPath": "/",
           "iconColor": "none",
           "id": "SystemMonitor",
           "showCpuCores": false,
@@ -326,7 +326,7 @@
         "id": "media-sysmon-card"
       }
     ],
-    "diskPath": "/persistent",
+    "diskPath": "/",
     "position": "close_to_bar_button",
     "shortcuts": {
       "left": [

@@ -2,6 +2,30 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-26
+
+### Noctalia 系统监控 Disk 显示 0 GB
+
+- 影响范围：Linux 桌面 Noctalia 顶栏 SystemMonitor 与系统监控面板的 Disk 行。保存即热加载，无需部署。
+- 配置入口：`home/linux/gui/base/noctalia/config/settings.json`（两处 `diskPath`）。
+- 变更内容：`diskPath` 从 `/persistent` 改为 `/`；`/persistent` 在 apollo 上不是挂载点，`df`
+  无对应行导致显示 0。
+- 验证方式：JSON 校验通过；顶栏磁盘读数变为 `297G`，与 `df /` 一致。
+- 关联文档：[Noctalia 系统监控磁盘路径](./noctalia-system-monitor.md)。
+
+### Noctalia 工作区 urgent 红色角标不消失
+
+- 影响范围：Linux 桌面（niri + Noctalia）顶栏工作区指示器。需 `just local` 后
+  `systemctl --user restart noctalia-shell`。
+- 配置入口：`overlays/noctalia-shell/default.nix`。
+- 变更内容：noctalia-qs 0.0.12 不处理 niri 的
+  `WorkspaceUrgencyChanged`，urgent 清除后仍显示红色；overlay 给 `NiriService.qml` 加
+  `onRawEvent`，收到该事件时 `Niri.refreshWorkspaces()`。
+- 验证方式：patched noctalia-shell 构建通过，home-manager 服务 `ExecStart`
+  指向新包；`niri msg -j event-stream` 实测 foot 响铃触发 `WorkspaceUrgencyChanged`
+  true/false；`just test`；`just local` 后截图确认 urgent 清除时顶栏角标随之变灰。
+- 关联文档：[Noctalia 工作区红色角标](./noctalia-workspace-urgent.md)。
+
 ## 2026-10-25
 
 ### Herdr 通知改为桌面通知（`delivery = "system"`）

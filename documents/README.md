@@ -38,20 +38,22 @@
 
 ## Linux 桌面（Niri + Noctalia）
 
-| 文档                                                     | 内容                                           |
-| -------------------------------------------------------- | ---------------------------------------------- |
-| [Niri 工作区与窗口分配](./niri-workspaces.md)            | 工作区命名、快捷键、窗口规则                   |
-| [Niri 显示缩放](./niri-display-scaling.md)               | 多显示器缩放                                   |
-| [Noctalia IPC 与服务环境](./noctalia-ipc.md)             | 快捷键 IPC 失效排查、`QT_QPA_PLATFORM` 约束    |
-| [Wayland 屏幕共享](./wayland-screen-sharing.md)          | portal、PipeWire 与应用级屏幕共享              |
-| [Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md) | 输入法配置、验证与回滚                         |
-| [Esc 与 Caps Lock 键位](./keyboard-layout.md)            | NixOS 与 macOS 的键位行为                      |
-| [Linux 语音输入](./linux-voice-input.md)                 | Voiceless 语音输入方案                         |
-| [Linux 微信、QQ 与飞书](./linux-im-apps.md)              | 安装方式、沙箱边界与屏幕共享                   |
-| [Linux 腾讯会议](./tencent-meeting.md)                   | 安装、数据持久化与回滚                         |
-| [浏览器与工作协作应用](./work-apps.md)                   | Zen + Chrome；Slack、Notion、Linear 及窗口分配 |
-| [Zen Browser](./zen-browser.md)                          | 浏览器安装与配置                               |
-| [Orca 桌面应用](./orca.md)                               | StablyAI Orca 的安装方式                       |
+| 文档                                                      | 内容                                           |
+| --------------------------------------------------------- | ---------------------------------------------- |
+| [Niri 工作区与窗口分配](./niri-workspaces.md)             | 工作区命名、快捷键、窗口规则                   |
+| [Niri 显示缩放](./niri-display-scaling.md)                | 多显示器缩放                                   |
+| [Noctalia IPC 与服务环境](./noctalia-ipc.md)              | 快捷键 IPC 失效排查、`QT_QPA_PLATFORM` 约束    |
+| [Noctalia 工作区红色角标](./noctalia-workspace-urgent.md) | urgent 状态不刷新的原因与 overlay 补丁         |
+| [Noctalia 系统监控磁盘路径](./noctalia-system-monitor.md) | `diskPath` 必须是挂载点                        |
+| [Wayland 屏幕共享](./wayland-screen-sharing.md)           | portal、PipeWire 与应用级屏幕共享              |
+| [Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)  | 输入法配置、验证与回滚                         |
+| [Esc 与 Caps Lock 键位](./keyboard-layout.md)             | NixOS 与 macOS 的键位行为                      |
+| [Linux 语音输入](./linux-voice-input.md)                  | Voiceless 语音输入方案                         |
+| [Linux 微信、QQ 与飞书](./linux-im-apps.md)               | 安装方式、沙箱边界与屏幕共享                   |
+| [Linux 腾讯会议](./tencent-meeting.md)                    | 安装、数据持久化与回滚                         |
+| [浏览器与工作协作应用](./work-apps.md)                    | Zen + Chrome；Slack、Notion、Linear 及窗口分配 |
+| [Zen Browser](./zen-browser.md)                           | 浏览器安装与配置                               |
+| [Orca 桌面应用](./orca.md)                                | StablyAI Orca 的安装方式                       |
 
 ## macOS
 
