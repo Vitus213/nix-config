@@ -15,6 +15,18 @@
 - 验证方式：`notify-send --app-name Herdr` 实测弹出；`just test`。
 - 关联文档：[Herdr](./herdr.md) 的“通知与 Agent 集成”。
 
+### Linux 主终端切回 foot：快捷键对调，登录只自启 foot
+
+- 影响范围：Linux 桌面（niri）。`Mod+Return` 改为 `footclient`（复用常驻的
+  `foot.service`），`Mod+Shift+Return` 改为 alacritty；XDG autostart 移除
+  `Alacritty.desktop`，登录只打开一个 foot 窗口。快捷键文件是 out-of-store
+  symlink，保存即由 niri 热重载；自启需 `just local`，下次登录生效。
+- 配置入口：`home/linux/gui/niri/conf/keybindings.kdl`、`home/linux/gui/base/xdg/autostart.nix`。
+- 变更内容：终端说明一直写的是“foot 主终端（`Mod+Return`）、alacritty 备用”，但快捷键实际相反且两个终端都自启，现按说明对齐。
+- 验证方式：`niri validate` 通过、niri 已重载；`just test`；切换后 `~/.config/autostart/` 下不再有
+  `Alacritty.desktop`。
+- 关联文档：[终端说明](../home/base/gui/terminal/README.md)。
+
 ## 2026-10-22
 
 ### Herdr server 改为 systemd 用户服务

@@ -7,9 +7,10 @@
 按平台保留两个终端：
 
 - **Linux**:
-  - `foot`: 主终端（`Mod+Return`），Wayland 原生、启动快、内存低，server 模式常驻；`csd.preferred = none`
-    不画标题栏
-  - `alacritty`: 备用终端（`Mod+Shift+Return`），Rust 实现
+  - `foot`: 主终端（`Mod+Return` 调
+    `footclient`），Wayland 原生、启动快、内存低，server 模式常驻；`csd.preferred = none`
+    不画标题栏；登录时 XDG autostart 只自动打开一个 foot 窗口
+  - `alacritty`: 备用终端（`Mod+Shift+Return`），Rust 实现，不随登录自启
 - **macOS**:
   - `ghostty`: Homebrew cask 安装的终端
   - `alacritty`: 备用终端

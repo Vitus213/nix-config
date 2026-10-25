@@ -15,8 +15,9 @@ binds {
     Mod+Shift+0 { spawn-sh "$HOME/.config/niri/scripts/normalize-workspaces.sh"; }
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
-    Mod+Return { spawn "alacritty"; }
-    Mod+Shift+Return { spawn "foot"; }
+    // foot 以 server 模式常驻（foot.service），footclient 只负责开窗。
+    Mod+Return { spawn "footclient"; }
+    Mod+Shift+Return { spawn "alacritty"; }
 
     // Launcher
     Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }

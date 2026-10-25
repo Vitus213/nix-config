@@ -9,8 +9,8 @@
   xdg.autostart.enable = true;
   # This fixes nixpak sandboxed apps accessing mapped folders correctly
   xdg.autostart.entries = [
+    # 登录只开一个 foot 窗口；alacritty 仅作备用，不自启。
     "${pkgs.foot}/share/applications/foot.desktop"
-    "${pkgs.alacritty}/share/applications/Alacritty.desktop"
 
     "${pkgs.stably-orca}/share/applications/orca.desktop"
 
