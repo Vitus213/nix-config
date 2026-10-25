@@ -52,7 +52,7 @@ type = "plugin_action"
 command = "hhdebb.herdr-radar.settings"
 
 [ui.toast]
-delivery = "herdr"
+delivery = "system"
 delay_seconds = 1
 
 [ui]
@@ -208,11 +208,33 @@ server 自 10-06 起长驻运行，内存中仍持有旧配置的
 
 ## 通知与 Agent 集成（OMP）
 
-Herdr 可以在后台 Workspace 的 Agent 完成或需要输入时弹出通知。当前配置为：
+Herdr 可以在 Agent 完成或需要输入时弹出通知。当前配置为：
 
-- `[ui.toast] delivery = "herdr"`：通知以 Herdr 应用内 toast 形式弹出。`system` 和 `terminal`
-  模式依赖系统通知守护进程或外层终端转发，apollo 没有安装 dunst/mako 等服务，因此不使用。
+- `[ui.toast] delivery = "system"`：以桌面通知弹出。Linux 上由 Herdr
+  **client**（运行在 foot 里的那个进程）调用
+  `notify-send --app-name Herdr`，由 noctalia-shell 的通知服务显示；macOS 上用
+  `terminal-notifier`，缺失时回退 `osascript`。
+- 抑制规则：Herdr 不为当前活动 tab 弹通知，但会读取外层终端的焦点事件。foot 在前台时只有其他 tab 的 Agent 会弹；foot 切到后台后，当前 tab 的 Agent 完成也会弹。
+- 弹出前等待 `delay_seconds = 1` 秒，期间状态变了就不弹。
 - `[ui.sound]` 未显式配置，沿用默认 `enabled = true`，后台 Workspace 的 Agent 状态变化同时有提示音。
+
+几种 `delivery` 在本机的取舍（依据 Herdr `0.9.5` 源码
+`src/terminal_notify.rs`、`src/platform/linux.rs`）：
+
+| 值         | 行为                                                       | foot 下                  |
+| ---------- | ---------------------------------------------------------- | ------------------------ |
+| `system`   | client 调 `notify-send`                                    | 可用（当前）             |
+| `terminal` | 向外层终端写 OSC 9/99，只识别 Ghostty/iTerm2/Kitty/WezTerm | 不弹：`TERM=foot` 被跳过 |
+| `herdr`    | Herdr 界面内 toast，终端不在前台时看不到                   | 可用，但看不到           |
+| `off`      | 关闭弹窗                                                   | —                        |
+
+`delivery` 只能选一个，选 `system` 后 Herdr 界面内不再有 toast。排查时先单独测试通知链路：
+
+```bash
+notify-send --app-name Herdr -- "测试" "桌面应弹出这条"
+```
+
+修改后对运行中的 server 执行 `herdr server reload-config`，不会结束 Pane。
 
 OMP 的状态上报通过 Herdr 官方集成安装：
 

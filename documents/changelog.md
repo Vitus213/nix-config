@@ -2,6 +2,19 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-25
+
+### Herdr 通知改为桌面通知（`delivery = "system"`）
+
+- 影响范围：Linux 与 macOS 共用的
+  `~/.config/herdr/config.toml`。Agent 完成或需要输入时改为桌面通知（Linux 走 `notify-send` →
+  noctalia），不再是只在 Herdr 界面内可见的 toast；foot 切到后台时也能看到。
+- 配置入口：`home/base/tui/dev-tools.nix` 的 `home.activation.herdrConfig`。
+- 变更内容：原配置基于“本机无通知守护进程”选了 `herdr`，现 noctalia 已提供通知服务；`terminal`
+  模式不识别 foot，因此选 `system`。部署后执行 `herdr server reload-config`。
+- 验证方式：`notify-send --app-name Herdr` 实测弹出；`just test`。
+- 关联文档：[Herdr](./herdr.md) 的“通知与 Agent 集成”。
+
 ## 2026-10-22
 
 ### Herdr server 改为 systemd 用户服务

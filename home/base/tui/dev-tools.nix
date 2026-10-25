@@ -33,10 +33,10 @@ let
     command = "hhdebb.herdr-radar.settings"
     description = "herdr-radar settings"
 
-    # 后台 agent 完成/需要输入时的通知；herdr = 应用内 toast。
-    # 本机无 dunst/mako 等系统通知守护进程，system/terminal 模式不可靠。
+    # 后台 agent 完成/需要输入时的桌面通知：Linux 走 notify-send（noctalia 显示）。
+    # terminal 模式只识别 Ghostty/iTerm2/Kitty/WezTerm，foot 下不弹。
     [ui.toast]
-    delivery = "herdr"
+    delivery = "system"
     delay_seconds = 1
 
     [ui]
