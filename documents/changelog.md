@@ -4,6 +4,17 @@
 
 ## 2026-10-26
 
+### OMP 中转 Claude provider 改名 `scitrace`，修复登录后 401
+
+- 影响范围：所有主机 `omp-sync-models` 生成的 `~/.omp/agent/models.yml`；Claude 中转模型选择器由
+  `anthropic/<model>` 改为 `scitrace/<model>`，`anthropic/<model>` 走官方 OAuth。
+- 配置入口：`home/base/core/omp-models.yml.in`。
+- 变更内容：同名 provider 覆盖内置 `anthropic` 的 baseUrl，`/login` 后 OAuth token 被发到
+  `sub.scitrace.cc` 返回 `401 INVALID_API_KEY`；改名后与本机已手改的 models.yml 一致。
+- 验证方式：模板与本机 models.yml 仅差 key；`omp -p --model anthropic/claude-opus-5-5` 请求指向
+  `api.anthropic.com` 并正常回复；中转 key curl `sub.scitrace.cc/v1/messages` 正常；`just test`。
+- 关联文档：[omp 模型配置](./omp-models.md) 的“scitrace provider”。
+
 ### Herdr tab 栏只显示编号
 
 - 影响范围：本机（apollo）Herdr tab 栏，tab 名由 `1 · 会话标题` 改为

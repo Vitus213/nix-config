@@ -49,6 +49,24 @@ my-secrets/omp-keys.age ──agenix──▶ /run/agenix/omp-keys（本机解�
 当前 glm provider：`https://open.bigmodel.cn/api/coding/paas/v4`（GLM Coding Plan，
 `api: openai-completions`），模型 `glm-5.3` / `glm-5.3-flash` / `glm-5.2`，选择器 `glm/<model>`。
 
+## scitrace provider（Claude 中转）
+
+中转的 Claude 系列放在 `scitrace`
+provider（`https://sub.scitrace.cc`，`api: anthropic-messages`），选择器为
+`scitrace/<model>`；key 占位符沿用 `@ANTHROPIC_KEY@`（omp-keys 中的 `anthropic:` 行）。
+
+该 provider **不能命名为 `anthropic`**：同名的自定义 provider 会覆盖 OMP 内置 `anthropic`
+的 baseUrl。此时用 `/login` 登录 Anthropic 账号后，OMP 会把官方 OAuth token 发到中转站，所有
+`anthropic/<model>` 请求返回 `401 {"code":"INVALID_API_KEY"}`。内置 `anthropic`
+保留给官方 OAuth（`api.anthropic.com`）。
+
+改名后需 `omp-sync-models` 重新生成，并重开已运行的 omp 会话（进程启动时读取配置）。验证：
+
+```bash
+omp -p --model anthropic/claude-opus-5-5 --no-tools "只回复 ok"
+# ~/.omp/logs 最新日志中请求应指向 api.anthropic.com，而不是 sub.scitrace.cc
+```
+
 ## DeepSeek provider
 
 DeepSeek 直连官方 `https://api.deepseek.com`，使用 `api: openai-completions`。模板登记的模型与官方

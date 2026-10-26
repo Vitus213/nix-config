@@ -14,7 +14,7 @@
 - `home/base/tui/shell/default.nix`：定义 Nushell 快捷命令。
 - `~/.omp/agent/models.yml`：OMP 模型 catalog。由 nix-config 模板 `home/base/core/omp-models.yml.in`
   生成并软链接（key 经 my-secrets/agenix 注入；直接编辑可即时覆盖，`omp-sync-models`
-  重置为模板版）。provider 以模板为准：`openai`、`anthropic`、`sci-plus`、`sci-pro-special`、`gemini`
+  重置为模板版）。provider 以模板为准：`openai`、`scitrace`（Claude 系列）、`sci-plus`、`sci-pro-special`、`gemini`
   （均走 scitrace 中转）、`glm`（GLM Coding Plan）与官方 `deepseek`，详见
   [omp 模型配置](./omp-models.md)。
 - `~/.omp/agent/config.yml`：OMP 用户级角色配置（可写普通文件，曾由 home-manager `programs.omp`
@@ -68,7 +68,7 @@ opencode --version
 ## Gemini provider（scitrace 中转）
 
 `gemini` provider 指向 `https://sub.scitrace.cc`，`api` 为 `openai-responses`，用独立 API key（与
-`openai`/`anthropic`/`sci-plus` 各自的 key 不同）。未绑定任何 `modelRoles`，按需用
+`openai`/`scitrace`/`sci-plus` 各自的 key 不同）。未绑定任何 `modelRoles`，按需用
 `--model gemini/<id>` 显式调用。
 
 中转 `/v1/models` 列出 18 个 gemini id，实测只有 10 个通道可用，已全部写入 catalog：
