@@ -608,11 +608,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792576635,
-        "narHash": "sha256-n7wZhCF9+L4pvzJD5AuKQzt87JXIDbl5J5Rrx8ewJQQ=",
+        "lastModified": 1793121741,
+        "narHash": "sha256-ls21HZp59QOLx64KDP/FsQvde8pVWitECMpSHLQZeQg=",
         "owner": "Vitus213",
         "repo": "voiceless",
-        "rev": "0417c78667de91fc7a8940ca1b1689b90bf60bbd",
+        "rev": "ace7247443b53898f1264135f0b1fd7af485d24a",
         "type": "github"
       },
       "original": {
