@@ -59,18 +59,18 @@ noctalia），需要时直接接显示器。
 
 版本以当前 `flake.lock` 中的 nixpkgs（`55bfb4d7`，2026-10-14，NixOS 26.11）为准。
 
-| 服务        | 版本                         | 地址                                                                  | 数据                                                                 |
-| ----------- | ---------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| SSH         | OpenSSH                      | `:22`，root 只允许公钥                                                | —                                                                    |
-| Tailscale   | 1.104.1                      | 服务在运行，不登录、不加入 tailnet                                    | —                                                                    |
-| Jellyfin    | 12.2                         | `http://athena:8096`                                                  | `/var/lib/jellyfin`；媒体 `/srv/media/{movies,tv,music}`             |
-| Immich      | 3.3.1（含机器学习）          | `http://athena:2283`                                                  | `/var/lib/immich`；PostgreSQL 18.6 + Redis 由模块管理                |
-| Uptime Kuma | 2.5.6                        | `http://athena:3001`                                                  | `/var/lib/uptime-kuma`                                               |
-| qBittorrent | 5.2.4（`qbittorrent-nox`）   | WebUI `http://athena:8080`；BT 端口 6881                              | `/var/lib/qBittorrent`；下载到 `/srv/media/downloads/qbittorrent`    |
-| aria2       | 1.37.0                       | RPC `http://athena:6800/jsonrpc`；BT 端口 6888                        | `/var/lib/aria2`；下载到 `/srv/media/downloads/aria2`                |
-| AriaNg      | 1.3.15（nginx 静态页）       | `http://athena:6880`                                                  | —                                                                    |
-| Vaultwarden | 1.37.4（web vault 2026.7.0） | `https://vault.vituss.me`（Cloudflare Tunnel）；本机 `127.0.0.1:8222` | `/var/lib/vaultwarden`；备份 `/var/backup/vaultwarden`（每日 23:00） |
-| cloudflared | 2026.10.0                    | 隧道 `athena`（`929d36f9-1bfd-4013-a762-2eb4e33c6583`），只出站       | 凭据 agenix `cloudflared-athena.json`                                |
+| 服务        | 版本                         | 地址                                                                                             | 数据                                                                 |
+| ----------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| SSH         | OpenSSH                      | `:22`，root 只允许公钥                                                                           | —                                                                    |
+| Tailscale   | 1.104.1                      | 服务在运行，不登录、不加入 tailnet                                                               | —                                                                    |
+| Jellyfin    | 12.2                         | `http://athena:8096`                                                                             | `/var/lib/jellyfin`；媒体 `/srv/media/{movies,tv,music}`             |
+| Immich      | 3.3.1（含机器学习）          | `http://athena:2283`                                                                             | `/var/lib/immich`；PostgreSQL 18.6 + Redis 由模块管理                |
+| Uptime Kuma | 2.5.6                        | `http://athena:3001`                                                                             | `/var/lib/uptime-kuma`                                               |
+| qBittorrent | 5.2.4（`qbittorrent-nox`）   | WebUI `http://athena:8080`；BT 端口 6881                                                         | `/var/lib/qBittorrent`；下载到 `/srv/media/downloads/qbittorrent`    |
+| aria2       | 1.37.0                       | RPC `http://athena:6800/jsonrpc`；BT 端口 6888                                                   | `/var/lib/aria2`；下载到 `/srv/media/downloads/aria2`                |
+| AriaNg      | 1.3.15（nginx 静态页）       | `http://athena:6880`                                                                             | —                                                                    |
+| Vaultwarden | 1.37.4（web vault 2026.7.0） | `https://vault.vitus213.xyz`（Cloudflare Tunnel；`vault.vituss.me` 过渡）；本机 `127.0.0.1:8222` | `/var/lib/vaultwarden`；备份 `/var/backup/vaultwarden`（每日 23:00） |
+| cloudflared | 2026.10.0                    | 隧道 `athena`（`929d36f9-1bfd-4013-a762-2eb4e33c6583`），只出站                                  | 凭据 agenix `cloudflared-athena.json`                                |
 
 - qBittorrent：没有用模块的 `serverConfig`，因为它每次启动都会整份覆盖
   `qBittorrent.conf`，WebUI 里改的密码会丢。改为 `preStart`
@@ -82,9 +82,11 @@ noctalia），需要时直接接显示器。
   改为 `false`。
 - Vaultwarden（Bitwarden 兼容服务端）：
   - 只监听 `127.0.0.1:8222`，对外只走 Cloudflare Tunnel（本地管理型，ingress 写在
-    `services.nix`）。DNS `vault.vituss.me` 是 CNAME `<隧道 ID>.cfargotunnel.com`（已开代理）
+    `services.nix`）。DNS `vault.vitus213.xyz`（主，`DOMAIN`）与
+    `vault.vituss.me`（过渡，域名 2026-11-02 到期）都是 CNAME
+    `<隧道 ID>.cfargotunnel.com`（已开代理）
   - `SIGNUPS_ALLOWED = false`，账号只能由管理员邀请；未配 SMTP，被邀请邮箱直接在网页注册即可
-  - `/admin` 在隧道入口返回 404（模块每个 hostname 只能写一条 ingress，所以这条专拦
+  - `/admin` 在隧道入口返回 404（模块每个 hostname 只能写一条 ingress，所以每个 hostname 那条专拦
     `^/admin`，其余落到
     `default`）。管理页经 SSH 转发：`ssh -L 8222:127.0.0.1:8222 root@192.168.100.11` 后开
     `http://localhost:8222/admin`；管理口令明文在 my-secrets `vaultwarden-admin-password.age`
@@ -96,8 +98,8 @@ noctalia），需要时直接接显示器。
     OpenClash（`MATCH → 自动选择`），节点不稳时会反复重连、外网报 530（Cloudflare 1033）
   - 异地备份：apollo 用户级 timer `vaultwarden-backup-pull`（每日 23:30，`Persistent`）拉到
     `~/backups/vaultwarden/<日期>/`，保留 30 天（`hosts/olympians-apollo/home.nix`）
-  - `vituss.me` 2026-11-02 到期；换域名要改 `DOMAIN`、ingress hostname 与 Cloudflare
-    CNAME，换之前不要注册通行密钥 / WebAuthn（绑定域名）
+  - 2026-10-27 起 `DOMAIN` 为 `https://vault.vitus213.xyz`；`vituss.me`
+    到期前删掉其 ingress 与 CNAME 即可。在最终域名上才注册通行密钥 / WebAuthn（绑定域名）
 
 ## 部署
 
@@ -144,7 +146,7 @@ nixos-rebuild switch --flake .#athena --target-host root@192.168.100.11
 1. qBittorrent 首次没有密码，临时密码在 `journalctl -u qbittorrent` 里；登录 WebUI 后改密码
 2. aria2 secret：`sudo cat /var/lib/aria2-secret/rpc-secret`，填到 AriaNg「AriaNg 设置 → RPC」
 3. Jellyfin、Immich、Uptime Kuma 在网页里完成初始化向导（创建管理员）
-4. Vaultwarden：管理页邀请账号后，在 `https://vault.vituss.me` 注册，立即开启 TOTP 两步验证
+4. Vaultwarden：管理页邀请账号后，在 `https://vault.vitus213.xyz` 注册，立即开启 TOTP 两步验证
 
 ## 从 j1900 迁移时注意
 
@@ -162,6 +164,7 @@ nixos-rebuild switch --flake .#athena --target-host root@192.168.100.11
 - secrets：my-secrets 回退提交 `4a10da3`（新增 athena recipient 并 rekey），再
   `nix flake update mysecrets`
 - Vaultwarden：回滚系统后 `/var/lib/vaultwarden`、`/var/backup/vaultwarden`
-  保留，彻底清除需手动删；Cloudflare 侧删隧道 `athena` 与 CNAME `vault.vituss.me`
+  保留，彻底清除需手动删；Cloudflare 侧删隧道 `athena` 与 CNAME
+  `vault.vitus213.xyz`、`vault.vituss.me`
 - 仓库：删除 `hosts/olympians-athena/`、`outputs/x86_64-linux/src/olympians-athena.nix` 和测试里的
   `athena` 条目

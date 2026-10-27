@@ -146,7 +146,7 @@ in
     backupDir = "/var/backup/vaultwarden"; # 模块自带每日 23:00 SQLite 备份
     environmentFile = config.age.secrets."vaultwarden-env".path;
     config = {
-      DOMAIN = "https://vault.vituss.me";
+      DOMAIN = "https://vault.vitus213.xyz";
       SIGNUPS_ALLOWED = false; # 只能由管理员邀请
       INVITATIONS_ALLOWED = true;
       ROCKET_ADDRESS = "127.0.0.1";
@@ -156,20 +156,28 @@ in
     };
   };
 
-  # 本地管理型隧道 athena；DNS：vault.vituss.me CNAME <隧道 ID>.cfargotunnel.com（已开代理）。
-  # 模块按 hostname 只能写一条 ingress，所以这条专门拦 /admin，其余路径落到 default。
-  # 只有指向本隧道 ID 的 CNAME 能把流量送进来，目前只有 vault.vituss.me。
+  # 本地管理型隧道 athena；DNS：vault.vitus213.xyz（主）与 vault.vituss.me（过渡，2026-11-02 到期）
+  # 都是 CNAME <隧道 ID>.cfargotunnel.com（已开代理）。
+  # 模块按 hostname 只能写一条 ingress，所以每个 hostname 那条专门拦 /admin，其余路径落到 default。
+  # 只有指向本隧道 ID 的 CNAME 能把流量送进来。
   services.cloudflared = {
     enable = true;
-    tunnels."929d36f9-1bfd-4013-a762-2eb4e33c6583" = {
-      credentialsFile = config.age.secrets."cloudflared-athena.json".path;
-      # protocol 保持默认 auto（QUIC 优先）：2026-10-27 cloudflared 预检 athena 出口
-      # QUIC 7844/udp 通、HTTP/2 7844/tcp 握手超时（经 Q30 OpenClash fake-ip）
-      ingress."vault.vituss.me" = {
-        path = "^/admin";
-        service = "http_status:404";
+    tunnels."929d36f9-1bfd-4013-a762-2eb4e33c6583" =
+      let
+        blockAdmin = {
+          path = "^/admin";
+          service = "http_status:404";
+        };
+      in
+      {
+        credentialsFile = config.age.secrets."cloudflared-athena.json".path;
+        # protocol 保持默认 auto（QUIC 优先）：2026-10-27 cloudflared 预检 athena 出口
+        # QUIC 7844/udp 通、HTTP/2 7844/tcp 握手超时（经 Q30 OpenClash fake-ip）
+        ingress = {
+          "vault.vitus213.xyz" = blockAdmin;
+          "vault.vituss.me" = blockAdmin;
+        };
+        default = "http://127.0.0.1:8222";
       };
-      default = "http://127.0.0.1:8222";
-    };
   };
 }

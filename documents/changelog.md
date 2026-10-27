@@ -4,6 +4,18 @@
 
 ## 2026-10-27
 
+### athena Vaultwarden 主域名切到 `vault.vitus213.xyz`
+
+- 影响范围：athena `vaultwarden`（`DOMAIN`）与
+  `cloudflared-tunnel-929d36f9-…`（ingress）；各客户端服务器地址。
+- 配置入口：`hosts/olympians-athena/services.nix`。
+- 变更内容：`DOMAIN` 改为 `https://vault.vitus213.xyz`；隧道 ingress 同时接受 `vault.vitus213.xyz`
+  与 `vault.vituss.me`（过渡到 2026-11-02 域名到期），两者都在入口拦截 `^/admin`。Cloudflare 新 zone
+  `vitus213.xyz` 加 CNAME `vault → <隧道 ID>.cfargotunnel.com`。
+- 验证方式：外部机器访问两个域名 `/alive`、`/api/config`、`/` 均 200，`/admin` 404；`/api/config`
+  返回的 `vault` 为新域名；隧道 2 条 HA 连接。
+- 关联文档：[athena（开发机 + 家庭服务）](./athena-host.md)。
+
 ### athena 部署 Vaultwarden，经 Cloudflare Tunnel 对外（`vault.vituss.me`）
 
 - 影响范围：athena 新增
