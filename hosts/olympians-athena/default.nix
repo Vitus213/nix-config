@@ -18,6 +18,7 @@ in
     ./hardware-configuration.nix
     ../_shared/nvidia.nix
     ./services.nix
+    ./hindsight.nix
   ];
 
   # 固定到 LTS 系列：非 LTS 内核 EOL 后会被 nixpkgs 直接删除，导致求值失败
