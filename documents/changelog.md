@@ -45,8 +45,11 @@
   key 不进 store：服务 `preStart` 从 `/run/agenix/omp-keys` 提取 `gemini:` 行生成
   `/var/lib/hindsight/hindsight.env`（0600，幂等，轮换后删文件重启重提取）。
 - 验证方式：`nix eval` 求值 image/ports/`after=["agenix.service"]`/preStart 挂载正确；
-  `just test`（`nix eval .#evalTests`）通过（尾行 `true`）。athena rebuild 后
-  `curl http://athena:8888/api/health` 与 artemis 数据导入见专题文档迁移一节。
+  `just test` 通过。athena 已切换（闭包 `8qqjypz`）：`podman-hindsight.service` active，
+  `curl http://athena:8888/health` 返回 `status: healthy, database: connected`；apollo 的
+  `~/.omp/agent/config.yml` 已切至该地址。自定义 preStart 需挂在 `podman-<name>` 单元
+  （oci-containers 的 serviceName 约定），挂 `<name>` 会生成缺 ExecStart 的坏单元——已修复。
+  artemis 数据卷导出导入待其上线（步骤见专题文档迁移一节）。
 - 关联文档：[Hindsight Agent 记忆后端](./hindsight.md)。
 
 ### 建立 omp 配置变更的 agent 回填提醒机制

@@ -121,10 +121,12 @@ artemis（macOS colima）上的旧实例数据在 docker 卷 `hindsight-data`。
 ## 验证
 
 ```bash
-curl -s http://athena:8888/api/health   # 服务端就绪
-curl -s http://athena:8888/banks?limit=5 # 查看已建 bank（应出现项目 tag 相关 bank）
+curl -s http://athena:8888/health        # 服务端就绪（status: healthy, database: connected）
+curl -s http://athena:8888/docs          # API 文档页（FastAPI）
 ssh athena -- sudo podman logs hindsight
 ```
+
+注意：早期版本的 `/api/health`、`/banks` 路径已不存在，以 `/health` 与 `/docs` 为准。
 
 omp 每会话首轮自动召回（`hindsight.autoRecall`），每 3 轮用户消息自动保留（`hindsight.retainEveryNTurns`）。
 
