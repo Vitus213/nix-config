@@ -3,14 +3,12 @@
 # 服务端为单容器（内嵌 PostgreSQL），原跑在 artemis（macOS colima），
 # 2026-10 迁到 athena 常驻，局域网内 apollo / artemis 的 omp 都连本服务；
 # 数据卷由 artemis 的 docker 卷 hindsight-data 导出导入，见 documents/hindsight.md。
+# 容器后端（podman）由 modules/nixos/desktop/virtualisation.nix 统一提供。
 let
   containerName = "hindsight";
   envFile = "/var/lib/hindsight/hindsight.env";
 in
 {
-  virtualisation.docker.enable = true;
-  virtualisation.oci-containers.backend = "docker";
-
   virtualisation.oci-containers.containers.${containerName} = {
     image = "ghcr.io/vectorize-io/hindsight:latest";
     autoStart = true;
