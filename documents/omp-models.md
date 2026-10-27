@@ -101,7 +101,9 @@ omp -p --model anthropic/claude-opus-5-5 --no-tools "只回复 ok"
   `qwen3.5-plus` 实测 404），新增型号前先 `curl /v1/chat/completions` 实测。
 - 此前直连官方的 `deepseek` provider（`api.deepseek.com`，`@DEEPSEEK_KEY@`）已由 newapi
   通道取代并从模板移除；config.yml 的 `retry.fallbackChains` 同步改为
-  `newapi/* → openai/gpt-5.6-sol`。
+  `newapi/* → sci-openai/gpt-5.6-sol`。
+- 原 `openai` provider（scitrace 中转 GPT 系，`api: openai-responses`）已于 2026-10-27 改名为
+  `sci-openai`（key 行与占位符同步改名），`openai` 这个名字让给将来的官方直连（内置 provider）。
 
 回滚：移除模板 `newapi` 块与 `omp-sync.py` 的 `@NEWAPI_KEY@` 校验项、删去密钥包
 `newapi:` 行重新加密，`config.yml` 恢复 `deepseek` provider 相关项后运行 `omp-sync-models`。

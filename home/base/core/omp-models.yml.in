@@ -1,7 +1,8 @@
 providers:
-  openai:
+  # 原 openai（scitrace 中转 GPT 系）；官方 OpenAI 将来直用内置 openai provider
+  sci-openai:
     baseUrl: https://sub.scitrace.cc
-    apiKey: @OPENAI_KEY@
+    apiKey: @SCI_OPENAI_KEY@
     api: openai-responses
     models:
       - id: gpt-5.5

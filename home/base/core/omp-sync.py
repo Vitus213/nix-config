@@ -22,7 +22,7 @@ for ph, val in keys.items():
 missing = [
     chunk
     for chunk in (
-        "@OPENAI_KEY@",
+        "@SCI_OPENAI_KEY@",
         "@ANTHROPIC_KEY@",
         "@SCI_PLUS_KEY@",
         "@SCI_PRO_SPECIAL_KEY@",

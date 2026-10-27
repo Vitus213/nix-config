@@ -4,6 +4,19 @@
 
 ## 2026-10-27
 
+### omp `openai` provider 改名 `sci-openai`，名字让给官方直连
+
+- 影响范围：apollo 用户级 omp 配置；my-secrets `omp-keys.age`（`openai:` 行改名
+  `sci-openai:`）。
+- 配置入口：`home/base/core/omp-models.yml.in`（provider 键与 `@SCI_OPENAI_KEY@` 占位符）、
+  `home/base/core/omp-sync.py`、`~/.omp/agent/config.yml`（providerOrder/enabledModels/
+  fallbackChains 引用）。
+- 变更内容：scitrace 中转的 GPT 系（openai-responses）provider 由 `openai` 改名 `sci-openai`，
+  选择器变为 `sci-openai/gpt-5.5` 等；`newapi/*` 的 fallback 目标同步改为
+  `sci-openai/gpt-5.6-sol`；`openai` 名字留给将来的官方 OpenAI 直连（届时用内置 provider 登录）。
+- 验证方式：解密重生成 `models.yml` 后 `omp -p --model sci-openai/gpt-5.6-sol` 实际返回。
+- 关联文档：[omp 模型配置管理](./omp-models.md)。
+
 ### 统一 apollo → athena 远程部署命令 `just remote-host`
 
 - 影响范围：athena 远程部署流程（原先需 ssh 手动 pull + rebuild）；其他 NixOS 主机可复用。
