@@ -16,9 +16,9 @@ Host 192.168.*
   IdentityFile ~/.ssh/id_ed25519
 ```
 
-局域网里的电脑（如 artemis `192.168.100.159`）只授权 `vars/default.nix` 的
+局域网里的电脑（如 artemis，固定 IP `192.168.100.5`）只授权 `vars/default.nix` 的
 `mainSshAuthorizedKeys`，不含 `ssh-key-romantic`，因此 `192.168.*` 依次尝试 `ssh-key-romantic`
-与本机 `~/.ssh/id_ed25519`。
+与本机 `~/.ssh/id_ed25519`；`ssh artemis` 不匹配 `192.168.*`，走默认身份 `~/.ssh/id_ed25519`。
 
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
 

@@ -55,10 +55,12 @@ in
           User = "vitus";
         };
 
+        # artemis 局域网固定 IP（Tailscale 长期离线）
         "artemis" = {
-          HostName = "100.64.0.14";
+          HostName = "192.168.100.5";
           User = "vitus";
         };
+
 
         # 13t - Tailscale 网段（100.64/10）主机，SSH 端口 8022
         "13t" = {

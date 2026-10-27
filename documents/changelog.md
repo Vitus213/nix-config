@@ -4,6 +4,16 @@
 
 ## 2026-10-26
 
+### SSH 客户端：`Host artemis` 改走局域网固定 IP `192.168.100.5`
+
+- 影响范围：所有主机生成的 `~/.ssh/config` 中 `Host artemis`；rebuild 后生效。
+- 配置入口：`home/base/tui/ssh.nix`。
+- 变更内容：`HostName` `100.64.0.14` →
+  `192.168.100.5`（artemis 的局域网固定 IP）。artemis 的 Tailscale 已离线约 220 天。离开家庭局域网时不可达。
+- 验证方式：`ssh artemis hostname` 返回 `artemis`。
+- 关联文档：[Homelab SSH Key](./homelab-ssh-key-romantic.md)。
+
+
 ### OMP 中转 Claude provider 改名 `scitrace`，修复登录后 401
 
 - 影响范围：所有主机 `omp-sync-models` 生成的 `~/.omp/agent/models.yml`；Claude 中转模型选择器由
