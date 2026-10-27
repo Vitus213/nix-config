@@ -39,9 +39,9 @@ artemis（macOS colima）。
 | 项                           | 值                                     | 说明                                                                                                          |
 | ---------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `HINDSIGHT_API_LLM_PROVIDER` | `openai`                               | OpenAI 兼容协议                                                                                               |
-| `HINDSIGHT_API_LLM_BASE_URL` | `https://sub.scitrace.cc/v1`           | scitrace relay OpenAI 兼容中转（2026-10-17 起；bailian/DashScope 两把 key 均已吊销）                          |
-| `HINDSIGHT_API_LLM_MODEL`    | `gemini-3.1-flash-lite`                | 与 omp `~/.omp/agent/models.yml` 的 gemini provider 同款；切换当日 relay 上 gpt 系 502/503，gemini 系实测 200 |
-| `HINDSIGHT_API_LLM_API_KEY`  | `/var/lib/hindsight/hindsight.env`     | 0600 文件；由服务 `preStart` 从 `/run/agenix/omp-keys` 的 `gemini:` 行自动 bootstrap，不进 Nix store          |
+| `HINDSIGHT_API_LLM_BASE_URL` | `https://sub.scitrace.cc/v1`           | scitrace relay OpenAI 兼容中转                                                                                |
+| `HINDSIGHT_API_LLM_MODEL`    | `gpt-5.5`                              | 与 omp `~/.omp/agent/models.yml` 的 openai provider 同款（scitrace 中转 GPT 系；此前用 gemini-3.1-flash-lite） |
+| `HINDSIGHT_API_LLM_API_KEY`  | `/var/lib/hindsight/hindsight.env`     | 0600 文件；由服务 `preStart` 从 `/run/agenix/omp-keys` 的 `openai:` 行自动 bootstrap，不进 Nix store          |
 | Embeddings                   | 默认 `local`                           | 镜像内建 ONNX 本地模型（BAAI/bge-small-en-v1.5），无外部 embedding API 依赖                                   |
 
 key bootstrap 逻辑：文件不存在或为空时，`preStart` 提取 omp-keys 的 `gemini:` 行写入

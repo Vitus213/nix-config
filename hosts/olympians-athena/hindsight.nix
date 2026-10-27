@@ -19,23 +19,23 @@ in
     environment = {
       HINDSIGHT_API_LLM_PROVIDER = "openai";
       HINDSIGHT_API_LLM_BASE_URL = "https://sub.scitrace.cc/v1";
-      HINDSIGHT_API_LLM_MODEL = "gemini-3.1-flash-lite";
+      HINDSIGHT_API_LLM_MODEL = "gpt-5.5";
     };
     environmentFiles = [ envFile ];
     volumes = [ "hindsight-data:/home/hindsight/.pg0" ];
   };
 
-  # LLM key 不进 store：首次启动从 agenix 解密的 omp-keys 提取 gemini 行生成
-  # env 文件（与 artemis 手工维护的 hindsight.env 同源）；文件非空则不动。
-  # omp-keys 无 gemini 行时生成空文件让容器照常启动（LLM 操作降级），
-  # 下次重启会重试提取。gemini key 轮换后删除该文件重新 bootstrap。
+  # LLM key 不进 store：首次启动从 agenix 解密的 omp-keys 提取 openai 行（scitrace
+  # 中转，与 omp models.yml openai provider 同源）生成 env 文件；文件非空则不动。
+  # omp-keys 无该行时生成空文件让容器照常启动（LLM 操作降级），
+  # 下次重启会重试提取。key 轮换后删除该文件重新 bootstrap。
   # 注意：oci-containers 生成的单元名是 podman-<name>，挂 here 才能与容器定义合并。
   systemd.services."podman-${containerName}" = {
     after = [ "agenix.service" ];
     preStart = ''
       install -d -m 700 /var/lib/hindsight
       if [ ! -s ${envFile} ]; then
-        key=$(sed -n 's/^gemini:[[:space:]]*//p' /run/agenix/omp-keys)
+        key=$(sed -n 's/^openai:[[:space:]]*//p' /run/agenix/omp-keys)
         if [ -n "$key" ]; then
           printf 'HINDSIGHT_API_LLM_API_KEY=%s\n' "$key" > ${envFile}
           chmod 600 ${envFile}
