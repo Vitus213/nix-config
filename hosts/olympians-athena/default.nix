@@ -57,6 +57,21 @@ in
   ];
   programs.nix-ld.enable = true;
 
+  # 从 apollo `just remote-host athena` 免密远程部署：
+  # - 仅放行 switch-to-configuration（每代 store 路径哈希变化，用通配；其余 sudo 照旧要密码）
+  # - 远程 nix copy 闭包所需 trusted-users 已由 modules/base/nix.nix 全局提供
+  security.sudo.extraRules = [
+    {
+      users = [ "vitus" ];
+      commands = [
+        {
+          command = "/nix/store/*/bin/switch-to-configuration *";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
   # 常驻服务器：禁用挂起/休眠，避免空闲后自动睡眠导致 SSH 与家庭服务断开
   systemd.targets = {
     sleep.enable = false;

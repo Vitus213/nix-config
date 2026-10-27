@@ -156,6 +156,27 @@ nixos-rebuild switch --flake .#athena --target-host root@192.168.100.11
   aria2 用 macvlan 独立 IP（`.9`、`.10`），路由器按源 IP 分流（qB 直连、aria2 走「⬇️下载」分组）。athena 上两者共用主机 IP，原规则不再生效，迁移时要在路由器上按 athena 的 IP 重新规划
 - 两台同时开机时，j1900 上的服务继续占用原 IP（`.3`、`.9`、`.10`），athena 用 `.11`，不冲突
 
+## 从 apollo 部署
+
+athena 平时远程使用，常规改动在 apollo 上一条命令完成（本地构建 → 闭包拷贝 → 远程切换）：
+
+```bash
+just remote-host athena          # 等价 sudo nixos-rebuild switch，在 athena 上免密切换
+just remote-host athena test     # 只构建并切换运行时，不写 boot entry
+just remote-host athena boot     # 只注册下一代的 boot entry
+```
+
+前提（已随 athena 配置落地，见 `hosts/olympians-athena/default.nix`）：
+
+- `security.sudo.extraRules`：vitus 对 `/nix/store/*/bin/switch-to-configuration *` 免密
+  （最小权限，其余 sudo 照旧要密码，模式同 artemis 的 `/etc/sudoers.d/nix-darwin`）。
+- 远程拷贝闭包所需的 `nix.settings.trusted-users` 由 `modules/base/nix.nix` 全局提供。
+
+首次引导（sudoers 规则生效前）仍需在 athena 本机手动跑一次
+`sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#athena`（`/tmp/nixcfg-deploy` 是指向
+origin/main 的 git worktree；athena 的 `~/nix-config` 主工作树存在本地未提交改动，勿直接
+pull，先人工核对处理）。
+
 ## 回滚
 
 - 系统层：systemd-boot 菜单选上一代，或

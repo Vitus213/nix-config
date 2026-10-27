@@ -121,6 +121,14 @@ local mode="default":
   use {{utils_nu}} *;
   local-switch (current-local-host) {{mode}}
 
+# Deploy to a remote NixOS host: build locally, copy closure, switch remotely.
+# 前提（目标机，见 hosts/olympians-athena/default.nix）：vitus 对
+# /nix/store/*/bin/switch-to-configuration 免密，且在 nix.settings.trusted-users。
+[linux]
+[group('homelab')]
+remote-host host mode="switch":
+    nixos-rebuild {{mode}} --flake .#{{host}} --target-host vitus@{{host}} --use-remote-sudo
+
 ############################################################################
 #
 #  Darwin related commands

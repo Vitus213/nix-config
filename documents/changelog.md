@@ -4,6 +4,20 @@
 
 ## 2026-10-27
 
+### 统一 apollo → athena 远程部署命令 `just remote-host`
+
+- 影响范围：athena 远程部署流程（原先需 ssh 手动 pull + rebuild）；其他 NixOS 主机可复用。
+- 配置入口：`Justfile`（新增 `remote-host`）、`hosts/olympians-athena/default.nix`
+  （sudoers 免密规则）、`documents/athena-host.md`。
+- 变更内容：`just remote-host athena` = apollo 本地构建 + `nix copy` 闭包到 athena +
+  `--use-remote-sudo` 远程切换（`mode` 支持 `switch`/`test`/`boot`）。athena 侧新增
+  `security.sudo.extraRules` 仅放行 `/nix/store/*/bin/switch-to-configuration *`
+  （最小权限，模式同 artemis 的 nix-darwin 白名单）；`trusted-users` 由
+  `modules/base/nix.nix` 全局提供，未重复声明。
+- 验证方式：`just --list` 解析正常；`nix eval` 求值 sudo extraRules 合并正确、
+  `trusted-users` 无重复项。首次 sudoers 生效前需在 athena 手动 rebuild 一次（见专题文档）。
+- 关联文档：[athena 主机](./athena-host.md) 的“从 apollo 部署”。
+
 ### hindsight 记忆后端迁至 athena 容器服务化
 
 - 影响范围：athena 新增 hindsight 容器服务；apollo / artemis 的 omp memory backend
