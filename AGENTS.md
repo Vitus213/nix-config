@@ -25,6 +25,13 @@
 - 改配置时，文档如果已经描述了该行为，应同步更新。
 - 不要覆盖用户已有的未提交改动，除非用户明确要求。
 - 不要运行破坏性 git 命令，如 `git reset --hard`、`git checkout --`。
+- omp 用户级配置是"半托管"：`~/.omp/agent/models.yml` 由本仓库
+  `home/base/core/omp-models.yml.in` + `my-secrets/omp-keys.age` 生成，
+  `config.yml`、`mcp.json` 则是本机手工文件（omp 需要写入，不能进只读 store）。
+  改动这些文件后，必须主动提醒把增量回填本仓库：`models.yml` 增量合并进
+  `home/base/core/omp-models.yml.in`（新 provider 同步加 `omp-sync.py` 占位符校验、
+  key 进 my-secrets）；`config.yml`/`mcp.json` 的行为变更记录进 `documents/`。
+  详见 `documents/omp-models.md`。
 
 ## 3. 编辑约定
 

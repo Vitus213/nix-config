@@ -4,6 +4,55 @@
 
 ## 2026-10-27
 
+### hindsight 记忆后端迁至 athena 容器服务化
+
+- 影响范围：athena 新增 hindsight 容器服务；apollo / artemis 的 omp memory backend
+  指向；artemis（macOS colima）旧部署退役。
+- 配置入口：`hosts/olympians-athena/hindsight.nix`（新增）、
+  `hosts/olympians-athena/default.nix`（import）、`documents/hindsight.md`（重写）。
+- 变更内容：`virtualisation.oci-containers`（podman 后端，由
+  `modules/nixos/desktop/virtualisation.nix` 提供）运行
+  `ghcr.io/vectorize-io/hindsight:latest`，端口 8888（API）/9999（UI）局域网暴露并写入
+  `networking.firewall.allowedTCPPorts`；数据卷 `hindsight-data` 由 artemis 导出导入。LLM
+  key 不进 store：服务 `preStart` 从 `/run/agenix/omp-keys` 提取 `gemini:` 行生成
+  `/var/lib/hindsight/hindsight.env`（0600，幂等，轮换后删文件重启重提取）。
+- 验证方式：`nix eval` 求值 image/ports/`after=["agenix.service"]`/preStart 挂载正确；
+  `just test`（`nix eval .#evalTests`）通过（尾行 `true`）。athena rebuild 后
+  `curl http://athena:8888/api/health` 与 artemis 数据导入见专题文档迁移一节。
+- 关联文档：[Hindsight Agent 记忆后端](./hindsight.md)。
+
+### 建立 omp 配置变更的 agent 回填提醒机制
+
+- 影响范围：所有 omp 会话的 agent 行为（全局规则注入）；nix-config 的 agent 指引。
+- 配置入口：`~/.omp/agent/RULES.md`（omp 全局规则，非 nix 托管）、本仓库 `AGENTS.md`
+  工作原则。
+- 变更内容：两层规则要求 agent 在改动 `~/.omp/agent/` 下任何配置
+  （`models.yml`、`config.yml`、`mcp.json`）后，主动提醒把增量回填本仓库：
+  `models.yml` 合并进 `home/base/core/omp-models.yml.in`（新 provider 加
+  `omp-sync.py` 占位符校验、key 进 my-secrets）；`config.yml`/`mcp.json`
+  行为变更记录进 `documents/`。
+- 验证方式：omp 会话启动时注入 `RULES.md`（本机制已在会话上下文可见）；纯规则/文档
+  改动，不涉及 Nix 构建，未跑 `just test`。
+- 关联文档：[omp 模型配置管理](./omp-models.md) 的“agent 改配置后的回填提醒”。
+
+### omp 新增 newapi 国产五家 provider，同步 anthropic/scitrace 分离
+
+- 影响范围：apollo 用户级 omp 配置（`models.yml` 生成链、`config.yml`）；my-secrets
+  `omp-keys.age`（新增 `newapi:` 行）。
+- 配置入口：`home/base/core/omp-models.yml.in`、`home/base/core/omp-sync.py`、
+  `my-secrets/omp-keys.age`；`~/.omp/agent/config.yml`（非 nix 托管，本机文件）。
+- 变更内容：模板新增 `newapi` provider（`https://newapi.samuka007.top/v1`，国产五家主力共 9 个
+  型号，选择器 `newapi/<model>`）；移除直连官方的 `deepseek` provider；`omp-sync.py` 占位符校验
+  `@DEEPSEEK_KEY@` → `@NEWAPI_KEY@`。`config.yml` 同步 provider 改名：`modelRoles` 的
+  `anthropic/claude-opus-5-5` → `scitrace/claude-opus-5-5`；`modelProviderOrder`/`enabledModels`
+  恢复内置 `anthropic`（官方 OAuth 登录通道）并加入 `newapi`；`retry.fallbackChains`
+  `deepseek/*` → `newapi/*`。
+- 验证方式：`omp -p --model newapi/deepseek-v4-pro`、`newapi/glm-5.3-flash` 实际返回；
+  模板+合并密钥本地重生成 `models.yml` 后 `newapi/deepseek-v4.1-flash` 端到端返回
+  `nix-sync-ok`。注意 baseUrl 必须带 `/v1`（omp 请求路径不含版本前缀，少写会被网关吞成空 200
+  流），详见专题文档。
+- 关联文档：[omp 模型配置管理](./omp-models.md)。
+
 ### athena Vaultwarden 主域名切到 `vault.vitus213.xyz`
 
 - 影响范围：athena `vaultwarden`（`DOMAIN`）与
