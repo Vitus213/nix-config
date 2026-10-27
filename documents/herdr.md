@@ -19,6 +19,13 @@ Herdr 二进制改为官方安装（`curl -fsSL https://herdr.dev/install.sh | s
 
 Linux 与 macOS 的共享 TUI 配置都会生成同一份 Herdr 配置文件。
 
+`athena` 于 2026-10-28 对齐到同一套插件与集成：`herdr` `0.9.5`、herdr-radar `1.4.9` （钉
+`3e72fe2`）、auto-title
+`0.14.0`（同样打了「不命名 tab」补丁）、`herdr integration install omp`；未装 `claude`
+集成（athena 无 claude 二进制）。athena 上 `git clone https://github.com/…` 会被 OpenClash
+fake-ip 链路重置，安装时改用 GitHub 反代做本地镜像 + `url.<base>.insteadOf`
+重写，完整步骤与验证命令见本仓库 `servers/athena.md`（all_server 仓库）。
+
 `config.toml` 是**可写的普通文件**，不是 Home
 Manager 的只读 symlink：herdr-radar 插件和 Herdr 自身（例如侧边栏排序切换）都会改写它。每次 Home
 Manager 激活时按以下规则重新生成：

@@ -2,17 +2,34 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-28
+
+### athena 的 Herdr 对齐 apollo：herdr-radar + auto-title + omp 集成
+
+- 影响范围：athena 用户级文件（`~/.config/herdr/plugins*` 与 `config.toml` 的 radar 托管块、
+  `~/.config/herdr/plugins.json`、`~/.local/share/fonts/HerdrAgentIconsMax-*.ttf`、
+  `~/.omp/agent/extensions/herdr-omp-agent-state.ts`）；nix 配置未改，不需要 rebuild。
+- 配置入口：`home/base/tui/dev-tools.nix`（基础 `config.toml` + `herdr.service`，本次沿用）。
+- 变更内容：装 `hhdebb/herdr-radar` `1.4.9`（钉 commit `3e72fe2`）与 `kryptamine/herdr-auto-title`
+  `v0.14.0`（重打「不命名 tab」补丁），并 `herdr integration install omp`；未装 `claude`
+  集成（athena 无该二进制）。athena 的 `git clone https://github.com/…` 会被 OpenClash
+  fake-ip 链路重置，改用 GitHub 反代本地镜像 + `url.<base>.insteadOf` 完成
+  `herdr plugin install`（不落持久 git 配置）。
+- 验证方式：`herdr plugin list`、`herdr config check`、`herdr integration status`、
+  `fc-list | grep "Herdr Agent Icons"`、`herdr pane list`（agent pane 带 radar `tokens`）、
+  `herdr plugin log list --plugin hhdebb.herdr-radar`。
+- 关联文档：[Herdr](./herdr.md)、all_server 仓库 `servers/athena.md`。
+
 ## 2026-10-27
 
 ### omp `openai` provider 改名 `sci-openai`，名字让给官方直连
 
-- 影响范围：apollo 用户级 omp 配置；my-secrets `omp-keys.age`（`openai:` 行改名
-  `sci-openai:`）。
+- 影响范围：apollo 用户级 omp 配置；my-secrets `omp-keys.age`（`openai:` 行改名 `sci-openai:`）。
 - 配置入口：`home/base/core/omp-models.yml.in`（provider 键与 `@SCI_OPENAI_KEY@` 占位符）、
   `home/base/core/omp-sync.py`、`~/.omp/agent/config.yml`（providerOrder/enabledModels/
   fallbackChains 引用）。
-- 变更内容：scitrace 中转的 GPT 系（openai-responses）provider 由 `openai` 改名 `sci-openai`，
-  选择器变为 `sci-openai/gpt-5.5` 等；`newapi/*` 的 fallback 目标同步改为
+- 变更内容：scitrace 中转的 GPT 系（openai-responses）provider 由 `openai` 改名
+  `sci-openai`，选择器变为 `sci-openai/gpt-5.5` 等；`newapi/*` 的 fallback 目标同步改为
   `sci-openai/gpt-5.6-sol`；`openai` 名字留给将来的官方 OpenAI 直连（届时用内置 provider 登录）。
 - 验证方式：解密重生成 `models.yml` 后 `omp -p --model sci-openai/gpt-5.6-sol` 实际返回。
 - 关联文档：[omp 模型配置管理](./omp-models.md)。
@@ -22,20 +39,20 @@
 - 影响范围：athena 远程部署流程（原先需 ssh 手动 pull + rebuild）；其他 NixOS 主机可复用。
 - 配置入口：`Justfile`（新增 `remote-host`）、`hosts/olympians-athena/default.nix`
   （sudoers 免密规则）、`documents/athena-host.md`。
-- 变更内容：`just remote-host athena` = ssh 同步目标机 `/tmp/nixcfg-deploy` worktree（指向
-  origin/main）+ 目标机本地 `sudo -n nixos-rebuild switch` 切换。athena 侧新增
+- 变更内容：`just remote-host athena` = ssh 同步目标机 `/tmp/nixcfg-deploy`
+  worktree（指向 origin/main）+ 目标机本地 `sudo -n nixos-rebuild switch` 切换。athena 侧新增
   `security.sudo.extraRules` 放行 `/nix/store/*/bin/nixos-rebuild switch *` 与
-  `/nix/store/*/bin/switch-to-configuration *`（最小权限，模式同 artemis 的 nix-darwin
-  白名单）。不用 `--target-host --use-remote-sudo`：其远程流程经 `sh -c` 调用
+  `/nix/store/*/bin/switch-to-configuration *`（最小权限，模式同 artemis 的 nix-darwin 白名单）。不用
+  `--target-host --use-remote-sudo`：其远程流程经 `sh -c` 调用
   `nix-env --set`，sudoers 无法安全约束。
-- 验证方式：`just --list` 解析正常；`nix eval` 求值 sudo extraRules 合并正确、
-  `trusted-users` 无重复项。首次 sudoers 生效前需在 athena 手动 rebuild 一次（见专题文档）。
+- 验证方式：`just --list` 解析正常；`nix eval` 求值 sudo extraRules 合并正确、 `trusted-users`
+  无重复项。首次 sudoers 生效前需在 athena 手动 rebuild 一次（见专题文档）。
 - 关联文档：[athena 主机](./athena-host.md) 的“从 apollo 部署”。
 
 ### hindsight 记忆后端迁至 athena 容器服务化
 
-- 影响范围：athena 新增 hindsight 容器服务；apollo / artemis 的 omp memory backend
-  指向；artemis（macOS colima）旧部署退役。
+- 影响范围：athena 新增 hindsight 容器服务；apollo / artemis 的 omp memory
+  backend 指向；artemis（macOS colima）旧部署退役。
 - 配置入口：`hosts/olympians-athena/hindsight.nix`（新增）、
   `hosts/olympians-athena/default.nix`（import）、`documents/hindsight.md`（重写）。
 - 变更内容：`virtualisation.oci-containers`（podman 后端，由
@@ -44,12 +61,12 @@
   `networking.firewall.allowedTCPPorts`；数据卷 `hindsight-data` 由 artemis 导出导入。LLM
   key 不进 store：服务 `preStart` 从 `/run/agenix/omp-keys` 提取 `gemini:` 行生成
   `/var/lib/hindsight/hindsight.env`（0600，幂等，轮换后删文件重启重提取）。
-- 验证方式：`nix eval` 求值 image/ports/`after=["agenix.service"]`/preStart 挂载正确；
-  `just test` 通过。athena 已切换：`podman-hindsight.service` active，`curl
-  http://athena:8888/health` 返回 `status: healthy, database: connected`；bank `omp`
-  2485 条事实自 artemis 数据卷完整迁入；LLM 连通验证 `Connection verified:
-  openai/deepseek-v4.1-flash`。apollo/artemis 的 `~/.omp/agent/config.yml` 均已切至
-  `http://athena:8888`。两个坑：自定义 preStart 需挂 `podman-<name>` 单元（oci-containers
+- 验证方式：`nix eval` 求值 image/ports/`after=["agenix.service"]`/preStart 挂载正确； `just test`
+  通过。athena 已切换：`podman-hindsight.service` active，`curl http://athena:8888/health` 返回
+  `status: healthy, database: connected`；bank `omp`
+  2485 条事实自 artemis 数据卷完整迁入；LLM 连通验证
+  `Connection verified: openai/deepseek-v4.1-flash`。apollo/artemis 的 `~/.omp/agent/config.yml`
+  均已切至 `http://athena:8888`。两个坑：自定义 preStart 需挂 `podman-<name>` 单元（oci-containers
   serviceName 约定）；artemis 数据卷含 aarch64 pg0 installation，跨架构不可直接用，需删
   `installation/` 保留 `instances/` 让容器重建 x86 安装。
 - 关联文档：[Hindsight Agent 记忆后端](./hindsight.md)。
@@ -57,15 +74,13 @@
 ### 建立 omp 配置变更的 agent 回填提醒机制
 
 - 影响范围：所有 omp 会话的 agent 行为（全局规则注入）；nix-config 的 agent 指引。
-- 配置入口：`~/.omp/agent/RULES.md`（omp 全局规则，非 nix 托管）、本仓库 `AGENTS.md`
-  工作原则。
-- 变更内容：两层规则要求 agent 在改动 `~/.omp/agent/` 下任何配置
-  （`models.yml`、`config.yml`、`mcp.json`）后，主动提醒把增量回填本仓库：
-  `models.yml` 合并进 `home/base/core/omp-models.yml.in`（新 provider 加
-  `omp-sync.py` 占位符校验、key 进 my-secrets）；`config.yml`/`mcp.json`
-  行为变更记录进 `documents/`。
-- 验证方式：omp 会话启动时注入 `RULES.md`（本机制已在会话上下文可见）；纯规则/文档
-  改动，不涉及 Nix 构建，未跑 `just test`。
+- 配置入口：`~/.omp/agent/RULES.md`（omp 全局规则，非 nix 托管）、本仓库 `AGENTS.md` 工作原则。
+- 变更内容：两层规则要求 agent 在改动 `~/.omp/agent/`
+  下任何配置（`models.yml`、`config.yml`、`mcp.json`）后，主动提醒把增量回填本仓库： `models.yml`
+  合并进 `home/base/core/omp-models.yml.in`（新 provider 加 `omp-sync.py`
+  占位符校验、key 进 my-secrets）；`config.yml`/`mcp.json` 行为变更记录进 `documents/`。
+- 验证方式：omp 会话启动时注入
+  `RULES.md`（本机制已在会话上下文可见）；纯规则/文档改动，不涉及 Nix 构建，未跑 `just test`。
 - 关联文档：[omp 模型配置管理](./omp-models.md) 的“agent 改配置后的回填提醒”。
 
 ### omp 新增 newapi 国产五家 provider，同步 anthropic/scitrace 分离
@@ -74,16 +89,17 @@
   `omp-keys.age`（新增 `newapi:` 行）。
 - 配置入口：`home/base/core/omp-models.yml.in`、`home/base/core/omp-sync.py`、
   `my-secrets/omp-keys.age`；`~/.omp/agent/config.yml`（非 nix 托管，本机文件）。
-- 变更内容：模板新增 `newapi` provider（`https://newapi.samuka007.top/v1`，国产五家主力共 9 个
-  型号，选择器 `newapi/<model>`）；移除直连官方的 `deepseek` provider；`omp-sync.py` 占位符校验
-  `@DEEPSEEK_KEY@` → `@NEWAPI_KEY@`。`config.yml` 同步 provider 改名：`modelRoles` 的
-  `anthropic/claude-opus-5-5` → `scitrace/claude-opus-5-5`；`modelProviderOrder`/`enabledModels`
-  恢复内置 `anthropic`（官方 OAuth 登录通道）并加入 `newapi`；`retry.fallbackChains`
-  `deepseek/*` → `newapi/*`。
-- 验证方式：`omp -p --model newapi/deepseek-v4-pro`、`newapi/glm-5.3-flash` 实际返回；
-  模板+合并密钥本地重生成 `models.yml` 后 `newapi/deepseek-v4.1-flash` 端到端返回
-  `nix-sync-ok`。注意 baseUrl 必须带 `/v1`（omp 请求路径不含版本前缀，少写会被网关吞成空 200
-  流），详见专题文档。
+- 变更内容：模板新增 `newapi`
+  provider（`https://newapi.samuka007.top/v1`，国产五家主力共 9 个型号，选择器
+  `newapi/<model>`）；移除直连官方的 `deepseek` provider；`omp-sync.py` 占位符校验 `@DEEPSEEK_KEY@`
+  → `@NEWAPI_KEY@`。`config.yml` 同步 provider 改名：`modelRoles` 的 `anthropic/claude-opus-5-5` →
+  `scitrace/claude-opus-5-5`；`modelProviderOrder`/`enabledModels` 恢复内置
+  `anthropic`（官方 OAuth 登录通道）并加入 `newapi`；`retry.fallbackChains` `deepseek/*` →
+  `newapi/*`。
+- 验证方式：`omp -p --model newapi/deepseek-v4-pro`、`newapi/glm-5.3-flash`
+  实际返回；模板+合并密钥本地重生成 `models.yml` 后 `newapi/deepseek-v4.1-flash` 端到端返回
+  `nix-sync-ok`。注意 baseUrl 必须带
+  `/v1`（omp 请求路径不含版本前缀，少写会被网关吞成空 200 流），详见专题文档。
 - 关联文档：[omp 模型配置管理](./omp-models.md)。
 
 ### athena Vaultwarden 主域名切到 `vault.vitus213.xyz`
