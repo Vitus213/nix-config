@@ -29,7 +29,8 @@ in
   # env 文件（与 artemis 手工维护的 hindsight.env 同源）；文件非空则不动。
   # omp-keys 无 gemini 行时生成空文件让容器照常启动（LLM 操作降级），
   # 下次重启会重试提取。gemini key 轮换后删除该文件重新 bootstrap。
-  systemd.services.${containerName} = {
+  # 注意：oci-containers 生成的单元名是 podman-<name>，挂 here 才能与容器定义合并。
+  systemd.services."podman-${containerName}" = {
     after = [ "agenix.service" ];
     preStart = ''
       install -d -m 700 /var/lib/hindsight
