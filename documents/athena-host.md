@@ -158,24 +158,26 @@ nixos-rebuild switch --flake .#athena --target-host root@192.168.100.11
 
 ## 从 apollo 部署
 
-athena 平时远程使用，常规改动在 apollo 上一条命令完成（本地构建 → 闭包拷贝 → 远程切换）：
+athena 平时远程使用，常规改动在 apollo 上一条命令完成（ssh 同步目标机 worktree →
+athena 本地构建并切换）：
 
 ```bash
 just remote-host athena          # 等价 sudo nixos-rebuild switch，在 athena 上免密切换
-just remote-host athena test     # 只构建并切换运行时，不写 boot entry
-just remote-host athena boot     # 只注册下一代的 boot entry
+just remote-host athena test     # 只构建并切换运行时，不写 boot entry（免密仅放行 switch）
+just remote-host athena boot     # 需密码，建议直接在 athena 上手动执行
 ```
 
 前提（已随 athena 配置落地，见 `hosts/olympians-athena/default.nix`）：
 
-- `security.sudo.extraRules`：vitus 对 `/nix/store/*/bin/switch-to-configuration *` 免密
-  （最小权限，其余 sudo 照旧要密码，模式同 artemis 的 `/etc/sudoers.d/nix-darwin`）。
-- 远程拷贝闭包所需的 `nix.settings.trusted-users` 由 `modules/base/nix.nix` 全局提供。
+- `security.sudo.extraRules`：vitus 对 `/nix/store/*/bin/nixos-rebuild switch *` 与
+  `/nix/store/*/bin/switch-to-configuration *` 免密（最小权限，其余 sudo 照旧要密码，
+  模式同 artemis 的 `/etc/sudoers.d/nix-darwin`）。
+- worktree 位于目标机 `/tmp/nixcfg-deploy`（指向 origin/main），由命令自动同步；
+  注意 /tmp 重启清空，命令会自动重建。
 
 首次引导（sudoers 规则生效前）仍需在 athena 本机手动跑一次
-`sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#athena`（`/tmp/nixcfg-deploy` 是指向
-origin/main 的 git worktree；athena 的 `~/nix-config` 主工作树存在本地未提交改动，勿直接
-pull，先人工核对处理）。
+`sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#athena`（athena 的 `~/nix-config`
+主工作树存在本地未提交改动，勿直接 pull，先人工核对处理）。
 
 ## 回滚
 

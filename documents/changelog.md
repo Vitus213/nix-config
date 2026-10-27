@@ -22,11 +22,12 @@
 - 影响范围：athena 远程部署流程（原先需 ssh 手动 pull + rebuild）；其他 NixOS 主机可复用。
 - 配置入口：`Justfile`（新增 `remote-host`）、`hosts/olympians-athena/default.nix`
   （sudoers 免密规则）、`documents/athena-host.md`。
-- 变更内容：`just remote-host athena` = apollo 本地构建 + `nix copy` 闭包到 athena +
-  `--use-remote-sudo` 远程切换（`mode` 支持 `switch`/`test`/`boot`）。athena 侧新增
-  `security.sudo.extraRules` 仅放行 `/nix/store/*/bin/switch-to-configuration *`
-  （最小权限，模式同 artemis 的 nix-darwin 白名单）；`trusted-users` 由
-  `modules/base/nix.nix` 全局提供，未重复声明。
+- 变更内容：`just remote-host athena` = ssh 同步目标机 `/tmp/nixcfg-deploy` worktree（指向
+  origin/main）+ 目标机本地 `sudo -n nixos-rebuild switch` 切换。athena 侧新增
+  `security.sudo.extraRules` 放行 `/nix/store/*/bin/nixos-rebuild switch *` 与
+  `/nix/store/*/bin/switch-to-configuration *`（最小权限，模式同 artemis 的 nix-darwin
+  白名单）。不用 `--target-host --use-remote-sudo`：其远程流程经 `sh -c` 调用
+  `nix-env --set`，sudoers 无法安全约束。
 - 验证方式：`just --list` 解析正常；`nix eval` 求值 sudo extraRules 合并正确、
   `trusted-users` 无重复项。首次 sudoers 生效前需在 athena 手动 rebuild 一次（见专题文档）。
 - 关联文档：[athena 主机](./athena-host.md) 的“从 apollo 部署”。

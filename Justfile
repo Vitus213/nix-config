@@ -121,13 +121,28 @@ local mode="default":
   use {{utils_nu}} *;
   local-switch (current-local-host) {{mode}}
 
-# Deploy to a remote NixOS host: build locally, copy closure, switch remotely.
+# Deploy to a remote NixOS host: sync a worktree on the target, rebuild there.
 # 前提（目标机，见 hosts/olympians-athena/default.nix）：vitus 对
-# /nix/store/*/bin/switch-to-configuration 免密，且在 nix.settings.trusted-users。
+# /nix/store/*/bin/nixos-rebuild switch 免密。首次需手动跑一次带密码的
+# sudo nixos-rebuild switch 装上该规则。
 [linux]
 [group('homelab')]
 remote-host host mode="switch":
-    nixos-rebuild {{mode}} --flake .#{{host}} --target-host vitus@{{host}} --use-remote-sudo
+    #!/usr/bin/env bash
+    set -euo pipefail
+    remote="vitus@{{host}}"
+    ssh -o BatchMode=yes "$remote" '
+      set -e
+      cd ~/nix-config && git fetch origin main -q
+      git -C /tmp/nixcfg-deploy checkout --detach -q origin/main 2>/dev/null ||
+        git -C ~/nix-config worktree add -q /tmp/nixcfg-deploy origin/main
+    '
+    if ! ssh -o BatchMode=yes "$remote" \
+        "sudo -n nixos-rebuild {{mode}} --flake /tmp/nixcfg-deploy#{{host}}"; then
+      echo "sudo 免密不可用：请在 {{host}} 上手动执行一次" \
+        "sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#{{host}}" >&2
+      exit 1
+    fi
 
 ############################################################################
 #

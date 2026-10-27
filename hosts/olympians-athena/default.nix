@@ -57,13 +57,18 @@ in
   ];
   programs.nix-ld.enable = true;
 
-  # 从 apollo `just remote-host athena` 免密远程部署：
-  # - 仅放行 switch-to-configuration（每代 store 路径哈希变化，用通配；其余 sudo 照旧要密码）
+  # 从 apollo `just remote-host athena` 免密远程部署（ssh 同步 worktree + 目标机本地切换）：
+  # - 放行 nixos-rebuild switch（每代 store 路径哈希变化，用通配；其余 sudo 照旧要密码）
+  # - 保留 switch-to-configuration 免密，供只激活不更新 profile 的场景
   # - 远程 nix copy 闭包所需 trusted-users 已由 modules/base/nix.nix 全局提供
   security.sudo.extraRules = [
     {
       users = [ "vitus" ];
       commands = [
+        {
+          command = "/nix/store/*/bin/nixos-rebuild switch *";
+          options = [ "NOPASSWD" ];
+        }
         {
           command = "/nix/store/*/bin/switch-to-configuration *";
           options = [ "NOPASSWD" ];
