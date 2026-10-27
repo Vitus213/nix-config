@@ -11,7 +11,7 @@ Zen Browser 是 Firefox 的开源分支，默认左侧垂直标签栏，面向�
 
 本仓库通过 flake input `zen-browser`（`github:youwen5/zen-browser-flake`，上游 GitHub
 Actions 每日自动跟随 Zen 上游发布更新）安装官方 Linux 二进制，用 nixpkgs 风格的 `wrapFirefox`
-封装，版本固定于 `flake.lock`（当前 `1.21.14b`）。
+封装，版本固定于 `flake.lock`（当前 `1.23.4b`，Gecko 内核版本见 `about:support`）。
 
 Firefox 与 Google
 Chrome 已从本仓库移除；Zen 是唯一安装的浏览器（Linux：`youwen5/zen-browser-flake`；macOS：Homebrew
@@ -37,6 +37,21 @@ cask `zen`）。未沙箱化。
 - Wayland app-id 为 `zen`（来自 desktop 文件
   `StartupWMClass=zen`、`--name zen`）。niri 据此匹配窗口规则。
 - 中文输入（fcitx5-rime）候选框行为正常：Firefox 内核没有 Wayland IME 候选框错位问题。
+
+## 视频解码（HTML5 播放器）
+
+Firefox 内核在 Linux 上自带的解码器（ffvpx）不含 H.264；H.264 需要运行时 `dlopen` 系统的
+`libavcodec`。nixpkgs 的 `wrapFirefox` 读取浏览器包 passthru 的 `withFFmpeg`，为 `true`
+时才把 ffmpeg 加入 wrapper 的 `LD_LIBRARY_PATH`，并按 Gecko 版本选择 `ffmpeg_8`/`ffmpeg_9`。
+
+- nixpkgs 将该 passthru 由 `ffmpegSupport` 改名为 `withFFmpeg`（`gssSupport` 同步改为
+  `withGSSAPI`）。zen-browser-flake
+  1.21.14b 及更早的锁定版本仍用旧名，wrapper 中没有 ffmpeg，H.264 与 H.264
+  MSE 均不可用，B 站等只提供 H.264 的站点会提示浏览器不支持 HTML5 播放器。上游已修复（[youwen5/zen-browser-flake#19](https://github.com/youwen5/zen-browser-flake/issues/19)），当前锁定版本已包含该修复。
+- 快速确认：`grep -o '/nix/store/[^:]*ffmpeg[^:]*' "$(readlink -f "$(command -v zen)")"`
+  应有输出；或在 Zen 打开 `about:support` 的“媒体”段，H264 应显示 `SWDEC` 或 `HWDEC`。
+- apollo 的 NVIDIA 硬件解码依赖 `hosts/_shared/nvidia.nix` 与 `home/linux/gui/base/nvidia.nix`
+  中已有的 `nvidia-vaapi-driver`、`LIBVA_DRIVER_NAME=nvidia` 与 `NVD_BACKEND=direct`。
 
 ## 更新方式
 

@@ -14,6 +14,22 @@
 - 关联文档：[Homelab SSH Key](./homelab-ssh-key-romantic.md)。
 
 
+### 更新 Zen Browser 到 1.23.4b，修复 HTML5 播放器缺 H.264
+
+- 影响范围：所有 Linux GUI 主机（apollo/generic）的 Zen Browser；1.21.14b → 1.23.4b（Gecko 153.0.4 →
+  158.0.1）。
+- 配置入口：`flake.lock` 的 `zen-browser` input（`youwen5/zen-browser-flake` e1e4aa6 → 7f6ce45）。
+- 变更内容：旧锁定版本的 passthru 仍用 `ffmpegSupport`，nixpkgs `wrapFirefox` 已改读
+  `withFFmpeg`，wrapper 缺 ffmpeg，H.264 不可用；新版本上游已改用
+  `withFFmpeg`/`withGSSAPI`，wrapper 加入 ffmpeg 9.0.1（libavcodec 63）。
+- 验证方式：`nix build` 新包，wrapper `LD_LIBRARY_PATH` 含 ffmpeg-9.0.1-lib；headless 探测
+  `canPlayType`/`MediaSource.isTypeSupported`：旧包 H.264 为空、MSE
+  H.264 为 false，新包 H.264/AAC 为 `probably`、MSE H.264 为 true；`nix eval .#evalTests` =
+  true。未执行 `just local`。
+- 关联文档：[Zen Browser](./zen-browser.md) 的“视频解码（HTML5 播放器）”、
+  [应用版本审计](./application-version-audit.md)。
+
+
 ### OMP 中转 Claude provider 改名 `scitrace`，修复登录后 401
 
 - 影响范围：所有主机 `omp-sync-models` 生成的 `~/.omp/agent/models.yml`；Claude 中转模型选择器由
