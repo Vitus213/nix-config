@@ -246,11 +246,11 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1792607871,
-        "narHash": "sha256-d3ECF13adna2K2gSaH7qIvAqSlqfx+w7SMWDbRYZu4M=",
+        "lastModified": 1793037735,
+        "narHash": "sha256-BDzVVti5TbDi/smmg/qGUl1Ru0xEH3HSAEFDeZHyNSc=",
         "ref": "refs/heads/main",
-        "rev": "ce0ed1bcee24a0417da8a6da7fce8a6a395cdbce",
-        "revCount": 40,
+        "rev": "4a10da3767f6c77f970c2af42ad940ff2388bd66",
+        "revCount": 41,
         "type": "git",
         "url": "https://github.com/Vitus213/my-secrets.git"
       },

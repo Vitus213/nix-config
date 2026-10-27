@@ -9,6 +9,9 @@ let
 
     urldecode = "python3 -c 'import sys, urllib.parse as ul; print(ul.unquote_plus(sys.stdin.read()))'";
     urlencode = "python3 -c 'import sys, urllib.parse as ul; print(ul.quote_plus(sys.stdin.read()))'";
+
+    # athena 有线网卡魔术包唤醒（需与 athena 在同一局域网 192.168.100.0/24）
+    wake-athena = "${pkgs.wakeonlan}/bin/wakeonlan -i 192.168.100.255 00:e2:69:8a:78:ce";
   };
 
   localBin = "${config.home.homeDirectory}/.local/bin";

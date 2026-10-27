@@ -24,5 +24,6 @@ in
 {
   apollo = check (hmUser "apollo");
   generic = check (hmUser "generic");
+  athena = check (hmUser "athena");
   hermes = check outputs.homeConfigurations.hermes.config;
 }

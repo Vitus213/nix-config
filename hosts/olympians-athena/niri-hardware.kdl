@@ -1,0 +1,13 @@
+// athena 平时不接显示器，不固定 output：接上任意显示器时由 niri 自动选择模式和缩放。
+// 需要固定时参考 hosts/olympians-apollo/niri-hardware.kdl，用 `niri msg outputs` 查看名称。
+// 命名工作区供 keybindings.kdl / windowrules.kdl 引用，必须声明。
+
+workspace "1terminal"
+workspace "2browser"
+workspace "3docs"
+workspace "4codex"
+workspace "5code"
+workspace "6chat"
+workspace "8music"
+workspace "9file"
+workspace "0other"

@@ -61,6 +61,11 @@ in
           User = "vitus";
         };
 
+        # athena 局域网固定 IP（路由器 DHCP 固定租约，不加入 tailnet）
+        "athena" = {
+          HostName = "192.168.100.11";
+          User = "vitus";
+        };
 
         # 13t - Tailscale 网段（100.64/10）主机，SSH 端口 8022
         "13t" = {

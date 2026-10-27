@@ -2,6 +2,57 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-27
+
+### athena 改走有线：固定 `.11` 移到有线网卡，开启网络唤醒，新增 `wake-athena`
+
+- 影响范围：athena 的 `enp2s0`（RTL8111）；路由器 Q30 DHCP 固定租约；所有主机的 shell 别名
+  `wake-athena`（rebuild 后生效）。
+- 配置入口：`hosts/olympians-athena/default.nix` 的
+  `networking.interfaces.enp2s0.wakeOnLan.enable`； `home/base/core/shells/default.nix`；路由器 uci
+  `dhcp`（`athena` 改绑有线 MAC → `.11`，新增 `athena-wifi` → `.12`）。
+- 变更内容：生成 udev `.link`（`WakeOnLan=magic`），原为
+  `Wake-on: d`；BIOS 已由用户打开 PCIe 唤醒。WiFi 局域网 ping 平均 53 ms、最高 103 ms，有线约 0.1
+  ms。
+- 验证方式：`ethtool enp2s0` 为 `Wake-on: g` 且重启后保持；`systemctl poweroff`
+  后从 apollo 发魔术包，约 35 秒可 ping、journal 出现新 boot；`ip route` 默认走
+  `enp2s0`（`.11`），WiFi `.12`；`nix eval .#evalTests`。
+- 关联文档：[athena（开发机 + 家庭服务）](./athena-host.md)。
+
+### athena 局域网固定 `192.168.100.11` + SSH 别名
+
+- 影响范围：路由器 Q30（`192.168.100.1`）DHCP 固定租约；所有主机生成的 `~/.ssh/config` 新增
+  `Host athena`，rebuild 后生效。
+- 配置入口：路由器 uci `dhcp`（`name='athena'`，WiFi MAC `a0:d3:65:67:b0:29` →
+  `.11`）；`home/base/tui/ssh.nix`。
+- 变更内容：athena 的 WiFi 原为动态 `.170`；按现有 `.3`–`.8`
+  固定租约的做法在路由器侧绑定，`.9`/`.10` 是 j1900 的 macvlan 地址，取下一个空闲的
+  `.11`。NixOS 侧仍用 DHCP。
+- 验证方式：athena 断开重连 WiFi 后 `ip -4 addr` 为 `192.168.100.11/24`，`ssh vitus@192.168.100.11`
+  返回 `athena`，旧 `.170` 不再应答；`nix eval .#evalTests`。
+- 关联文档：[athena（开发机 + 家庭服务）](./athena-host.md)。
+
+### athena 改为部署到 H610M 双系统实机：niri 桌面 + secrets
+
+- 影响范围：`nixosConfigurations.athena`；my-secrets 全部 `.age` 新增 `athena`
+  recipient。其他主机配置不变。
+- 配置入口：`outputs/x86_64-linux/src/olympians-athena.nix`（改为与 apollo 相同的
+  `secrets/nixos.nix` + `modules/nixos/desktop.nix` + `hardening/{nixpaks,bwraps}` + niri +
+  `home/linux/gui.nix`）；`hosts/olympians-athena/{default,hardware-configuration,home}.nix`、新增
+  `niri-hardware.kdl`；测试 `outputs/x86_64-linux/tests/home-manager/`
+  中 athena 改为有 homelab 块；my-secrets 提交 `4a10da3` 与 `flake.lock` 的 `mysecrets`。
+- 变更内容：硬件配置换成实机 `nixos-generate-config` 结果（UUID 挂载、Windows 原有 300M
+  ESP 上的 systemd-boot，`configurationLimit = 3`）；导入
+  `hosts/_shared/nvidia.nix`；WiFi（NetworkManager + 固件）与蓝牙（desktop 模块）；禁用挂起/休眠；RTC 本地时间；`stateVersion`
+  改为实际安装的 `26.05`；去掉无 secrets 时的 `nix.extraOptions` /
+  home 覆盖；重复的 Tailscale 块交给 desktop 模块（athena 不加入 tailnet）。
+- 验证方式：`nix eval .#evalTests` =
+  true；rekey 时逐个文件做解密回环比对；`nixos-rebuild switch --target-host root@athena`
+  后重启：内核 6.18.56、`nvidia-smi` 识别 RTX
+  4060（595.104.02）、WiFi 已连、蓝牙 Powered、`/run/agenix/*`
+  解密成功、家庭服务 active、niri 会话运行、`suspend.target` masked、无失败的系统单元。
+- 关联文档：[athena（开发机 + 家庭服务）](./athena-host.md)。
+
 ## 2026-10-26
 
 ### SSH 客户端：`Host artemis` 改走局域网固定 IP `192.168.100.5`
@@ -12,7 +63,6 @@
   `192.168.100.5`（artemis 的局域网固定 IP）。artemis 的 Tailscale 已离线约 220 天。离开家庭局域网时不可达。
 - 验证方式：`ssh artemis hostname` 返回 `artemis`。
 - 关联文档：[Homelab SSH Key](./homelab-ssh-key-romantic.md)。
-
 
 ### 更新 Zen Browser 到 1.23.4b，修复 HTML5 播放器缺 H.264
 
@@ -29,7 +79,6 @@
 - 关联文档：[Zen Browser](./zen-browser.md) 的“视频解码（HTML5 播放器）”、
   [应用版本审计](./application-version-audit.md)。
 
-
 ### OMP 中转 Claude provider 改名 `scitrace`，修复登录后 401
 
 - 影响范围：所有主机 `omp-sync-models` 生成的 `~/.omp/agent/models.yml`；Claude 中转模型选择器由
@@ -40,6 +89,18 @@
 - 验证方式：模板与本机 models.yml 仅差 key；`omp -p --model anthropic/claude-opus-5-5` 请求指向
   `api.anthropic.com` 并正常回复；中转 key curl `sub.scitrace.cc/v1/messages` 正常；`just test`。
 - 关联文档：[omp 模型配置](./omp-models.md) 的“scitrace provider”。
+
+### 新增 athena 主机（无桌面开发机 + 家庭服务）
+
+- 影响范围：新增 `nixosConfigurations.athena` / `packages.athena`；其他主机不变。尚未安装到盘。
+- 配置入口：`outputs/x86_64-linux/src/olympians-athena.nix`、`hosts/olympians-athena/`
+  （`default.nix`、`hardware-configuration.nix`、`services.nix`、`home.nix`）；测试
+  `outputs/x86_64-linux/tests/home-manager/` 增加 `athena`。
+- 变更内容：终端链 NixOS（`modules/base` + `modules/nixos/base` +
+  `home/linux/tui.nix`），无 secrets；可移植引导（systemd-boot 不写 NVRAM、按卷标挂载、通用 initrd 驱动）；SSH、Tailscale，以及 Jellyfin、Immich、Uptime
+  Kuma、qBittorrent、aria2 + AriaNg，接替 j1900 的 Docker 部署。
+- 验证方式：`nix build .#nixosConfigurations.athena.config.system.build.toplevel`；`just test`。
+- 关联文档：[athena（无桌面开发机 + 家庭服务）](./athena-host.md)。
 
 ### Herdr tab 栏只显示编号
 
