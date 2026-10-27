@@ -35,7 +35,7 @@ in
     preStart = ''
       install -d -m 700 /var/lib/hindsight
       if [ ! -s ${envFile} ]; then
-        key=$(sed -n 's/^openai:[[:space:]]*//p' /run/agenix/omp-keys)
+        key=$(sed -n 's/^sci-openai:[[:space:]]*//p' /run/agenix/omp-keys)
         if [ -n "$key" ]; then
           printf 'HINDSIGHT_API_LLM_API_KEY=%s\n' "$key" > ${envFile}
           chmod 600 ${envFile}
