@@ -1,6 +1,12 @@
-{ pkgs, ... }:
+{
+  config,
+  pkgs,
+  mysecrets,
+  ...
+}:
 # 家庭服务（接替 j1900 上的 Docker 部署）：Jellyfin / Immich / Uptime Kuma /
-# qBittorrent / aria2 + AriaNg。防火墙沿用 modules/nixos/base/ssh.nix 的默认关闭，
+# qBittorrent / aria2 + AriaNg；另有 Vaultwarden 经 Cloudflare Tunnel 对外。
+# 防火墙沿用 modules/nixos/base/ssh.nix 的默认关闭，
 # 各服务仍声明 openFirewall，后续打开防火墙时端口不用再补。
 let
   mediaRoot = "/srv/media";
@@ -123,6 +129,47 @@ in
         }
       ];
       root = "${pkgs.ariang}/share/ariang";
+    };
+  };
+
+  # Vaultwarden（Bitwarden 兼容服务端）：只听本机，经 Cloudflare Tunnel 对外；
+  # /admin 在隧道入口返回 404，日常经 `ssh -L 8222:127.0.0.1:8222 root@athena` 访问。
+  age.secrets = {
+    # ADMIN_TOKEN='<Argon2 哈希>'；systemd 以 root 读取 EnvironmentFile
+    "vaultwarden-env".file = "${mysecrets}/vaultwarden-env.age";
+    # 隧道凭据，经 LoadCredential 交给 DynamicUser 的 cloudflared
+    "cloudflared-athena.json".file = "${mysecrets}/cloudflared-athena.json.age";
+  };
+
+  services.vaultwarden = {
+    enable = true;
+    backupDir = "/var/backup/vaultwarden"; # 模块自带每日 23:00 SQLite 备份
+    environmentFile = config.age.secrets."vaultwarden-env".path;
+    config = {
+      DOMAIN = "https://vault.vituss.me";
+      SIGNUPS_ALLOWED = false; # 只能由管理员邀请
+      INVITATIONS_ALLOWED = true;
+      ROCKET_ADDRESS = "127.0.0.1";
+      ROCKET_PORT = 8222;
+      # 只听本机，该头只能由 cloudflared 写入；日志与登录限流按真实客户端 IP
+      IP_HEADER = "CF-Connecting-IP";
+    };
+  };
+
+  # 本地管理型隧道 athena；DNS：vault.vituss.me CNAME <隧道 ID>.cfargotunnel.com（已开代理）。
+  # 模块按 hostname 只能写一条 ingress，所以这条专门拦 /admin，其余路径落到 default。
+  # 只有指向本隧道 ID 的 CNAME 能把流量送进来，目前只有 vault.vituss.me。
+  services.cloudflared = {
+    enable = true;
+    tunnels."929d36f9-1bfd-4013-a762-2eb4e33c6583" = {
+      credentialsFile = config.age.secrets."cloudflared-athena.json".path;
+      # protocol 保持默认 auto（QUIC 优先）：2026-10-27 cloudflared 预检 athena 出口
+      # QUIC 7844/udp 通、HTTP/2 7844/tcp 握手超时（经 Q30 OpenClash fake-ip）
+      ingress."vault.vituss.me" = {
+        path = "^/admin";
+        service = "http_status:404";
+      };
+      default = "http://127.0.0.1:8222";
     };
   };
 }

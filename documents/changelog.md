@@ -4,6 +4,22 @@
 
 ## 2026-10-27
 
+### athena 部署 Vaultwarden，经 Cloudflare Tunnel 对外（`vault.vituss.me`）
+
+- 影响范围：athena 新增
+  `vaultwarden`、`cloudflared-tunnel-929d36f9-…`、`backup-vaultwarden.timer`；apollo 新增用户级 timer
+  `vaultwarden-backup-pull`（`sudo nixos-rebuild switch` 后生效）；my-secrets 新增
+  `vaultwarden-env`、`vaultwarden-admin-password`、`cloudflared-athena.json`。
+- 配置入口：`hosts/olympians-athena/services.nix`（`services.vaultwarden`、`services.cloudflared`、
+  `age.secrets`）；`hosts/olympians-apollo/home.nix`；`flake.lock` 的 `mysecrets` → `fab4476`。
+- 变更内容：Vaultwarden 1.37.4 只听 `127.0.0.1:8222`，关闭注册、只允许邀请；本地管理型隧道
+  `athena`，ingress 拦截 `^/admin`（404），其余转发本机；协议
+  `auto`（QUIC）。athena 每日 23:00 备份，apollo 23:30 拉取并保留 30 天。
+- 验证方式：athena 三个单元 active、8222 只听 127.0.0.1；手动备份
+  `PRAGMA integrity_check = ok`；美国机器访问 `/alive`、`/api/config`、`/` 为 200，`/admin`
+  为 404；apollo 手动运行拉取脚本成功。
+- 关联文档：[athena（开发机 + 家庭服务）](./athena-host.md)。
+
 ### athena 改走有线：固定 `.11` 移到有线网卡，开启网络唤醒，新增 `wake-athena`
 
 - 影响范围：athena 的 `enp2s0`（RTL8111）；路由器 Q30 DHCP 固定租约；所有主机的 shell 别名
