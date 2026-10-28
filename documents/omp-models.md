@@ -23,9 +23,10 @@ my-secrets/omp-keys.age ──agenix──▶ /run/agenix/omp-keys（本机解�
 
 ## 使用方式
 
-- **直接手改**：编辑 `~/.omp/agent/models.yml` 即时生效，无需
-  `just local`。重建系统不会覆盖（B 模式）。
-- **从模板重置**（覆盖手改）：运行 `omp-sync-models`。
+- **直接手改**：编辑 `~/.omp/agent/models.yml` 后，新启动的 omp 会话读取新配置，无需
+  `just local`。重建系统不会覆盖已有软链接指向的配置（B 模式）。
+- **从模板重置**（覆盖手改）：运行 `omp-sync-models`；该命令使用当前系统已部署的 Nix
+  store 模板，不会直接读取仓库工作区。修改仓库模板后，需部署更新，才能让此命令使用新模板。
 - **把改动同步到全平台**：将手改增量合并回
   `home/base/core/omp-models.yml.in`，提交并推送 nix-config；其他机器更新 flake 后在本地运行
   `omp-sync-models`（首次生成）。
