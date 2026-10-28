@@ -4,6 +4,36 @@
 
 ## 2026-10-28
 
+### Magpie 改为 Athena 单实例共享网关
+
+- 影响范围：Athena 新增常驻网关服务；Apollo、Artemis、Athena 三台 OMP 的 `magpie` provider；
+  my-secrets `omp-keys.age` 新增 `magpie:` 行（**未提交、未推送**）。
+- 配置入口：`hosts/olympians-athena/magpie.nix`、`hosts/olympians-athena/{home,default}.nix`、
+  `home/base/core/omp-models.yml.in`、`home/base/core/omp-sync.py`、`home/base/core/test_omp_sync.py`；
+  Apollo 的 Magpie 服务模块与持久化声明已移除。
+- 变更内容：网关只绑 `192.168.100.11:3425`，管理页留 `127.0.0.1:3430`；`linger=yes`、防火墙放行
+  3425；OMP 模板改用局域网地址 + `@MAGPIE_KEY@`，占位符校验追加 `@MAGPIE_KEY@`；
+  回归测试扩展到两个占位符并验证失败时不覆盖已有输出。Apollo 本地实例停用、unit 软链删除。
+  默认角色、原有 provider 定义与 OAuth 凭据未改。
+- 验证方式：unit `enabled/active`、`linger=yes`，监听两个端口；无 key 访问 `/v1/models` 返回 401，
+  带 key 返回 200（89 模型）；禁用客户端重试/fallback 后 Apollo 返回 `ATHENA_MAGPIE_APOLLO_OK`、
+  Artemis 返回 `ATHENA_MAGPIE_ARTEMIS_OK`，两机普通新会话 `/model` 均出现 `magpie`；
+  `just test`、`nixfmt --check`、`test_omp_sync.py` 通过。未执行整机 rebuild。
+- 关联文档：[Magpie 共享模型网关](./magpie.md)、[OMP 模型配置管理](./omp-models.md#magpie-共享网关)。
+
+### Magpie 独立运行并接入 OMP 动态目录
+
+- 影响范围：Apollo 的独立 Magpie 用户服务、应用可写状态和本机 OMP 选择器；未切换系统。
+- 配置入口：`hosts/olympians-apollo/magpie.nix`、`home/base/core/omp-models.yml.in`、
+  本机 `~/.omp/agent/config.yml`。
+- 变更内容：启用 Nix 构建的用户 unit，复用现有 8 个 API-key 上游初始化 Magpie；
+  OMP 增加 `magpie` provider 与动态目录发现，增量加入排序及白名单，不迁移原有 OAuth，
+  不改变默认角色，不回退用户自己的 retry 设置；未改密钥包及 flake 锁定。
+- 验证方式：网关 healthcheck 通过；禁用客户端重试和模型 fallback 后，真实调用返回
+  `MAGPIE_CHAT_OK`；普通新会话 `/model` 显示 Magpie 及原有 OAuth 通道；
+  原 provider 定义不变，生成器回归通过。scitrace 上游直连 TLS 超时，Codex 独立授权尚未确认完成。
+- 关联文档：[Magpie 本地模型网关](./magpie.md)、[OMP 模型配置管理](./omp-models.md#magpie-独立网关)。
+
 ### OMP 关闭自动模型 fallback，保留同模型请求重试
 
 - 影响范围：本机 OMP 的模型出错恢复；默认角色、`smol`、模型目录与密钥不变。

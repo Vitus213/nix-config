@@ -21,6 +21,10 @@ in
     ./hindsight.nix
   ];
 
+  # 常驻网关不依赖 SSH / 图形登录会话。
+  users.users.vitus.linger = true;
+  networking.firewall.allowedTCPPorts = [ 3425 ];
+
   # 固定到 LTS 系列：非 LTS 内核 EOL 后会被 nixpkgs 直接删除，导致求值失败
   boot.kernelPackages = pkgs.linuxPackages_6_18;
   # Match Windows' default RTC behavior for dual boot.
