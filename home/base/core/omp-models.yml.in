@@ -552,9 +552,9 @@ providers:
         name: openai-codex · GPT Daybreak Blue
   # Magpie 独立管理上游与路由；OMP 只读取网关当前目录。
   magpie:
-    baseUrl: http://127.0.0.1:3425/v1
+    baseUrl: http://192.168.100.11:3425/v1
     api: openai-completions
-    auth: none
+    apiKey: @MAGPIE_KEY@
     headers:
       User-Agent: omp
     compat:

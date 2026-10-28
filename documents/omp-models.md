@@ -79,6 +79,23 @@ modelFallback 后，响应的 provider / model 为 `newapi` / `deepseek-v4.1-fla
 改回 true，并按需恢复明确的备选链，再重开会话；只打开开关而没有链不会恢复原来的 NewAPI →
 GPT 中转路由。语义依据：[OMP 18.13.1 重试策略](https://github.com/can1357/oh-my-pi/blob/v18.13.1/docs/non-compaction-retry-policy.md)。
 
+## Magpie 共享网关
+
+Athena 上的单一 Magpie 实例独立管理上游、账号和路由；OMP 模板只声明 `magpie` provider，连接
+`http://192.168.100.11:3425/v1`，用 `apiKey: @MAGPIE_KEY@` 与 `discovery.type: openai-models-list`
+动态读取目录，不复制模型清单或上游 key。
+
+`@MAGPIE_KEY@` 来自 `omp-keys.age` 的 `magpie:` 行，由 `omp-sync.py`
+注入，缺失时拒绝生成。Apollo、Artemis 共用同一把网关 key；各机 `.omp/agent/config.yml` 增量加入
+`modelProviderOrder: [..., magpie]` 与
+`enabledModels: [..., magpie/*]`。原有 provider、OAuth 登录、默认角色和用户自己的 retry 调整保持不变。
+
+目录或路由变更后运行 `omp models refresh magpie`，选择器形如
+`magpie/newapi/deepseek-v4.1-flash`。回环 `127.0.0.1`
+只对网关所在机器有效，客户端必须用 Athena 的局域网地址。
+
+网关 key 轮换、备份与已知限制见 [Magpie 共享模型网关](./magpie.md)。
+
 ## 新增 provider / 模型（标准流程）
 
 统一操作规范见仓库技能：[omp-provider](../.agents/skills/omp-provider/SKILL.md)。它覆盖 API key /

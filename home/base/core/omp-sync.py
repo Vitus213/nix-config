@@ -30,6 +30,7 @@ missing = [
         "@GLM_KEY@",
         "@DEEPSEEK_KEY@",
         "@NEWAPI_KEY@",
+        "@MAGPIE_KEY@",
     )
     if chunk in content
 ]
