@@ -13,10 +13,14 @@ WebKit 桌面窗口。其他主机没有启用此服务。
 - `hosts/olympians-apollo/home.nix`：导入用户模块。
 - `hosts/olympians-apollo/default.nix`：持久化 `~/.config/magpie`，权限 `0700`。
 
-`magpie.service` 随用户登录启动，运行 `magpie serve`，异常退出后重启。网关固定监听
-`127.0.0.1:3425`，不开放局域网端口。服务设置
+`magpie.service` 随用户登录启动，运行 `magpie serve`（附挂管理界面
+`magpie web --web=127.0.0.1:3430`，登录 key 存
+`~/.config/magpie/web.env`），异常退出后重启。网关监听 `0.0.0.0:3425`（unit 环境变量
+`MAGPIE_ADDR`，由本机手工管理，晚于仓库快照）， athena 防火墙默认关闭，局域网 192.168.100.0/24 可达。网关已启用 Bearer 鉴权：caller
+key 名为 `omp-lan`，明文存
+`~/.config/magpie/caller-keys.json`（目录权限 0700）；本机不设 key 的请求一律 401。服务设置
 `DO_NOT_TRACK=1`，PATH 包含用户的 Bun、npm、`~/.local/bin` 和 Home Manager
-profile，供订阅桥接与插件查找 CLI。未配置 linger，不承诺用户退出后仍运行。
+profile，供订阅桥接与插件查找 CLI。已开启 linger，用户退出后服务保持运行。
 
 管理界面按需运行 `magpie web`，默认监听
 `127.0.0.1:3430`，与常驻网关使用同一份配置。它会显示带登录 key 的本地链接；不设置 `MAGPIE_WEB_KEY`
@@ -86,14 +90,19 @@ magpie:
     type: openai-models-list
 ```
 
+> **注意（athena 现状）**：该块声明在 apollo 的模板中，但 athena 的 `~/.omp/agent/models.yml`
+> 由本机手工合并维护（magpie 块同样适用，`auth: none` 无需密钥行）。仓库当前部署快照
+> `/tmp/nixcfg-deploy`（提交 60e459ba，早于 magpie 提交 1fa972e8）尚不包含上述 unit 定义与模板块；athena 上运行的 unit、`MAGPIE_ADDR`、web.env 与 caller
+> key 均为本机手工状态。下次部署 apollo 模板前不要用旧 store 的 `omp-sync-models`
+> 重生成，否则 magpie 块会被移除。
+
 OMP 18.13.1 通过 `/v1/models`
 动态读取目录、上下文、输出上限和思考档，不在模板中复制模型列表。当前 OMP 入口使用 Chat
 Completions，由 Magpie 转发或转换到上游协议；不能把协议转换视为所有原生功能、思考签名和多轮工具调用都已等价验证。新增 provider、模型或路由组后执行
 `omp models refresh magpie`，再开新会话。
 
-本机 `config.yml` 只增量加入 `modelProviderOrder: [..., magpie]` 与
-`enabledModels: [..., magpie/*]`。选择器例如
-`magpie/newapi/deepseek-v4.1-flash`。所有原有 provider 定义和默认角色保留；原有 OAuth 凭据未迁移，用户同时修改的 retry 设置也不回退。
+本机 `config.yml` 的 `enabledModels` 当前为空数组（全放行），无需为 magpie 单独加白名单；选择器例如
+`magpie/auto/glm-5.3-flash`、`magpie/codex/gpt-6.1-sol`。所有原有 provider 定义和默认角色保留；原有 OAuth 凭据未迁移，用户同时修改的 retry 设置也不回退。
 
 Magpie 管上游和路由，Nix 模板管 OMP 的接入边界；不要在 Magpie 的 Agents 页再次接管 OMP，否则它会把动态目录块改成自己的静态清单。纯网关页面使用
 `magpie web --gateway`。本机已安全重生成 `models.yml`，软链与 `0600` 权限保留。未更新系统前，旧的
@@ -121,9 +130,11 @@ WebSocket 的客户端不应在未经验证时整体迁入。
 整个目录由 Apollo 的 preservation 保存。不要提交到 Git；备份时按密钥材料保护。若启用配置前此目录已存在，应先按 preservation 的迁移要求保存已有数据，避免新挂载遮住旧目录。
 `~/.cache/magpie` 未加入持久化清单，模型目录缓存和插件 Bun 运行时可能需要重新下载。
 
-默认本机网关不校验 API
-key，任意本机进程都能调用它；回环绑定不是同机用户隔离。不要直接用端口转发、反向代理或 `--lan`
-把它暴露出去；跨机器使用需要另行设置网关鉴权。管理页面的登录 key 也不等同于网关 key。
+网关已启用 Bearer 鉴权（caller key 存 `~/.config/magpie/caller-keys.json`，目录 0700），但监听
+`0.0.0.0:3425`
+且 athena 防火墙默认关闭，持 key 的局域网设备都能调用；管理页面的登录 key 不等同于网关 key。不要把
+`caller-keys.json` 明文提交或转发给不可信设备；收紧暴露面时把 unit 的 `MAGPIE_ADDR` 改回
+`127.0.0.1:3425`（本机手工改动，仓库快照仍是回环地址）。
 
 ## 更新、验证与回滚
 
@@ -141,9 +152,15 @@ key，任意本机进程都能调用它；回环绑定不是同机用户隔离�
   `openai-codex`、`anthropic`、API-key 通道；启动默认仍为 `openai-codex/gpt-6.1-sol`。
 - 生成前后对比：所有原有 provider 定义不变；现有生成器回归通过。
 
+athena 复验（2026-10-29）：`magpie/auto/glm-5.3-flash` 经网关返回 `MAGPIE_OK`、低思考档返回
+`THE_OK`，`magpie/codex/gpt-6.1-sol`（Codex 订阅上游）返回
+`CODEX_VIA_MAGPIE_OK`；OMP 日志确认 provider=magpie。局域网地址 192.168.100.11:3425 带 caller
+key 可列出目录并完成真实推理；不带 key 返回 401。`omp models magpie` 目录 43 个模型（含 `auto/*`
+路由组与 `codex/*`、`claude/*` 订阅上游）。
+
 限制：经 Magpie 调用 `sci-openai/gpt-6.1-sol` 和 `scitrace/claude-haiku-4-5`
 的烟测超时；绕过 Magpie 直接连接 `sub.scitrace.cc`
-也发生 TLS 握手超时，因此未证明这两个中转的端到端可用性。未验证：Codex 独立授权后的推理、复杂多轮工具调用、配额耗尽切换以及重启系统后的自启。
+也发生 TLS 握手超时，因此未证明这两个中转的端到端可用性。未验证：复杂多轮工具调用、配额耗尽切换以及重启系统后的自启。
 
 回滚时先停止用户服务，再移除 `home.nix` 的 Magpie 导入和专用持久化声明，重新应用配置。不要删除
 `~/.config/magpie` 或其 `/persistent` 副本，除非已备份并确认不再需要其中的密钥与路由。

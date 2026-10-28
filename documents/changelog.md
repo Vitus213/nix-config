@@ -2,6 +2,24 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-29
+
+### athena 将本机 Magpie 网关接入 OMP（magpie provider）
+
+- 影响范围：athena 本机
+  `~/.omp/agent/models.yml`（手工合并 magpie 块）；网关、密钥包、默认角色与其他 provider 不变。apollo 仓库模板中的 magpie 块此前已被旧 store 同步命令覆盖，本次为本机恢复。
+- 配置入口：`~/.omp/agent/models.yml`（模板 `home/base/core/omp-models.yml.in`
+  的 magpie 块，`auth: none` 动态 discovery）；网关 caller key 见
+  `~/.config/magpie/caller-keys.json`。
+- 变更内容：恢复模板中的 `magpie` provider（`http://127.0.0.1:3425/v1`，`openai-completions`
+  - 动态目录）；`omp models refresh magpie` 后目录 43 个模型，覆盖 `auto/*` 路由组与 API-key / Codex
+    / Claude 订阅上游。核查确认 athena 运行的 magpie unit 为本机手工状态（`0.0.0.0:3425` +
+    Bearer 鉴权 + web 管理界面），部署 worktree 快照尚未包含 magpie 提交。
+- 验证方式：重生成前后 7 个原有 provider 集合与配置逐项一致；临时关闭 retry 后
+  `magpie/auto/glm-5.3-flash` 返回 `MAGPIE_OK`（低思考档 `THE_OK`）、 `magpie/codex/gpt-6.1-sol`
+  返回 `CODEX_VIA_MAGPIE_OK`，OMP 日志 provider=magpie；局域网带 key 可用、无 key 401。
+- 关联文档：[Magpie 本地模型网关](./magpie.md)、[OMP 模型配置管理](./omp-models.md)。
+
 ## 2026-10-28
 
 ### athena 持久提供 BoxLite 开发工具链

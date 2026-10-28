@@ -23,6 +23,7 @@ extend-ignore-re = [
   "noice",                                                            # noice.nvim
   "crypted-nixos",
   "daed",
+  "60e459ba", # git short hash（documents/magpie.md）
 
   # catppuccin theme colors
   "11111b",
