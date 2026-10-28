@@ -59,6 +59,33 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMpmGeM4GP8Kv8lMTac4YYvBFmTO5qPoaHZgFz+FOkoG
 SHA256:Hxrb0W0iIlN8gHKowcouWUF13946VX9/hSj/M6biqm8
 ```
 
+## 三机统一部署验收（2026-10-29）
+
+三台系统基于 nix-config `28270764` 构建并完成切换，my-secrets 均为
+`0ad61861317f47035109015b1cfc4f72088893b8`，`flake.lock`
+使用同一密钥版本，其他 input 未变。后续仅追加文档验收记录的提交同样在三台拉齐，不要求为纯文档变更再次切换系统。
+
+| 主机    | 已激活系统                                                                               |
+| ------- | ---------------------------------------------------------------------------------------- |
+| Apollo  | `/nix/store/sqd04cvp04jk5xzj0fghdzqs36mnd6pg-nixos-system-apollo-26.11.20261014.55bfb4d` |
+| Athena  | `/nix/store/2ldzj2qlqsib6bijsbkwlnvxx49ndyd8-nixos-system-athena-26.11.20261014.55bfb4d` |
+| Artemis | `/nix/store/rlyi3442mvfnxshzf4w4pg1v0gmp0mbd-darwin-system-26.11.4cff07d`                |
+
+三台原生构建和最终 switch 均返回 0；`just test`、相关 `pre-commit`
+检查和 OMP 生成器回归通过。切换后再次使用独立设备密钥完成六方向 SSH，三台普通新 OMP 的 `/model`
+中 Magpie 模型 ID 均与网关逐项相同（当时为 25 项）。临时禁用 OMP retry /
+modelFallback 后，三台实际调用 Auto 路由分别返回
+`LAN_APOLLO_OK`、`LAN_ATHENA_OK`、`LAN_ARTEMIS_OK`。
+
+Athena 首次激活遇到手工创建的 Magpie 自启链接冲突；以 `systemctl --user disable magpie`
+撤去旧链接（不停止进程），由 Home Manager 接管后重新 switch 成功，unit 最终为 `enabled` /
+`active`，`home-manager-vitus.service` 为 active。配置目录与上游、登录状态未删除。
+
+Apollo 原未提交的网关迁移增量已保存为独立提交并合入统一版本，另保留
+`preserve-apollo-wip-before-lan-sync-20261029` stash。原密钥密文增量备份保留在 Apollo 的
+`~/.local/state/my-secrets-sync/20261028T180922Z/`，权限 `0700`。恢复钥匙的处理边界见
+[Secrets 管理](../secrets/README.md#private-secrets-仓库)。
+
 ## 文件位置
 
 私有 secrets 仓库:

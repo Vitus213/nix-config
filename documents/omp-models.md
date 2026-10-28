@@ -6,11 +6,11 @@
 
 `models.yml` 是三部分合成的产物，由 nix-config 与 my-secrets 两个仓库协同管理：
 
-| 位置                                          | 内容                                                                                            | 是否含明文 key |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------- |
-| `nix-config/home/base/core/omp-models.yml.in` | API-key provider / 模型定义及官方 OAuth 模型显示名覆盖，key 处为占位符（`@SCI_OPENAI_KEY@` 等） | 否             |
-| `my-secrets/omp-keys.age`                     | 8 个 API key 的 age 加密包（含 glm、newapi；recipients 见 `my-secrets/secrets.nix`）            | 否（密文）     |
-| `~/.omp/agent/models.yml`                     | 上面两处合成后的实际配置（symlink → `.models.generated.yml`）                                   | 是（仅本机）   |
+| 位置                                          | 内容                                                                                             | 是否含明文 key |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------- |
+| `nix-config/home/base/core/omp-models.yml.in` | API-key provider / 模型定义及官方 OAuth 模型显示名覆盖，key 处为占位符（`@SCI_OPENAI_KEY@` 等）  | 否             |
+| `my-secrets/omp-keys.age`                     | 8 个上游 API key 与 1 个 Magpie 网关 key 的 age 加密包（recipients 见 `my-secrets/secrets.nix`） | 否（密文）     |
+| `~/.omp/agent/models.yml`                     | 上面两处合成后的实际配置（symlink → `.models.generated.yml`）                                    | 是（仅本机）   |
 
 **生成链路：**
 

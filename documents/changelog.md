@@ -4,6 +4,20 @@
 
 ## 2026-10-29
 
+### 三机仓库拉齐并完成原生构建与系统切换
+
+- 影响范围：Apollo、Athena、Artemis 的 nix-config / my-secrets checkout 与已激活系统。
+- 配置入口：统一配置提交 `28270764`、`flake.lock` 的 mysecrets 节点，以及三台主机入口。
+- 变更内容：合并 Apollo 原有未提交的单实例网关部署增量并保留 stash
+  / 密文备份；三台均 pull 同一版本，密钥包锁定
+  `0ad61861317f47035109015b1cfc4f72088893b8`。恢复私钥从 my-secrets 当前跟踪中移除并忽略，原机私有副本保留，不重写旧历史。
+- 验证方式：三台原生 build 与最终 switch 均成功；解决 Athena 手工自启链接阻挡 Home
+  Manager 接管的问题。切换后六方向独立公钥 SSH、三台普通 OMP 选择器逐项对齐、三台经共享 Auto 路由真实推理全部通过；agenix 均加载包含 Magpie
+  key 的 9 个密钥条目。
+- 关联文档：[三机部署验收](./homelab-ssh-key-romantic.md#三机统一部署验收2026-10-29)、
+  [Magpie 目录与开关](./magpie.md#apollo-与-athena-共同跟随-magpie-的开关)、
+  [Secrets 同步边界](../secrets/README.md#private-secrets-仓库)。
+
 ### 三机 LAN SSH 互信与 Magpie 开关一致性
 
 - 影响范围：Apollo、Athena、Artemis 的普通用户 SSH；Apollo / Athena 的 OMP Magpie 目录。
