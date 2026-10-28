@@ -4,6 +4,17 @@
 
 ## 2026-10-28
 
+### OMP 关闭自动模型 fallback，保留同模型请求重试
+
+- 影响范围：本机 OMP 的模型出错恢复；默认角色、`smol`、模型目录与密钥不变。
+- 配置入口：本机手工文件 `~/.omp/agent/config.yml` 的 `retry`。
+- 变更内容：`retry.modelFallback` 改为 false，移除原 `newapi/* → sci-openai/gpt-5.6-sol` 的
+  `fallbackChains`；保留 retry 开关、10 次上限和退避参数。
+- 验证方式：OMP 18.13.1 CLI 读取有效开关与空备选链；实际 OMP 进程在受控 HTTP
+  400 失败时不访问备选模型并报出原错误，开启开关的对照运行能访问同一备选模型。临时文件和服务已清理，未改模板 /
+  my-secrets / flake，未切换系统。
+- 关联文档：[omp 模型配置管理：本机自动模型 fallback](./omp-models.md#本机自动模型-fallback)。
+
 ### OMP 轻量角色改用 NewAPI DeepSeek Flash 低思考档
 
 - 影响范围：本机 OMP 的 `smol` 角色；其他机器不会自动同步。
@@ -42,6 +53,19 @@
   modelFallback 后，官方 Flash 低思考模式返回 `DEEPSEEK_FLASH_OK`，Pro 非思考模式返回
   `DEEPSEEK_PRO_OK`；普通新会话模型选择器显示两个官方型号及原有通道。未执行系统切换或完整 Nix 验证。
 - 关联文档：[omp 模型配置管理：DeepSeek 官方直连](./omp-models.md#deepseek-provider官方-api-key-直连)。
+
+### Apollo 增加 Magpie 本地模型网关配置
+
+- 影响范围：Apollo 的 Home Manager 用户服务与 Magpie 状态持久化；其他主机不启用服务。
+- 配置入口：`overlays/magpie/default.nix`、`hosts/olympians-apollo/magpie.nix`、
+  `hosts/olympians-apollo/home.nix`、`hosts/olympians-apollo/default.nix`。
+- 变更内容：固定 `0.1.1846` 从源码构建 CLI/Web/TUI 版本，用户服务监听
+  `127.0.0.1:3425`，管理页面按需启动；`~/.config/magpie` 以 `0700`
+  持久化。不导入真实凭据、不修改 OMP 模型配置、不执行系统切换。
+- 验证方式：原生构建成功；Apollo 包/服务/持久化求值通过；临时 HOME 下实际运行网关和 Web
+  UI，`/v1/models`
+  成功返回，浏览器点击 Providers 页正常。真实上游推理、订阅登录和系统激活后自启未验证。
+- 关联文档：[Magpie 本地模型网关](./magpie.md)。
 
 ### omp 全部已启用通道的模型显示名统一带 provider
 

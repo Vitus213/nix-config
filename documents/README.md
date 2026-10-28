@@ -70,6 +70,7 @@
 | [Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)       | Agent CLI 的安装与快捷命令                             |
 | [omp 模型配置管理](./omp-models.md)                              | `models.yml` 的生成、新增 provider 流程                |
 | [OMP provider 变更技能](../.agents/skills/omp-provider/SKILL.md) | 新增通道、my-secrets、增量同步、OAuth 保留与新会话验收 |
+| [Magpie 本地模型网关](./magpie.md)                               | Apollo 本地网关、Web/TUI、凭据持久化与 OMP 管理边界    |
 | [Hindsight 记忆后端](./hindsight.md)                             | Agent 长期记忆服务的部署                               |
 | [Herdr Agent 终端运行时](./herdr.md)                             | Herdr 与 Zellij 的关系、radar 侧边栏、手机 SSH 接入    |
 | [bb Agent IDE](./bb.md)                                          | 安装来源、更新与回滚                                   |

@@ -60,6 +60,24 @@ modelFallback 后，响应的 provider / model 为 `newapi` / `deepseek-v4.1-fla
 
 回滚：仅将本机 `modelRoles.smol` 改回 `scitrace/claude-opus-5-5:max`，再新开会话；保留其余设置。
 
+### 本机自动模型 fallback
+
+`~/.omp/agent/config.yml` 设置 `retry.modelFallback: false`，并移除 `retry.fallbackChains`。此前
+`newapi/* → sci-openai/gpt-5.6-sol`
+的自动备选链已关闭：原模型调用失败时，不再自动换到其他模型或 provider。`retry.enabled: true` 与
+`retry.maxRetries: 10`
+保留，可重试错误仍在同一模型上重试；不可重试错误直接报出。默认角色、`smol`、白名单和所有 key 不变。
+
+这是本机手工配置，不属于 `models.yml`
+模板；其他机器需自行同步这两个变更，不会随 rebuild 自动分发。重开 OMP 会话确保读取新设置。
+
+验证：OMP 18.13.1 CLI 读取的有效开关为 false、备选链为空；受控本地 HTTP
+400 失败烟测中，即使临时测试配置保留一条可用备选链，禁用开关后也只请求原模型、返回原错误，不访问备选模型。同一测试开启开关时确实会调用备选模型成功，排除了备选链本身不可用造成的假通过。烟测不调用真实供应商，不使用真实 key，临时服务和文件均已清理。
+
+回滚：将 `retry.modelFallback`
+改回 true，并按需恢复明确的备选链，再重开会话；只打开开关而没有链不会恢复原来的 NewAPI →
+GPT 中转路由。语义依据：[OMP 18.13.1 重试策略](https://github.com/can1357/oh-my-pi/blob/v18.13.1/docs/non-compaction-retry-policy.md)。
+
 ## 新增 provider / 模型（标准流程）
 
 统一操作规范见仓库技能：[omp-provider](../.agents/skills/omp-provider/SKILL.md)。它覆盖 API key /
@@ -160,8 +178,8 @@ Flash 的正式 API ID 是 `deepseek-flash`，当前对应 V4.1-Flash-1017。本
   时网关把错误路径吞成空 200 流，表现为模型空响应、`outputTokens=0`、empty-stop 重试耗尽。
 - 中转目录里列出的型号不一定有可用通道（如 `qwen3-coder-480b-a35b-instruct`、 `qwen3.5-plus`
   实测 404），新增型号前先 `curl /v1/chat/completions` 实测。
-- 官方 `deepseek` 与 `newapi` 现在独立并存，分别使用各自的 key； `retry.fallbackChains` 仍为
-  `newapi/* → sci-openai/gpt-5.6-sol`。
+- 官方 `deepseek` 与 `newapi` 独立并存，分别使用各自的 key；本机已关闭自动模型 fallback，不再配置
+  `newapi/* → sci-openai/gpt-5.6-sol` 备选链。
 - 原 `openai` provider（scitrace 中转 GPT 系，`api: openai-responses`）已于 2026-10-27 改名为
   `sci-openai`（key 行与占位符同步改名），`openai` 这个名字让给将来的官方直连（内置 provider）。
 

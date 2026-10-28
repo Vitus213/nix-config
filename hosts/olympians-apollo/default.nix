@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  myvars,
   refind-minimal,
   ...
 }:
@@ -39,6 +40,13 @@ in
     ../_shared/nvidia.nix
 
     ../_shared/preservation.nix
+  ];
+
+  preservation.preserveAt."/persistent".users.${myvars.username}.directories = [
+    {
+      directory = ".config/magpie";
+      mode = "0700";
+    }
   ];
 
   # 固定到 LTS 系列：非 LTS 内核 EOL 后会被 nixpkgs 直接删除，导致求值失败

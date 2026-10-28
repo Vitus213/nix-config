@@ -550,3 +550,14 @@ providers:
         name: openai-codex · GPT-6.1 Terra
       gpt-daybreak-blue-latest:
         name: openai-codex · GPT Daybreak Blue
+  # Magpie 独立管理上游与路由；OMP 只读取网关当前目录。
+  magpie:
+    baseUrl: http://127.0.0.1:3425/v1
+    api: openai-completions
+    auth: none
+    headers:
+      User-Agent: omp
+    compat:
+      promptCacheSessionHeader: x-session-affinity
+    discovery:
+      type: openai-models-list
