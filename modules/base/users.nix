@@ -1,4 +1,9 @@
-{ myvars, ... }:
+{
+  config,
+  lib,
+  myvars,
+  ...
+}:
 {
   programs.ssh = myvars.networking.ssh;
 
@@ -16,6 +21,12 @@
     #      ```
     #    2. Never leave the device and never sent over the network.
     # 2. Or just use hardware security keys like Yubikey/CanoKey.
-    openssh.authorizedKeys.keys = myvars.mainSshAuthorizedKeys;
+    openssh.authorizedKeys.keys =
+      myvars.mainSshAuthorizedKeys
+      ++ lib.optionals (lib.elem config.networking.hostName [
+        "apollo"
+        "athena"
+        "artemis"
+      ]) myvars.lanSshAuthorizedKeys;
   };
 }

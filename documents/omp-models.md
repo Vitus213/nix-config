@@ -88,6 +88,9 @@ OAuth 分流、两仓库发布顺序、增量合并、候选生成、选择器�
 - `nix-config` 管模板与占位符校验；`my-secrets` 只在新增或更新 API
   key 时修改。已有 key 可复用时，不重写密钥包、不无意义更新 flake。
 - 本机 `config.yml` 的白名单与排序需增量更新，保留旧 provider、默认角色和 fallback。
+- 模型 ID 内含 `/` 时用 `provider/**`，例如 Apollo 的 `magpie/**`；`magpie/*` 的 `*` 不跨
+  `/`，会漏掉 `magpie/auto/gpt-6.1-sol` 和 `magpie/group/sol-any`。修正后重开普通会话，具体证据见
+  [Magpie Auto 路由验收](./magpie.md#apollo-auto-路由可见性与-lan-验收2026-10-29)。
 - 验收必须包括普通新会话的 `/model`；目录列表和显式 `--model` 请求成功不能代替它。
 
 当前 glm provider：`https://open.bigmodel.cn/api/coding/paas/v4`（GLM Coding Plan，

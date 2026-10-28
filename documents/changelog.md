@@ -4,6 +4,34 @@
 
 ## 2026-10-29
 
+### 三机 LAN SSH 互信与 Magpie 开关一致性
+
+- 影响范围：Apollo、Athena、Artemis 的普通用户 SSH；Apollo / Athena 的 OMP Magpie 目录。
+- 配置入口：`home/base/tui/ssh.nix`、`vars/networking.nix`、`vars/default.nix`、
+  `modules/base/users.nix`，以及对应机器的用户级 SSH 文件。
+- 变更内容：三台别名统一使用 LAN 地址，固定已核验的服务端公钥；添加三台实际设备公钥，仅追加到这三台的普通用户授权。复用 Apollo
+  /
+  Artemis 私钥，Athena 在本机生成设备密钥，不传私钥、不扩大 root 授权。Magpie 目录以 Athena 网关开关为唯一来源，不手写第二份型号表。
+- 验证方式：六方向分别禁用 SSH 连接复用、agent 和 agent 转发，`BatchMode=yes`
+  登录并返回正确主机名；Magpie 关闭 Claude 订阅条目后，两机新 TUI 的 25 个可见模型 ID 逐项一致。
+- 关联文档：[三机 SSH 互信](./homelab-ssh-key-romantic.md#当前设计)、
+  [两机跟随 Magpie 开关](./magpie.md#apollo-与-athena-共同跟随-magpie-的开关)。
+
+### Apollo OMP 恢复 Magpie Auto 路由可选，SSH 别名改走局域网
+
+- 影响范围：Apollo 本机 OMP 白名单；Athena 的 `ssh apollo` 和仓库共享 SSH 别名。
+- 配置入口：Apollo `~/.omp/agent/config.yml`、`home/base/tui/ssh.nix`、Athena
+  `~/.ssh/config`；provider 技能补充嵌套模型 ID 的 glob 规则。
+- 变更内容：`enabledModels` 中 `magpie/*` 改为 `magpie/**`，修复 `*` 不跨 `/` 导致 Auto /
+  Group 路由被隐藏；`Host apollo` 从不可达 Tailnet 地址改为
+  `192.168.100.4`。保留原有 provider、角色、默认模型与鉴权；未改密钥包、未切换系统。
+- 验证方式：Apollo 普通新会话 `/model` 的 Magpie 条目从 13 增至 43，Auto / Group 搜索成功；禁用 OMP
+  retry / modelFallback 的 LAN 推理返回
+  `APOLLO_AUTO_LAN_OK`，网关审计确认为 Auto 请求经 Codex 返回 HTTP 200；实际 `ssh apollo hostname`
+  返回 `apollo`。
+- 关联文档：[Magpie Auto 路由与 LAN 验收](./magpie.md#apollo-auto-路由可见性与-lan-验收2026-10-29)、
+  [Homelab SSH 别名](./homelab-ssh-key-romantic.md#当前设计)。
+
 ### athena 将本机 Magpie 网关接入 OMP（magpie provider）
 
 - 影响范围：athena 本机

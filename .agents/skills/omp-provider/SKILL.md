@@ -111,6 +111,8 @@ secret 声明或改 recipients；只有文件/主机权限确实变化时才改�
 
 - 增量加入 `enabledModels`，否则 provider 即使已配置也可能不出现在 `/model` 或 Ctrl+P。
 - 正式模型范围小且有旧别名时用精确 `provider/model-id`；确实要开放整组才用 `provider/*`。
+- 模型 ID 自身含 `/` 时，整组白名单必须用 `provider/**`（例如 `magpie/**`）；`*` 不跨
+  `/`，`magpie/*` 无法匹配 `magpie/auto/gpt-6.1-sol`。验收以普通新会话的 `/model` 为准。
 - 增量加入 `modelProviderOrder`；它控制排序，不替代白名单或认证。
 - 原有 `openai-codex/*`、`anthropic/*` 等条目必须保留。`disabledProviders`
   或路径级配置仍可能隐藏 provider，需一起检查。

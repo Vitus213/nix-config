@@ -16,9 +16,31 @@ Host 192.168.*
   IdentityFile ~/.ssh/id_ed25519
 ```
 
-局域网里的电脑（如 artemis，固定 IP `192.168.100.5`）只授权 `vars/default.nix` 的
-`mainSshAuthorizedKeys`，不含 `ssh-key-romantic`，因此 `192.168.*` 依次尝试 `ssh-key-romantic`
-与本机 `~/.ssh/id_ed25519`；`ssh artemis` 不匹配 `192.168.*`，走默认身份 `~/.ssh/id_ed25519`。
+三台日常机器统一使用局域网别名，普通用户为 `vitus`：
+
+| 别名      | 地址             | 用户目录       |
+| --------- | ---------------- | -------------- |
+| `apollo`  | `192.168.100.4`  | `/home/vitus`  |
+| `athena`  | `192.168.100.11` | `/home/vitus`  |
+| `artemis` | `192.168.100.5`  | `/Users/vitus` |
+
+客户端入口为 `home/base/tui/ssh.nix`；系统级地址和服务端公钥固定在
+`vars/networking.nix`，因此这些主机之间不依赖失效的 Tailnet 地址。`192.168.*`
+地址连接会先尝试 homelab key，再尝试本机 `~/.ssh/id_ed25519`；三台命名别名使用各自的默认设备密钥。
+
+`vars/default.nix` 的 `lanSshAuthorizedKeys` 记录三台实际公钥，`modules/base/users.nix`
+仅将它们追加到这三台的 `vitus`
+授权，不扩展到其他机器或 root。Apollo 与 Artemis 复用现有设备密钥；Athena 的 Ed25519 设备密钥在本机新建，私钥
+`0600`、`.ssh` 目录 `0700`，用于无人值守的用户间 SSH。私钥不复制、不进入 Git 或 Nix
+store；Athena 的 agenix identity 仍是其 `/etc/ssh/ssh_host_ed25519_key`，不与新设备密钥混用。
+
+2026-10-29 已分别验证 Apollo → Athena、Apollo → Artemis、Athena → Apollo、Athena → Artemis、Artemis
+→ Apollo、Artemis → Athena。六次均使用 `BatchMode=yes`、
+`ControlPath=none`、`IdentityAgent=none`、`ForwardAgent=no`，执行 `hostname`
+并返回目标主机名；没有借用主控连接或转发的 agent 冒充源机器认证成功。原有授权公钥均保留。
+
+三台均可直接运行
+`ssh apollo`、`ssh athena`、`ssh artemis`。这些别名用于家庭局域网；若 DHCP 地址或主机密钥改变，应在上述仓库入口和机器上同步更新。回滚时仅撤销三机 LAN 附加授权、对应别名和固定指纹，不删除原设备密钥及无关授权。
 
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
 

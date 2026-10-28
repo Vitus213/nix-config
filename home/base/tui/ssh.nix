@@ -51,7 +51,7 @@ in
         };
 
         "apollo" = {
-          HostName = "100.64.0.89";
+          HostName = "192.168.100.4";
           User = "vitus";
         };
 

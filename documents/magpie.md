@@ -2,9 +2,9 @@
 
 ## 当前配置
 
-Apollo 的 Home Manager 配置安装 [yetone/magpie](https://github.com/yetone/magpie)，固定为
-`0.1.1846`，从源码构建 `nogui` 版本。保留网关、CLI、TUI 和浏览器管理界面，不包含 GTK /
-WebKit 桌面窗口。其他主机没有启用此服务。
+当前实际网关运行在 Athena（`192.168.100.11`），Apollo（`192.168.100.4`）作为局域网 OMP 客户端。Magpie 固定为
+[yetone/magpie](https://github.com/yetone/magpie) `0.1.1846`，从源码构建 `nogui`
+版本，保留网关、CLI、TUI 和浏览器界面，不包含 GTK / WebKit 桌面窗口。
 
 配置入口：
 
@@ -13,26 +13,28 @@ WebKit 桌面窗口。其他主机没有启用此服务。
 - `hosts/olympians-apollo/home.nix`：导入用户模块。
 - `hosts/olympians-apollo/default.nix`：持久化 `~/.config/magpie`，权限 `0700`。
 
-`magpie.service` 随用户登录启动，运行 `magpie serve`（附挂管理界面
-`magpie web --web=127.0.0.1:3430`，登录 key 存
-`~/.config/magpie/web.env`），异常退出后重启。网关监听 `0.0.0.0:3425`（unit 环境变量
-`MAGPIE_ADDR`，由本机手工管理，晚于仓库快照）， athena 防火墙默认关闭，局域网 192.168.100.0/24 可达。网关已启用 Bearer 鉴权：caller
-key 名为 `omp-lan`，明文存
-`~/.config/magpie/caller-keys.json`（目录权限 0700）；本机不设 key 的请求一律 401。服务设置
-`DO_NOT_TRACK=1`，PATH 包含用户的 Bun、npm、`~/.local/bin` 和 Home Manager
-profile，供订阅桥接与插件查找 CLI。已开启 linger，用户退出后服务保持运行。
+Athena 的 `magpie.service` 运行 `magpie serve --web=127.0.0.1:3430`，异常退出后重启。网关通过
+`MAGPIE_ADDR=0.0.0.0:3425` 监听局域网；管理界面仅监听回环地址，固定登录 key 从
+`~/.config/magpie/web.env` 读取，不进入 Nix
+store。当前 unit 与仓库中的 Apollo 回环版定义不同，不能将仓库模块存在等同于 Athena 已由该模块部署。
 
-管理界面按需运行 `magpie web`，默认监听
-`127.0.0.1:3430`，与常驻网关使用同一份配置。它会显示带登录 key 的本地链接；不设置 `MAGPIE_WEB_KEY`
-时每次运行生成新的 key。不把管理密钥放进 Nix store 或用户 unit。
+局域网客户端必须发送有效的 gateway key；现有 key 名为 `omp-lan`，保存在 Athena 的
+`~/.config/magpie/caller-keys.json`，不能使用管理界面的登录 key 代替。网关自身端口的回环请求允许无 key；访问
+`192.168.100.11:3425`
+即使来自 Athena 自己，也按远程请求校验，缺 key 返回 401。管理界面端口上的 API 请求同样需要 gateway
+key。固定版本的
+[鉴权规则](https://github.com/yetone/magpie/blob/v0.1.1846/docs/reference.md#connecting-anything-else)
+明确区分这些入口。
+
+服务设置 `DO_NOT_TRACK=1`，PATH 包含 Bun、npm、`~/.local/bin` 与 Home Manager
+profile。Athena 已开启 linger，退出登录后用户服务保持运行。
 
 ## 启用与使用
 
-Apollo 已启用独立的 `magpie.service`，`magpie healthcheck`
-通过；未切换整个 NixOS 系统。当前用户 unit 是由仓库 Home
-Manager 配置单独求值、构建后链接的同一份文件， `~/.local/bin/magpie` 链接到固定版本的二进制。
-`~/.local/state/nix/profiles/magpie-unit` 是该 unit 及其包闭包的 GC root。后续正常激活 Home
-Manager 时使用仓库中的包与 unit 定义，不另建 `magpie daemon` 服务。
+Athena 当前用户 unit 链接到 Nix store；`~/.local/bin/magpie` 链接到固定版本二进制，
+`~/.local/state/nix/profiles/magpie-unit`
+保护该 unit 及其包闭包。仓库的安装和 preservation 定义仍位于 Apollo 模块中；这与 Athena 当前手工部署的 LAN
+unit 是两处状态。本次仅修复 OMP 白名单和 SSH 别名，没有切换系统或改写网关 unit。
 
 ```sh
 magpie web --gateway
@@ -101,13 +103,76 @@ OMP 18.13.1 通过 `/v1/models`
 Completions，由 Magpie 转发或转换到上游协议；不能把协议转换视为所有原生功能、思考签名和多轮工具调用都已等价验证。新增 provider、模型或路由组后执行
 `omp models refresh magpie`，再开新会话。
 
-本机 `config.yml` 的 `enabledModels` 当前为空数组（全放行），无需为 magpie 单独加白名单；选择器例如
-`magpie/auto/glm-5.3-flash`、`magpie/codex/gpt-6.1-sol`。所有原有 provider 定义和默认角色保留；原有 OAuth 凭据未迁移，用户同时修改的 retry 设置也不回退。
+Athena 的 `enabledModels` 未设置白名单，发现的 Magpie 模型默认可选；Apollo 有白名单，必须使用
+`magpie/**` 才能包含带 `/` 的嵌套模型 ID。选择器例如
+`magpie/auto/glm-5.3-flash`、`magpie/codex/gpt-6.1-sol`。
 
 Magpie 管上游和路由，Nix 模板管 OMP 的接入边界；不要在 Magpie 的 Agents 页再次接管 OMP，否则它会把动态目录块改成自己的静态清单。纯网关页面使用
 `magpie web --gateway`。本机已安全重生成 `models.yml`，软链与 `0600` 权限保留。未更新系统前，旧的
 `omp-sync-models` 仍可能从旧 store 模板生成配置并移除 Magpie，见
 [OMP 模型配置管理](./omp-models.md)。
+
+### Apollo Auto 路由可见性与 LAN 验收（2026-10-29）
+
+Apollo 的 `~/.omp/agent/models.yml` 中，`magpie.baseUrl` 为
+`http://192.168.100.11:3425/v1`，使用现有 gateway key 和 `openai-models-list` 发现。Apollo 不能用
+`127.0.0.1:3425` 连接 Athena；该地址代表 Apollo 自己。
+
+OMP 18.13.1 的 `enabledModels` 使用 Bun 路径 glob，`*` 不跨 `/`。`magpie/*` 无法匹配
+`magpie/auto/gpt-6.1-sol`，也无法匹配 `magpie/group/sol-any`。修复为：
+
+```yaml
+enabledModels:
+  # 保留其他 provider 条目。
+  - magpie/**
+```
+
+此前目录命令列出 43 项，但普通新会话的 `/model` 只有 13 项：其他白名单如 `sci-openai/*`
+意外匹配了 Magpie 模型的裸 ID `sci-openai/gpt-6.1-sol`，而 Auto /
+Group 没有对应规则。这不是发现失败，也不需要开启特殊运行模式。实现依据为
+[OMP glob 匹配](https://github.com/can1357/oh-my-pi/blob/v18.13.1/packages/coding-agent/src/config/model-resolver.ts#L133)
+与 [Bun glob 语义](https://bun.com/docs/runtime/glob#supported-glob-patterns)。
+
+使用时重开普通 `omp` 会话，输入 `/model`，搜索 `auto/gpt-6.1-sol`；完整选择器为
+`magpie/auto/gpt-6.1-sol`。它使用 Magpie 的 smart 路由组，候选为 sci-openai、sci-plus、codex；
+`magpie/group/sol-any` 则是 codex → sci-openai → sci-plus 的 order 路由。`auto`
+是网关模型 ID 的一部分，与 OMP 的 `--thinking auto`
+无关。旧会话启动时已固定模型范围，F5 不能重建该范围。
+
+本次实际验收：
+
+- Apollo → Athena 携 gateway key 读取 `/v1/models` 返回 HTTP 200。
+- 修复前普通新 TUI 显示 Magpie
+  13 项，搜索 Auto 无匹配；修复后新 TUI 显示 43 项，Auto 与 Group 均可搜索到。未使用 `--model` /
+  `--models` 启动这些选择器验收会话。
+- 从 Apollo 另发真实 OMP 请求，临时禁用 retry 和 OMP modelFallback，返回
+  `APOLLO_AUTO_LAN_OK`；网关审计记录 `req=auto/gpt-6.1-sol`、`provider=codex`、HTTP
+  200，客户端身份为 `omp-lan`。这次请求证明命中 Codex，未模拟配额耗尽或上游故障。
+- 仅将 Apollo `config.yml` 的 `magpie/*` 改为 `magpie/**`，文件仍为 `0600`；默认角色仍是
+  `magpie/sci-openai/gpt-6.1-sol:max`，其余角色、OAuth、key 和 retry 设置不变。临时会话与 smoke
+  overlay 已清理。
+
+本机白名单不由 Nix 生成，此处是配置回填记录，其他有白名单的客户端需同步同一规则。回滚仅把该条改回
+`magpie/*` 并重开会话，但会重新隐藏嵌套路由。已安装的旧 `omp-sync-models`
+仍可能覆盖本机 provider 地址与鉴权；正常更新系统前，不要用旧命令重置。
+
+### Apollo 与 Athena 共同跟随 Magpie 的开关
+
+`magpie` provider 的唯一目录来源是 Athena 网关的 `/v1/models`。两台 OMP 都使用动态
+`openai-models-list` 发现，不维护第二份固定型号清单；Apollo 的 `magpie/**`
+只是允许嵌套 ID 通过本机白名单，不会重新启用网关已经关闭的型号。Athena 通过回环、Apollo 通过 LAN 连接的是同一个网关，不是各自机器上独立的 Magpie 配置。
+
+在 Magpie 管理界面选择、开启或关闭 provider 型号、路由组后，需要让客户端刷新目录：
+
+```sh
+omp models refresh magpie
+```
+
+随后重开普通 OMP 会话，启动时的模型范围才会按新目录重建。OMP
+18.13.1 的已有会话并非实时订阅网关开关；有固定 scope 时 F5 不重建 scope，不能用旧会话仍显示缓存条目来判断 Magpie 开关失效。用户关闭过的型号不应通过复制旧静态目录重新加入。
+
+实际开关复验：关闭 Claude 订阅条目后，网关目录与 Apollo、Athena 两台新 TUI 的 Magpie 分组均为 25 项，逐项模型 ID 完全一致，`magpie/claude/*`
+均不存在。此数量只是当时的开关快照，不是固定目标；后续以 Magpie 当前目录为准。其他 OMP 直连 provider 与 Magpie 是独立入口，不受 Magpie 的开关控制，本次未删除它们或改变默认角色。
 
 ChatGPT/Codex 订阅不等于 OpenAI
 API 余额。Magpie 使用订阅凭据访问对应后端，可用模型、额度与授权范围由订阅及上游决定；第三方工具支持不构成上游授权保证。固定版本的

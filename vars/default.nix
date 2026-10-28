@@ -33,6 +33,12 @@
     # apollo (NixOS workstation) ~/.ssh/id_ed25519, generated 2026-06-21
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUqUa+dbnW9E7TUJcZTDTcFOM4ZjIcH8NGhaMRp1wFA apollo"
   ];
+  # 仅用于三台局域网机器的普通用户互信，不追加到 root 或其他主机。
+  lanSshAuthorizedKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUqUa+dbnW9E7TUJcZTDTcFOM4ZjIcH8NGhaMRp1wFA apollo"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII+RpWZKJxoaVGK7giHrAWI0Q4nlH8fszNJpTOlq+8qh vitus@athena-lan"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHRkwg9/gTY2pgbr4+7u0C0FIATd2L9tpoAtUiY4/ID/ zhzvitus@gmail.com"
+  ];
   secondaryAuthorizedKeys = [
     # the backup ssh keys for disaster recovery
   ];

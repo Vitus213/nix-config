@@ -23,7 +23,7 @@ rec {
     apollo = {
       # Desktop PC
       iface = "enp5s0";
-      ipv4 = "192.168.100.100";
+      ipv4 = "192.168.100.4";
       ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
       gateway = "192.168.100.1";
       gateway6 = "fe80::5";
@@ -52,8 +52,8 @@ rec {
     #   IdentityFile — the location of your SSH key authentication file for the account.
     # Format in details:
     #   https://www.ssh.com/academy/ssh/config
-    extraConfig = (
-      lib.attrsets.foldlAttrs (
+    extraConfig =
+      (lib.attrsets.foldlAttrs (
         acc: host: val:
         acc
         + ''
@@ -61,8 +61,15 @@ rec {
             HostName ${val.ipv4}
             Port 22
         ''
-      ) "" hostsAddr
-    );
+      ) "" hostsAddr)
+      + ''
+        Host artemis
+          HostName 192.168.100.5
+          Port 22
+        Host athena
+          HostName 192.168.100.11
+          Port 22
+      '';
 
     # this config will be written to /etc/ssh/ssh_known_hosts
     knownHosts =
@@ -74,13 +81,31 @@ rec {
       #     => { x = "bar-a"; y = "bar-b"; }
       lib.attrsets.mapAttrs
         (host: value: {
-          hostNames = [ host ] ++ (lib.optional (hostsAddr ? host) hostsAddr.${host}.ipv4);
+          hostNames =
+            value.hostNames or ([ host ] ++ (lib.optional (hostsAddr ? host) hostsAddr.${host}.ipv4));
           publicKey = value.publicKey;
         })
         {
           # https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
           "github.com".publicKey =
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl";
+          "apollo".publicKey =
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEMXO6/x1DtOnitqseH1jc34Nf489GCBFAgPAHyoWS7U";
+          "athena" = {
+            hostNames = [
+              "athena"
+              "192.168.100.11"
+              "192.168.100.12"
+            ];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPl9yGPLm/Oacc/MiteQswtAgYJI015TtbE0LAP9Chof";
+          };
+          "artemis" = {
+            hostNames = [
+              "artemis"
+              "192.168.100.5"
+            ];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPno/uSP9Aubo1zCQlZWDq2lif2MGHOTuY0fDnwv9AFY";
+          };
         };
   };
 }
