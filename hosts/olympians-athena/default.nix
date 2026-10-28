@@ -12,6 +12,7 @@
 #############################################################
 let
   hostName = "athena";
+  muslCc = pkgs.pkgsCross.musl64.stdenv.cc;
 in
 {
   imports = [
@@ -53,7 +54,20 @@ in
   environment.systemPackages = with pkgs; [
     gcc
     python3
-    nodejs
+    nodejs_22
+    go
+    protobuf
+    gperf
+    # Corepack shims read packageManager; pkgs.yarn would install Yarn Classic.
+    corepack_22
+    # Keep Home Manager's native cargo/rustc; expose only the rustup manager.
+    (writeShellScriptBin "rustup" ''
+      exec ${pkgs.rustup}/bin/rustup "$@"
+    '')
+    # Native gcc remains glibc; this command always targets x86_64 musl.
+    (writeShellScriptBin "musl-gcc" ''
+      exec ${muslCc}/bin/${muslCc.targetPrefix}cc "$@"
+    '')
   ];
   programs.nix-ld.enable = true;
 

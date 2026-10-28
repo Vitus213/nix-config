@@ -55,6 +55,82 @@ noctalia），需要时直接接显示器。
 - Tailscale：desktop 模块会启用 `tailscaled`，但 athena **不加入 tailnet**，只在局域网内访问
 - `system.stateVersion = "26.05"`（`nixos-install` 时的版本，不要改）
 
+## BoxLite 开发工具
+
+`hosts/olympians-athena/default.nix` 在主机 PATH 中持久提供缺失的工具，不依赖一次性
+`nix-shell -p`。BoxLite 自己的 flake devShell 仍是项目构建环境的权威入口：进入其仓库执行
+`nix develop`；这里不复制项目的 Rust 版本、构建变量或依赖锁，也不修改 BoxLite 仓库。工具包版本统一跟随本仓库
+`flake.lock`，没有另加 nixpkgs input。
+
+| 声明包 / 命令                                   | 用途与边界                                                                    |
+| ----------------------------------------------- | ----------------------------------------------------------------------------- |
+| `gcc`、`python3`                                | 保留已有原生 C 编译器和 Python                                                |
+| `nodejs_22`                                     | 与 Home Manager 的 Node 22 保持同一主版本，提供 Node、npm、Corepack           |
+| `go`                                            | Go SDK 与 `go` 命令                                                           |
+| `protobuf`                                      | `protoc` 编译器；Python 的 protobuf 模块不能替代它                            |
+| `gperf`                                         | guest / 原生依赖构建所用代码生成工具                                          |
+| `corepack_22`                                   | 声明式生成 Yarn / pnpm shims；Yarn 版本由各项目 `packageManager` 决定         |
+| `rustup` 包的单命令包装                         | 只暴露 `rustup`，不把包内 cargo / rustc / rustfmt 等代理一起放进系统 PATH     |
+| `pkgsCross.musl64.stdenv.cc` 的 `musl-gcc` 包装 | 调用带 target 前缀的 `cc`，目标为 `x86_64-unknown-linux-musl`，不替换原生 gcc |
+
+### Rust 与 musl
+
+Home Manager 已安装原生 `rustc`、`cargo`、`rustfmt`、`clippy` 和 `rust-analyzer`，保持不动。新增的
+`rustup` 命令只管理用户已有的 `~/.rustup`；系统激活不会自动安装工具链、设置 default /
+override，也不会覆盖 `~/.cargo/bin`。直接运行主机 `cargo`
+仍可能得到 Nix 的原生版本，不等于自动使用 rustup 所选版本。优先在 BoxLite 的 `nix develop`
+中按项目说明构建；需要直接使用某个已安装的 rustup 工具链时，用 `rustup run <toolchain> cargo ...`
+明确选择，不要全局替换 Rust。
+
+在项目目录中用 `rustup show active-toolchain` 确认选择；缺少 guest target 时执行
+`rustup target add x86_64-unknown-linux-musl`（工具链、target 下载需要网络，系统包不预装）。
+`musl-gcc -dumpmachine` 应返回 `x86_64-unknown-linux-musl`；仅安装 musl
+libc 或把普通 gcc 重命名并不能生成相同的编译器。项目需要显式指定 Rust linker 时使用
+`CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=musl-gcc`，不要全局设置
+`CC=musl-gcc`，以免把原生依赖也切到 musl。
+
+### Yarn 4
+
+BoxLite 的 `apps/package.json` 指定 `packageManager: yarn@4.13.0`，在 `apps/` 内使用
+`yarn --version` 或 `corepack yarn --version` 应得到 `4.13.0`。`corepack_22`
+在自己的 Nix 输出中生成 shims，不需要对只读 `/nix/store` 执行 `corepack enable`，也不安装
+`pkgs.yarn`（Yarn Classic）或
+`npm install -g yarn`。Corepack 首次运行可能下载项目指定的 Yarn 并写入用户缓存；不要用
+`corepack install -g` 改掉项目版本。
+
+若登录后仍命中其他 Node / Yarn / Rust，用 shell 的命令查找功能（Nushell：
+`which --all node yarn rustup cargo rustc musl-gcc`）查看 PATH 优先级，先处理用户自己安装的同名工具；不要删除已有工具链。这里不设置代理、认证信息或下载镜像密码。
+
+### 构建、部署与验收
+
+在 `~/nix-config` 执行（先构建，确认后由操作者激活；配置编辑本身不运行这些命令）：
+
+```sh
+nix build .#nixosConfigurations.athena.config.system.build.toplevel --no-link
+sudo nixos-rebuild switch --flake .#athena
+```
+
+切换后新建登录 shell，检查 `go version`、`protoc --version`、`gperf --version`、
+`rustup --version`、`musl-gcc -dumpmachine`、`node --version`、`corepack --version`，再到 BoxLite 的
+`apps/` 确认 `yarn --version` 为 `4.13.0`；实际 guest /
+SDK 构建与端到端测试遵循 BoxLite 项目工作流。`switch`
+可能按系统配置重启服务，因此由负责部署的操作者统一执行。
+
+提交前验证：`just test` 返回 `true`，athena 的 `system.build.toplevel.drvPath`
+求值通过；直接运行声明包中的 Node、Go、protoc、gperf 和 rustup，musl 包装器报告
+`x86_64-unknown-linux-musl`，并成功编译、运行静态 C 程序。Node 提供的 Corepack 为
+`0.36.0`，`corepack_22` 的 Yarn shim 在隔离缓存的临时项目中按 `packageManager` 选择
+`4.13.0`。这些验证未执行完整系统构建、激活或 BoxLite guest / SDK 构建，不能代替切换后的登录 shell
+PATH 验收。
+
+回滚只撤销 `default.nix` 中本节列出的新增包、包装器和 Node
+22 选择，再按上述命令构建 / 切换；不要为回滚工具包删除用户的 `~/.rustup`、`~/.cargo`
+或 Corepack 缓存。
+
+参考：[Corepack 0.36.0 官方使用说明](https://github.com/nodejs/corepack/blob/v0.36.0/README.md)
+（项目版本选择、只读安装目录），以及锁定 nixpkgs 的
+`pkgs/development/web/nodejs/corepack.nix`（`corepack_22` shim 生成方式）。
+
 ## 服务
 
 版本以当前 `flake.lock` 中的 nixpkgs（`55bfb4d7`，2026-10-14，NixOS 26.11）为准。
@@ -170,10 +246,10 @@ just remote-host athena boot     # 需密码，建议直接在 athena 上手动�
 前提（已随 athena 配置落地，见 `hosts/olympians-athena/default.nix`）：
 
 - `security.sudo.extraRules`：vitus 对 `/nix/store/*/bin/nixos-rebuild switch *` 与
-  `/nix/store/*/bin/switch-to-configuration *` 免密（最小权限，其余 sudo 照旧要密码，
-  模式同 artemis 的 `/etc/sudoers.d/nix-darwin`）。
-- worktree 位于目标机 `/tmp/nixcfg-deploy`（指向 origin/main），由命令自动同步；
-  注意 /tmp 重启清空，命令会自动重建。
+  `/nix/store/*/bin/switch-to-configuration *`
+  免密（最小权限，其余 sudo 照旧要密码，模式同 artemis 的 `/etc/sudoers.d/nix-darwin`）。
+- worktree 位于目标机
+  `/tmp/nixcfg-deploy`（指向 origin/main），由命令自动同步；注意 /tmp 重启清空，命令会自动重建。
 
 首次引导（sudoers 规则生效前）仍需在 athena 本机手动跑一次
 `sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#athena`（athena 的 `~/nix-config`

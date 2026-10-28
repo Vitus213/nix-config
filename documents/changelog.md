@@ -4,6 +4,19 @@
 
 ## 2026-10-28
 
+### athena 持久提供 BoxLite 开发工具链
+
+- 影响范围：仅 athena 主机开发命令 PATH；不改 BoxLite 仓库、其他主机或用户既有 Rust 工具链。
+- 配置入口：`hosts/olympians-athena/default.nix`。
+- 变更内容：保留 gcc / Python，Node 对齐 Home Manager 的 `nodejs_22`；新增 `go`、`protobuf`
+  （`protoc`）、`gperf`、`corepack_22`，以及仅暴露管理命令的 `rustup` 包装和真正指向
+  `pkgsCross.musl64.stdenv.cc` 的 `musl-gcc` 包装。Yarn 由项目 `packageManager` 选择
+  `4.13.0`，不安装 Yarn Classic；原生 cargo / rustc 保持原有来源。
+- 验证方式：`just test` 返回 `true`；athena 完整系统派生求值与 Nix 格式检查通过。实际运行 Node / Go
+  / protoc / gperf / rustup 命令，musl 编译器生成并运行静态 C 程序，Corepack 在临时项目中按
+  `packageManager` 选择 Yarn `4.13.0`。未构建完整系统或执行切换。
+- 关联文档：[athena 主机](./athena-host.md) 的“BoxLite 开发工具”（包集、使用方式、冲突边界与回滚）。
+
 ### OMP 关闭自动模型 fallback，保留同模型请求重试
 
 - 影响范围：本机 OMP 的模型出错恢复；默认角色、`smol`、模型目录与密钥不变。
