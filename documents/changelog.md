@@ -4,6 +4,83 @@
 
 ## 2026-10-28
 
+### OMP 轻量角色改用 NewAPI DeepSeek Flash 低思考档
+
+- 影响范围：本机 OMP 的 `smol` 角色；其他机器不会自动同步。
+- 配置入口：`~/.omp/agent/config.yml` 的 `modelRoles.smol`。
+- 变更内容：由 `scitrace/claude-opus-5-5:max` 改为
+  `newapi/deepseek-v4.1-flash:low`；保留用户当前默认模型、其他角色与 fallback，未改模型模板、密钥包或 flake。
+- 验证方式：OMP 18.13.1 正确解析保存的角色；临时关闭 retry / modelFallback 后，真实请求由
+  `newapi/deepseek-v4.1-flash` 返回
+  `NEWAPI_SMOL_OK`，完整进程耗时 11.42 秒；临时烟测配置已移除，未执行系统切换。
+- 关联文档：[omp 模型配置管理：本机轻量角色](./omp-models.md#本机轻量角色smol)。
+
+### 新增仓库级 OMP provider 操作技能与新会话回归门槛
+
+- 影响范围：在 nix-config 中操作 OMP provider 的 agent 流程。
+- 配置入口：`.agents/skills/omp-provider/SKILL.md`；`documents/omp-models.md` 与文档索引。
+- 变更内容：区分官方 API key、中转 key 与内置 OAuth；规定 nix-config /
+  my-secrets 职责、已有 key 复用、两仓库发布顺序、增量修改、安全候选生成、权限、回滚与旧 store 模板风险。将“不传
+  `--model` 的普通新会话 `/model` 仍能看到既有 OAuth 通道”作为必验项。
+- 验证方式：新 OMP 会话自动补全显示 `/skill:omp-provider`
+  及正确描述。针对用户报告的 Codex 消失，确认凭据和白名单保留，刷新目录后实际新会话 `/model` 显示
+  `openai-codex`、`anthropic`、新增 `deepseek` 与其他原有 API-key 通道，默认仍为
+  `openai-codex/gpt-6.1-sol`；未将“配置覆盖”当作已证实根因。
+- 关联文档：[OMP provider 变更技能](../.agents/skills/omp-provider/SKILL.md)、
+  [omp 模型配置管理](./omp-models.md)。
+
+### 恢复独立的 DeepSeek 官方 API provider，与 newapi 并存
+
+- 影响范围：OMP 模板与同步校验、本机 `config.yml` 白名单 / 排序；不改变默认角色或 fallback。
+- 配置入口：`home/base/core/omp-models.yml.in`、`home/base/core/omp-sync.py`、
+  `~/.omp/agent/config.yml`；本机生成文件已同步、权限 `0600`。
+- 变更内容：新增 `deepseek` → `https://api.deepseek.com`，复用密钥包原有 `deepseek:` /
+  `@DEEPSEEK_KEY@`；正式选择器为
+  `deepseek/deepseek-flash`、`deepseek/deepseek-v4-pro`，显示名带 provider 前缀。`newapi`
+  仍使用自己的网关 key；my-secrets 与 flake 锁定未改。
+- 验证方式：现有缺 DeepSeek key 回归由失败变为通过；禁用 retry /
+  modelFallback 后，官方 Flash 低思考模式返回 `DEEPSEEK_FLASH_OK`，Pro 非思考模式返回
+  `DEEPSEEK_PRO_OK`；普通新会话模型选择器显示两个官方型号及原有通道。未执行系统切换或完整 Nix 验证。
+- 关联文档：[omp 模型配置管理：DeepSeek 官方直连](./omp-models.md#deepseek-provider官方-api-key-直连)。
+
+### omp 全部已启用通道的模型显示名统一带 provider
+
+- 影响范围：7 个 API-key provider 的 74 条模型定义，以及官方 `anthropic` / `openai-codex`
+  OAuth 通道的模型显示名；涵盖当前启用的 9 个 provider。
+- 配置入口：`home/base/core/omp-models.yml.in` 的 `models[].name` 与仅含 `name` 的
+  `modelOverrides`；已用仓库脚本同步本机 `~/.omp/agent/.models.generated.yml`。
+- 变更内容：显示名统一为 `provider · 模型名称`，包括 `newapi`
+  下的同名模型；官方 OAuth 仅覆盖显示名，不改认证或端点；模型 ID、能力、角色与 fallback 引用不变。
+- 验证方式：OMP 18.13.1 `omp models --json`
+  中上述通道的 100 条有效目录项均带正确前缀，OAuth 覆盖前后所有非 `name`
+  目录字段一致；实际 TUI 状态栏显示 `newapi · GLM 5.3`； `openai-codex/gpt-6.1-sol` 真实请求返回
+  `OK`。未切换系统或运行完整 Nix 验证。
+- 关联文档：[omp 模型配置管理：模型显示名](./omp-models.md#模型显示名)
+  （含旧 store 模板覆盖风险、同步方法与回滚）。
+
+### glm 模型显示名加 provider 前缀
+
+- 影响范围：omp 模型选择器与状态栏中 glm provider 的 3 个模型显示名。
+- 配置入口：`home/base/core/omp-models.yml.in`（glm 块 `name` 字段）。
+- 变更内容：omp 状态栏只渲染模型 `name`，不显示 provider；glm 组显示名改为 `glm · GLM 5.3` /
+  `glm · GLM 5.3 Flash` / `glm · GLM 5.2`。newapi 下同名 GLM 型号不变。
+- 验证方式：用仓库 `omp-sync.py` + 新模板重新生成 `~/.omp/agent/.models.generated.yml` （等效
+  `omp-sync-models`，免去等 rebuild 更新 store 模板），`omp models find glm`
+  正常；重开 omp 会话后状态栏显示新名字。
+- 关联文档：[omp 模型配置管理](./omp-models.md)。
+
+### apollo omp 启用 ChatGPT 官方 OAuth 通道（openai-codex）
+
+- 影响范围：apollo 用户级 `~/.omp/agent/config.yml`（本机手工文件，未入库）。
+- 配置入口：`~/.omp/agent/config.yml` 的 `modelProviderOrder` 与 `enabledModels`。
+- 变更内容：ChatGPT OAuth 登录的凭据挂在内置 `openai-codex`
+  provider（9 个模型），而模型选择器按"有凭据 ∩ `enabledModels` 白名单"过滤，白名单此前未含
+  `openai-codex/*`，导致选择器里该组整体不可见。已在 `modelProviderOrder` 加
+  `openai-codex`、`enabledModels` 加
+  `openai-codex/*`；凭据未过期（约 2026-11-06 到期），无需重新登录。
+- 验证方式：`omp --model openai-codex/gpt-6-sol -p --no-session --thinking low` 实际返回 "ok"。
+- 关联文档：[omp 模型配置管理](./omp-models.md)。
+
 ### athena 的 Herdr 对齐 apollo：herdr-radar + auto-title + omp 集成
 
 - 影响范围：athena 用户级文件（`~/.config/herdr/plugins*` 与 `config.toml` 的 radar 托管块、

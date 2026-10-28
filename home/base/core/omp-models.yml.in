@@ -6,49 +6,49 @@ providers:
     api: openai-responses
     models:
       - id: gpt-5.5
-        name: GPT-5.5
+        name: sci-openai · GPT-5.5
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6
-        name: GPT-5.6
+        name: sci-openai · GPT-5.6
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-sol
-        name: GPT-5.6 Sol
+        name: sci-openai · GPT-5.6 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-terra
-        name: GPT-5.6 Terra
+        name: sci-openai · GPT-5.6 Terra
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6
-        name: GPT-6
+        name: sci-openai · GPT-6
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6-astra
-        name: GPT-6 Astra
+        name: sci-openai · GPT-6 Astra
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6-sol
-        name: GPT-6 Sol
+        name: sci-openai · GPT-6 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6.1-sol
-        name: GPT-6.1 Sol
+        name: sci-openai · GPT-6.1 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
@@ -60,91 +60,91 @@ providers:
     api: anthropic-messages
     models:
       - id: claude-fable-5
-        name: Claude Fable 5
+        name: scitrace · Claude Fable 5
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-fable-5-1
-        name: Claude Fable 5.1
+        name: scitrace · Claude Fable 5.1
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-haiku-4-5
-        name: Claude Haiku 4.5
+        name: scitrace · Claude Haiku 4.5
         reasoning: true
         input: [text, image]
         contextWindow: 200000
         maxTokens: 64000
       - id: claude-haiku-4-5-20251001
-        name: Claude Haiku 4.5
+        name: scitrace · Claude Haiku 4.5
         reasoning: true
         input: [text, image]
         contextWindow: 200000
         maxTokens: 64000
       - id: claude-opus-4-5
-        name: Claude Opus 4.5
+        name: scitrace · Claude Opus 4.5
         reasoning: true
         input: [text, image]
         contextWindow: 200000
         maxTokens: 64000
       - id: claude-opus-4-5-20251101
-        name: Claude Opus 4.5
+        name: scitrace · Claude Opus 4.5
         reasoning: true
         input: [text, image]
         contextWindow: 200000
         maxTokens: 64000
       - id: claude-opus-4-6
-        name: Claude Opus 4.6
+        name: scitrace · Claude Opus 4.6
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-opus-4-7
-        name: Claude Opus 4.7
+        name: scitrace · Claude Opus 4.7
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-opus-4-8
-        name: Claude Opus 4.8
+        name: scitrace · Claude Opus 4.8
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-opus-5
-        name: Claude Opus 5
+        name: scitrace · Claude Opus 5
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-opus-5-5
-        name: Claude Opus 5.5
+        name: scitrace · Claude Opus 5.5
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-sonnet-4-5
-        name: Claude Sonnet 4.5
+        name: scitrace · Claude Sonnet 4.5
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 64000
       - id: claude-sonnet-4-5-20250929
-        name: Claude Sonnet 4.5
+        name: scitrace · Claude Sonnet 4.5
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 64000
       - id: claude-sonnet-4-6
-        name: Claude Sonnet 4.6
+        name: scitrace · Claude Sonnet 4.6
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
         maxTokens: 128000
       - id: claude-sonnet-5
-        name: Claude Sonnet 5
+        name: scitrace · Claude Sonnet 5
         reasoning: true
         input: [text, image]
         contextWindow: 1000000
@@ -155,61 +155,61 @@ providers:
     api: openai-responses
     models:
       - id: gpt-5.4-mini
-        name: GPT-5.4 mini
+        name: sci-plus · GPT-5.4 mini
         reasoning: true
         input: [text, image]
         contextWindow: 400000
         maxTokens: 128000
       - id: gpt-5.5
-        name: GPT-5.5
+        name: sci-plus · GPT-5.5
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6
-        name: GPT-5.6
+        name: sci-plus · GPT-5.6
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-luna
-        name: GPT-5.6 Luna
+        name: sci-plus · GPT-5.6 Luna
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-sol
-        name: GPT-5.6 Sol
+        name: sci-plus · GPT-5.6 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-terra
-        name: GPT-5.6 Terra
+        name: sci-plus · GPT-5.6 Terra
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6-astra
-        name: GPT-6 Astra
+        name: sci-plus · GPT-6 Astra
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6-luna
-        name: GPT-6 Luna
+        name: sci-plus · GPT-6 Luna
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6-sol
-        name: GPT-6 Sol
+        name: sci-plus · GPT-6 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6.1-sol
-        name: GPT-6.1 Sol
+        name: sci-plus · GPT-6.1 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
@@ -220,67 +220,67 @@ providers:
     api: openai-responses
     models:
       - id: gpt-5.2
-        name: GPT-5.2
+        name: sci-pro-special · GPT-5.2
         reasoning: true
         input: [text, image]
         contextWindow: 400000
         maxTokens: 128000
       - id: gpt-5.3-codex-spark
-        name: GPT-5.3 Codex Spark
+        name: sci-pro-special · GPT-5.3 Codex Spark
         reasoning: true
         input: [text, image]
         contextWindow: 128000
         maxTokens: 32000
       - id: gpt-5.4
-        name: GPT-5.4
+        name: sci-pro-special · GPT-5.4
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.4-mini
-        name: GPT-5.4 mini
+        name: sci-pro-special · GPT-5.4 mini
         reasoning: true
         input: [text, image]
         contextWindow: 400000
         maxTokens: 128000
       - id: gpt-5.5
-        name: GPT-5.5
+        name: sci-pro-special · GPT-5.5
         reasoning: true
         input: [text, image]
         contextWindow: 260000
         maxTokens: 128000
       - id: gpt-5.6
-        name: GPT-5.6
+        name: sci-pro-special · GPT-5.6
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-luna
-        name: GPT-5.6 Luna
+        name: sci-pro-special · GPT-5.6 Luna
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-5.6-sol
-        name: GPT-5.6 Sol
+        name: sci-pro-special · GPT-5.6 Sol
         reasoning: true
         input: [text, image]
         contextWindow: 920000
         maxTokens: 128000
       - id: gpt-5.6-terra
-        name: GPT-5.6 Terra
+        name: sci-pro-special · GPT-5.6 Terra
         reasoning: true
         input: [text, image]
         contextWindow: 920000
         maxTokens: 128000
       - id: gpt-6
-        name: GPT-6
+        name: sci-pro-special · GPT-6
         reasoning: true
         input: [text, image]
         contextWindow: 1050000
         maxTokens: 128000
       - id: gpt-6-astra
-        name: GPT-6 Astra
+        name: sci-pro-special · GPT-6 Astra
         reasoning: true
         input: [text, image]
         contextWindow: 920000
@@ -291,109 +291,109 @@ providers:
     api: openai-responses
     models:
       - id: gemini-3.1-pro-high
-        name: Gemini 3.1 Pro High
+        name: gemini · Gemini 3.1 Pro High
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.1-pro-low
-        name: Gemini 3.1 Pro Low
+        name: gemini · Gemini 3.1 Pro Low
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.7-flash-high
-        name: Gemini 3.7 Flash High
+        name: gemini · Gemini 3.7 Flash High
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.7-flash-medium
-        name: Gemini 3.7 Flash Medium
+        name: gemini · Gemini 3.7 Flash Medium
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.7-flash-low
-        name: Gemini 3.7 Flash Low
+        name: gemini · Gemini 3.7 Flash Low
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.6-flash-high
-        name: Gemini 3.6 Flash High
+        name: gemini · Gemini 3.6 Flash High
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.6-flash-medium
-        name: Gemini 3.6 Flash Medium
+        name: gemini · Gemini 3.6 Flash Medium
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.6-flash-low
-        name: Gemini 3.6 Flash Low
+        name: gemini · Gemini 3.6 Flash Low
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.6-flash-tiered
-        name: Gemini 3.6 Flash Tiered
+        name: gemini · Gemini 3.6 Flash Tiered
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.1-flash-lite
-        name: Gemini 3.1 Flash Lite
+        name: gemini · Gemini 3.1 Flash Lite
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-2.5-flash
-        name: Gemini 2.5 Flash
+        name: gemini · Gemini 2.5 Flash
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-2.5-flash-lite
-        name: Gemini 2.5 Flash Lite
+        name: gemini · Gemini 2.5 Flash Lite
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-2.5-flash-thinking
-        name: Gemini 2.5 Flash Thinking
+        name: gemini · Gemini 2.5 Flash Thinking
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3-flash
-        name: Gemini 3 Flash
+        name: gemini · Gemini 3 Flash
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.5-flash-lite
-        name: Gemini 3.5 Flash Lite
+        name: gemini · Gemini 3.5 Flash Lite
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.8-flash-high
-        name: Gemini 3.8 Flash High
+        name: gemini · Gemini 3.8 Flash High
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.8-flash-low
-        name: Gemini 3.8 Flash Low
+        name: gemini · Gemini 3.8 Flash Low
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
         maxTokens: 65536
       - id: gemini-3.8-flash-medium
-        name: Gemini 3.8 Flash Medium
+        name: gemini · Gemini 3.8 Flash Medium
         reasoning: true
         input: [text, image]
         contextWindow: 1048576
@@ -403,24 +403,42 @@ providers:
     apiKey: @GLM_KEY@
     api: openai-completions
     models:
+      # name 带 provider 前缀：omp 状态栏只显示 name，不加前缀看不出是哪个 provider
       - id: glm-5.3
-        name: GLM 5.3
+        name: glm · GLM 5.3
         reasoning: true
         input: [text, image]
         contextWindow: 917504
         maxTokens: 131072
       - id: glm-5.3-flash
-        name: GLM 5.3 Flash
+        name: glm · GLM 5.3 Flash
         reasoning: true
         input: [text, image]
         contextWindow: 917504
         maxTokens: 131072
       - id: glm-5.2
-        name: GLM 5.2
+        name: glm · GLM 5.2
         reasoning: true
         input: [text]
         contextWindow: 1000000
         maxTokens: 131072
+  deepseek:
+    baseUrl: https://api.deepseek.com
+    apiKey: @DEEPSEEK_KEY@
+    api: openai-completions
+    models:
+      - id: deepseek-flash
+        name: deepseek · DeepSeek V4.1 Flash 1017
+        reasoning: true
+        input: [text, image]
+        contextWindow: 1000000
+        maxTokens: 384000
+      - id: deepseek-v4-pro
+        name: deepseek · DeepSeek V4 Pro
+        reasoning: true
+        input: [text]
+        contextWindow: 1048576
+        maxTokens: 393216
   # newapi 中转通道；baseUrl 必须带 /v1（omp 请求路径不含版本前缀）
   newapi:
     baseUrl: https://newapi.samuka007.top/v1
@@ -428,46 +446,107 @@ providers:
     api: openai-completions
     models:
       - id: deepseek-v4-pro
-        name: DeepSeek V4 Pro
+        name: newapi · DeepSeek V4 Pro
         reasoning: true
         input: [text]
         contextWindow: 1000000
         maxTokens: 393216
       - id: deepseek-v4.1-flash
-        name: DeepSeek V4.1 Flash
+        name: newapi · DeepSeek V4.1 Flash
         reasoning: true
         input: [text]
         contextWindow: 1000000
         maxTokens: 393216
       - id: glm-5.3
-        name: GLM 5.3
+        name: newapi · GLM 5.3
         reasoning: true
         input: [text, image]
         contextWindow: 917504
         maxTokens: 131072
       - id: glm-5.3-flash
-        name: GLM 5.3 Flash
+        name: newapi · GLM 5.3 Flash
         reasoning: true
         input: [text, image]
         contextWindow: 917504
         maxTokens: 131072
       - id: kimi-k3.1-pro
-        name: Kimi K3.1 Pro
+        name: newapi · Kimi K3.1 Pro
         reasoning: true
         input: [text]
       - id: kimi-k2.7-code
-        name: Kimi K2.7 Code
+        name: newapi · Kimi K2.7 Code
         reasoning: true
         input: [text]
       - id: qwen3.8-max
-        name: Qwen3.8 Max
+        name: newapi · Qwen3.8 Max
         reasoning: true
         input: [text]
       - id: qwen3.7-max
-        name: Qwen3.7 Max
+        name: newapi · Qwen3.7 Max
         reasoning: true
         input: [text]
       - id: MiniMax-M3
-        name: MiniMax M3
+        name: newapi · MiniMax M3
         reasoning: true
         input: [text]
+  # 官方 OAuth 通道只覆盖显示名，保留内置认证、端点与模型能力。
+  anthropic:
+    modelOverrides:
+      claude-fable-5:
+        name: anthropic · Claude Fable 5
+      claude-fable-5-1:
+        name: anthropic · Claude Fable 5.1
+      claude-haiku-4-5:
+        name: anthropic · Claude Haiku 4.5
+      claude-haiku-4-5-20251001:
+        name: anthropic · Claude Haiku 4.5
+      claude-haiku-5-5:
+        name: anthropic · Claude Haiku 5.5
+      claude-mythos-5:
+        name: anthropic · Claude Mythos 5
+      claude-mythos-5-1:
+        name: anthropic · Claude Mythos 5.1
+      claude-opus-4-5:
+        name: anthropic · Claude Opus 4.5
+      claude-opus-4-5-20251101:
+        name: anthropic · Claude Opus 4.5
+      claude-opus-4-6:
+        name: anthropic · Claude Opus 4.6
+      claude-opus-4-7:
+        name: anthropic · Claude Opus 4.7
+      claude-opus-4-8:
+        name: anthropic · Claude Opus 4.8
+      claude-opus-5:
+        name: anthropic · Claude Opus 5
+      claude-opus-5-5:
+        name: anthropic · Claude Opus 5.5
+      claude-sonnet-4-5:
+        name: anthropic · Claude Sonnet 4.5
+      claude-sonnet-4-5-20250929:
+        name: anthropic · Claude Sonnet 4.5
+      claude-sonnet-4-6:
+        name: anthropic · Claude Sonnet 4.6
+      claude-sonnet-5:
+        name: anthropic · Claude Sonnet 5
+      claude-sonnet-5-5:
+        name: anthropic · Claude Sonnet 5.5
+  openai-codex:
+    modelOverrides:
+      gpt-5.6-luna:
+        name: openai-codex · GPT-5.6 Luna
+      gpt-5.6-sol:
+        name: openai-codex · GPT-5.6 Sol
+      gpt-5.6-terra:
+        name: openai-codex · GPT-5.6 Terra
+      gpt-6-astra:
+        name: openai-codex · GPT-6 Astra
+      gpt-6-luna:
+        name: openai-codex · GPT-6 Luna
+      gpt-6-sol:
+        name: openai-codex · GPT-6 Sol
+      gpt-6.1-sol:
+        name: openai-codex · GPT-6.1 Sol
+      gpt-6.1-terra:
+        name: openai-codex · GPT-6.1 Terra
+      gpt-daybreak-blue-latest:
+        name: openai-codex · GPT Daybreak Blue
