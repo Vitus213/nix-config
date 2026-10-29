@@ -551,8 +551,9 @@ providers:
       gpt-daybreak-blue-latest:
         name: openai-codex · GPT Daybreak Blue
   # Magpie 独立管理上游与路由；OMP 只读取网关当前目录。
+  # 地址按本机 hostname 由 omp-sync.py 选择：Athena（网关所在机）用回环，其余客户端用 Athena 局域网地址。
   magpie:
-    baseUrl: http://192.168.100.11:3425/v1
+    baseUrl: @MAGPIE_BASE_URL@
     api: openai-completions
     apiKey: @MAGPIE_KEY@
     headers:

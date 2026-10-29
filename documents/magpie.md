@@ -14,12 +14,12 @@ WebKit。Apollo、Artemis 的 OMP 只作为客户端连接它，不各自再跑�
 - `hosts/olympians-athena/default.nix`：`linger` 与防火墙放行 `3425`。
 - `home/base/core/omp-models.yml.in`：各客户端的 `magpie` provider。
 
-| 项目     | 值                                              |
-| -------- | ----------------------------------------------- |
-| 网关地址 | `http://192.168.100.11:3425/v1`                 |
-| 管理页面 | `127.0.0.1:3430`（仅 Athena 本机，走 SSH 隧道） |
-| 鉴权     | 局域网请求必须带 Magpie 网关 key                |
-| 状态目录 | `/home/vitus/.config/magpie`（Athena）          |
+| 项目     | 值                                                                                 |
+| -------- | ---------------------------------------------------------------------------------- |
+| 网关地址 | Athena 本机 `http://127.0.0.1:3425/v1`；其他客户端 `http://192.168.100.11:3425/v1` |
+| 管理页面 | `127.0.0.1:3430`（仅 Athena 本机，走 SSH 隧道）                                    |
+| 鉴权     | 局域网请求必须带 Magpie 网关 key；回环免 key                                       |
+| 状态目录 | `/home/vitus/.config/magpie`（Athena）                                             |
 
 服务以 `vitus` 用户级 systemd unit 运行，已 `enable` 且
 `linger=yes`，不依赖 SSH 或图形登录会话。`MAGPIE_ADDR=0.0.0.0:3425`
@@ -31,7 +31,7 @@ WebKit。Apollo、Artemis 的 OMP 只作为客户端连接它，不各自再跑�
 
 ```yaml
 magpie:
-  baseUrl: http://192.168.100.11:3425/v1
+  baseUrl: @MAGPIE_BASE_URL@
   api: openai-completions
   apiKey: @MAGPIE_KEY@
   headers:
@@ -42,8 +42,16 @@ magpie:
     type: openai-models-list
 ```
 
-网关 key 存在 agenix `omp-keys.age` 的 `magpie:` 行，占位符 `@MAGPIE_KEY@`，由 `omp-sync.py`
-注入；模板与仓库都不含明文。
+`@MAGPIE_BASE_URL@` 由 `omp-sync.py` 按本机 hostname 决定（忽略域名后缀与大小写）：`athena` 用
+`http://127.0.0.1:3425/v1`，其他主机用 `http://192.168.100.11:3425/v1`。网关 key 存在 agenix
+`omp-keys.age` 的 `magpie:` 行，占位符 `@MAGPIE_KEY@`，由 `omp-sync.py` 注入；模板与仓库都不含明文。
+
+**为什么 Athena 必须用回环**：Magpie 只对回环请求免 key， `0.0.0.0:3425`
+上的非回环来源一律要求 caller key。而 Magpie 自己的 agent sync（`internal/agent/omp.go` 的
+`ompProviderAt`）只在目标地址被判定为"另一台机器"时才写
+`apiKey`；Athena 自己的 LAN 地址不算，于是它会写 `auth: none`
+却保留 LAN 地址，生成的配置被自家网关 401 拒绝。让 Athena 用回环后 `auth: none`
+与地址一致，`magpie sync` 无论写 key 还是写回 `auth: none` 都能正常推理。
 
 ```sh
 omp models refresh magpie           # 目录或路由变更后
@@ -66,7 +74,8 @@ magpie gateway-key list
 
 Apollo 的 `~/.omp/agent/models.yml` 中，`magpie.baseUrl` 为
 `http://192.168.100.11:3425/v1`，使用现有 gateway key 和 `openai-models-list` 发现。Apollo 不能用
-`127.0.0.1:3425` 连接 Athena；该地址代表 Apollo 自己。
+`127.0.0.1:3425` 连接 Athena；该地址代表 Apollo 自己。Athena 本机相反：用 `127.0.0.1:3425`
+（回环免 key），模板由 hostname 自动区分。
 
 OMP 18.13.1 的 `enabledModels` 使用 Bun 路径 glob，`*` 不跨 `/`。`magpie/*` 无法匹配
 `magpie/auto/gpt-6.1-sol`，也无法匹配 `magpie/group/sol-any`。修复为：
@@ -233,3 +242,24 @@ key 可列出目录并完成真实推理；不带 key 返回 401。`omp models m
 
 回滚：从 `hosts/olympians-athena/home.nix` 移除该导入与 `linger`/防火墙声明，停用 Athena
 unit；确认备份后再删 `~/.config/magpie`。
+
+### 已知上游缺陷：agent sync 写出免鉴权地址却要求 key（0.1.1846）
+
+症状：Athena 本机 OMP 调用 `magpie/auto/gpt-6.1-sol` 稳定返回 `401 no API key was sent`，而同一网关
+`127.0.0.1:3425` 无 key 可用。
+
+根因在 Magpie 自己的 OMP 接线，不在 OMP 或密钥：
+
+- `internal/agent/omp.go` 的 `ompProviderAt` 无条件先写 `auth: none`，仅当
+  `keyAt(gw) != gateway.Token` 时才改写成 `apiKey`。
+- `keyAt`（`gatewaykey.go`）只在 `onAnotherMachine(gw)` 成立时返回 LAN
+  key。网关所在机写自己的 LAN 地址（`192.168.100.11`）不算“另一台机器”，于是保留 `auth: none`。
+- 网关对 `0.0.0.0:3425` 上的非回环来源一律要求 caller key，生成的配置因此被自家网关拒绝。
+
+复现（隔离 HOME，`HOME=/tmp/magpie-repro/home`，不触碰运行配置）：用带 `apiKey` 的副本执行
+`magpie sync`，4 秒内被改写为 `auth: none` 且保留 LAN 地址；仅把地址改为 `127.0.0.1` 后 `auth: none`
+才是有效组合，同副本推理成功。
+
+本项目规避方式：模板用 `@MAGPIE_BASE_URL@`，Athena 渲染回环地址，其他客户端渲染 LAN 地址（见
+[omp 模型配置](./omp-models.md#magpie-共享网关)）。上游修复前，若把 Athena 的 `magpie.baseUrl`
+改回自己的 LAN 地址，`magpie sync` 会在下次启动或 sync 时删掉 key，401 复发。

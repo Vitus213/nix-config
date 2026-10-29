@@ -4,6 +4,25 @@
 
 ## 2026-10-29
 
+### Magpie 网关地址按主机区分，修复 Athena 本机 401
+
+- 影响范围：`~/.omp/agent/models.yml` 的 `magpie`
+  provider 地址；Athena 本机 OMP 请求 Magpie 时的鉴权。
+- 配置入口：`home/base/core/omp-models.yml.in`、`home/base/core/omp-sync.py`、
+  `home/base/core/test_omp_sync.py`。
+- 变更内容：模板地址改为 `@MAGPIE_BASE_URL@`，由 `omp-sync.py` 按 hostname 渲染：`athena` 用
+  `http://127.0.0.1:3425/v1`，其余主机（Apollo、Artemis）保持
+  `http://192.168.100.11:3425/v1`。根因是 Magpie 0.1.1846 的 agent
+  sync 只在目标地址被判定为另一台机器时才写 `apiKey`；Athena 写自己的 LAN 地址时会被改写成
+  `auth: none` + LAN 地址，而网关对非回环来源要求 caller
+  key，因此稳定 401。生成器同时改为可导入的函数结构，并补充地址选择回归测试。
+- 验证方式：`python3 home/base/core/test_omp_sync.py`
+  通过；将地址选择回退为固定 LAN 地址时 2 个测试失败、恢复后通过；Athena 重生成后
+  `omp -p --model magpie/auto/gpt-6.1-sol` 返回 `FIXED_401_OK`，`magpie sync`
+  重写 provider 块后同一推理仍返回 `POST_SYNC_OK`。
+- 关联文档：[omp 模型配置](./omp-models.md#magpie-共享网关)、
+  [Magpie 共享模型网关](./magpie.md#当前配置)。
+
 ### 三机仓库拉齐并完成原生构建与系统切换
 
 - 影响范围：Apollo、Athena、Artemis 的 nix-config / my-secrets checkout 与已激活系统。

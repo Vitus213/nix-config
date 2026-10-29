@@ -81,9 +81,13 @@ GPT 中转路由。语义依据：[OMP 18.13.1 重试策略](https://github.com/
 
 ## Magpie 共享网关
 
-Athena 上的单一 Magpie 实例独立管理上游、账号和路由；OMP 模板只声明 `magpie` provider，连接
-`http://192.168.100.11:3425/v1`，用 `apiKey: @MAGPIE_KEY@` 与 `discovery.type: openai-models-list`
+Athena 上的单一 Magpie 实例独立管理上游、账号和路由；OMP 模板只声明 `magpie` provider，地址写
+`@MAGPIE_BASE_URL@` 占位符，用 `apiKey: @MAGPIE_KEY@` 与 `discovery.type: openai-models-list`
 动态读取目录，不复制模型清单或上游 key。
+
+`@MAGPIE_BASE_URL@` 由 `omp-sync.py` 按 hostname 渲染：`athena` 得
+`http://127.0.0.1:3425/v1`（网关所在机，回环免 key），Apollo、Artemis 等客户端得
+`http://192.168.100.11:3425/v1`。
 
 `@MAGPIE_KEY@` 来自 `omp-keys.age` 的 `magpie:` 行，由 `omp-sync.py`
 注入，缺失时拒绝生成。Apollo、Artemis 共用同一把网关 key；各机 `.omp/agent/config.yml` 增量加入
@@ -92,7 +96,11 @@ Athena 上的单一 Magpie 实例独立管理上游、账号和路由；OMP 模�
 
 目录或路由变更后运行 `omp models refresh magpie`，选择器形如
 `magpie/newapi/deepseek-v4.1-flash`。回环 `127.0.0.1`
-只对网关所在机器有效，客户端必须用 Athena 的局域网地址。
+只对网关所在机器有效；Athena 用回环，其他客户端必须用 Athena 的局域网地址。
+
+Athena 之所以用回环而非自己的 LAN 地址：Magpie agent sync 判定目标为“另一台机器”时才写
+`apiKey`，写自己的 LAN 地址会生成 `auth: none` + LAN 地址的无效组合，被网关以 401 拒绝（证据与复现见
+[Magpie 共享模型网关](./magpie.md#当前配置)）。
 
 网关 key 轮换、备份与已知限制见 [Magpie 共享模型网关](./magpie.md)。
 
