@@ -88,13 +88,16 @@ Athena 上的单一 Magpie 实例独立管理上游、账号和路由；OMP 模�
 `@MAGPIE_KEY@` 来自 `omp-keys.age` 的 `magpie:` 行，由 `omp-sync.py`
 注入，缺失时拒绝生成。Apollo、Artemis 共用同一把网关 key；各机 `.omp/agent/config.yml` 增量加入
 `modelProviderOrder: [..., magpie]` 与
-`enabledModels: [..., magpie/*]`。原有 provider、OAuth 登录、默认角色和用户自己的 retry 调整保持不变。
+`enabledModels: [..., magpie/**]`。原有 provider、OAuth 登录、默认角色和用户自己的 retry 调整保持不变。
 
 目录或路由变更后运行 `omp models refresh magpie`，选择器形如
 `magpie/newapi/deepseek-v4.1-flash`。回环 `127.0.0.1`
 只对网关所在机器有效，客户端必须用 Athena 的局域网地址。
 
 网关 key 轮换、备份与已知限制见 [Magpie 共享模型网关](./magpie.md)。
+
+当前 Sol 三路与 Auto 组的共同工作窗口为 500K，Codex 优先、`stays=auto`。500K 是保守工作预算，不是实测硬上限；Codex 已验证 528147-token 输入，SCI 两路容量测试因小请求 EOF 阻塞。具体计数口径、已验证范围和旧会话处理见
+[Sol 共同窗口实测](./magpie.md#sol-共同工作窗口与实测边界2026-10-29)。
 
 ## 新增 provider / 模型（标准流程）
 

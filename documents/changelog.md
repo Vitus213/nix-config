@@ -73,6 +73,19 @@
   仅更新 mysecrets 节点，文档格式与拼写检查通过。本次未重复切换系统。
 - 关联文档：[Secrets 的 private 仓库约定](../secrets/README.md#private-secrets-仓库)。
 
+### Sol 路由统一 500K 工作预算并保持 Codex 优先
+
+- 影响范围：Athena 的 Magpie 三条 Sol 通道及 Auto 组；三台 OMP 的发现目录；两条 SCI
+  Sol 的模板定义。未改密钥包、其他型号、默认角色或正在运行的用户会话。
+- 配置入口：Magpie `model context` / `group set`，`home/base/core/omp-models.yml.in`。
+- 变更内容：三路工作窗口统一 500000，输出上限不变；Auto 为 codex → sci-openai →
+  sci-plus 的 order 路由，`stays=auto`。同步改正嵌套模型 ID 白名单示例。
+- 验证方式：Codex 上游报告 528147 输入 token 的请求完成，首中尾标记正确；约 1M 正文返回上下文超限。SCI 两路小请求均 EOF
+  /
+  502，容量测试受阻，未声称测得其硬上限。配置后 Auto 经 Codex 成功，三台普通新 OMP 选择器均显示 500K；500K 是运行预算而非精确硬上限。探针与临时会话清理，未执行系统切换。
+- 关联文档：[共同窗口与实测记录](./magpie.md#sol-共同工作窗口与实测边界2026-10-29)、
+  [OMP 共享网关](./omp-models.md#magpie-共享网关)。
+
 ## 2026-10-28
 
 ### athena 持久提供 BoxLite 开发工具链

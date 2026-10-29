@@ -84,10 +84,9 @@ Group 没有对应规则。这不是发现失败，也不需要开启特殊运�
 与 [Bun glob 语义](https://bun.com/docs/runtime/glob#supported-glob-patterns)。
 
 使用时重开普通 `omp` 会话，输入 `/model`，搜索 `auto/gpt-6.1-sol`；完整选择器为
-`magpie/auto/gpt-6.1-sol`。它使用 Magpie 的 smart 路由组，候选为 sci-openai、sci-plus、codex；
-`magpie/group/sol-any` 则是 codex → sci-openai → sci-plus 的 order 路由。`auto`
-是网关模型 ID 的一部分，与 OMP 的 `--thinking auto`
-无关。旧会话启动时已固定模型范围，F5 不能重建该范围。
+`magpie/auto/gpt-6.1-sol` 当前使用 order 路由：codex → sci-openai → sci-plus，`stays=auto`；
+`magpie/group/sol-any` 是另一组独立的 order 路由。`auto` 是网关模型 ID 的一部分，与 OMP 的
+`--thinking auto` 无关。旧会话启动时已固定模型范围，F5 不能重建该范围。
 
 本次实际验收：
 
@@ -124,6 +123,41 @@ omp models refresh magpie
 
 实际开关复验：关闭 Claude 订阅条目后，网关目录与 Apollo、Athena 两台新 TUI 的 Magpie 分组均为 25 项，逐项模型 ID 完全一致，`magpie/claude/*`
 均不存在。此数量只是当时的开关快照，不是固定目标；后续以 Magpie 当前目录为准。其他 OMP 直连 provider 与 Magpie 是独立入口，不受 Magpie 的开关控制，本次未删除它们或改变默认角色。
+
+### Sol 共同工作窗口与实测边界（2026-10-29）
+
+Athena 上三条 `gpt-6.1-sol` 通道统一声明 `500000` 的工作窗口，输出上限保留
+`128000`。这是一致、保守的客户端预算，不是“实测硬上限恰好 500K”。自动组保留 Codex 优先的 order 及
+`stays=auto`，按以下命令设置，不改账号、key、默认角色或其他型号：
+
+```sh
+magpie model context codex/gpt-6.1-sol 500000
+magpie model context sci-openai/gpt-6.1-sol 500000
+magpie model context sci-plus/gpt-6.1-sol 500000
+magpie group set auto/gpt-6.1-sol routing=order stays=auto models=codex/gpt-6.1-sol,sci-openai/gpt-6.1-sol,sci-plus/gpt-6.1-sol
+```
+
+容量探针使用合成数据，首、中、尾各放校验标记；以 `o200k_base`
+离线计数，再检查上游完成事件、usage 与三个标记，不把流式 HTTP
+200 本身当作成功，也不通过路由组替换测试上游。
+
+| 通道                  | 输入计数口径               | 结果                                     |
+| --------------------- | -------------------------- | ---------------------------------------- |
+| Codex                 | 上游报告 524143 token      | 完成，三个标记正确                       |
+| Codex                 | 上游报告 528147 token      | 完成，三个标记正确                       |
+| Codex                 | 离线正文 999981 token      | 拒绝：超出上下文窗口，未返回 input usage |
+| Codex                 | 离线正文 1059975 token     | 同上，未返回 input usage                 |
+| sci-openai / sci-plus | 各约 1027 token 的离线正文 | 两者均 EOF / 502，无法测量容量           |
+
+可确认 Codex 支持上述 528147-token 输入；未精确定位硬边界，不能用目录的 500K 或 SCI 原手工覆盖的 1050K 代替实测。SCI 的小请求尚不可用，本次没有声称其 500K 容量验证通过。其窗口从旧覆盖值降低到共同工作预算；网关故障仍需上游恢复，改变窗口不会修复 EOF。
+
+配置后 Auto 小请求实际只尝试 Codex 并成功；三台刷新目录后，新普通 OMP 的 `/model`
+均显示该组为 500K。直连 SCI 的模板中仅两条 Sol `contextWindow`
+回填为 500000，其余型号能力不变。Magpie 设置保存在 Athena 可写状态，生效不需要系统 rebuild；模板增量随正常部署更新安装的同步命令，勿用尚未更新的 store 模板回退直连设置。
+
+已有约 70 万 token 的历史不会自动变短，也不会自动换掉旧会话的预算；继续前需完成上下文压缩或新开会话接续任务，再选择同一 Auto 组。本次未操作用户正在运行的 Boxlite 会话。恢复原预算时，SCI 两条可设回 1050000，Codex 用
+`magpie model context codex/gpt-6.1-sol --reset`
+移除本次覆盖，然后刷新各客户端并重开会话；这只恢复旧配置，不代表旧数值已验证。
 
 ChatGPT/Codex 订阅不等于 OpenAI
 API 余额。Magpie 使用订阅凭据访问对应后端，可用模型、额度与授权范围由订阅及上游决定；第三方工具支持不构成上游授权保证。固定版本的
