@@ -10,7 +10,7 @@
 - 配置入口：统一配置提交 `28270764`、`flake.lock` 的 mysecrets 节点，以及三台主机入口。
 - 变更内容：合并 Apollo 原有未提交的单实例网关部署增量并保留 stash
   / 密文备份；三台均 pull 同一版本，密钥包锁定
-  `0ad61861317f47035109015b1cfc4f72088893b8`。恢复私钥从 my-secrets 当前跟踪中移除并忽略，原机私有副本保留，不重写旧历史。
+  `0ad61861317f47035109015b1cfc4f72088893b8`。该次取消主私钥跟踪的改动已按用户约定恢复，见同日恢复记录。
 - 验证方式：三台原生 build 与最终 switch 均成功；解决 Athena 手工自启链接阻挡 Home
   Manager 接管的问题。切换后六方向独立公钥 SSH、三台普通 OMP 选择器逐项对齐、三台经共享 Auto 路由真实推理全部通过；agenix 均加载包含 Magpie
   key 的 9 个密钥条目。
@@ -61,6 +61,17 @@
   `magpie/auto/glm-5.3-flash` 返回 `MAGPIE_OK`（低思考档 `THE_OK`）、 `magpie/codex/gpt-6.1-sol`
   返回 `CODEX_VIA_MAGPIE_OK`，OMP 日志 provider=magpie；局域网带 key 可用、无 key 401。
 - 关联文档：[Magpie 本地模型网关](./magpie.md)、[OMP 模型配置管理](./omp-models.md)。
+
+### 恢复 private my-secrets 仓库的主私钥跟踪约定
+
+- 影响范围：my-secrets 的 `master_key` 跟踪规则与三台 checkout；nix-config 的 mysecrets 锁定。
+- 配置入口：my-secrets `master_key` / `README.md`、`flake.lock`、`secrets/README.md`。
+- 变更内容：按用户既有约定，恢复 `master_key` 的 Git 跟踪，移除新增的忽略规则并发布
+  `864b767410d5b6299aae05e18dd5521f09ff139d`；三台正常同步，私钥工作文件 `0600`，仓库目录
+  `0700`。不重新生成、轮换私钥，也不修改 `.age` 密文、provider key 或 SSH 配置。
+- 验证方式：恢复的私钥 Git blob 与取消跟踪前相同；三台确认已跟踪、版本一致、权限正确； `flake.lock`
+  仅更新 mysecrets 节点，文档格式与拼写检查通过。本次未重复切换系统。
+- 关联文档：[Secrets 的 private 仓库约定](../secrets/README.md#private-secrets-仓库)。
 
 ## 2026-10-28
 

@@ -48,10 +48,10 @@ jq '.nodes.mysecrets.locked' flake.lock
 
 不要在本仓库文档或提交信息中写入 secret 明文、token、私钥内容或解密后的文件内容。
 
-`master_key` 是本机保留的恢复私钥，不属于可同步仓库内容。当前私有仓库已将它从 Git 当前版本移除并加入
-`.gitignore`；已有机器保留原私有副本，权限
-`0600`。新机器只接收密文和公开 metadata，不复制恢复私钥或其他设备私钥。旧 Git 历史仍可能包含此前误跟踪的私钥；这次统一不重写历史、不自动轮换恢复钥匙，新 checkout 使用不含私钥的安全 HEAD 浅克隆。Nix 的
-`mysecrets` input 必须锁定该安全版本，避免继续把私钥作为 flake 源码放进 store。
+`master_key`
+是 my-secrets 的主恢复私钥，按用户约定由这个 private 仓库正常跟踪和同步，用于兜底解密与 rekey；不要擅自取消跟踪或加入
+`.gitignore`。工作文件权限保持 `0600`，仓库目录保持
+`0700`。不得把私钥正文写进 nix-config、公开文档、聊天或日志；恢复跟踪不重新生成或轮换现有钥匙。
 
 当前 `agenix 0.15.0` 在非交互 stdin 下执行 `agenix -r` 时，会把 `EDITOR` 设为
 `cp -- /dev/stdin`。如果 stdin 为空，它会把已解密明文覆盖为空文件后再加密。rekey 前必须确认命令在真正交互式 TTY 中执行，或者改用显式临时明文加
