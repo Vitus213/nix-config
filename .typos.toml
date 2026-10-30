@@ -48,3 +48,6 @@ extend-ignore-re = [
 
 [default.extend-words]
 ist = "ist"
+# SPA（PipeWire）buffer 真实字段名
+datas = "datas"
+n_datas = "n_datas"

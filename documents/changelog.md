@@ -4,18 +4,29 @@
 
 ## 2026-10-30
 
+### wemeet 采集库 SPA 字段名修正
+
+- 问题：`overlays/wemeet` 纳入构建后，`wemeet-desktop-capture`
+  在 Athena 编译失败（`spa_buffer has no member named 'data'`），阻塞整台主机 rebuild。
+- 根因：`capture-session.hpp`/`capture-gpu.hpp` 中 SPA 0.3 buffer 字段误写为单数
+  `data`/`n_data`，正确字段为 `datas`/`n_datas`；共 8 处。
+- 处理：按 SPA 0.3 API 修正字段名；修正后与此前实测验证的采集库产物一致（输出路径 `bzcsv…`
+  缓存命中）。
+- 验证：`nix build` capture 派生通过；Athena `nixos-rebuild switch` 成功。
+- 关联文档：[Linux 腾讯会议](./tencent-meeting.md)。
+
 ### Magpie deepseek 上游更换官方 key 并对齐上下文声明
 
-- 影响范围：Athena 上 Magpie 网关的 `deepseek` 上游（`~/.config/magpie/providers.json`，CLI 管理）；
-  其余 8 个上游、路由组、网关 key 与各客户端 OMP 配置不变。
+- 影响范围：Athena 上 Magpie 网关的 `deepseek`
+  上游（`~/.config/magpie/providers.json`，CLI 管理）；其余 8 个上游、路由组、网关 key 与各客户端 OMP 配置不变。
 - 配置入口：`magpie provider key deepseek`、`magpie model context`（Athena 本机状态，不进 Git）。
-- 变更内容：原 key（尾号 `1d04`，余额仅 0.96 CNY）更换为新官方 key（尾号 `b370`，
-  充值余额 99 USD）；`deepseek/deepseek-flash` 上下文从手工 1000000 对齐为官方 1048576。
-  上游仍为 `https://api.deepseek.com`，模型 `deepseek-flash`、`deepseek-v4-pro` 不变，
-  `auto-deepseek-v4-pro` 路由组无需改动。
-- 验证方式：`magpie provider test deepseek` 通过；经网关回环真实推理
-  `deepseek/deepseek-flash` 返回 `GW_FLASH_OK`、`deepseek/deepseek-v4-pro` 返回
-  `GW_PRO_OK`；新 key 官方余额接口确认 $99.49 → $99.37，扣费发生在新账户。
+- 变更内容：原 key（尾号 `1d04`，余额仅 0.96 CNY）更换为新官方 key（尾号 `b370`，充值余额 99
+  USD）；`deepseek/deepseek-flash` 上下文从手工 1000000 对齐为官方 1048576。上游仍为
+  `https://api.deepseek.com`，模型 `deepseek-flash`、`deepseek-v4-pro` 不变， `auto-deepseek-v4-pro`
+  路由组无需改动。
+- 验证方式：`magpie provider test deepseek` 通过；经网关回环真实推理 `deepseek/deepseek-flash` 返回
+  `GW_FLASH_OK`、`deepseek/deepseek-v4-pro` 返回 `GW_PRO_OK`；新 key 官方余额接口确认 $99.49 →
+  $99.37，扣费发生在新账户。
 - 关联文档：[Magpie 共享模型网关](./magpie.md#上游与凭据)。
 
 ### 腾讯会议远端画面黑屏根因修复（Mesa EGL 厂商切换）

@@ -144,7 +144,7 @@ public:
   const std::vector<GpuFormat> &formats() const { return formats_; }
 
   bool read(const spa_buffer &buffer, const spa_video_info_raw &info, std::vector<uint8_t> &pixels, std::string &error) {
-    if (!program_ || !buffer.n_data || buffer.n_data > 4 || info.size.width > max_size_ || info.size.height > max_size_) {
+    if (!program_ || !buffer.n_datas || buffer.n_datas > 4 || info.size.width > max_size_ || info.size.height > max_size_) {
       error = "unsupported DMA-BUF plane count or dimensions";
       return false;
     }
@@ -159,8 +159,8 @@ public:
     constexpr EGLint pitch_keys[] = {EGL_DMA_BUF_PLANE0_PITCH_EXT, EGL_DMA_BUF_PLANE1_PITCH_EXT, EGL_DMA_BUF_PLANE2_PITCH_EXT, EGL_DMA_BUF_PLANE3_PITCH_EXT};
     constexpr EGLint lo_keys[] = {EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT, EGL_DMA_BUF_PLANE1_MODIFIER_LO_EXT, EGL_DMA_BUF_PLANE2_MODIFIER_LO_EXT, EGL_DMA_BUF_PLANE3_MODIFIER_LO_EXT};
     constexpr EGLint hi_keys[] = {EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT, EGL_DMA_BUF_PLANE1_MODIFIER_HI_EXT, EGL_DMA_BUF_PLANE2_MODIFIER_HI_EXT, EGL_DMA_BUF_PLANE3_MODIFIER_HI_EXT};
-    for (uint32_t i = 0; i < buffer.n_data; ++i) {
-      const auto &plane = buffer.data[i];
+    for (uint32_t i = 0; i < buffer.n_datas; ++i) {
+      const auto &plane = buffer.datas[i];
       if (plane.type != SPA_DATA_DmaBuf || plane.fd < 0 || plane.fd > std::numeric_limits<EGLint>::max() || !plane.chunk || plane.chunk->stride <= 0 ||
           uint64_t(plane.mapoffset) + plane.chunk->offset > std::numeric_limits<EGLint>::max()) {
         error = "invalid DMA-BUF plane layout";

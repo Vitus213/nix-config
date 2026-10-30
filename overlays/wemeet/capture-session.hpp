@@ -191,8 +191,8 @@ private:
   }
 
   bool copy_memory(const spa_buffer &buffer, std::vector<uint8_t> &pixels) {
-    if (buffer.n_data != 1) return false;
-    const auto &plane = buffer.data[0];
+    if (buffer.n_datas != 1) return false;
+    const auto &plane = buffer.datas[0];
     if ((plane.type != SPA_DATA_MemFd && plane.type != SPA_DATA_MemPtr) || !plane.data || !plane.chunk || !plane.maxsize) return false;
     const size_t row_bytes = size_t(info_.size.width) * 4;
     const size_t offset = plane.chunk->offset % plane.maxsize;
@@ -227,13 +227,13 @@ private:
     last_frame_ = now;
     auto *selected = std::exchange(pending_, nullptr);
     const auto &buffer = *selected->buffer;
-    if (!info_.size.width || !buffer.n_data || !buffer.data[0].chunk ||
-        (buffer.data[0].chunk->flags & (SPA_CHUNK_FLAG_CORRUPTED | SPA_CHUNK_FLAG_EMPTY))) {
+    if (!info_.size.width || !buffer.n_datas || !buffer.datas[0].chunk ||
+        (buffer.datas[0].chunk->flags & (SPA_CHUNK_FLAG_CORRUPTED | SPA_CHUNK_FLAG_EMPTY))) {
       pw_stream_queue_buffer(stream_, selected);
       return;
     }
     std::string error;
-    const bool dma = buffer.data[0].type == SPA_DATA_DmaBuf;
+    const bool dma = buffer.datas[0].type == SPA_DATA_DmaBuf;
     const bool copied = dma ? gpu_->read(buffer, info_, staging_, error) : copy_memory(buffer, staging_);
     if (copied) {
       std::lock_guard<std::mutex> lock(mutex_);
