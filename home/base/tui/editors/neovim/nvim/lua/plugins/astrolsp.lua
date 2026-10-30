@@ -91,7 +91,7 @@ return {
     -- customize language server configuration options passed to `lspconfig`
     ---@diagnostic disable: missing-fields
     config = {
-      -- the offset_encoding of clangd will confilicts whit null-ls
+      -- the offset_encoding of clangd will conflicts whit null-ls
       -- so we need to manually set it to utf-8
       clangd = {
         capabilities = {
