@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# 从大 index 往小移才会收敛：先固定 0other:10，再依次归位 9/8/7…，
+# 正序移动会把后面的工作区反复挤离目标位。
 workspace_order=(
-  "1terminal:1"
-  "2browser:2"
-  "3docs:3"
-  "4codex:4"
-  "5code:5"
-  "6chat:6"
-  "8music:8"
-  "9file:9"
   "0other:10"
+  "9file:9"
+  "8music:8"
+  "7misc:7"
+  "6chat:6"
+  "5code:5"
+  "4codex:4"
+  "3docs:3"
+  "2browser:2"
+  "1terminal:1"
 )
 
 for item in "${workspace_order[@]}"; do

@@ -4,25 +4,29 @@
 
 ## 当前工作区语义
 
-| 工作区      | 语义       | 自动进入的应用                                |
-| ----------- | ---------- | --------------------------------------------- |
-| `1terminal` | 终端       | `foot`、`Alacritty`、`Ghostty`                |
-| `2browser`  | 浏览器     | `Zen`、`Chrome`                               |
-| `3docs`     | 文档笔记   | `Obsidian`、`Apostrophe`、Notion、Linear      |
-| `4codex`    | Codex GUI  | `ChatGPT`、`Codex`、`Claude` 等 AI 图形客户端 |
-| `5code`     | 代码编辑器 | `VSCode`、`Cursor`、`Zed`                     |
-| `6chat`     | 聊天沟通   | `Slack`、`Telegram`、飞书、微信、QQ           |
-| `8music`    | 音乐       | QQ 音乐、网易云音乐                           |
-| `9file`     | 文件/阅读  | `Foliate`、`Dolphin`、`Sioyek`                |
-| `0other`    | 其他工具   | `FlClash`、`Zoom`、腾讯会议                   |
+| 工作区      | 语义       | 自动进入的应用                                                  |
+| ----------- | ---------- | --------------------------------------------------------------- |
+| `1terminal` | 终端       | `foot`、`footclient`（server 模式窗口）、`Alacritty`、`Ghostty` |
+| `2browser`  | 浏览器     | `Zen`、`Chrome`                                                 |
+| `3docs`     | 文档笔记   | `Obsidian`、`Apostrophe`、Notion、Linear                        |
+| `4codex`    | Codex GUI  | `ChatGPT`、`Codex`、`Claude` 等 AI 图形客户端                   |
+| `5code`     | 代码编辑器 | `VSCode`、`Cursor`、`Zed`                                       |
+| `6chat`     | 聊天沟通   | `Slack`、`Telegram`、飞书、微信、QQ                             |
+| `7misc`     | 空白暂存   | 无固定分配，临时窗口随手放                                      |
+| `8music`    | 音乐       | QQ 音乐、网易云音乐                                             |
+| `9file`     | 文件/阅读  | `Foliate`、`Dolphin`、`Sioyek`                                  |
+| `0other`    | 其他工具   | `FlClash`、`Zoom`、腾讯会议                                     |
 
 Niri 工作区名称使用小写，语义和 macOS AeroSpace 的 `1Terminal`、`2Browser`、`3Docs`、`4Codex`、
-`5Code`、`6Chat`、`8Music`、`0Other` 对齐。
+`5Code`、`6Chat`、`8Music`、`0Other` 对齐；`7misc` 是 Linux 端补充的空白暂存区，macOS
+AeroSpace 暂无对应项。
 
 Niri 是动态工作区模型，工作区的显示顺序不是静态编号。`niri msg workspaces`
 左侧的数字是当前运行时index，不是工作区名字里的数字。`niri msg windows` 里的 `Workspace ID`
 也是 Niri 内部 ID，不是显示序号；需要和 `niri msg -j workspaces` 里的 `id` 对照，显示顺序看
-`idx`。命名工作区可以绑定快捷键和窗口规则，但运行中新增、移动或重载配置后，位置可能和名称前缀不一致。当前配置用脚本把命名工作区显式移动到固定顺序。
+`idx`。命名工作区按配置声明顺序占据 index：三台主机的 `niri-hardware.kdl` 按 1–0 顺序声明，因此
+`niri msg workspaces` 的 index 与名字前缀一一对应（`0other` 在 index
+10）。运行中手动移动过工作区导致顺序漂移时，用 `Mod + Shift + 0` 调用整理脚本复位。
 
 ## 配置入口
 
@@ -54,6 +58,7 @@ Mod + 3    3docs
 Mod + 4    4codex
 Mod + 5    5code
 Mod + 6    6chat
+Mod + 7    7misc
 Mod + 8    8music
 Mod + 9    9file
 Mod + 0    0other
@@ -64,10 +69,20 @@ Mod + 0    0other
 使用 `Mod + Shift + 0` 重新整理当前 Niri 运行时工作区顺序:
 
 ```text
-1terminal, 2browser, 3docs, 4codex, 5code, 6chat, 8music, 9file, 0other
+1terminal, 2browser, 3docs, 4codex, 5code, 6chat, 7misc, 8music, 9file, 0other
 ```
 
-它调用 `move-workspace-to-index --reference`，只调整工作区顺序，不关闭窗口。
+脚本从大 index 往小依次调用 `move-workspace-to-index --reference`（先 `0other:10`，再
+`9file:9`、`8music:8`……），倒序才能收敛到目标布局；只调整顺序，不关闭窗口。
+
+## Bar 显示
+
+Niri 会在每个显示器末尾保留一个无名空工作区（`niri msg workspaces` 里的 index
+11），数字键管不到，也无法关闭；Noctalia
+bar 默认把它和空着的命名工作区一起画成无号胶囊。当前通过 Noctalia 的
+`bar.widgets.center[0].hideUnoccupied = true` （settings.json，v4
+schema）隐藏所有"无窗口且非当前"的工作区胶囊：`Win+N`
+跳转和窗口规则不受影响，跳到某个空工作区时它作为当前工作区仍会显示，离开后空着就隐藏。
 
 ## app-id 校准
 

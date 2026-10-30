@@ -65,6 +65,7 @@ workspace "4codex" { open-on-output "DP-1"; }
 workspace "5code" { open-on-output "DP-1"; }
 
 workspace "6chat" { open-on-output "DP-1"; }
+workspace "7misc" { open-on-output "DP-1"; }
 workspace "8music" { open-on-output "DP-1"; }
 workspace "9file" { open-on-output "DP-1"; }
 workspace "0other" { open-on-output "DP-1"; }

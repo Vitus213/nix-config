@@ -3,8 +3,11 @@
 // https://yalter.github.io/niri/Configuration:-Window-Rules
 
 // Terminal applications - open in workspace 1
+// footclient（server 模式）开出的窗口 app-id 是 "footclient" 而非 "foot"，
+// 必须同时匹配，否则终端会落在当前工作区而不是 1terminal。
 window-rule {
     match app-id="foot"
+    match app-id="footclient"
     open-on-workspace "1terminal"
     open-maximized true
 }

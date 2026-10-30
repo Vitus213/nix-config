@@ -72,6 +72,15 @@ in
     };
   };
 
+  # foot.server 生成的 foot.service 与显示器就绪存在竞速：foot --server
+  # 拿不到输出会立即退出，默认 RestartSec=100ms 连试 5 次即触发 start-limit，
+  # 之后整个会话 footclient 无 server 可连（Win+Return 失灵）。
+  # 放宽为每 2s 重试且不限次数，显示器就绪后自动补起。
+  systemd.user.services.foot = {
+    unitConfig.StartLimitIntervalSec = 0;
+    serviceConfig.RestartSec = 2;
+  };
+
   # ghostty 不再通过 Home Manager 安装到任何平台：
   #   - Linux 已改用 foot + alacritty
   #   - macOS 由 Homebrew cask 安装，这里仅声明 settings 供下方配置文件引用
