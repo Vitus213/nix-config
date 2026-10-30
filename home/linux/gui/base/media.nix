@@ -30,6 +30,7 @@
     mesa-demos
     nvitop
     (pkgs-x64.zoom-us)
+    # overlay 统一启动入口、portal/DMA-BUF 共享与原生界面配色。
     wemeet
   ];
 

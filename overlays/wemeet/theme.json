@@ -1,0 +1,824 @@
+{
+  "version": 1,
+  "target": "Tencent Meeting Linux 3.26.10.401 x86_64",
+  "text_sha256": "3bc2a49197feac4ccaacacc97edc93b23957ff40eaab11535445e9df3eec5295",
+  "authority": {
+    "service_cache": "ev_88907804cd4262732e16288069578619bdb5f759d7b5e17665098cf2b60b59ec",
+    "compiled_map_export": "ev_0bd0c677f5fcb3dc1e293ec1e8e43202f68fd2a9204e9d5132f431b7baca6d6e",
+    "initializer_va": "0x6b3c90",
+    "mechanism": "Exact value/key RIP-relative LEA pairs populate the compiled light/dark maps. External themes/default/styles/color.json does not supply modern service tokens."
+  },
+  "modes": {
+    "light": {
+      "value_instruction_va": "0x6b3d01",
+      "stride": 133,
+      "tokens": [
+        {
+          "name": "wm_color_primary",
+          "vendor": "#FF0066FF",
+          "value": "#FF245BC4"
+        },
+        {
+          "name": "wm_color_primary_30",
+          "vendor": "#4D0066FF",
+          "value": "#4D245BC4"
+        },
+        {
+          "name": "wm_color_primary_hover_pressed",
+          "vendor": "#FF0055E8",
+          "value": "#FF19499F"
+        },
+        {
+          "name": "wm_color_primary_disabled",
+          "vendor": "#FFABCFFF",
+          "value": "#FFD5E1F5"
+        },
+        {
+          "name": "wm_color_primary_on_disabled",
+          "vendor": "#FFFFFFFF",
+          "value": "#FF53657F"
+        },
+        {
+          "name": "wm_color_secondary",
+          "vendor": "#FFEBF2FF",
+          "value": "#FFECF1FA"
+        },
+        {
+          "name": "wm_color_tertiary",
+          "vendor": "#FFDCE4FA",
+          "value": "#FFDFE7F5"
+        },
+        {
+          "name": "wm_color_quaternary",
+          "vendor": "#FFEBF2FF",
+          "value": "#FFECF1FA"
+        },
+        {
+          "name": "wm_color_text_primary",
+          "vendor": "#FF000000",
+          "value": "#FF172033"
+        },
+        {
+          "name": "wm_color_text_primary_30",
+          "vendor": "#4D000000",
+          "value": "#4D172033"
+        },
+        {
+          "name": "wm_color_text_primary_40",
+          "vendor": "#66000000",
+          "value": "#66172033"
+        },
+        {
+          "name": "wm_color_text_secondary",
+          "vendor": "#FF4E5461",
+          "value": "#FF46546A"
+        },
+        {
+          "name": "wm_color_text_tertiary",
+          "vendor": "#FF7B818F",
+          "value": "#FF596A82"
+        },
+        {
+          "name": "wm_color_text_quaternary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_text_quinary",
+          "vendor": "#FF4E5461",
+          "value": "#FF46546A"
+        },
+        {
+          "name": "wm_color_text_senary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_text_senary_30",
+          "vendor": "#4DFFFFFF"
+        },
+        {
+          "name": "wm_color_text_septenary",
+          "vendor": "#FF0066FF",
+          "value": "#FF245BC4"
+        },
+        {
+          "name": "wm_color_text_septenary_30",
+          "vendor": "#4D0066FF",
+          "value": "#4D245BC4"
+        },
+        {
+          "name": "wm_color_text_octonary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_text_nonary",
+          "vendor": "#FF5979FF"
+        },
+        {
+          "name": "wm_color_text_disabled",
+          "vendor": "#FFB0B6C3",
+          "value": "#FF718096"
+        },
+        {
+          "name": "wm_color_text_disabled_30",
+          "vendor": "#4DB0B6C3",
+          "value": "#4D718096"
+        },
+        {
+          "name": "wm_color_success_primary",
+          "vendor": "#FF27D08E"
+        },
+        {
+          "name": "wm_color_success_primary_30",
+          "vendor": "#4D27D08E"
+        },
+        {
+          "name": "wm_color_success_hover_pressed",
+          "vendor": "#FF17C07E"
+        },
+        {
+          "name": "wm_color_success_disabled",
+          "vendor": "#FF99EACA"
+        },
+        {
+          "name": "wm_color_success_variant",
+          "vendor": "#FFECF8F3"
+        },
+        {
+          "name": "wm_color_warning_primary",
+          "vendor": "#FFFF970F"
+        },
+        {
+          "name": "wm_color_warning_hover_pressed",
+          "vendor": "#FFF5810C"
+        },
+        {
+          "name": "wm_color_warning_disabled",
+          "vendor": "#FFFFE0B7"
+        },
+        {
+          "name": "wm_color_warning_variant",
+          "vendor": "#FFFFF4EB"
+        },
+        {
+          "name": "wm_color_error_primary",
+          "vendor": "#FFFA4E32"
+        },
+        {
+          "name": "wm_color_error_primary_30",
+          "vendor": "#4DFA4E32"
+        },
+        {
+          "name": "wm_color_error_hover_pressed",
+          "vendor": "#FFE63922"
+        },
+        {
+          "name": "wm_color_error_disabled",
+          "vendor": "#FFFFD8D6"
+        },
+        {
+          "name": "wm_color_error_on_disabled",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_error_variant",
+          "vendor": "#FFFFF0F0"
+        },
+        {
+          "name": "wm_color_outline_primary",
+          "vendor": "#FFB0B6C3",
+          "value": "#FF8799B1"
+        },
+        {
+          "name": "wm_color_outline_primary_30",
+          "vendor": "#4DB0B6C3",
+          "value": "#4D8799B1"
+        },
+        {
+          "name": "wm_color_outline_secondary",
+          "vendor": "#FFD3D6DB",
+          "value": "#FFC5D0E0"
+        },
+        {
+          "name": "wm_color_outline_secondary_30",
+          "vendor": "#4DD3D6DB",
+          "value": "#4DC5D0E0"
+        },
+        {
+          "name": "wm_color_outline_tertiary",
+          "vendor": "#FFEBEDF2",
+          "value": "#FFE2E8F1"
+        },
+        {
+          "name": "wm_color_outline_quaternary",
+          "vendor": "#FFEBEDF2",
+          "value": "#FFE2E8F1"
+        },
+        {
+          "name": "wm_color_background_primary",
+          "vendor": "#FFD3D6D8",
+          "value": "#FFCCD6E4"
+        },
+        {
+          "name": "wm_color_background_secondary",
+          "vendor": "#FFE6E8EB",
+          "value": "#FFE7EDF5"
+        },
+        {
+          "name": "wm_color_background_tertiary",
+          "vendor": "#FFF5F6F7",
+          "value": "#FFF4F7FB"
+        },
+        {
+          "name": "wm_color_background_quaternary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_background_quinary",
+          "vendor": "#FFF5F6F7",
+          "value": "#FFF4F7FB"
+        },
+        {
+          "name": "wm_color_background_senary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_background_septenary",
+          "vendor": "#FFF5F6F7",
+          "value": "#FFF4F7FB"
+        },
+        {
+          "name": "wm_color_background_octonary",
+          "vendor": "#FFE6E8EB",
+          "value": "#FFE7EDF5"
+        },
+        {
+          "name": "wm_color_background_denary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_background_eleventh",
+          "vendor": "#FFE6E8EB",
+          "value": "#FFE7EDF5"
+        },
+        {
+          "name": "wm_color_background_twelfth",
+          "vendor": "#FFEBEDF2",
+          "value": "#FFE2E8F1"
+        },
+        {
+          "name": "wm_color_background_thirteenth",
+          "vendor": "#40000000"
+        },
+        {
+          "name": "wm_color_background_fourteenth",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_background_fifteenth",
+          "vendor": "#FFF0F4FA",
+          "value": "#FFEEF3FA"
+        },
+        {
+          "name": "wm_color_background_seventeenth",
+          "vendor": "#FFF1F3F7",
+          "value": "#FFF0F4FA"
+        },
+        {
+          "name": "wm_color_alpha_primary",
+          "vendor": "#FF464646"
+        },
+        {
+          "name": "wm_color_alpha_primary_10080",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_secondary",
+          "vendor": "#FF000000"
+        },
+        {
+          "name": "wm_color_alpha_secondary_0005",
+          "vendor": "#00000000"
+        },
+        {
+          "name": "wm_color_alpha_secondary_80",
+          "vendor": "#CC000000"
+        },
+        {
+          "name": "wm_color_alpha_tertiary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary",
+          "vendor": "#FF000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_02_04",
+          "vendor": "#05000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_04",
+          "vendor": "#0A000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_08",
+          "vendor": "#14000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_08_06",
+          "vendor": "#14000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_10",
+          "vendor": "#1A000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_16_10",
+          "vendor": "#29000000"
+        },
+        {
+          "name": "wm_color_extra_text_primary",
+          "vendor": "#FF323640",
+          "value": "#FF25334A"
+        },
+        {
+          "name": "wm_color_extra_text_secondary",
+          "vendor": "#FF4E5461",
+          "value": "#FF46546A"
+        },
+        {
+          "name": "wm_color_extra_background_primary",
+          "vendor": "#FF198CFF",
+          "value": "#FF245BC4"
+        },
+        {
+          "name": "wm_color_extra_background_secondary",
+          "vendor": "#FF177EE6",
+          "value": "#FF19499F"
+        },
+        {
+          "name": "wm_color_extra_background_tertiary",
+          "vendor": "#FF549EFF",
+          "value": "#FF4174CE"
+        },
+        {
+          "name": "wm_color_extra_background_quaternary",
+          "vendor": "#FFEBEDF2",
+          "value": "#FFE2E8F1"
+        },
+        {
+          "name": "wm_color_extra_background_quinary",
+          "vendor": "#FFDDE1E5",
+          "value": "#FFD6DFEC"
+        },
+        {
+          "name": "wm_color_extra_background_senary",
+          "vendor": "#FFABCFFF",
+          "value": "#FFD5E1F5"
+        },
+        {
+          "name": "wm_color_extra_background_septenary_96",
+          "vendor": "#F5202020"
+        },
+        {
+          "name": "wm_color_extra_background_octonary_50",
+          "vendor": "#80000000"
+        },
+        {
+          "name": "wm_color_extra_background_nonary_60",
+          "vendor": "#99131518"
+        },
+        {
+          "name": "wm_color_extra_background_denary",
+          "vendor": "#FFB0B6C3",
+          "value": "#FF8799B1"
+        },
+        {
+          "name": "wm_color_extra_background_eleventh",
+          "vendor": "#FFEBEDF2",
+          "value": "#FFE2E8F1"
+        },
+        {
+          "name": "wm_color_extra_background_twelfth",
+          "vendor": "#FFEBF2FF",
+          "value": "#FFECF1FA"
+        },
+        {
+          "name": "wm_color_extra_outline_primary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_custom_vip_tag_text",
+          "vendor": "#FF5979FF"
+        }
+      ]
+    },
+    "dark": {
+      "value_instruction_va": "0x6b6b57",
+      "stride": 133,
+      "tokens": [
+        {
+          "name": "wm_color_primary",
+          "vendor": "#FF0A7BFF",
+          "value": "#FF285CB8"
+        },
+        {
+          "name": "wm_color_primary_30",
+          "vendor": "#4D0A7BFF",
+          "value": "#4D285CB8"
+        },
+        {
+          "name": "wm_color_primary_hover_pressed",
+          "vendor": "#FF0864CC",
+          "value": "#FF214E9C"
+        },
+        {
+          "name": "wm_color_primary_disabled",
+          "vendor": "#FF1C3E66",
+          "value": "#FF314460"
+        },
+        {
+          "name": "wm_color_primary_on_disabled",
+          "vendor": "#FF657A92",
+          "value": "#FFB7C6DC"
+        },
+        {
+          "name": "wm_color_secondary",
+          "vendor": "#FF2B2B2B",
+          "value": "#FF1B293C"
+        },
+        {
+          "name": "wm_color_tertiary",
+          "vendor": "#FF31394D",
+          "value": "#FF273B59"
+        },
+        {
+          "name": "wm_color_quaternary",
+          "vendor": "#FF313131",
+          "value": "#FF213149"
+        },
+        {
+          "name": "wm_color_text_primary",
+          "vendor": "#FFE9E9E9",
+          "value": "#FFE5EDF5"
+        },
+        {
+          "name": "wm_color_text_primary_30",
+          "vendor": "#4DE9E9E9",
+          "value": "#4DE5EDF5"
+        },
+        {
+          "name": "wm_color_text_primary_40",
+          "vendor": "#66E9E9E9",
+          "value": "#66E5EDF5"
+        },
+        {
+          "name": "wm_color_text_secondary",
+          "vendor": "#FFD0D0D0",
+          "value": "#FFC2CFDF"
+        },
+        {
+          "name": "wm_color_text_tertiary",
+          "vendor": "#FF999999",
+          "value": "#FFA8B7CB"
+        },
+        {
+          "name": "wm_color_text_quaternary",
+          "vendor": "#FF242424"
+        },
+        {
+          "name": "wm_color_text_quinary",
+          "vendor": "#FF999999",
+          "value": "#FFA8B7CB"
+        },
+        {
+          "name": "wm_color_text_senary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_text_senary_30",
+          "vendor": "#4DFFFFFF"
+        },
+        {
+          "name": "wm_color_text_septenary",
+          "vendor": "#FF3392FF",
+          "value": "#FF89B4FA"
+        },
+        {
+          "name": "wm_color_text_septenary_30",
+          "vendor": "#4D3392FF",
+          "value": "#4D89B4FA"
+        },
+        {
+          "name": "wm_color_text_octonary",
+          "vendor": "#FF999999",
+          "value": "#FFA8B7CB"
+        },
+        {
+          "name": "wm_color_text_nonary",
+          "vendor": "#FF10BBB3"
+        },
+        {
+          "name": "wm_color_text_disabled",
+          "vendor": "#FF666666",
+          "value": "#FF95A8C1"
+        },
+        {
+          "name": "wm_color_text_disabled_30",
+          "vendor": "#4D666666",
+          "value": "#4D95A8C1"
+        },
+        {
+          "name": "wm_color_success_primary",
+          "vendor": "#FF36B282"
+        },
+        {
+          "name": "wm_color_success_primary_30",
+          "vendor": "#4D36B282"
+        },
+        {
+          "name": "wm_color_success_hover_pressed",
+          "vendor": "#FF27805D"
+        },
+        {
+          "name": "wm_color_success_disabled",
+          "vendor": "#FF294F40"
+        },
+        {
+          "name": "wm_color_success_variant",
+          "vendor": "#FF2B2B2B"
+        },
+        {
+          "name": "wm_color_warning_primary",
+          "vendor": "#FFF5A53D"
+        },
+        {
+          "name": "wm_color_warning_hover_pressed",
+          "vendor": "#FFC28330"
+        },
+        {
+          "name": "wm_color_warning_disabled",
+          "vendor": "#FF634B2C"
+        },
+        {
+          "name": "wm_color_warning_variant",
+          "vendor": "#FF2B2B2B"
+        },
+        {
+          "name": "wm_color_error_primary",
+          "vendor": "#FFFF5B40"
+        },
+        {
+          "name": "wm_color_error_primary_30",
+          "vendor": "#4DFF5B40"
+        },
+        {
+          "name": "wm_color_error_hover_pressed",
+          "vendor": "#FFCC4933"
+        },
+        {
+          "name": "wm_color_error_disabled",
+          "vendor": "#FF66342C"
+        },
+        {
+          "name": "wm_color_error_on_disabled",
+          "vendor": "#FF856864"
+        },
+        {
+          "name": "wm_color_error_variant",
+          "vendor": "#FF2B2B2B"
+        },
+        {
+          "name": "wm_color_outline_primary",
+          "vendor": "#FF313131",
+          "value": "#FF60748E"
+        },
+        {
+          "name": "wm_color_outline_primary_30",
+          "vendor": "#4D313131",
+          "value": "#4D60748E"
+        },
+        {
+          "name": "wm_color_outline_secondary",
+          "vendor": "#FF464646",
+          "value": "#FF526680"
+        },
+        {
+          "name": "wm_color_outline_secondary_30",
+          "vendor": "#4646464D",
+          "value": "#4D526680"
+        },
+        {
+          "name": "wm_color_outline_tertiary",
+          "vendor": "#FF313131",
+          "value": "#FF293E58"
+        },
+        {
+          "name": "wm_color_outline_quaternary",
+          "vendor": "#FF464646",
+          "value": "#FF3D526D"
+        },
+        {
+          "name": "wm_color_background_primary",
+          "vendor": "#FF464646",
+          "value": "#FF334760"
+        },
+        {
+          "name": "wm_color_background_secondary",
+          "vendor": "#FF313131",
+          "value": "#FF213149"
+        },
+        {
+          "name": "wm_color_background_tertiary",
+          "vendor": "#FF2B2B2B",
+          "value": "#FF172538"
+        },
+        {
+          "name": "wm_color_background_quaternary",
+          "vendor": "#FF242424",
+          "value": "#FF111D2D"
+        },
+        {
+          "name": "wm_color_background_quinary",
+          "vendor": "#FF242424",
+          "value": "#FF111D2D"
+        },
+        {
+          "name": "wm_color_background_senary",
+          "vendor": "#FF2B2B2B",
+          "value": "#FF172538"
+        },
+        {
+          "name": "wm_color_background_septenary",
+          "vendor": "#FF313131",
+          "value": "#FF213149"
+        },
+        {
+          "name": "wm_color_background_octonary",
+          "vendor": "#FF464646",
+          "value": "#FF334760"
+        },
+        {
+          "name": "wm_color_background_denary",
+          "vendor": "#FF313131",
+          "value": "#FF213149"
+        },
+        {
+          "name": "wm_color_background_eleventh",
+          "vendor": "#FF464646",
+          "value": "#FF334760"
+        },
+        {
+          "name": "wm_color_background_twelfth",
+          "vendor": "#FF242424",
+          "value": "#FF111D2D"
+        },
+        {
+          "name": "wm_color_background_thirteenth",
+          "vendor": "#99000000"
+        },
+        {
+          "name": "wm_color_background_fourteenth",
+          "vendor": "#FF464646",
+          "value": "#FF334760"
+        },
+        {
+          "name": "wm_color_background_fifteenth",
+          "vendor": "#FF242424",
+          "value": "#FF111D2D"
+        },
+        {
+          "name": "wm_color_background_seventeenth",
+          "vendor": "#FF242424",
+          "value": "#FF111D2D"
+        },
+        {
+          "name": "wm_color_alpha_primary",
+          "vendor": "#FF464646"
+        },
+        {
+          "name": "wm_color_alpha_primary_10080",
+          "vendor": "#CCFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_secondary",
+          "vendor": "#FF000000"
+        },
+        {
+          "name": "wm_color_alpha_secondary_0005",
+          "vendor": "#0D000000"
+        },
+        {
+          "name": "wm_color_alpha_secondary_80",
+          "vendor": "#CC000000"
+        },
+        {
+          "name": "wm_color_alpha_tertiary",
+          "vendor": "#FF000000"
+        },
+        {
+          "name": "wm_color_alpha_quaternary",
+          "vendor": "#FFFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_02_04",
+          "vendor": "#0AFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_04",
+          "vendor": "#0AFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_08",
+          "vendor": "#14FFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_08_06",
+          "vendor": "#0FFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_10",
+          "vendor": "#1AFFFFFF"
+        },
+        {
+          "name": "wm_color_alpha_quaternary_16_10",
+          "vendor": "#1AFFFFFF"
+        },
+        {
+          "name": "wm_color_extra_text_primary",
+          "vendor": "#FFD0D0D0",
+          "value": "#FFC2CFDF"
+        },
+        {
+          "name": "wm_color_extra_text_secondary",
+          "vendor": "#FF999999",
+          "value": "#FFA8B7CB"
+        },
+        {
+          "name": "wm_color_extra_background_primary",
+          "vendor": "#FF198CFF",
+          "value": "#FF285CB8"
+        },
+        {
+          "name": "wm_color_extra_background_secondary",
+          "vendor": "#FF177EE6",
+          "value": "#FF214E9C"
+        },
+        {
+          "name": "wm_color_extra_background_tertiary",
+          "vendor": "#FF549EFF",
+          "value": "#FF4174CE"
+        },
+        {
+          "name": "wm_color_extra_background_quaternary",
+          "vendor": "#FF313131",
+          "value": "#FF213149"
+        },
+        {
+          "name": "wm_color_extra_background_quinary",
+          "vendor": "#FF464646",
+          "value": "#FF334760"
+        },
+        {
+          "name": "wm_color_extra_background_senary",
+          "vendor": "#FF486D94",
+          "value": "#FF486589"
+        },
+        {
+          "name": "wm_color_extra_background_septenary_96",
+          "vendor": "#F5202020"
+        },
+        {
+          "name": "wm_color_extra_background_octonary_50",
+          "vendor": "#80000000"
+        },
+        {
+          "name": "wm_color_extra_background_nonary_60",
+          "vendor": "#99131518"
+        },
+        {
+          "name": "wm_color_extra_background_denary",
+          "vendor": "#FFB0B6C3",
+          "value": "#FF95A8C1"
+        },
+        {
+          "name": "wm_color_extra_background_eleventh",
+          "vendor": "#FF1A1A1A",
+          "value": "#FF0D1725"
+        },
+        {
+          "name": "wm_color_extra_background_twelfth",
+          "vendor": "#FF292D34",
+          "value": "#FF192A40"
+        },
+        {
+          "name": "wm_color_extra_outline_primary",
+          "vendor": "#00000000"
+        },
+        {
+          "name": "wm_color_custom_vip_tag_text",
+          "vendor": "#FF5979FF"
+        }
+      ]
+    }
+  }
+}

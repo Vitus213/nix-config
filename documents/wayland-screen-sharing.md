@@ -11,9 +11,11 @@
   强制屏幕共享使用 portal/PipeWire。未启用该参数时，飞书同包 Chromium 的 X11 整屏缩略图为黑屏；启用后会打开 portal，并收到实时整屏画面。
 - OBS 必须新增 `Screen Capture (PipeWire)` source。`Display Capture (XSHM)`
   是 X11 捕获路径，在 Niri 下不能代替 portal/PipeWire。
-- 腾讯会议默认继续使用
-  `wemeet`。当前 Nixpkgs 包的默认入口已经包含 Wayland 屏幕共享 hook、摄像头预览修复和输入焦点修复；`wemeet-xwayland`
-  保留为会议内分享失败时的对照入口。
+- 腾讯会议的 `wemeet` 命令与应用菜单统一调用 X11/xcb 入口；`overlays/wemeet/`
+  保留上游音频适配，以本地 portal/PipeWire/EGL 采集库替换旧共享 hook，可导入 NVIDIA
+  DMA-BUF 并支持 SHM。Niri `26.04`
+  的 SHM 回移继续兼容其他内存帧消费者。会内共享流与边框已实测，远端画面和完整录制仍按功能逐项验收，详见
+  [Linux 腾讯会议](./tencent-meeting.md)。
 
 ## 当前版本
 
@@ -30,14 +32,20 @@
 - 腾讯会议 `3.26.10.401`
 - Nixpkgs revision `65179426c83bb3f6bc14898b42ea1c6f01d374b0`
 
+2026-10-29 的腾讯会议适配使用 Niri `26.04`、portal `1.22.1`、GNOME portal `50.0`、PipeWire
+`1.6.9`、NVIDIA `595.104.02`，主 Nixpkgs 为
+`9013764fcc0ea99fa16cf7aa7decf8a5c3889dd2`。上述飞书故障记录保留其当时版本与实测结论。
+
 ## 配置入口
 
 - `modules/nixos/desktop/xdg.nix`：系统 portal 包与 `xdgOpenUsePortal`。
-- `home/linux/gui/base/xdg/default.nix`：用户侧
-  `xdg.portal.config`，Niri 的 ScreenCast/RemoteDesktop 优先使用 GNOME backend，其余接口回退 GTK。
+- Niri 包的
+  `share/xdg-desktop-portal/niri-portals.conf`：Niri 官方提供的 backend 路由，ScreenCast 使用 GNOME，其余接口由已有 GTK/GNOME
+  backend 处理。
 - `home/linux/gui/base/misc.nix`：飞书包覆盖，加入 `--enable-features=WebRTCPipeWireCapturer`。
 - `home/linux/gui/base/creative.nix`：OBS 与插件。
 - `home/linux/gui/base/media.nix`：腾讯会议包。
+- `overlays/niri/default.nix`：ScreenCast 的 SHM 回退补丁。
 
 当前 portal 路径是：
 
@@ -90,8 +98,8 @@ pgrep -af "opt/bytedance/feishu/feishu" | rg -v "type=|crashpad"
 `93yrpg…`（wrapper 无该参数），故共享仍黑屏。kill 旧进程后由 niri 重新拉起，`/proc/<pid>/cmdline`
 即含该参数。
 
-2026-08-16 真实会议复测（pw-mon 抓取 PipeWire 协商）结论：飞书桌面客户端在本机（NVIDIA +
-niri）**无法接收共享流**，属上游限制，配置无法绕过：
+2026-08-16 真实会议复测（pw-mon 抓取 PipeWire 协商）结论：当时未提供 SHM 的 Niri 与飞书桌面客户端在本机（NVIDIA +
+Niri）无法建立共享流：
 
 - 提供方（niri）只发布 GPU DMA-BUF 缓冲（`BGRx + modifier`）。
 - 消费方（飞书 WebRTC，X11 路径）请求 BGRA/RGBA/BGRx/RGBx 但**不能导入 DMA-BUF**，交集为空，niri 报
@@ -103,6 +111,10 @@ niri）**无法接收共享流**，属上游限制，配置无法绕过：
 
 已证伪并回滚的尝试：`debug { force-pipewire-invalid-modifier; }`（只改 modifier 不改缓冲类型，且会把 niri 发布格式过滤到只剩 invalid，可能拖累 OBS）；`--ozone-platform=wayland`。保留
 `--enable-features=WebRTCPipeWireCapturer`（它把捕获切到 portal，是必要前提，且对 Zen/Chromium 有效）。
+
+2026-10-29 补充：当前回移的 Niri SHM 支持直接补齐上述消费者缺少的缓冲类型；它与
+`force-pipewire-invalid-modifier`
+不同。旧版本的飞书失败不能用于断言打补丁后仍失败，但本次没有重新验证飞书真实会议，实际远端画面仍需复测。
 
 可行替代：需要共享屏幕时用
 **Zen（原生 Wayland）打开飞书网页版会议**，浏览器 portal 路径已验证可收到实时画面；或用 OBS 采集后推流。
@@ -127,21 +139,29 @@ OBS 预览同时显示实时递归桌面画面，证明当前 OBS `32.1.2` 在�
 
 ## 腾讯会议
 
-两个入口均由 Nixpkgs `wemeet 3.26.10.401` 提供：
+当前 Nixpkgs 包为 `wemeet 3.26.10.401`。`overlays/wemeet/` 统一 `wemeet` 与 `wemeet-xwayland`
+入口，应用菜单和会议 URI handler 均使用同一路径：
 
 ```bash
 wemeet
-wemeet-xwayland
 ```
 
-运行时 A/B 已确认：
+2026-10-29 在当前 Niri/NVIDIA 环境做相同临时 `HOME` 对照：原包 `wemeet`
+以原生 Wayland 运行但未创建可见窗口；X11/xcb 入口正常显示登录页，窗口 app-id 仍为
+`wemeetapp`。此入口保留音频/文件传输适配，用本地 `libwemeet-capture.so` 替换旧SHM-only
+`libhook.so`，可直接导入 NVIDIA DMA-BUF，也提供 SHM。不加载原生 Wayland 专用的 focus/camera
+fix，也不强制 Mesa EGL。
 
-- `wemeet` 创建原生 Wayland 窗口，加载默认包装器中的屏幕共享、摄像头和输入焦点修复。
-- `wemeet-xwayland` 创建 X11/xcb 窗口，并实际加载 `wemeet-wayland-screenshare` 的 `libhook.so`。
+Niri 侧另有独立的缓冲协商约束：原版 `26.04` 只提供 DMA-BUF，只接受 SHM 的消费者在选屏后报
+`no more input formats`。当前 overlay 回移
+[上游 SHM 支持](https://github.com/niri-wm/niri/pull/1791)，保留 DMA-BUF 并增加
+`MemFd`。本机修改前用无 modifier `BGRx`
+消费者复现了此错误。该修复需要构建部署后重新登录 Niri 会话，不能靠 KDL 热重载生效；完整步骤见
+[Linux 腾讯会议](./tencent-meeting.md#niri-屏幕共享兼容)。
 
-默认入口保留
-`wemeet`，因为它包含更多上游修复。当前客户端停在登录/同意条款页，未进入真实会议，因此没有足够证据把桌面入口永久切到 XWayland。遇到仅腾讯会议失败时，应在同一会议中退出默认实例，再用
-`wemeet-xwayland` 做对照；不要同时运行两个实例。
+此前真实会议选中 `DP-1` 后报 `no more input formats`
+时，运行的仍是旧 Niri。现在运行进程已加载 SHM 补丁；新腾讯会议采集库也已纳入 Git
+flake 源并部署，避免继续使用旧 hook。实际 XShm 采集验证在两次独立选屏中均收到红色变蓝色的像素，停止后 casts 为空。该证据覆盖本机动态采集与重复启动，远端会议接收仍需确认；仅重开腾讯会议即可加载新库。
 
 ## 低风险验证
 
@@ -160,27 +180,30 @@ nix build --impure --no-link --print-out-paths --expr '
     builtins.head (builtins.filter (p: (p.pname or "") == "feishu") packages)
 '
 
-# 腾讯会议两个入口
+# 构建 Niri 共享兼容包；腾讯会议菜单与命令均使用 xcb
+nix build .#nixosConfigurations.apollo.config.programs.niri.package --no-link
 wemeet
-wemeet-xwayland
 ```
 
 部署后应分别确认：
 
 - 飞书进入会议后，点击屏幕共享会打开 portal，选中显示器后远端能看到持续更新的画面。
 - OBS 的 `Screen Capture (PipeWire)` source 有实时预览。
-- 腾讯会议默认入口能分享；若失败，用 `wemeet-xwayland` 在同一会议、同一显示器上对照。
+- 腾讯会议可共享持续更新的远端画面，停止后能再次共享；两个命令已统一为 xcb，不能再作为后端 A/B 对照。
 
 ## 回滚
 
 1. 将 `home/linux/gui/base/misc.nix` 中的飞书包覆盖恢复为普通 `feishu`。
 2. 重新部署 Home Manager/NixOS 配置。
 3. OBS 只需删除测试 scene/source，不涉及声明式配置回滚。
-4. 腾讯会议默认入口没有在本次变更中切换，无需回滚。
+4. 回滚 Niri SHM 支持：删除 `overlays/niri/`，重新部署并登录桌面；会恢复仅 DMA-BUF 的协商行为。
+5. 回滚腾讯会议默认 xcb：将 `home/linux/gui/base/media.nix` 的腾讯会议包装恢复为普通
+   `wemeet`，部署后重新启动客户端。
 
 ## 参考
 
 - ScreenCast
   portal：<https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.ScreenCast.html>
-- 当前 Nixpkgs 飞书包：<https://github.com/NixOS/nixpkgs/blob/65179426c83bb3f6bc14898b42ea1c6f01d374b0/pkgs/by-name/fe/feishu/package.nix>
-- 当前 Nixpkgs 腾讯会议包：<https://github.com/NixOS/nixpkgs/blob/65179426c83bb3f6bc14898b42ea1c6f01d374b0/pkgs/by-name/we/wemeet/package.nix>
+- 当前 Nixpkgs 飞书包：<https://github.com/NixOS/nixpkgs/blob/9013764fcc0ea99fa16cf7aa7decf8a5c3889dd2/pkgs/by-name/fe/feishu/package.nix>
+- 当前 Nixpkgs 腾讯会议包：<https://github.com/NixOS/nixpkgs/blob/9013764fcc0ea99fa16cf7aa7decf8a5c3889dd2/pkgs/by-name/we/wemeet/package.nix>
+- Niri SHM 支持：<https://github.com/niri-wm/niri/pull/1791>

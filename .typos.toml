@@ -24,6 +24,7 @@ extend-ignore-re = [
   "crypted-nixos",
   "daed",
   "60e459ba", # git short hash（documents/magpie.md）
+  "00 ba ba", # 媒体 UDP 分组信封魔数（documents/tencent-meeting.md）
 
   # catppuccin theme colors
   "11111b",

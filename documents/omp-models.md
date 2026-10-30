@@ -42,6 +42,41 @@ my-secrets/omp-keys.age ──agenix──▶ /run/agenix/omp-keys（本机解�
 
 手动改完 `models.yml` / `config.yml` 而没走回填流程时，以本节为对照清单。
 
+### 本机 REA 逆向 MCP
+
+Apollo 的 `~/.omp/agent/mcp.json` 增加 `rea` stdio 服务，运行
+`/home/vitus/work/rea/scripts/rea.mjs mcp`。Node `24.22.1` 与 npm `11.16.0` 固定安装在
+`~/.local/share/rea/toolchain/`，客户端超时为 `450000` 毫秒；REA 的 `env`
+显式选择分析引擎及 NixOS 的
+`prlimit`、工具搜索路径。完整目录为 231 个 MCP 工具，未限制工具族。原配置保存在
+`~/.omp/agent/mcp.json.rea.backup`，Linear、Notion 注册保留。
+
+分析依赖位于 `~/.local/share/rea/providers/`，不切换系统：Ghidra `12.1.4`、JDK `21.0.12.1`、Kuna
+`1.833`、Rizin `0.9.1`、GDB `17.2`、pwntools `4.15.0`、pwndbg `2026.09.15`、JADX headless MCP
+`0.7.1`、Apktool `3.0.3`、Binwalk `3.1.0`、Unblob `26.6.4`、Wireshark `4.6.9`、sigrok-cli
+`0.7.2`、WABT `1.0.42`、Wakaru `1.14.0`、mitmproxy `12.2.3`。Ghidra、Kuna 同时接受输入时，调用
+`open_binary` 必须明确 `provider_id`。Frida `17.23.2` 来自仓库锁定依赖。
+
+Cutter `2.5.0` 的当前 Nix 构建实测拒绝 Python 插件对象转换；Shiboken
+ABI 是原因推断。本机隔离加载器放在
+`providers/native/share/rizin/cutter/plugins/python/rea_bridge.py`，由 Qt 事件循环负责启动与退出，协议实现仍使用仓库桥接文件的未修改副本。通过
+`providers/native/bin/cutter-rea` 打开目标后，MCP `cutter_command` 的 `ij`
+实测返回 ELF64 分析；未启动 GUI 时没有会话。此次 offscreen 退出被 Cutter 的保存确认框阻塞，测试进程已按所属关系停止；该结果不建立无人值守的正常 GUI 退出保证。
+
+已完成 22 项带结果断言的 stdio
+MCP／OMP 实测，覆盖原生程序、双线程 core、公开 APK、固件、录制网络流、UART、WASM、JavaScript、Cutter 与隔离 Chromium 点击场景。保存后的配置通过 OMP
+`18.13.1` 自身传输获得全部 231 个工具，身份为 `aligned`；REA 构建、类型检查、lint 及 MCP
+schema／身份／provider 环境的 28 项测试通过。初始化证据位于
+`/home/vitus/work/rea/.cache/initialization/`，不表示腾讯会议功能已经验证。
+
+IDA、Hopper 未安装，JEB 缺调用者激活并启动的 MCP 服务；macOS 专属能力在 Linux 不可用。工具被注册不代表每个目标、平台或运行时能力都可用。
+
+在 OMP 中执行 `/mcp reload`
+或新开会话加载注册；仅 reconnect 已有条目不能代替发现新增服务。规则技能安装在
+`~/.agents/skills/reverse-engineer-anything/`。此处已回填本机变更记录，
+`mcp.json`、依赖及绝对路径仍非 Nix 托管，其他机器或重装后需按其本机路径重新初始化。回滚只移除
+`mcpServers.rea` 后重新加载，勿用完整旧备份覆盖后续其他配置。
+
 ### 本机轻量角色（smol）
 
 `~/.omp/agent/config.yml` 的 `modelRoles.smol` 使用

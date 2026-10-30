@@ -36,6 +36,19 @@
 新增主机时只复制硬件差异文件（`hardware-configuration.nix`、`home.nix`、
 `niri-hardware.kdl`），共享能力直接导入 `_shared/`。
 
+### Apollo 的 FUSE allow_other
+
+`hosts/olympians-apollo/default.nix` 使用
+`programs.fuse.userAllowOther = true`，允许 BoxLite 的非 root 挂载指定 `allow_other`，系统生成的
+`/etc/fuse.conf` 包含 `user_allow_other`。当前锁定 nixpkgs
+`55bfb4d7437bd4e09ab7cba58a43bd68eb310044` 在 `programs.fuse` 下定义该选项；`security.fuse`
+不存在，会直接阻止 NixOS rebuild 求值。
+
+部署使用 `just local`；切换后检查 `/etc/fuse.conf` 中未被注释的
+`user_allow_other`。该选项只允许挂载者申请这项权限，不会自动将已有文件系统重新挂载。如需撤销，将该选项设为
+`false` 并重新部署，相关 BoxLite 挂载将不能再使用 `allow_other`。选项定义见
+[锁定版本的 NixOS FUSE 模块](https://github.com/NixOS/nixpkgs/blob/55bfb4d7437bd4e09ab7cba58a43bd68eb310044/nixos/modules/programs/fuse.nix)。
+
 ### mkForce 消除：基础模块改 mkDefault
 
 三个基础模块的默认值改为 `lib.mkDefault`，主机可用普通赋值覆盖：

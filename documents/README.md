@@ -51,7 +51,7 @@
 | [Esc 与 Caps Lock 键位](./keyboard-layout.md)             | NixOS 与 macOS 的键位行为                      |
 | [Linux 语音输入](./linux-voice-input.md)                  | Voiceless 语音输入方案                         |
 | [Linux 微信、QQ 与飞书](./linux-im-apps.md)               | 安装方式、沙箱边界与屏幕共享                   |
-| [Linux 腾讯会议](./tencent-meeting.md)                    | 安装、数据持久化与回滚                         |
+| [Linux 腾讯会议](./tencent-meeting.md)                    | 启动、portal/DMA-BUF 共享、原生主题与录制边界  |
 | [浏览器与工作协作应用](./work-apps.md)                    | Zen + Chrome；Slack、Notion、Linear 及窗口分配 |
 | [Zen Browser](./zen-browser.md)                           | 浏览器安装与配置                               |
 | [Orca 桌面应用](./orca.md)                                | StablyAI Orca 的安装方式                       |

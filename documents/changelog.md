@@ -2,6 +2,74 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-10-30
+
+### 腾讯会议远端画面黑屏根因修复（Mesa EGL 厂商切换）
+
+- 问题：接收他人共享与远端视频黑屏；X 侧窗口内容即为黑色，媒体层接收与解码正常（
+  `video_stream_decoder` 持续输出 2560×1600 帧），黑在渲染。
+- 根因：客户端以 NVIDIA EGL 给 XWayland 视频窗口 `eglCreateWindowSurface`，返回
+  `EGL_NO_SURFACE(3005)`；与 arch 论坛 16745、flathub issue #56 的 NVIDIA/Wayland 案例一致。
+- 处理：`overlays/wemeet/default.nix` wrapper 在 Wayland 会话导出
+  `__EGL_VENDOR_LIBRARY_FILENAMES`（`/run/opengl-driver` 下 `50_mesa.json`）与
+  `__GLX_VENDOR_LIBRARY_NAME=mesa`，视频层软件渲染；X11 会话不变。
+- 影响：发送采集不再取得 NVIDIA modifier，协商 SHM 兜底（依赖 Niri
+  SHM 回移补丁），远端确认可见；接收共享与远端视频恢复显示。
+- 验证：双端实测接收/发送均正常；`nix build` 新包 wrapper 含注入，`just test` 返回
+  `true`。永久生效需重建部署，当前运行实例来自一次性环境变量。
+- 关联文档：[Linux 腾讯会议](./tencent-meeting.md#共享者本机视图与接收路径)。
+
+### Noctalia 隐藏空工作区胶囊
+
+- 问题：Niri 每个显示器末尾强制保留一个无名空工作区（index
+  11），加上空着的命名工作区，bar 上出现一排无号暗色胶囊。
+- 处理：`settings.json` 的 `bar.widgets.center[0].hideUnoccupied` 置 `true` （noctalia-shell
+  4.7.7 的 v4 per-instance schema；`widget.workspaces.hide_when_empty` 是 v5
+  schema 对本版无效，未采用）。无窗口且非当前的工作区胶囊全部隐藏；`Win+N`
+  跳转、窗口规则、工作区声明均不变，当前所在的空工作区仍显示。
+- 验证：重启 noctalia-shell 后截图确认 bar 只剩有窗口的 1/2/5/6/10，空胶囊消失。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md#bar-显示)。
+
+### Niri 补 7 号工作区并修复 foot 自启竞速
+
+- 问题：`Mod+7` 按 index 绑定、其余数字键按名字绑定，两者混用导致 Win+7 切到空的
+  `8music`；命名工作区跳过 7，声明顺序与 index 从 8 起错位。`foot --server`
+  登录时与显示器就绪竞速失败（`no monitors available`），默认 100ms 间隔烧光 start-limit 配额后整个会话无 server，Win+Return 无反应。
+- 处理：三台主机 `niri-hardware.kdl` 补声明 `7misc`，声明顺序 1–0 恰好对齐 index
+  1–10；`Mod+7`/`Mod+Ctrl+7` 改按名字绑定；`normalize-workspaces.sh`
+  改倒序移动保证收敛并纳入 7misc；foot service 加 `RestartSec=2` + `StartLimitIntervalSec=0`
+  无限重试；foot 窗口规则补匹配
+  `app-id="footclient"`（server 模式窗口 app-id 不同，原规则不命中导致终端落在当前工作区而非 1terminal）；清理 default.nix 中已悬空的 spawn-at-startup 软链（#242 起自启动改走 XDG
+  autostart）。
+- 验证：`niri validate` 通过；活配置热加载后 `focus-workspace "7misc"` 实测切换成功；foot
+  service 重启后 footclient 实测开窗正常。竞速修复需重登录验证。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md)。
+
+### 腾讯会议共享本机视图与接收路径边界确认
+
+- 问题：共享时本机只见“您正在共享屏幕”状态条，没有共享内容与会议界面；接收他人共享从未验证。
+- 结论：3.26 桌面端共享时隐藏主窗口、无共享者预览是全平台设计（官方指南与反编译
+  `window_share_view_model.cc` 的 `show: 0`
+  推送一致）；本机绿框被采集库有意抑制（xwayland-satellite 下为全屏绿窗），共享工具栏与成员悬浮窗按 Niri 规则落在
+  `0other`，跨工作区发起共享时不可见，需 `Mod+0`
+  切回；工具栏应用内拖拽因 xwayland-satellite 不执行 X11 自定位而失效，用 `Mod+V` 浮动后 `Mod+左键`
+  拖动。
+- 证据：xcast 会议日志全程无入站视频（`video_recv`
+  空、`Flow recv -1`），接收路径未实测；采集库不拦截接收渲染符号，`XDamageQueryExtension`
+  抑制列为接收首测第一嫌疑。
+- 验证：纯文档变更，未改配置；双端实测步骤写入专题文档，待第二台设备执行。
+- 关联文档：[Linux 腾讯会议](./tencent-meeting.md#共享者本机视图与接收路径)。
+
+### 腾讯会议共享适配纳入 flake 源快照
+
+- 问题：现有 `overlays/wemeet/` 尚未跟踪，Git
+  flake 忽略该目录；实际系统和普通包求值仍使用原包旧共享 hook，与本机专用测试产物不一致。
+- 处理：将现有适配文件纳入 Git 跟踪，Apollo 包求值与构建选择 `a457…`、采集库 `bzcsv…`；保留原有 Niri
+  SHM 补丁、用户主题和独立重建代码。
+- 验证：采集库两个 CTest 和 `just test` 通过，完整系统构建与激活成功（退出码
+  `0`）；已安装入口指向新包。真实 XShm/portal/PipeWire/NVIDIA 路径两次独立共享均捕获红→蓝像素变化，停止后 casts 为空；远端会议连续画面仍需第二端确认。当前 Niri 已是补丁版，只需重开客户端。
+- 关联文档：[适配代码进入系统构建](./tencent-meeting.md#适配代码进入系统构建)。
+
 ## 2026-10-29
 
 ### Magpie 网关地址按主机区分，修复 Athena 本机 401
@@ -23,6 +91,67 @@
 - 关联文档：[omp 模型配置](./omp-models.md#magpie-共享网关)、
   [Magpie 共享模型网关](./magpie.md#当前配置)。
 
+### 腾讯会议独立核心重建与原生共享预览
+
+- 目标：按用户后续要求逆向完整客户端，构建不加载腾讯闭源核心的“澄会”；原有适配包保持可用。
+- 源码与证据：本机 `/home/vitus/work/rea/_reference/wemeet/reconstruction/`；固定 nixpkgs 的
+  `flake.nix`／`flake.lock` 可构建独立 Qt5/Python 客户端，未加入系统默认软件包。
+- 实测：真实二维码入口与打包后干净退出；信令 `conn.wemeet.tencent.com:443`
+  的 TLS1.3 证书/主机名校验（端口与 TLS 枚举来自原库指令证据）；账号资料 `user_district`
+  生产者证实为 refresh-token
+  CGI；入会响应状态门、控制应答、媒体协商存在性与三种媒体加密的原库对照均有独立测试。本轮新增恢复并验收（86/86 回归测试）：TIM 消息编解码、媒体 dispatch 交换与建房间参数映射、PERE 发送流水线（FU-A 分片/会话门控）、成员推送合并规则（字面 switch 证据）、SelectAbility
+  283/284 推送-应答、设置内容边界（内层格式未恢复不伪造键名）、COS 上传请求链；媒体运行时接入 worker（系统 CA 验证 TLS、0x36 信封、283 自动应答），dispatch 帧传输绑定显式标记 inferred。`nix build`
+  含 CTest 通过且依赖闭包无腾讯组件。后续补齐：媒体凭据生产者恢复（relation_id=av_room_id 低 32 位，meeting_appid/media_set_type 为入会应答根字段）、app-crypto 直接密钥发送路径与 UDP 分组信封、采集→libx264→sender 流水线桥（libavcodec/
+  libx264 已链接，编码器 CTest 通过），回归测试增至 96/96。
+- 当前边界：真实扫码登录后的入会 IQ 发送、媒体 dispatch 交换、房间注册与远端共享画面尚未端到端验证，不能称为完整替代品；Hyprland 未实测，本地录制暂缓。
+- 关联文档：[独立客户端重建](./tencent-meeting.md#独立客户端重建)。
+
+### 腾讯会议新增 DMA-BUF 采集适配与原生主题
+
+- 影响范围：NixOS 的腾讯会议 `3.26.10.401`；当前验证平台为 Apollo x86-64、Niri/NVIDIA。
+- 配置入口：`overlays/wemeet/`、`home/linux/gui/base/media.nix`；启动统一走 X11/xcb，保留音频适配，本地 portal/PipeWire/EGL 库替换旧 SHM-only
+  hook，支持 NVIDIA modifier 与 SHM、裁剪/变换和清理。
+- 兼容修复：抑制在 xwayland-satellite 下变成绿色大窗口的精确边框类；保留共享状态条。限帧时保留最后待消费帧，继承预加载库的非 Qt 子进程通过 eager-binding 回归。
+- 外观：固定二进制身份的原生蓝灰配色；部分 NXUI 按钮、暗色和网页仍有覆盖缺口。
+- 验证：实际 Apollo 包构建成功，两个 CTest 通过；`just test` 返回
+  `true`，受影响 Nix 文件格式通过；专用测试客户端入会、NVIDIA
+  DMA-BUF、绿色窗口抑制和 9,828 帧后撤销清理已实测。
+- 限制：Linux 原生本地录制被厂商关闭、转码路径为空；云录制处理回放、远端连续画面、Hyprland 和全部厂商功能未完成端到端验收。未恢复厂商完整原始源码或取得其内部测试套件。
+- 关联文档：[Linux 腾讯会议](./tencent-meeting.md)。
+
+### 初始化 REA 逆向 MCP 与本机分析工具
+
+- 影响范围：Apollo 用户的 OMP 逆向能力；新增 `~/.omp/agent/mcp.json` 的 `rea`，保留原服务并备份。
+- 配置入口：`~/.local/share/rea/toolchain/`、`providers/`；REA 源码入口为
+  `/home/vitus/work/rea/scripts/rea.mjs`。
+- 变更内容：固定 Node `24.22.1`／npm `11.16.0`，构建 REA
+  `6.8.0`，配置原生、Android、固件、抓包、信号及 WASM 引擎；客户端超时 `450000` 毫秒，安装技能
+  `53`。
+- 验证方式：真实 stdio
+  MCP 与 OMP 原生传输发现 231 个工具；反编译、调试、core、APK、固件、网络、UART、WASM 与浏览器交互实测通过；构建、类型检查、lint 和 28 项 MCP 测试通过。IDA／Hopper／JEB 与 macOS 主机限制保留明确状态，腾讯会议逆向及功能验收尚未开始。
+- 关联文档：[本机 REA 逆向 MCP](./omp-models.md#本机-rea-逆向-mcp)。
+
+### 腾讯会议共享黑屏确认是旧 Niri 会话未加载 SHM 补丁
+
+- 影响范围：Apollo 的腾讯会议 `3.26.10.401` 与当前 Niri 会话。
+- 用户澄清：主要问题是开始共享后看不到内容；不再按“入会即崩溃”判断。
+- 实测证据：11:10:37 portal 已选择 `DP-1`，Niri 随后报
+  `Paused -> Error("no more input formats")`，腾讯会议视频消费者 suspended。当前运行进程仍来自
+  `66hps6…`，系统与服务入口已切到带 SHM 补丁的 `mls1s…`。
+- 生效要求：保存图形应用工作后重新登录，确认新 Niri 路径，再验证共享真实画面；当前未取得补丁生效后的会议共享结果。
+- 关联文档：[腾讯会议历史共享黑屏](./tencent-meeting.md#历史故障旧-niri-会话未加载-shm-补丁)。
+
+### Apollo 修正 FUSE allow_other 的 NixOS 选项
+
+- 影响范围：Apollo 的 BoxLite 非 root FUSE 挂载与本机 rebuild。
+- 配置入口：`hosts/olympians-apollo/default.nix`。
+- 变更内容：将不存在的 `security.fuse.userAllowOther` 改为锁定 nixpkgs 定义的
+  `programs.fuse.userAllowOther`，保留原有 `allow_other` 意图，避免模块求值直接失败。
+- 验证方式：`just local` 完整构建成功，交互认证后同一产物切换成功（退出码 `0`）；系统 profile 与
+  `/run/current-system` 一致，实际 `/etc/fuse.conf` 含 `user_allow_other`，Home
+  Manager 成功，系统与用户单元无失败项。
+- 关联文档：[Apollo 的 FUSE allow_other](./host-shared-modules.md#apollo-的-fuse-allow_other)。
+
 ### 三机仓库拉齐并完成原生构建与系统切换
 
 - 影响范围：Apollo、Athena、Artemis 的 nix-config / my-secrets checkout 与已激活系统。
@@ -36,6 +165,20 @@
 - 关联文档：[三机部署验收](./homelab-ssh-key-romantic.md#三机统一部署验收2026-10-29)、
   [Magpie 目录与开关](./magpie.md#apollo-与-athena-共同跟随-magpie-的开关)、
   [Secrets 同步边界](../secrets/README.md#private-secrets-仓库)。
+
+### 腾讯会议默认使用 XWayland，Niri 回移 ScreenCast SHM 支持
+
+- 影响范围：Apollo、Athena、generic 的 Niri `26.04`；部署后需保存工作、退出桌面并重新登录。
+- 配置入口：`overlays/niri/default.nix`、`home/linux/gui/base/media.nix`；腾讯会议版本保持
+  `3.26.10.401`。
+- 变更内容：固定提交范围和 SHA-256 回移上游 PR #1791，在 DMA-BUF 之外提供 `MemFd` SHM 屏幕流；将
+  `wemeet` 与应用菜单统一到包自带的 `wemeet-xwayland`，保留音频/文件传输和共享 hook。保留 GNOME
+  portal、PipeWire 和 NVIDIA EGL vendor；Apollo 已部署，当前桌面会话保留至用户重登。
+- 验证方式：原版 Niri 上复现
+  `no more input formats`；带补丁 Niri 构建及 194 项上游测试通过。Apollo 完整构建与系统切换成功，已安装
+  `wemeet` 指向 xcb 入口；新 Niri 校验配置通过，Home
+  Manager 与 portal/PipeWire 服务正常。真实 SHM 帧和会议远端画面需重新登录后验收。
+- 关联文档：[Linux 腾讯会议](./tencent-meeting.md)、[Wayland 屏幕共享](./wayland-screen-sharing.md)。
 
 ### 三机 LAN SSH 互信与 Magpie 开关一致性
 
