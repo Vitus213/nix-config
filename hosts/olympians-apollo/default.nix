@@ -82,6 +82,9 @@ in
   # Zram consumes physical memory for compression, which can cause a deadlock and system hang if the model size approaches the physical memory limit.
   zramSwap.enable = false;
 
+  # BoxLite managed volumes and rootless bind mounts use FUSE allow_other.
+  programs.fuse.userAllowOther = true;
+
   services.sunshine.enable = true;
   services.tuned.ppdSettings.main.default = "performance";
 
