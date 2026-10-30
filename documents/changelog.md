@@ -4,6 +4,20 @@
 
 ## 2026-10-30
 
+### Magpie deepseek 上游更换官方 key 并对齐上下文声明
+
+- 影响范围：Athena 上 Magpie 网关的 `deepseek` 上游（`~/.config/magpie/providers.json`，CLI 管理）；
+  其余 8 个上游、路由组、网关 key 与各客户端 OMP 配置不变。
+- 配置入口：`magpie provider key deepseek`、`magpie model context`（Athena 本机状态，不进 Git）。
+- 变更内容：原 key（尾号 `1d04`，余额仅 0.96 CNY）更换为新官方 key（尾号 `b370`，
+  充值余额 99 USD）；`deepseek/deepseek-flash` 上下文从手工 1000000 对齐为官方 1048576。
+  上游仍为 `https://api.deepseek.com`，模型 `deepseek-flash`、`deepseek-v4-pro` 不变，
+  `auto-deepseek-v4-pro` 路由组无需改动。
+- 验证方式：`magpie provider test deepseek` 通过；经网关回环真实推理
+  `deepseek/deepseek-flash` 返回 `GW_FLASH_OK`、`deepseek/deepseek-v4-pro` 返回
+  `GW_PRO_OK`；新 key 官方余额接口确认 $99.49 → $99.37，扣费发生在新账户。
+- 关联文档：[Magpie 共享模型网关](./magpie.md#上游与凭据)。
+
 ### 腾讯会议远端画面黑屏根因修复（Mesa EGL 厂商切换）
 
 - 问题：接收他人共享与远端视频黑屏；X 侧窗口内容即为黑色，媒体层接收与解码正常（
