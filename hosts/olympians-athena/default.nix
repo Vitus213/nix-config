@@ -72,6 +72,9 @@ in
     (writeShellScriptBin "musl-gcc" ''
       exec ${muslCc}/bin/${muslCc.targetPrefix}cc "$@"
     '')
+    # apollo 用 kitty 作外层终端 ssh 过来时 TERM=xterm-kitty，
+    # 全屏 ncurses 程序需要 terminfo；只要输出产物，不装 kitty GUI。
+    kitty.terminfo
   ];
   programs.nix-ld.enable = true;
 

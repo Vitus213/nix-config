@@ -143,6 +143,20 @@ systemctl --user status herdr   # 应为 active (running)
 `herdr`，仍会形成嵌套终端复用器，双方都会处理分屏、复制和前缀键，且 Herdr 无法检测其中运行的 Agent。临时试用可以这样做，长期使用时应让一个工具负责会话管理：以 Herdr 为主时，先退出当前 Zellij 会话回到外层 Shell，再运行
 `herdr`。
 
+## 剪贴板图片粘贴（kitty 外层终端）
+
+OMP 在 SSH 会话里粘贴图片走 kitty 的 OSC 5522 剪贴板读取协议；foot 只有 OSC
+52 文本剪贴板，传不了图片。Herdr 二进制内置同一协议的处理逻辑，kitty 作外层终端即可打通
+`OMP → Herdr pane → Herdr client → kitty` 链路：
+
+1. `Mod+Ctrl+Return` 打开 kitty（kitty 里 Nushell 不会自动进 Zellij）。
+2. 运行 `herdr`，在 pane 里 `ssh` 到目标主机跑 OMP；也可以在 kitty 里直接 `ssh` 跑 OMP。
+3. 本机复制截图，在 OMP 输入框按粘贴：OMP 发出 OSC 5522 读取请求，kitty 授权后回传图片。
+
+读剪贴板时 kitty 默认弹授权确认，保持 ask，不自动放行。kitty 默认
+`TERM=xterm-kitty`，SSH 目标机缺该 terminfo 的处理见 [终端说明](../home/base/gui/terminal/README.md)
+的「`xterm-kitty` 远程主机问题」。
+
 ## Shell 与字体排障
 
 Herdr 不自行选择字体，外层终端负责最终字形渲染。当前 Ghostty `1.3.1` 与 Foot `1.27.0` 都使用

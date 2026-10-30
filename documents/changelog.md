@@ -4,6 +4,25 @@
 
 ## 2026-10-30
 
+### 加回 kitty 支持 SSH 会话里给 OMP 粘贴剪贴板图片
+
+- 影响范围：Linux 桌面（niri 主机共用 `home/base` 配置）。
+- 配置入口：`home/base/gui/terminal/terminals.nix`（`programs.kitty`）、
+  `home/linux/gui/niri/conf/keybindings.kdl`（`Mod+Ctrl+Return`）、
+  `home/linux/gui/niri/conf/windowrules.kdl`（kitty → `1terminal`）、
+  `home/base/tui/zellij/default.nix`（`KITTY_WINDOW_ID` 跳过自启）、
+  `hosts/olympians-athena/default.nix`（`kitty.terminfo`）。
+- 变更内容：kitty 之前因零使用移除，现作为唯一支持 OSC
+  5522 剪贴板读取协议的终端加回：OMP 在 SSH 会话里粘贴本机剪贴板图片只走该协议，foot 的 OSC
+  52 传不了图片；herdr client 内置同协议处理，`kitty → herdr → OMP`
+  链路可通。kitty 保持默认 ask 授权，不自动放行剪贴板读取。athena 经 `environment.systemPackages`
+  补装 `pkgs.kitty.terminfo`（terminfo 输出产物，不装 GUI），解决 ssh 过去 `TERM=xterm-kitty` 报错。
+- 验证方式：`just test`；`just remote-host athena` 远程 switch，切换后在 athena
+  `infocmp xterm-kitty` 可解析；协议链路为静态确认（OMP `utils/enhanced-paste.ts`
+  与 herdr 二进制 strings 均含 OSC 5522 处理），端到端贴图需 apollo 部署 kitty 后在 `ssh` +
+  OMP 与 herdr pane 两种场景实测。
+- 关联文档：[终端说明](../home/base/gui/terminal/README.md)、[Herdr](./herdr.md)。
+
 ### wemeet 采集库 SPA 字段名修正
 
 - 问题：`overlays/wemeet` 纳入构建后，`wemeet-desktop-capture`
