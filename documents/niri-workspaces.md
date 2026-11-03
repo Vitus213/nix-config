@@ -10,7 +10,7 @@
 | `2browser`  | 浏览器     | `Zen`、`Chrome`                                                 |
 | `3docs`     | 文档笔记   | `Obsidian`、`Apostrophe`、Notion、Linear                        |
 | `4codex`    | Codex GUI  | `ChatGPT`、`Codex`、`Claude` 等 AI 图形客户端                   |
-| `5code`     | 代码编辑器 | `VSCode`、`Cursor`、`Zed`                                       |
+| `5code`     | 代码编辑器 | `VSCode`、`Cursor`、`Zed`、`Delta`                              |
 | `6chat`     | 聊天沟通   | `Slack`、`Telegram`、飞书、微信、QQ                             |
 | `7misc`     | 空白暂存   | 无固定分配，临时窗口随手放                                      |
 | `8music`    | 音乐       | QQ 音乐、网易云音乐                                             |

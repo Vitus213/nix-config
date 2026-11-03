@@ -9,7 +9,7 @@
   `1.6.3`。
 - 当前 NixPak 只封装 2 个应用：`nixpaks.telegram-desktop`、`nixpaks.qq`。
 - 明确局部固定、局部修补或不完全跟随主 `nixpkgs` 统一更新的用户可见应用/数据包括 Pi / Oh My
-  Pi、QQ、WeChat、飞书、StablyAI Orca、Rime Ice、Catppuccin VSCode 扩展。
+  Pi、QQ、WeChat、飞书、StablyAI Orca、Delta、Rime Ice、Catppuccin VSCode 扩展。
 - Linux 桌面常规应用默认跟随主 `nixpkgs` 输入，也就是
   `github:nixos/nixpkgs/nixos-unstable`；仓库不再为常规软件额外维护 `nixpkgs-stable` 或
   `nixpkgs-master` 包集合。
@@ -19,6 +19,7 @@
 | 应用                   | 当前版本             | 配置入口                                                                                    | 版本来源                                                                                                                   | 固定/修补      | NixPak | 处理建议                                                                                                                                                                                                   |
 | ---------------------- | -------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Zed                    | `1.6.3`              | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.zed-editor`                                                                                          | 否             | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
+| Delta                  | `0.23.0`             | `flake.nix`、`overlays/delta/default.nix`、`home/linux/gui/base/editors.nix`                | 官方 `zed-industries/delta-nix` flake input，固定于 `flake.lock`                                                           | 是             | 否     | `nix flake update delta` 更新；CLI 改名 `delta-zed` 避免与 git-delta 冲突；详见 [Delta](./delta.md)                                                                                                        |
 | Orca                   | `1.4.137`            | `home/linux/gui/base/misc.nix`、`overlays/stably-orca/default.nix`                          | 官方 GitHub release 的 `orca-linux.AppImage`                                                                               | 是             | 否     | 使用 `pkgs.stably-orca` 避免与 GNOME `pkgs.orca` 冲突；更新时同步 `orca.md`                                                                                                                                |
 | Cursor                 | `3.7.19`             | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.code-cursor`                                                                                         | 否             | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
 | VSCode                 | `1.125.0`            | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.vscode`                                                                                              | 否             | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
@@ -49,7 +50,7 @@
 
 当前未使用 NixPak 的主要图形应用:
 
-- Zed、Cursor、VSCode、LibreOffice Fresh、Orca、飞书
+- Zed、Cursor、VSCode、LibreOffice Fresh、Orca、Delta、飞书
 - Zen Browser
 - WeChat，它使用 `appimageTools.wrapAppImage` 和 bubblewrap 参数，不是 NixPak
 - FlClash、Noctalia Shell、Voiceless

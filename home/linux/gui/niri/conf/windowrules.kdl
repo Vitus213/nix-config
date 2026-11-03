@@ -104,6 +104,11 @@ window-rule {
     open-on-workspace "5code"
     open-maximized true
 }
+window-rule {
+    match app-id="dev.zed.Delta"
+    open-on-workspace "5code"
+    open-maximized true
+}
 
 window-rule {
     match app-id="orca"

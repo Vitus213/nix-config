@@ -26,6 +26,9 @@ in
   home.packages = [
     pkgs.code-cursor
     pkgs.zed-editor
+    # Delta：Zed 团队的多人 agent 编码环境（thread + DeltaDB），CLI 为 delta-zed；
+    # 来自官方 delta-nix flake（经 overlays/delta 改名，避免与 git-delta 冲突）。
+    pkgs.delta-zed
     # pkgs.antigravity-fhs
     pkgs.libreoffice # 开源办公套件，Wayland 原生，替代闭源 WPS
   ];

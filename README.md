@@ -140,7 +140,7 @@ secrets 没 rekey，第一次切换后很容易看到 `nix-config` 目录变空�
 | 文件管理                   | [Yazi][Yazi] + [Dolphin][dolphin]                                                              |
 | Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                      |
 | 媒体播放器                 | [mpv][mpv]                                                                                     |
-| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed                                                       |
+| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed / Delta                                               |
 | 字体                       | [Nerd Fonts][Nerd fonts]                                                                       |
 | 图片查看                   | [imv][imv]                                                                                     |
 | 截图                       | Niri 内置截图                                                                                  |

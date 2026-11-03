@@ -2,6 +2,24 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-11-03
+
+### 安装 Delta（Zed agent 协作环境）并解决 `delta` 命名冲突
+
+- 影响范围：`apollo` NixOS 桌面 Home Manager 的 GUI 包列表、Niri `5code` 工作区窗口规则。
+- 配置入口：`flake.nix`（`delta` input）、`overlays/delta/default.nix`、
+  `home/linux/gui/base/editors.nix`、`home/linux/gui/niri/conf/windowrules.kdl`。
+- 变更内容：新增官方 `github:zed-industries/delta-nix` flake input（当前
+  `0.23.0`，闭源unfree，`nixpkgs.follows = "nixpkgs"`）。上游同时提供 `bin/delta` 与
+  `bin/delta-app`，前者与 nixpkgs 的 git-delta 冲突；`overlays/delta` 将 CLI 改名为
+  `delta-zed`、GUI 保持 `delta-app`，并把桌面项 `Exec` 改为 `delta-zed open %U`。Niri 中
+  `app-id="dev.zed.Delta"` 的窗口去 `5code` 并最大化。
+- 验证方式：构建 `pkgs.delta-zed` 并执行 `delta-zed --version` 得到 `delta 0.23.0`；构建
+  `home-manager.users.vitus.home.path` 成功（无 `bin/delta` 冲突）；实际启动后
+  `niri msg --json windows` 显示 `app_id=dev.zed.Delta`，随后关闭测试窗口。
+- 关联文档：[Delta（Zed 团队的 agent 协作环境）](./delta.md)、
+  [Niri 工作区与窗口分配](./niri-workspaces.md)、[应用版本审计](./application-version-audit.md)。
+
 ## 2026-10-30
 
 ### wemeet 采集库 SPA 字段名修正

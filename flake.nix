@@ -106,6 +106,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Delta —— Zed 团队的多人 agent 编码环境，官方 Nix 打包（仅 Linux）。
+    # 二进制闭源（unfree），版本随 flake.lock；更新：nix flake update delta。
+    delta = {
+      url = "github:zed-industries/delta-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ########################  Some non-flake repositories  #########################################
 
     nu_scripts = {
