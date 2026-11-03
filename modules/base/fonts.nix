@@ -34,9 +34,14 @@ in
       noto-fonts-color-emoji # 彩色的表情符号字体
       # Noto CJK 为「思源」系列汉字字体，由 Adobe + Google 共同开发
       # Google 以 Noto Sans/Serif CJK SC/TC/HK/JP/KR 的名称发布该系列字体。
-      # 这俩跟 noto-fonts-cjk-sans/serif 实际为同一字体，只是分别由 Adobe/Google 以自己的品牌名发布
-      # noto-fonts-cjk-sans # 思源黑体
+      # 与 source-han-* 是同一批字形，但字族名不同；cosmic-text 等应用按
+      # "Noto Sans CJK SC" 精确查找时只有这个包能命中，故两者都保留。
+      noto-fonts-cjk-sans # Noto Sans CJK SC
       # noto-fonts-cjk-serif # 思源宋体
+
+      # 常见 fallback 字族（Delta 的 cosmic-text 预设列表会按名查找）
+      dejavu_fonts
+      freefont_ttf
 
       # Adobe 以 Source Han Sans/Serif 的名称发布此系列字体
       source-sans # 无衬线字体，不含汉字。字族名叫 Source Sans 3，以及带字重的变体（VF）

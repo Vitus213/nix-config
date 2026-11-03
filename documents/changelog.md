@@ -4,6 +4,19 @@
 
 ## 2026-11-03
 
+### 修复 Delta 字体 fallback 导致的渲染与输入卡顿
+
+- 影响范围：所有启用了 `modules.desktop.fonts.enable` 的 Linux 桌面（apollo / athena / generic）。
+- 配置入口：`modules/base/fonts.nix`。
+- 问题：Delta 使用 cosmic-text，按硬编码列表查找 `Noto Sans CJK SC`、`FreeSans`、
+  `DejaVu Sans Mono`、`FreeMono`；仓库原先只有 Source
+  Han 系列，字族名不匹配。每个汉字都逐字尝试 fallback 并写 DEBUG 日志，30 分钟约 409k 行 / 49
+  MB，中文回退到 Source Han Serif，表现为字体发虚和输入卡顿。
+- 变更内容：启用 `noto-fonts-cjk-sans`，新增 `dejavu_fonts`、`freefont_ttf`；Source Han 系列保留。
+- 验证方式：`fc-match "Noto Sans CJK SC"` 返回 `NotoSansCJK-VF.otf.ttc`；重新启动 Delta 15 秒后
+  `delta.log` 只增加 1 行，`font::fallback` 为 0；`just test` = true。
+- 关联文档：[Delta（Zed 团队的 agent 协作环境）](./delta.md#字体与日志刷屏)。
+
 ### 安装 Delta（Zed agent 协作环境）并解决 `delta` 命名冲突
 
 - 影响范围：`apollo` NixOS 桌面 Home Manager 的 GUI 包列表、Niri `5code` 工作区窗口规则。

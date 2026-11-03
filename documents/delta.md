@@ -41,6 +41,36 @@ environment for coding with agents"。它不是 Zed 编辑器里的功能，也�
 
 上游只支持 `x86_64-linux` / `aarch64-linux`；macOS 不在本仓库 Nix 管理范围内。
 
+## 字体与日志刷屏
+
+Delta 使用 cosmic-text，按硬编码的 fallback 列表精确查找字族。仓库原先只有 Source Han（字族名是
+`Source Han Sans` / `Source Han Serif`），没有
+`Noto Sans CJK SC`，于是每个汉字都会逐字尝试 fallback，并产生 DEBUG 日志：
+
+```
+failed to find family 'Noto Sans CJK SC' for script Han
+failed to find family 'FreeSans'
+failed to find family 'DejaVu Sans Mono'
+failed to find family 'FreeMono'
+failed to find family 'Noto Sans Symbols2'
+```
+
+实测 30 分钟内写入约 409k 行、49 MB 日志，同时中文回退到
+`Source Han Serif`，表现为字体发虚、衬线、输入卡顿。
+
+修复在 `modules/base/fonts.nix`：启用 `noto-fonts-cjk-sans`（提供 `Noto Sans CJK SC`
+字族名），并补充 `dejavu_fonts`、`freefont_ttf`。Source Han 系列保留，两者字形相同但字族名不同。
+
+验证：
+
+```bash
+fc-match "Noto Sans CJK SC"   # NotoSansCJK-VF.otf.ttc
+fc-match "DejaVu Sans Mono"   # DejaVuSansMono.ttf
+```
+
+修复后启动 Delta 15 秒，日志只增加 1 行，`font::fallback` 计数为 0。若仍看到
+`Noto Sans Symbols2`（没有空格）的提示，那是 Delta 预设名的拼写问题，不影响中文渲染。
+
 ## 使用
 
 从应用启动器打开 "Delta"，或：
