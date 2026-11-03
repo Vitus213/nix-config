@@ -8,10 +8,11 @@
 #
 # 当前保留的终端模拟器：
 #   - Linux:  foot（Mod+Return 主终端） + alacritty（Mod+Shift+Return 备用）
+#             + kitty（Mod+Ctrl+Return，SSH 里给 OMP 贴剪贴板图片用）
 #   - macOS:  ghostty（Homebrew cask 安装） + alacritty
 #
-# ghostty 和 kitty 已不再用于 Linux 桌面。标签页、复制、搜索、滚动历史和
-# 工作区交给 Zellij，终端只提供基础能力。
+# ghostty 不再用于 Linux 桌面。标签页、复制、搜索、滚动历史和工作区交给
+# Zellij，终端只提供基础能力；kitty 是例外，见下方注释。
 #
 ###########################################################
 let
@@ -79,6 +80,24 @@ in
   systemd.user.services.foot = {
     unitConfig.StartLimitIntervalSec = 0;
     serviceConfig.RestartSec = 2;
+  };
+
+  # kitty：唯一实现 OSC 5522 剪贴板读取协议的常用终端。OMP 在 SSH 会话里
+  # 粘贴图片只走该协议（foot 只有 OSC 52 文本剪贴板），herdr client 亦内置
+  # 同协议处理；用 kitty 作外层终端即可粘贴本机截图给远程 OMP。
+  # 读剪贴板时 kitty 默认弹授权确认，保持 ask，不自动放行。
+  programs.kitty = {
+    # 仅 Linux；macOS 终端仍是 Homebrew 的 ghostty
+    enable = pkgs.stdenv.hostPlatform.isLinux;
+
+    # https://sw.kovidgoyal.net/kitty/conf.html
+    settings = {
+      font_family = "Maple Mono NF CN";
+      font_size = "13.0";
+      scrollback_lines = 20000;
+      # Spawn a nushell in login mode via `bash`
+      shell = "${pkgs.bash}/bin/bash --login -c 'nu --login --interactive'";
+    };
   };
 
   # ghostty 不再通过 Home Manager 安装到任何平台：

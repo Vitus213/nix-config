@@ -18,6 +18,7 @@ binds {
     // foot 以 server 模式常驻（foot.service），footclient 只负责开窗。
     Mod+Return { spawn "footclient"; }
     Mod+Shift+Return { spawn "alacritty"; }
+    Mod+Ctrl+Return { spawn "kitty"; }
 
     // Launcher
     Mod+D { spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
