@@ -7,14 +7,17 @@
 }:
 let
   # agenix 解密位置：NixOS 复制到 /etc/agenix（/run/agenix 对用户不可遍历），darwin 直接读 /run/agenix
-  secretPaths = name: [
-    "/etc/agenix/${name}"
-    "/run/agenix/${name}"
-  ];
+  secretPaths =
+    name:
+    lib.optional (config.modules.secrets.home.enable or false) config.age.secrets.${name}.path
+    ++ [
+      "/etc/agenix/${name}"
+      "/run/agenix/${name}"
+    ];
 
   # wakatime-cli 通过 api_key_vault_cmd 调用它取 key，明文不落 ~/.wakatime.cfg
   wakatimeApiKey = pkgs.writeShellScriptBin "wakatime-api-key" ''
-    for f in ${lib.concatStringsSep " " (secretPaths "wakatime-api-key")}; do
+    for f in ${lib.concatMapStringsSep " " (p: ''"${p}"'') (secretPaths "wakatime-api-key")}; do
       if [ -r "$f" ]; then
         tr -d '\n' < "$f"
         exit 0
@@ -38,7 +41,7 @@ let
         --ccusage ${lib.getExe pkgs.ccusage} \
         --theme gruvbox --radius 15 \
         ${lib.optionalString (hostName != "") "--host ${hostName}"} \
-        ${lib.concatMapStringsSep " " (p: "--token-file ${p}") (secretPaths "github_token")} \
+        ${lib.concatMapStringsSep " " (p: ''--token-file "${p}"'') (secretPaths "github_token")} \
         "$@"
     '';
   };

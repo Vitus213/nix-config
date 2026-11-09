@@ -58,6 +58,14 @@ in
           file = "${mysecrets}/github_token.age";
         }
         // user_readable;
+        "wakatime-api-key" = {
+          file = "${mysecrets}/wakatime-api-key.age";
+        }
+        // user_readable;
+        "omp-keys" = {
+          file = "${mysecrets}/omp-keys.age";
+        }
+        // user_readable;
         "nix-access-tokens" = {
           file = "${mysecrets}/nix-access-tokens.age";
         }

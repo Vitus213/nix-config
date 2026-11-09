@@ -10,7 +10,11 @@ let
   modelsGenerated = "${ompAgentDir}/.models.generated.yml";
   modelsTemplate = ./omp-models.yml.in;
   syncScript = ./omp-sync.py;
-  keysFile = "/run/agenix/omp-keys";
+  keysFile =
+    if config.modules.secrets.home.enable or false then
+      config.age.secrets."omp-keys".path
+    else
+      "/run/agenix/omp-keys";
 
   # 从 agenix 解密出的 key 文件 + Nix store 模板，生成实际 models.yml（含明文 key，仅落用户目录）。
   # 手动运行 `omp-sync-models` 可从模板重置本机配置（覆盖手改）。

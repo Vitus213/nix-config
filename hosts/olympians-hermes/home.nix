@@ -10,6 +10,9 @@ in
 {
   targets.genericLinux.enable = true;
 
+  # New WSL instances must not publish usage reports before explicit opt-in.
+  systemd.user.timers.agent-usage-report.Install.WantedBy = lib.mkForce [ ];
+
   home.sessionVariables = {
     NIXCFG_HOSTNAME = hostName;
   };

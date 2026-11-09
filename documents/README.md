@@ -19,6 +19,8 @@
 | [rEFInd 引导方案](./refind-boot.md)                                        | `apollo` 上 NixOS 与 Windows 双系统引导                 |
 | [NixOS 内核策略](./nixos-kernel.md)                                        | 内核版本选择方式                                        |
 
+| [hermes（Ubuntu WSL）](./hermes-wsl.md) | Ubuntu 24.04 独立 Home Manager、用户 secrets 与验证 |
+
 ## 系统维护
 
 | 文档                                                         | 内容                                      |

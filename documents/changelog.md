@@ -2,6 +2,17 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-11-09
+
+### 部署 Ubuntu WSL hermes 与用户 secrets
+
+- 影响范围：Ubuntu 独立 Home Manager、OMP 和 WakaTime 的用户 secret 路径。
+- 配置入口：`secrets/home.nix`、`home/base/core/omp.nix`、`home/base/tui/agent-usage/default.nix` 与
+  `hosts/olympians-hermes/home.nix`。
+- 为新 hermes 身份开放共享 secrets；保留现有接收者，禁用新主机的用量报告自动发布定时器。
+- 验证：activationPackage 完整构建、激活、agenix 解密、OMP 同步与配置检查。
+- 关联文档：[hermes Ubuntu WSL](./hermes-wsl.md)。
+
 ## 2026-11-03
 
 ### 修复 Delta 字体 fallback 导致的渲染与输入卡顿
