@@ -65,7 +65,7 @@
         "image/png" = [ "imv-dir.desktop" ];
         "image/webp" = [ "imv-dir.desktop" ];
 
-        "inode/directory" = [ "yazi.desktop" ];
+        "inode/directory" = [ "dev.duxlabs.files.desktop" ];
       };
 
     associations.removed = {

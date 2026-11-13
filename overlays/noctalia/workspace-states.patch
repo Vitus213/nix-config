@@ -1,0 +1,148 @@
+--- a/src/shell/bar/widgets/workspaces_widget.h
++++ b/src/shell/bar/widgets/workspaces_widget.h
+@@ -124,6 +124,7 @@
+   struct Item {
+     InputArea* area = nullptr;
+     Box* indicator = nullptr;
++    Box* urgencyDot = nullptr;
+     Label* text = nullptr;
+     Image* icon = nullptr;
+     Label* separator = nullptr;
+--- a/src/shell/bar/widgets/workspaces_widget.cpp
++++ b/src/shell/bar/widgets/workspaces_widget.cpp
+@@ -157,10 +157,17 @@
+ void WorkspacesWidget::applyItemVisualStyle(Item& item) {
+   if (item.indicator != nullptr) {
+     item.indicator->setFill(workspaceFillColor(item.visualWorkspace, item.output));
+-    item.indicator->clearBorder();
++    if (m_style == WorkspacesStyle::Regular && m_changeColorOnHover && m_hoveredArea == item.area) {
++      item.indicator->setBorder(colorSpecFromRole(ColorRole::OutlineVariant), 1.0F);
++    } else {
++      item.indicator->clearBorder();
++    }
+   }
+   if (item.text != nullptr && item.showLabel) {
+     item.text->setColor(workspaceTextColor(item.visualWorkspace, item.output));
++  }
++  if (item.urgencyDot != nullptr) {
++    item.urgencyDot->setVisible(item.workspace.urgent);
+   }
+ }
+ 
+@@ -543,10 +550,17 @@
+       slot.inactiveWidth = std::max(minWidth, textBasedWidth);
+       slot.activeWidth = std::max(minActiveWidth, textBasedWidth);
+     }
++    if (!m_isVertical) {
++      slot.inactiveWidth += 6.0F;
++      slot.activeWidth += 6.0F;
++    }
+   }
+ 
+   m_gap = gap;
+   m_indicatorHeight = isMinimal() ? std::round(maxLabelHeight + padding) : pillHeight;
++  if (m_style == WorkspacesStyle::Regular && m_isVertical) {
++    m_indicatorHeight += 6.0F;
++  }
+   m_crossSize = m_indicatorHeight;
+ 
+   for (std::size_t i = 0; i < entries.size(); ++i) {
+@@ -627,6 +641,16 @@
+       ));
+       item.text->measure(renderer);
+     }
++    if (m_style == WorkspacesStyle::Regular) {
++      item.urgencyDot = static_cast<Box*>(area->addChild(ui::box({
++          .fill = colorSpecFromRole(ColorRole::Error),
++          .radius = 2.0F,
++          .width = 4.0F,
++          .height = 4.0F,
++          .visible = ws.urgent,
++          .participatesInLayout = false,
++      })));
++    }
+ 
+     if (showsActiveIcon() && ws.active) {
+       item.showIcon = true;
+@@ -657,6 +681,10 @@
+ 
+         m_hoveredArea = areaPtr;
+         updateHoverOverlay();
++        if (m_style == WorkspacesStyle::Regular) {
++          requestRedraw();
++          return;
++        }
+ 
+         const ColorSpec fill = widgetForegroundOr(colorSpecFromRole(ColorRole::OnSurface));
+         auto applyHoverProgress = [this, fill](float p) {
+@@ -690,6 +718,10 @@
+ 
+         m_hoveredArea = nullptr;
+         updateHoverOverlay();
++        if (m_style == WorkspacesStyle::Regular) {
++          requestRedraw();
++          return;
++        }
+ 
+         const ColorSpec fill = widgetForegroundOr(colorSpecFromRole(ColorRole::OnSurface));
+         auto applyHoverProgress = [this, fill](float p) {
+@@ -932,6 +964,10 @@
+       const float textBasedWidth = textWidth + padding;
+       item.inactiveWidth = std::max(minWidth, textBasedWidth);
+       item.activeWidth = std::max(minActiveWidth, textBasedWidth);
++    }
++    if (!m_isVertical) {
++      item.inactiveWidth += 6.0F;
++      item.activeWidth += 6.0F;
+     }
+   }
+ 
+@@ -1185,6 +1221,10 @@
+       it.indicator->setRadius(workspacePillRadius(itemW, itemH));
+     }
+   }
++  if (it.urgencyDot != nullptr) {
++    it.urgencyDot->setPosition(std::max(0.0F, itemW - 6.0F), 2.0F);
++    it.urgencyDot->setVisible(it.workspace.urgent);
++  }
+ 
+   if (m_hoveredArea == it.area) {
+     updateHoverOverlay();
+@@ -1253,6 +1293,12 @@
+ }
+ 
+ void WorkspacesWidget::updateHoverOverlay() {
++  if (m_style == WorkspacesStyle::Regular) {
++    for (auto& item : m_items) {
++      applyItemVisualStyle(item);
++    }
++    return;
++  }
+   const auto hoveredIt =
+       m_hoveredArea != nullptr ? std::ranges::find(m_items, m_hoveredArea, &Item::area) : m_items.end();
+   if (hoveredIt == m_items.end() || hoveredIt->exiting) {
+@@ -1553,11 +1599,14 @@
+   if (workspace.active) {
+     return workspaceUsesFocusedStyle(workspace, output) ? m_focusedColor : m_occupiedColor;
+   }
+-  if (workspace.urgent) {
++  if (workspace.urgent && m_style != WorkspacesStyle::Regular) {
+     return m_urgentColor;
+   }
+   if (workspace.occupied) {
+     return m_occupiedColor;
++  }
++  if (m_style == WorkspacesStyle::Regular) {
++    return m_emptyColor;
+   }
+   ColorSpec color = m_emptyColor;
+   color.alpha *= 0.55F;
+@@ -1565,7 +1614,7 @@
+ }
+ 
+ ColorSpec WorkspacesWidget::workspaceTextColor(const Workspace& workspace, wl_output* output) const {
+-  if (workspace.urgent) {
++  if (workspace.urgent && m_style != WorkspacesStyle::Regular) {
+     return isMinimal() ? m_urgentColor : readableColorForFill(m_urgentColor);
+   }
+   if (!isMinimal()) {

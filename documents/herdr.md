@@ -131,7 +131,8 @@ systemctl --user status herdr   # 应为 active (running)
 
 ## 与 Zellij 的关系
 
-普通终端（Ghostty、Foot 等）中的 Nushell 仍会自动进入 Zellij；Herdr Pane 中则跳过该自动启动：
+Linux 默认终端 kitty 中的 Nushell 不会自动进入 Zellij；其他普通终端保留自动启动，Herdr
+Pane 中也跳过：
 
 - `home/base/tui/zellij/default.nix` 的自动启动条件包含 `(not ("HERDR_ENV" in $env))`。
 - Herdr 会给每个交互式 Pane 注入 `HERDR_ENV=1`，因此 Herdr
@@ -149,7 +150,7 @@ OMP 在 SSH 会话里粘贴图片走 kitty 的 OSC 5522 剪贴板读取协议；
 52 文本剪贴板，传不了图片。Herdr 二进制内置同一协议的处理逻辑，kitty 作外层终端即可打通
 `OMP → Herdr pane → Herdr client → kitty` 链路：
 
-1. `Mod+Ctrl+Return` 打开 kitty（kitty 里 Nushell 不会自动进 Zellij）。
+1. `Mod+Return` 打开 kitty（`Mod+Shift+Return`、`Mod+Ctrl+Return` 也相同；不自动进 Zellij）。
 2. 运行 `herdr`，在 pane 里 `ssh` 到目标主机跑 OMP；也可以在 kitty 里直接 `ssh` 跑 OMP。
 3. 本机复制截图，在 OMP 输入框按粘贴：OMP 发出 OSC 5522 读取请求，kitty 授权后回传图片。
 

@@ -113,6 +113,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # 原生 Noctalia 5.5.0 保留上游自己的 nixpkgs，避免改动主系统输入。
+    noctalia.url = "github:noctalia-dev/noctalia/c2573248a89470383e41b8e1ac432424691cbc1f";
+    noctalia-plugins = {
+      url = "github:noctalia-dev/community-plugins/33d7ba696a6644016ae3c0706c0b5fcf066e42e8";
+      flake = false;
+    };
+
+    # Dux Files：独立 Wayland 文件管理器，官方 NixOS 模块。
+    dux-files = {
+      url = "github:duxlabs-dev/dux-files/v2.1.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     ########################  Some non-flake repositories  #########################################
 
     nu_scripts = {

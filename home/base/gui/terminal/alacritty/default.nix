@@ -24,7 +24,7 @@
 ###########################################################
 {
   programs.alacritty = {
-    enable = true;
+    enable = pkgs.stdenv.hostPlatform.isDarwin;
     # https://alacritty.org/config-alacritty.html
     settings = {
       window = {

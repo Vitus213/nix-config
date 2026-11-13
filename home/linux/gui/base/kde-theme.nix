@@ -7,7 +7,7 @@ let
   };
 in
 {
-  # Kvantum 样式引擎（Qt6 插件）；Dolphin 等 Qt 应用经 QT_STYLE_OVERRIDE 使用它
+  # Kvantum 样式引擎（Qt6 插件）；Qt widget 应用经 QT_STYLE_OVERRIDE 使用它
   home.packages = with pkgs; [
     kdePackages.qtstyleplugin-kvantum
   ];

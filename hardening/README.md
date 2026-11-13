@@ -16,21 +16,20 @@
 ```text
 hardening/
 ├── apparmor/   # AppArmor 配置
-├── bwraps/     # 直接使用 bubblewrap 的沙箱
 ├── nixpaks/    # 基于 nixpak 的应用沙箱
 └── profiles/   # 系统加固 profile
 ```
 
 ## 当前状态
 
-| 组件              | 状态   | 说明            |
-| ----------------- | ------ | --------------- |
-| AppArmor          | 整理中 | 基础结构已存在  |
-| Nixpak QQ         | 使用中 | QQ 沙箱         |
-| Bubblewrap WeChat | 使用中 | WeChat 专用沙箱 |
-| 系统 profile      | 整理中 | 系统级加固配置  |
+| 组件         | 状态   | 说明           |
+| ------------ | ------ | -------------- |
+| AppArmor     | 整理中 | 基础结构已存在 |
+| Nixpak QQ    | 使用中 | QQ 沙箱        |
+| 系统 profile | 整理中 | 系统级加固配置 |
 
-NixOS 桌面上的微信和 QQ 使用方式见 [Linux 微信与 QQ](../documents/linux-im-apps.md)。
+QQ 等应用的沙箱配置见 [Linux 微信、QQ 与飞书](../documents/linux-im-apps.md)；微信直接运行
+`pkgs.wechat`，不使用沙箱。
 
 ## 参考方向
 

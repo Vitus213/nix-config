@@ -25,6 +25,7 @@ extend-ignore-re = [
   "daed",
   "60e459ba", # git short hash（documents/magpie.md）
   "00 ba ba", # 媒体 UDP 分组信封魔数（documents/tencent-meeting.md）
+  "MTg0NDQ5NTIyNzg5(NTUwNjk2Nzk|MzMyNjI0NTY)", # 微信 COS 对象版本标识，不能修正拼写
 
   # catppuccin theme colors
   "11111b",

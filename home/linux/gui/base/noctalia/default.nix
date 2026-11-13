@@ -3,11 +3,15 @@
   config,
   pkgs,
   wallpapers,
+  noctalia-plugins,
   ...
 }:
 
 let
-  package = pkgs.noctalia-shell;
+  package = pkgs.noctalia;
+  mkSymlink = config.lib.file.mkOutOfStoreSymlink;
+  confPath = "${config.home.homeDirectory}/nix-config/home/linux/gui/base/noctalia";
+  tomlFormat = pkgs.formats.toml { };
 in
 {
 
@@ -21,46 +25,66 @@ in
   ]);
 
   home.file."Pictures/Wallpapers".source = wallpapers + "/jpg";
-  xdg.configFile =
-    let
-      mkSymlink = config.lib.file.mkOutOfStoreSymlink;
-      confPath = "${config.home.homeDirectory}/nix-config/home/linux/gui/base/noctalia";
-    in
-    {
-      # NOTE: use config dir as noctalia config because config is not only settings.json
-      # https://github.com/noctalia-dev/noctalia-shell/blob/main/nix/home-module.nix#L211-L220
-      "noctalia".source = mkSymlink "${confPath}/config";
-      "qt6ct/qt6ct.conf".source = mkSymlink "${confPath}/qt6ct.conf";
-      "totp/secrets.conf" = {
-        source = mkSymlink "/etc/agenix/totp-secrets.conf";
-        force = true;
+  xdg.configFile = {
+    "noctalia/config.toml".source = mkSymlink "${confPath}/config/config.toml";
+    "noctalia/scripts/totp".source = mkSymlink "${confPath}/config/scripts/totp";
+    "noctalia/plugins.toml".source = tomlFormat.generate "noctalia-plugins.toml" {
+      plugins = {
+        enabled = [
+          "thepunkoff/pomodoro"
+          "vitus/desktop"
+        ];
+        auto_update = "none";
+        source = [
+          {
+            name = "community-pinned";
+            kind = "path";
+            location = toString noctalia-plugins;
+            enabled = true;
+          }
+        ];
       };
     };
+    "qt6ct/qt6ct.conf".source = mkSymlink "${confPath}/qt6ct.conf";
+    "totp/secrets.conf" = {
+      source = mkSymlink "/etc/agenix/totp-secrets.conf";
+      force = true;
+    };
+  };
 
-  systemd.user.services.noctalia-shell = {
+  xdg.dataFile."noctalia/plugins/desktop".source = mkSymlink "${confPath}/plugins/desktop";
+
+  # 只移除本仓库旧的受管目录链接，其他目标视为冲突。
+  home.activation.migrateNoctaliaConfig = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+    noctalia_config="${config.xdg.configHome}/noctalia"
+    if [ -L "$noctalia_config" ]; then
+      target="$(readlink -f "$noctalia_config")"
+      if [ "$target" = "${confPath}/config" ]; then
+        run unlink "$noctalia_config"
+      else
+        echo "Noctalia config link conflicts with managed migration: $noctalia_config -> $target" >&2
+        exit 1
+      fi
+    fi
+  '';
+
+  systemd.user.services.noctalia = {
     Unit = {
       Description = "Noctalia Shell - Wayland desktop shell";
-      Documentation = "https://docs.noctalia.dev/docs";
-      PartOf = [ config.wayland.systemd.target ];
-      After = [ config.wayland.systemd.target ];
+      Documentation = "https://github.com/noctalia-dev/noctalia/tree/v5.5.0";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "niri.service" ];
+      Before = [ "graphical-session.target" ];
     };
 
     Service = {
+      Type = "notify";
       ExecStart = lib.getExe package;
       Restart = "on-failure";
 
-      Environment = [
-        # 必须与会话的 QT_QPA_PLATFORM 一致：noctalia-qs 的 ipc 按它推导的 display 过滤实例，
-        # 不一致时 `noctalia-shell ipc call ...`（Alt+Space、锁屏等）会报 No running instances。
-        "QT_QPA_PLATFORM=wayland"
-        "QT_QPA_PLATFORMTHEME=qt6ct"
-        "QT_AUTO_SCREEN_SCALE_FACTOR=1"
-        # 锁屏认证走专用精简 PAM 服务（定义在 modules/nixos/desktop/security.nix），
-        # 避免默认 login 栈的多次哈希验证导致解锁缓慢。
-        "NOCTALIA_PAM_SERVICE=noctalia-lock"
-      ];
+      Environment = [ "TERMINAL=kitty" ];
     };
 
-    Install.WantedBy = [ config.wayland.systemd.target ];
+    Install.WantedBy = [ "niri.service" ];
   };
 }

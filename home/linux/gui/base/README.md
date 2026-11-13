@@ -4,73 +4,46 @@
 
 ## 模块分类
 
-| 文件或目录          | 用途                                    |
-| ------------------- | --------------------------------------- |
-| `noctalia/`         | Noctalia Shell 配置和用户服务           |
-| `hypridle/`         | 空闲管理                                |
-| `fcitx5/`           | Fcitx5 输入法                           |
-| `gtk.nix`           | GTK 主题                                |
-| `xdg/`              | XDG 文件关联和 autostart                |
-| `browsers.nix`      | 浏览器                                  |
-| `desktop-tools.nix` | 日常桌面工具                            |
-| `dev-tools.nix`     | GUI 开发工具                            |
-| `editors.nix`       | GUI 编辑器                              |
-| `media.nix`         | 媒体应用                                |
-| `voice-input.nix`   | Voiceless 语音输入与 overlay 服务       |
-| `creative.nix`      | 创作软件                                |
-| `note-taking.nix`   | 笔记应用                                |
-| `misc.nix`          | Wayland 工具、截图、录屏、音频、Orca 等 |
-| `nvidia.nix`        | NVIDIA 相关用户级配置                   |
+| 文件或目录          | 用途                              |
+| ------------------- | --------------------------------- |
+| `noctalia/`         | Noctalia Shell 配置和用户服务     |
+| `hypridle/`         | 空闲管理                          |
+| `fcitx5/`           | Fcitx5 输入法                     |
+| `gtk.nix`           | GTK 主题                          |
+| `xdg/`              | XDG 文件关联和 autostart          |
+| `browsers.nix`      | 浏览器                            |
+| `desktop-tools.nix` | 日常桌面工具                      |
+| `dev-tools.nix`     | GUI 开发工具                      |
+| `editors.nix`       | GUI 编辑器                        |
+| `media.nix`         | 媒体应用                          |
+| `voice-input.nix`   | Voiceless 语音输入与 overlay 服务 |
+| `creative.nix`      | 创作软件                          |
+| `note-taking.nix`   | 笔记应用                          |
+| `misc.nix`          | 电子书、远程桌面与即时通信应用    |
+| `nvidia.nix`        | NVIDIA 相关用户级配置             |
 
 ## Noctalia Shell
 
-Noctalia Shell 当前承担桌面 shell 的主要职责，替代或整合了部分传统工具:
+声明配置固定原生 Noctalia `5.5.0`，由 `noctalia.service` 用户服务启动。软件包入口是
+`pkgs.noctalia`，配置与本地插件位于 `noctalia/`。apollo 已完成挂载顺序修正版的
+`switch`，运行系统与开机 profile 一致；主要桌面检查和真实错误/正确密码解锁均已通过。迁移与完整回滚见
+[Noctalia v5](../../../../documents/noctalia-v5.md)。
 
-| 传统工具    | 作用     | Noctalia 对应能力 |
-| ----------- | -------- | ----------------- |
-| `gammastep` | 夜间色温 | `nightLight`      |
-| `swaylock`  | 锁屏     | 内置锁屏          |
-| `anyrun`    | 启动器   | `appLauncher`     |
-| `mako`      | 通知     | `notifications`   |
-| `waybar`    | 状态栏   | `bar`             |
-| `wlogout`   | 会话菜单 | `sessionMenu`     |
+`noctalia/config/config.toml` 是仓库基础层；Home Manager 按文件链接到
+`~/.config/noctalia/`。GUI 改动保存在
+`~/.local/state/noctalia/settings.toml`，最后加载并覆盖基础层。服务使用
+`TERMINAL=kitty`，启动的应用由独立 systemd transient service 承载。
 
-主配置在 `noctalia/config/settings.json`。
+原生 Shell 提供状态栏、通知、启动器、剪贴板、锁屏、夜间色温和会话菜单。锁屏命令是
+`noctalia msg session lock`；软件包补丁固定使用专用 `/etc/pam.d/noctalia-lock`，GNOME
+Keyring 继续由 greetd 登录阶段解锁。详见 [PAM 说明](../../../../documents/lockscreen-pam.md)。
 
-Noctalia 从本机私有目录 `~/Pictures/WLOP`
-递归读取壁纸，当前每 600 秒为所有显示器随机切换，并从壁纸生成 Shell 配色。该目录不由 Nix、Home
-Manager 或 Git 管理；每台桌面主机都需要从 WLOP 官方渠道单独准备图片。当前筛选作品的标题、官方页面和预期文件名记录在公开的
-[Vitus213/wallpapers](https://github.com/Vitus213/wallpapers)，仓库不保存原图。
+壁纸目录为 `/home/vitus/Pictures/Wallpapers`，Home Manager 链接到固定 wallpapers input 的 `jpg/`
+子目录。当前基础壁纸为 `dome.jpg`，递归浏览开启，自动换图关闭，Shell 从壁纸生成配色。使用
+`noctalia msg wallpaper-set <path>` 换图；更新图库需更新 wallpapers input 并部署。
 
-新增或恢复壁纸时，将合法取得的文件复制到 `~/Pictures/WLOP`，再通过 Noctalia 壁纸选择器或
-`noctalia-shell ipc call wallpaper set <path> all` 应用。需要更换目录时修改
-`noctalia/config/settings.json` 的 `wallpaper.directory`；回滚时恢复该字段并重新选择目标图片。
-
-Noctalia Shell 由 Home Manager 的 `noctalia-shell.service` 用户服务启动。服务设置了
-`NOCTALIA_PAM_SERVICE=noctalia-lock`，锁屏认证使用专用的精简 PAM 服务
-`/etc/pam.d/noctalia-lock`（定义在
-`modules/nixos/desktop/security.nix`），只做一次 pam_unix 校验，避免默认 `login`
-栈的多次哈希验证导致解锁等待约 10 秒。该服务不运行 session 阶段，锁屏时不再顺带解锁 gnome-keyring；登录时 greetd 已负责解锁，会话内不受影响。背景与验证见
-[documents/lockscreen-pam.md](../../../../documents/lockscreen-pam.md)。
-
-锁屏由 `hypridle` 触发 `noctalia-shell ipc call lockScreen lock`。
-
-### 壁纸来源
-
-Noctalia Shell `4.4.3` 从 `/home/vitus/Pictures/Wallpapers` 递归读取壁纸，路径由
-`noctalia/config/settings.json` 的 `wallpaper.directory` 固定。Home Manager 将该目录链接到非 flake
-input `github:Vitus213/wallpapers` 的 `jpg/` 子目录；`flake.lock`
-固定具体提交，只向壁纸选择器暴露 JPG 文件，不暴露壁纸仓库的 `README.md` 和 `sources.json`。
-
-新增或替换壁纸时先更新 `Vitus213/wallpapers` 的 `jpg/` 目录，再更新本仓库的 `wallpapers`
-锁定版本并部署配置。当前 `automationEnabled` 为 `false`，不会按间隔自动切换壁纸。回滚时可将
-`wallpapers.url` 和 `home.file."Pictures/Wallpapers".source` 改回其他壁纸仓库及其图片子目录。
-
-## Orca
-
-`misc.nix` 通过 `pkgs.stably-orca` 安装 StablyAI Orca `1.4.137`，启动命令为
-`orca`。`xdg/autostart.nix` 让 Orca 在登录 Niri 图形会话后自动启动；Niri 会将窗口默认打开到 `5code`
-工作区并最大化。版本固定、自启动、更新和回滚方式见 [Orca 桌面应用](../../../../documents/orca.md)。
+本地 `vitus/desktop` 插件桥接现有 TOTP 脚本与系统负载；番茄钟使用固定社区插件
+`thepunkoff/pomodoro`。TOTP 密钥仍由 agenix 提供，旧番茄钟统计仅保存在本机私有备份中。
 
 ## 空闲策略
 
@@ -82,5 +55,5 @@ input `github:Vitus213/wallpapers` 的 `jpg/` 子目录；`flake.lock`
 
 ## 参考
 
-- <https://docs.noctalia.dev/v4/>
+- <https://github.com/noctalia-dev/noctalia/tree/v5.5.0/docs/user>
 - [上级目录说明](../README.md)

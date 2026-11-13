@@ -24,7 +24,6 @@ let
         # nixos hardening
         # "hardening/profiles/default.nix"
         "hardening/nixpaks"
-        "hardening/bwraps"
       ])
       ++ [
         {

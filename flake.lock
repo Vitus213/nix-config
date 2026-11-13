@@ -44,6 +44,22 @@
         "type": "github"
       }
     },
+    "dank-qml-common": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794151661,
+        "narHash": "sha256-DhTvMaG7G0hG9eOZjgX24NR+cc9vRQ77LXrGfnF5dxY=",
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "rev": "2eb518fa47397d9b06d5ab1fd49bf045e16018e0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "duxlabs-dev",
+        "repo": "dux-qml-common",
+        "type": "github"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -83,6 +99,28 @@
       "original": {
         "owner": "zed-industries",
         "repo": "delta-nix",
+        "type": "github"
+      }
+    },
+    "dux-files": {
+      "inputs": {
+        "dank-qml-common": "dank-qml-common",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794152728,
+        "narHash": "sha256-QvzIP92EzO2d+1soAE2rZna+wmirZUfYdT+DPuWKF5k=",
+        "owner": "duxlabs-dev",
+        "repo": "dux-files",
+        "rev": "994e99772f78e52dc4b8cb9b947c95159252be10",
+        "type": "github"
+      },
+      "original": {
+        "owner": "duxlabs-dev",
+        "ref": "v2.1.2",
+        "repo": "dux-files",
         "type": "github"
       }
     },
@@ -440,6 +478,55 @@
         "type": "github"
       }
     },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1793876309,
+        "narHash": "sha256-Q62pssAT9r01POiSyXW0IPXBWhntiKqMhzlsp3bsl5I=",
+        "rev": "f9a75f41be3a74eab55d3a7679d34ad6cc0da977",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1108983.f9a75f41be3a/nixexprs.tar.zst"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst"
+      }
+    },
+    "noctalia": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1794447720,
+        "narHash": "sha256-JFT5v+NFN6j/5nDZ5oKizflUsGJNMvwCOdt+4zZ0IX8=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "c2573248a89470383e41b8e1ac432424691cbc1f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "noctalia",
+        "rev": "c2573248a89470383e41b8e1ac432424691cbc1f",
+        "type": "github"
+      }
+    },
+    "noctalia-plugins": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794501575,
+        "narHash": "sha256-m8FBeN+BE3ws0G/JX+6x02lGFQ34yjMj1br6FOw3WOs=",
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "rev": "33d7ba696a6644016ae3c0706c0b5fcf066e42e8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "community-plugins",
+        "rev": "33d7ba696a6644016ae3c0706c0b5fcf066e42e8",
+        "type": "github"
+      }
+    },
     "nu_scripts": {
       "flake": false,
       "locked": {
@@ -534,6 +621,7 @@
         "agenix": "agenix",
         "catppuccin": "catppuccin",
         "delta": "delta",
+        "dux-files": "dux-files",
         "haumea": "haumea",
         "home-manager": "home-manager_2",
         "mysecrets": "mysecrets",
@@ -544,6 +632,8 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-darwin": "nixpkgs-darwin",
         "nixpkgs-voiceless": "nixpkgs-voiceless",
+        "noctalia": "noctalia",
+        "noctalia-plugins": "noctalia-plugins",
         "nu_scripts": "nu_scripts",
         "nuenv": "nuenv",
         "pre-commit-hooks": "pre-commit-hooks",

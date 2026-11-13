@@ -7,8 +7,7 @@
       let
         my_terminal_desktop = [
           # NOTE: We have add these packages at user level
-          "Alacritty.desktop"
-          "foot.desktop"
+          "kitty.desktop"
         ];
       in
       {

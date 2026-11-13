@@ -1,10 +1,11 @@
 # Zellij
 
-Zellij 是当前默认的终端工作区工具。它类似 tmux / screen，但交互提示更完整，适合作为统一的终端层。
+Zellij 是终端工作区工具，提供标签页、搜索、复制、滚动历史和 pane 管理。
 
-## 为什么默认进入 Zellij
+## 启动方式
 
-终端模拟器只负责显示字符，标签页、搜索、复制、滚动历史和 pane 管理交给 Zellij。这样可以在 kitty、foot、alacritty、ghostty 之间切换，而不丢失主要工作流。
+Linux 默认终端为 kitty，直接进入 Nushell，需要 Zellij 时手动运行 `zj` 或
+`zellij`。非 kitty 的普通交互式 Nushell 保留自动启动；Zellij、Emacs 和 Herdr Pane 内跳过，避免嵌套。
 
 Zellij 也适合远程服务器。熟悉一套快捷键后，本地和远程都能保持一致。
 

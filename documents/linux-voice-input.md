@@ -118,7 +118,7 @@ D-Bus 调用。重新部署后，系统将回到 Type4Me 全局语音输入。
 `home/linux/gui/base/voice-input.nix` 把 `voiceless-fcitx5-bridge` 加入 Fcitx5 addons。该模块在
 `org.fcitx.Fcitx5` 的 `/voiceless` 上提供 `dev.voiceless.Fcitx5Bridge1.CommitString`，Voiceless 在
 `inject.prefer = "fcitx5"`
-时通过它把最终文本提交到当前焦点输入框，和输入法打字上屏同一路径；Wayland 与 XWayland（微信等 XIM 应用）都适用。调用失败（Fcitx5 未运行、没有焦点输入框）时按
+时通过它把最终文本提交到当前焦点输入框，和输入法打字上屏同一路径；Wayland（包括新版微信）与 XWayland 应用都适用。调用失败（Fcitx5 未运行、没有焦点输入框）时按
 `clipboard_fallback = true` 回退到剪贴板方式。
 
 - 检查：`voiceless doctor` 中的 `fcitx5 bridge` 项，或

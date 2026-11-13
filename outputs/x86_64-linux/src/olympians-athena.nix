@@ -21,9 +21,8 @@ let
         "modules/nixos/desktop.nix"
         # host specific
         "hosts/olympians-${name}"
-        # home/linux/gui 引用的 pkgs.nixpaks / pkgs.bwraps 由这两项提供
+        # home/linux/gui 引用的 pkgs.nixpaks 由此提供
         "hardening/nixpaks"
-        "hardening/bwraps"
       ])
       ++ [
         {

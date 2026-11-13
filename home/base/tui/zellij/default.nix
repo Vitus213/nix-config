@@ -18,7 +18,7 @@ in
     # auto start zellij
     # except when in emacs, zellij itself, herdr panes, or kitty
     # herdr injects HERDR_ENV; nested multiplexer hides agents from herdr detection
-    # kitty is reserved for OSC 5522 clipboard image paste, keep it bare
+    # keep kitty bare for OSC 5522 clipboard image paste
     if (not ("ZELLIJ" in $env)) and (not ("INSIDE_EMACS" in $env)) and (not ("HERDR_ENV" in $env)) and (not ("KITTY_WINDOW_ID" in $env)) {
       if "ZELLIJ_AUTO_ATTACH" in $env and $env.ZELLIJ_AUTO_ATTACH == "true" {
         ^zellij attach -c

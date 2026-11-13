@@ -60,6 +60,12 @@ patch:
     - { accept: Control+space, toggle: ascii_mode, when: always }
 ```
 
+## 微信接入
+
+微信 `4.1.13.26` 使用原生 Wayland，应用局部设置
+`QT_IM_MODULE=text-input-unstable-v3`。Fcitx5 与 Rime 小鹤双拼保持不变，不需要迁移中文引擎。XWayland 启动探测和 XIM 恢复服务继续为 X11 应用保留，不作为新版微信的输入前提。微信候选框和截图粘贴分别验收，详见
+[Linux 微信、QQ 与飞书](./linux-im-apps.md)。
+
 ## 重启与重新部署
 
 当前会话中的 Fcitx5 只由 Home Manager 的 `fcitx5-daemon.service` 启动。用户级

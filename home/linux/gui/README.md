@@ -20,6 +20,6 @@
 ## 为什么桌面配置主要放 Home Manager
 
 桌面配置多数位于 `~/.config`，并且很多服务是用户级 systemd
-service，例如 noctalia-shell、fcitx5、hypridle。
+service，例如 noctalia、fcitx5、hypridle。
 
 用 Home Manager 管理这些内容更容易控制用户服务的启动顺序，也更方便在非 NixOS Linux 环境复用。

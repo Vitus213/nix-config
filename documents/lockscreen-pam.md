@@ -1,10 +1,49 @@
-# Noctalia 锁屏解锁延迟修复
+# Noctalia 锁屏 PAM 与解锁延迟
 
-记录锁屏后输入密码需等待约 10 秒才能进入桌面的问题诊断与修复。
+## 当前声明配置：原生 Noctalia 5.5.0（2026-11-13）
 
-## 问题
+apollo 已部署包含挂载顺序修正的原生 Noctalia 5.5.0，并完成
+`switch`。用户已完成真实错误/正确密码解锁验收；日志确认专用 `noctalia-lock`
+拒绝错误密码，随后成功解锁。下文 2026-08-15 的延迟数据为历史证据，不能作为本轮原生实现的测量结果。
 
-锁屏后输入正确密码，需等待约 10 秒才回到桌面。
+当前声明链路是 `hypridle` → `noctalia msg session lock` → 原生 Noctalia 锁屏 → PAM →
+Niri 解锁。`overlays/noctalia/dedicated-pam.patch` 将固定版本 `src/shell/lockscreen/lock_screen.cpp`
+的 `LockScreen::tryAuthenticate()` 中 PAM 服务名从 `login` 固定为
+`noctalia-lock`。这是包源码补丁，不使用 `NOCTALIA_PAM_SERVICE`
+环境变量；旧 Quickshell 环境变量已从新服务移除。
+
+`modules/nixos/desktop/security.nix` 保留专用 `security.pam.services.noctalia-lock`，以一次
+`pam_unix` 校验避免完整 login 栈的重复认证、空口令探测与 keyring 解密。原生认证调用
+`pam_authenticate`，成功后还调用 `pam_acct_mgmt`，不调用
+`pam_open_session`。固定上游实现允许非特权锁屏的 account 检查返回
+`PAM_AUTHINFO_UNAVAIL`；其他非成功 account 结果会使认证失败。因此不能沿用旧 Quickshell“只认证、不检查 account”的结论。
+
+greetd 登录及 `greetd.enableGnomeKeyring` 保留，GNOME
+Keyring 仍由登录阶段解锁；锁屏不重新解锁 keyring，不修改默认集合或密钥保存策略。锁屏声明
+`grace_period_seconds=0`、`allow_empty_password=false`、`fingerprint=false`，立即生效；空闲策略继续由 hypridle 独占。
+
+### 本轮验收状态与阻断条件
+
+2026-11-13 11:12，用户在已激活的修正版 `test`
+系统亲自输入密码，自动化未读取或注入密码。结合用户完成确认、`noctalia.service`
+journal 与当前 IPC 状态，记录如下：
+
+- 11:12:19.491 请求锁屏，11:12:19.517 已锁定，11:12:21.156 请求解锁。
+- 11:12:30.270 再次请求锁屏，11:12:30.279 已锁定。
+- 11:12:31 出现 `pam_unix(noctalia-lock:auth)` 认证失败，11:12:33.271 返回 `rc=7`；未请求解锁。
+- 11:12:34.923 后续认证请求解锁；检查时 IPC `locked=false`，Shell 与 hypridle 均 active。
+
+两次成功解锁的 account 阶段均出现
+`pam_unix(noctalia-lock:account): setuid failed: Operation not permitted`。上游 5.5.0 的
+`src/auth/pam_authenticator.cpp` 在密码认证成功后容许
+`PAM_AUTHINFO_UNAVAIL`，用于非特权锁屏无法读取 shadow 的场景；这不是禁用密码认证，本轮错误密码已实际被拒绝。普通日志未输出 account 返回码，不将该警告描述为 account 检查成功，也未测量输入提交到完成的认证耗时。
+
+修正版激活、真实解锁验收与最终 `switch` 已完成，运行系统与开机 profile 均指向同一修正版，见
+[迁移说明](./noctalia-v5.md#备份与本机-test-切换)。后续复测仍由本人输入错误/正确密码，不绕过认证、不读取密码。20 分钟锁屏、20 分半关屏、suspend/resume、重新登录与重启尚未实测。
+
+## 历史问题：旧版输入密码后等待约 10 秒
+
+以下 2026-08-15 记录来自旧 Quickshell 锁屏链路，保留用于解释专用 PAM 服务的由来。历史环境变量、服务名与部署命令不是当前 v5 用法。
 
 ## 诊断结论（2026-08-15）
 
@@ -38,9 +77,9 @@ quickshell 源码确认（`src/services/pam/subprocess.cpp`）：PAM 子进程�
 社区佐证：noctalia 官方支持 `NOCTALIA_PAM_SERVICE` 环境变量指定锁屏 PAM 服务（`LockContext.qml`
 读取该变量）；同类做法见 quickshell 官方 lockscreen 示例与社区 gist（allmeta/f52b6619）。
 
-## 修复（2026-08-15）
+## 历史修复（2026-08-15）
 
-### 1. 专用锁屏 PAM 服务（已实施）
+### 1. 专用锁屏 PAM 服务（当时已实施）
 
 - `modules/nixos/desktop/security.nix` 新增
   `security.pam.services.noctalia-lock`（仅一次 pam_unix 校验，无 nullok 探测、无 gnome-keyring）
@@ -56,7 +95,7 @@ auth required pam_deny.so
 
 效果验证（错误密码结构测试）：Password 提示从 T+3536ms 提前到 T+1ms。
 
-### 2. 降低密码哈希成本（已实施）
+### 2. 降低密码哈希成本（当时已实施）
 
 将 `vars/default.nix` 的 `initialHashedPassword` 从 scrypt
 rounds=11（`$7$`）换成 yescrypt 默认 rounds=8（`$y$`）：
@@ -73,22 +112,18 @@ rounds=11（`$7$`）换成 yescrypt 默认 rounds=8（`$y$`）：
 注意：`users.mutableUsers = false` 且 `/etc/shadow` 在每次 activation 重新生成， `vars/default.nix`
 里的哈希是 vitus 和 root 密码的唯一来源；替换后两台主机的登录密码即改为新哈希对应的密码（同一密码，无变化）。
 
-## 安全权衡
+## 历史安全权衡（2026-08-15）
 
 - 专用锁屏服务不解锁 gnome-keyring：登录时 greetd 已解锁（`greetd.enableGnomeKeyring`），会话内 keyring 保持解锁，锁屏不解锁它无功能损失。
 - yescrypt 默认 rounds 的离线暴力破解成本低于 scrypt
   rounds=11，但仍远高于在线攻击门槛（锁屏进程非特权、每次尝试仍需完整 PAM 流程）；本机登录主通道是 SSH
   key。
 
-## 回滚方式
+## 当前回滚方式
 
-- 撤销 `NOCTALIA_PAM_SERVICE` 环境变量与 `noctalia-lock` 服务定义即恢复原 login 栈。
-- 哈希如需回滚，把旧的 `$7$` 哈希写回 `vars/default.nix` 并 `just local`。
+按 [Noctalia v5 迁移](./noctalia-v5.md) 的完整顺序恢复备份的旧系统、Home Manager
+generation、配置目录链接、旧 JSON/QML 和 Niri 调用，并恢复旧 `noctalia-shell`
+与 hypridle。仅撤销环境变量不能回滚原生包中的固定 PAM 服务补丁；仅恢复系统包也不足以恢复已迁移的配置和快捷键。
 
-## 验证
-
-```bash
-nix eval .#evalTests                     # 配置求值
-# 部署后实测：锁屏 → 输入密码 → 秒回桌面
-journalctl --user -u noctalia-shell | grep -E "LockContext|PAM"
-```
+历史哈希调整是独立变更，本轮不修改或回滚密码哈希。历史记录中的
+`just local`、旧服务 journal 和环境变量仅描述 2026-08-15 的操作，不作为本轮验收命令。

@@ -1,24 +1,27 @@
 # 终端模拟器
 
-当前终端模拟器只保留基础能力，标签页、复制、搜索、滚动历史和工作区主要交给 Zellij。
+Linux 使用 kitty，直接进入 Nushell；需要终端复用时手动运行 `zj`（Zellij）或 `herdr`。
 
 ## 当前选择
 
-按平台保留两个终端：
+按平台选择：
 
 - **Linux**:
-  - `foot`: 主终端（`Mod+Return` 调
-    `footclient`），Wayland 原生、启动快、内存低，server 模式常驻；`csd.preferred = none`
-    不画标题栏；登录时 XDG autostart 只自动打开一个 foot 窗口
-  - `alacritty`: 备用终端（`Mod+Shift+Return`），Rust 实现，不随登录自启
-  - `kitty`: 图片粘贴终端（`Mod+Ctrl+Return`），见下节；里面不自动进 Zellij
+  - 只安装 `kitty`，不再安装 foot、Alacritty，也不再运行 `foot.service`。
+  - `Mod+Return`、`Mod+Shift+Return`、`Mod+Ctrl+Return` 均打开 kitty。
+  - 登录时 XDG autostart 只打开一个 kitty；新窗口进入 `1terminal` 并最大化。
+  - 系统 `xdg-terminal-exec` 默认使用 `kitty.desktop`；Noctalia v5 服务设置 `TERMINAL=kitty`。
+  - 保持 Maple Mono NF CN 13pt、20000 行回滚与现有 Nushell 启动方式。
+  - 保持 `KITTY_WINDOW_ID` 跳过 Zellij 自动启动，便于直接使用 SSH 图片粘贴或 Herdr。
 - **macOS**:
   - `ghostty`: Homebrew cask 安装的终端
   - `alacritty`: 备用终端
 
-已移除：Linux 上的 `ghostty`。
+Linux 不使用 Ghostty；macOS 的 Ghostty、Alacritty 配置不变。
 
-配置文件在 `terminals.nix`（foot + kitty + ghostty settings）与 `alacritty/default.nix`。
+配置文件在 `terminals.nix`（kitty + Ghostty settings）与
+`alacritty/default.nix`（仅 macOS）。部署、验证与回滚见
+[Niri 工作区与窗口分配](../../../../documents/niri-workspaces.md#linux-终端统一为-kitty)。
 
 ## kitty 与剪贴板图片粘贴
 

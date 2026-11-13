@@ -1,0 +1,16 @@
+id = "vitus/desktop"
+name = "Desktop helpers"
+version = "1.0.0"
+plugin_api = 24
+author = "vitus"
+
+[[widget]]
+id = "totp"
+entry = "totp.luau"
+
+[widget.actions]
+middle = "none"
+
+[[widget]]
+id = "load"
+entry = "load.luau"

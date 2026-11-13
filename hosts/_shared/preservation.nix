@@ -314,6 +314,14 @@ in
 
         # noctalia shell
         ".cache/noctalia"
+        {
+          directory = ".local/state/noctalia";
+          mode = "0700";
+        }
+        {
+          directory = ".local/share/noctalia";
+          mode = "0700";
+        }
 
         # AI
         ".cache/modelscope"
@@ -339,6 +347,12 @@ in
       ];
     };
   };
+
+  # 首次 test 时先挂载运行数据，避免遮住 Home Manager 刚创建的插件链接。
+  systemd.services."home-manager-${username}".unitConfig.RequiresMountsFor = [
+    "/home/${username}/.local/state/noctalia"
+    "/home/${username}/.local/share/noctalia"
+  ];
 
   # Create some directories with custom permissions.
   #

@@ -26,7 +26,7 @@ Fcitx5 的 Default 输入法组只保留 `rime`，避免日常在 `rime` 和英�
 Fcitx5 只由 Home Manager 的 `fcitx5-daemon.service` 启动。系统包自带的 `org.fcitx.Fcitx5.desktop`
 会被用户级 autostart 覆盖禁用，避免第二个实例争抢 D-Bus 名称。服务启动前用 `xprop -root`
 触发 Niri 的按需 XWayland；`fcitx5-xim-recovery.timer` 每 10 秒检查
-`XIM_SERVERS`，在显示器断连等原因导致 XWayland 重启、Fcitx5 丢失 XCB 连接后自动重启 Fcitx5，恢复 WeChat 的 XIM 候选框。
+`XIM_SERVERS`，在显示器断连等原因导致 XWayland 重启、Fcitx5 丢失 XCB 连接后自动重启 Fcitx5，恢复 X11 应用的 XIM 服务。新版微信使用原生 Wayland/text-input-v3，不依赖该 XIM 注册。
 
 详细使用、验证和回滚方式见 `documents/fcitx5-rime-input-method.md`。
 

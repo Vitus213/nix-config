@@ -1,0 +1,588 @@
+[bar.main]
+position = "top"
+thickness = 37
+scale = 1.0
+font_scale = 1.0
+background_opacity = 0.2
+margin_ends = 0
+margin_edge = 0
+padding = 2
+widget_spacing = 6
+auto_hide = false
+smart_auto_hide = false
+reserve_space = true
+compositor_blur = true
+concave_edge_corners = true
+border_width = 0
+capsule = true
+capsule_fill = "surface_container"
+capsule_opacity = 1.0
+start = ["launcher", "clock", "cpu", "load", "ram", "net_rx", "net_tx", "disk", "active_window", "media"]
+center = ["workspaces"]
+end = ["notifications", "battery", "volume", "brightness", "totp", "pomodoro", "tray", "control-center"]
+
+[[bar.main.capsule_group]]
+id = "system-monitor"
+members = ["cpu", "load", "ram", "net_rx", "net_tx", "disk"]
+fill = "surface_container"
+
+[bar.main.dead_zone.actions]
+left = "none"
+middle = "none"
+right = "panel-toggle control-center home"
+scroll_up = "none"
+scroll_down = "none"
+
+[widget.launcher]
+glyph = "rocket"
+
+[widget.clock]
+format = "{:%H:%M %a, %b %d}"
+vertical_format = "{:%H %M - %d %m}"
+tooltip_format = "{:%H:%M %a, %b %d}"
+
+[widget.cpu]
+type = "sysmon"
+stat = "cpu_usage"
+visualization = "none"
+show_value = true
+show_glyph = true
+label_show_units = true
+label_min_width = 0
+peek = false
+font_family = "Maple Mono NF CN"
+show_cpu_cores = false
+
+[widget.cpu.actions]
+right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+
+[widget.load]
+type = "vitus/desktop:load"
+
+[widget.load.actions]
+left = "panel-toggle control-center system"
+right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_pct"
+visualization = "none"
+show_value = true
+show_glyph = true
+label_show_units = true
+label_min_width = 0
+peek = false
+font_family = "Maple Mono NF CN"
+
+[widget.ram.actions]
+right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+
+[widget.net_rx]
+type = "sysmon"
+stat = "net_rx"
+visualization = "none"
+show_value = true
+show_glyph = true
+label_show_units = true
+label_min_width = 0
+peek = false
+font_family = "Maple Mono NF CN"
+network_speed_unit = "auto"
+network_speed_compact = false
+
+[widget.net_rx.actions]
+right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+
+[widget.net_tx]
+type = "sysmon"
+stat = "net_tx"
+visualization = "none"
+show_value = true
+show_glyph = true
+label_show_units = true
+label_min_width = 0
+peek = false
+font_family = "Maple Mono NF CN"
+network_speed_unit = "auto"
+network_speed_compact = false
+
+[widget.net_tx.actions]
+right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+
+[widget.disk]
+type = "sysmon"
+stat = "disk_used"
+path = "/"
+visualization = "none"
+show_value = true
+show_glyph = true
+label_show_units = true
+label_min_width = 0
+peek = false
+font_family = "Maple Mono NF CN"
+
+[widget.disk.actions]
+right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+
+[widget.active_window]
+display = "icon_and_text"
+min_length = 0
+max_length = 145
+title_scroll = "on_hover"
+show_empty_label = false
+colorize_icons = false
+
+[widget.media]
+min_length = 0
+max_length = 145
+title_scroll = "on_hover"
+artist_first = true
+hide_artist = false
+hide_album_art = true
+album_art_only = false
+hide_when_no_media = true
+hide_when_idle = false
+show_progress = true
+
+[widget.workspaces]
+style = "regular"
+show_labels = true
+label_source = "id"
+max_label_chars = 2
+show_icons = false
+labels_only_when_occupied = true
+hide_when_empty = true
+monitors = []
+font_weight = 700
+focused_color = "primary"
+occupied_color = "surface_container_high"
+empty_color = "surface_container"
+urgent_color = "error"
+focused_output_only = true
+active_pill_size = 2.2
+inactive_pill_size = 1.0
+pill_scale = 1.0
+change_color_on_hover = true
+
+[widget.notifications]
+hide_when_no_unread = false
+
+[widget.battery]
+display_mode = "glyph"
+show_label = true
+label_content = "percent"
+device = "auto"
+peek = false
+hide_when_plugged = false
+hide_when_full = false
+
+[widget.volume]
+show_glyph = true
+show_label = true
+peek = false
+
+[widget.volume.actions]
+middle = "exec pwvucontrol || pavucontrol"
+scroll_up = "volume-up 1"
+scroll_down = "volume-down 1"
+
+[widget.brightness]
+show_glyph = true
+show_label = true
+peek = false
+
+[widget.brightness.actions]
+scroll_up = "brightness-up current 3"
+scroll_down = "brightness-down current 3"
+
+[widget.totp]
+type = "vitus/desktop:totp"
+
+[widget.pomodoro]
+type = "thepunkoff/pomodoro:widget"
+
+[widget.tray]
+drawer = true
+hidden = []
+pinned = []
+hide_passive = false
+colorize_icons = false
+
+[widget.control-center]
+type = "control-center"
+
+[shell]
+font_family = "Maple Mono NF CN"
+avatar_path = "~/.face"
+telemetry_enabled = false
+setup_wizard_enabled = false
+polkit_agent = false
+screen_time_enabled = false
+corner_radius_scale = 1.0
+card_borders = false
+clipboard_enabled = true
+clipboard_auto_paste = "off"
+niri_overview_type_to_launch_enabled = false
+niri_overview_close_on_launch_enabled = false
+launch_apps_as_systemd_services = true
+
+[accessibility]
+ui_scale = 1.0
+
+[shell.animation]
+enabled = true
+speed = 1.0
+
+[shell.shadow]
+direction = "down_right"
+
+[shell.screen_corners]
+enabled = false
+
+[shell.panel]
+transparency_mode = "soft"
+borders = false
+launcher_placement = "floating"
+launcher_position = "center"
+clipboard_placement = "floating"
+clipboard_position = "center"
+control_center_placement = "attached"
+open_near_click_control_center = true
+wallpaper_placement = "attached"
+session_placement = "floating"
+session_position = "center"
+
+[shell.launcher]
+app_grid = true
+categories = true
+sort_by_usage = true
+track_usage = true
+show_icons = true
+colorize_icons = false
+ignore_mouse = false
+pinned = []
+auto_paste = "off"
+fetch_exchange_rates = false
+provider_prefix = "/"
+
+[shell.launcher.providers.calculator]
+prefix = "calc"
+
+[shell.launcher.providers.session]
+global = true
+
+[shell.launcher.providers.windows]
+global = true
+
+[theme]
+source = "wallpaper"
+wallpaper_scheme = "m3-tonal-spot"
+mode = "dark"
+shell_mode = "follow"
+sync_color_scheme = true
+
+[theme.templates]
+enable_builtin_templates = false
+builtin_ids = []
+enable_community_templates = false
+community_ids = []
+
+[wallpaper]
+enabled = true
+directory = "/home/vitus/Pictures/Wallpapers"
+directory_light = ""
+directory_dark = ""
+per_monitor_directories = false
+fill_mode = "crop"
+fill_color = "#000000"
+transition = ["fade", "disc", "stripes", "wipe", "pixel", "honeycomb"]
+transition_duration = 1500
+edge_smoothness = 0.05
+transition_on_startup = true
+
+[wallpaper.default]
+path = "/home/vitus/Pictures/Wallpapers/dome.jpg"
+
+[wallpaper.automation]
+enabled = false
+interval_seconds = 600
+order = "random"
+recursive = true
+
+[backdrop]
+enabled = true
+blur_intensity = 0.4
+tint_intensity = 0.6
+
+[control_center]
+shortcuts = [{ type = "wifi" }, { type = "bluetooth" }, { type = "wallpaper" }, { type = "power_profile" }, { type = "caffeine" }, { type = "nightlight" }]
+
+[control_center.calendar]
+show_events_card = true
+show_week_numbers = false
+
+[control_center.media]
+show_visualizer = false
+
+[location]
+auto_locate = false
+address = "Changsha"
+custom_schedule = false
+
+[weather]
+enabled = true
+unit = "metric"
+effects = true
+
+[nightlight]
+enabled = true
+force = true
+temperature_day = 6500
+temperature_night = 4000
+
+[bluetooth]
+connect_when_enabled = true
+connection_notifications = false
+
+[brightness]
+enable_ddcutil = false
+sync_all_monitors = false
+
+[audio]
+enable_overdrive = false
+enable_sounds = false
+spectrum_frame_rate = 30
+sound_volume = 0.3
+
+[shell.mpris]
+blacklist = []
+
+[storage]
+key_source = "secret-service"
+
+[system.monitor]
+enabled = true
+gpu_poll_seconds = 0
+cpu_usage_activity_threshold = 80
+cpu_usage_critical_threshold = 95
+cpu_temp_activity_threshold = 80
+cpu_temp_critical_threshold = 90
+gpu_temp_activity_threshold = 80
+gpu_temp_critical_threshold = 90
+ram_pct_activity_threshold = 80
+ram_pct_critical_threshold = 90
+swap_pct_activity_threshold = 80
+swap_pct_critical_threshold = 90
+disk_used_activity_threshold = 80
+disk_used_critical_threshold = 90
+disk_used_pct_activity_threshold = 80
+disk_used_pct_critical_threshold = 90
+
+[notification]
+enable_daemon = true
+position = "top_right"
+layer = "overlay"
+background_opacity = 1.0
+keep_dismissed_in_history = false
+monitors = []
+filter_order = ["pomodoro"]
+
+[notification.filter.pomodoro]
+match = "noctalia"
+match_content = "^Pomodoro Timer$"
+play_sound = false
+show_toast = true
+
+[osd]
+enabled = true
+position = "top_right"
+hide_delay_ms = 2000
+background_opacity = 1.0
+monitors = []
+
+[osd.kinds]
+volume = true
+volume_output = true
+volume_input = true
+brightness = false
+lock_keys = true
+keyboard_layout = true
+media = false
+media_volume = false
+wifi = false
+bluetooth = false
+power_profile = false
+caffeine = false
+nightlight = false
+dnd = false
+privacy = false
+keyboard_backlight = false
+custom = false
+
+[battery]
+warning_threshold = 20
+
+[dock]
+enabled = false
+
+[hot_corners]
+enabled = false
+
+[idle.behavior.lock]
+enabled = false
+
+[idle.behavior.screen-off]
+enabled = false
+
+[idle.behavior.lock-and-suspend]
+enabled = false
+
+[shell.session]
+grid = true
+grid_columns = 3
+show_shortcuts = true
+
+[[shell.session.actions]]
+action = "lock"
+enabled = true
+shortcut = "1"
+countdown_seconds = 10.0
+
+[[shell.session.actions]]
+action = "suspend"
+enabled = true
+shortcut = "2"
+countdown_seconds = 10.0
+
+[[shell.session.actions]]
+action = "command"
+enabled = true
+shortcut = "3"
+countdown_seconds = 10.0
+label = "休眠"
+glyph = "moon"
+command = "systemctl hibernate"
+
+[[shell.session.actions]]
+action = "reboot"
+enabled = true
+shortcut = "4"
+countdown_seconds = 10.0
+
+[[shell.session.actions]]
+action = "logout"
+enabled = true
+shortcut = "5"
+countdown_seconds = 10.0
+
+[[shell.session.actions]]
+action = "shutdown"
+enabled = true
+shortcut = "6"
+countdown_seconds = 10.0
+
+[lockscreen]
+enabled = true
+lock_before_suspend = true
+transition = []
+blur_intensity = 0.0
+tint_intensity = 0.0
+monitors = []
+grace_period_seconds = 0
+fingerprint = false
+allow_empty_password = false
+
+[lockscreen_widgets]
+enabled = true
+schema_version = 2
+widget_order = ["clock_main"]
+
+[lockscreen_widgets.widget.clock_main]
+type = "clock"
+cx = 200.0
+cy = 180.0
+box_width = 160.0
+box_height = 220.0
+rotation = 0.0
+
+[lockscreen_widgets.widget.clock_main.settings]
+clock_style = "digital"
+format = "{:%H}\n{:%M}"
+background = false
+color = "on_surface"
+font_family = "Maple Mono NF CN"
+
+[desktop_widgets]
+enabled = true
+schema_version = 2
+widget_order = ["edp1_clock", "edp1_media", "edp1_weather"]
+
+[desktop_widgets.grid]
+visible = true
+
+[desktop_widgets.widget.edp1_clock]
+type = "clock"
+output = "eDP-1"
+cx = 147.0
+cy = 216.0
+box_width = 110.0
+box_height = 110.0
+rotation = 0.0
+
+[desktop_widgets.widget.edp1_clock.settings]
+background = true
+background_color = "surface"
+background_opacity = 0.8
+background_radius = 12
+font_family = "Maple Mono NF CN"
+clock_style = "digital"
+format = "{:%H:%M}\n{:%-d %B %Y}"
+
+[desktop_widgets.widget.edp1_media]
+type = "media_player"
+output = "eDP-1"
+cx = 322.0
+cy = 346.0
+box_width = 460.0
+box_height = 94.0
+rotation = 0.0
+
+[desktop_widgets.widget.edp1_media.settings]
+background = true
+background_color = "surface"
+background_opacity = 0.8
+background_radius = 12
+font_family = "Maple Mono NF CN"
+layout = "horizontal"
+audio_visualizer = true
+hide_when_no_media = false
+album_art_background = false
+
+[desktop_widgets.widget.edp1_weather]
+type = "weather"
+output = "eDP-1"
+cx = 390.5
+cy = 216.0
+box_width = 321.0
+box_height = 110.0
+rotation = 0.0
+
+[desktop_widgets.widget.edp1_weather.settings]
+background = true
+background_color = "surface"
+background_opacity = 0.8
+background_radius = 12
+font_family = "Maple Mono NF CN"
+color = "on_surface"
+show_forecast = false
+
+[plugin_settings."thepunkoff/pomodoro"]
+work-duration = 25
+short-break-duration = 5
+long-break-duration = 15
+sessions-before-long-break = 4
+auto-start-breaks = false
+auto-start-work = false
+enable-work-timer-sound = false
+use-bundled-alarm-sound = true
+bypass-noctalia-sound-globals = false

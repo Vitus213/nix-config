@@ -3,18 +3,8 @@
 // https://yalter.github.io/niri/Configuration:-Window-Rules
 
 // Terminal applications - open in workspace 1
-// footclient（server 模式）开出的窗口 app-id 是 "footclient" 而非 "foot"，
-// 必须同时匹配，否则终端会落在当前工作区而不是 1terminal。
-// kitty 是 SSH 里给 OMP 贴剪贴板图片用的终端，落点与 foot 一致
 window-rule {
-    match app-id="foot"
-    match app-id="footclient"
     match app-id="kitty"
-    open-on-workspace "1terminal"
-    open-maximized true
-}
-window-rule {
-    match app-id="Alacritty"
     open-on-workspace "1terminal"
     open-maximized true
 }
@@ -108,13 +98,7 @@ window-rule {
 }
 window-rule {
     match app-id="dev.zed.Delta"
-    open-on-workspace "5code"
-    open-maximized true
-}
-
-window-rule {
-    match app-id="orca"
-    open-on-workspace "5code"
+    open-on-workspace "1terminal"
     open-maximized true
 }
 
@@ -200,7 +184,7 @@ window-rule {
     open-on-workspace "9file"
 }
 window-rule {
-    match app-id="org.kde.dolphin"
+    match app-id="^dev\\.duxlabs\\.files$"
     open-on-workspace "9file"
 }
 window-rule {
