@@ -2,9 +2,17 @@
   config,
   lib,
   pkgs,
+  osConfig ? null,
   ...
 }:
 let
+  developmentHost =
+    osConfig != null
+    && builtins.elem (osConfig.networking.hostName or "") [
+      "apollo"
+      "athena"
+    ];
+
   # herdr 配置不再以只读 symlink 部署：herdr-radar 插件与 herdr 自身都会改写
   # config.toml。这里只声明基础内容，由下方 activation 合并插件的托管块。
   # 约束：[ui] 必须是最后一个表——radar 的 tab-bar 块是 [ui] 下的裸键。
@@ -45,31 +53,65 @@ let
   '';
 in
 {
-  #############################################################
-  #
-  #  Basic settings for development environment
-  #
-  #  Please avoid to install language specific packages here(globally),
-  #  instead, install them:
-  #     1. per IDE, such as `programs.neovim.extraPackages`
-  #     2. per-project, using https://github.com/the-nix-way/dev-templates
-  #
-  #############################################################
+  # 语言工具集中管理，版本随 flake.lock；项目依赖使用现有 direnv/devShell。
 
-  home.packages = with pkgs; [
-    just
-    colmena # nixos's remote deployment tool
-    # herdr 二进制改用官方安装（curl -fsSL https://herdr.dev/install.sh | sh，
-    # 装至 ~/.local/bin），更新走 `herdr update` 自管理，不在 nix 里固化。
-    # 配置由下方 home.activation.herdrConfig 生成。
+  home.packages =
+    with pkgs;
+    [
+      just
+      colmena # nixos's remote deployment tool
+      google-cloud-sdk
+      # herdr 使用官方用户级安装，配置由下方 activation 管理。
+      tokei
+      sqlite
+      gitleaks
 
-    tokei # count lines of code, alternative to cloc
+      # Python、Rust 从编辑器包列表迁入，保持已有主机的工具链。
+      uv
+      (python313.withPackages (
+        ps: with ps; [
+          pyright
+          ruff
+          pipx
+          black
+          jupyter
+          ipython
+          pandas
+          requests
+          pyquery
+          pyyaml
+          boto3
+          protobuf
+          numpy
+        ]
+      ))
 
-    sqlite
+      # 使用 nixpkgs 工具链；rust-analyzer wrapper 已提供匹配的标准库源码。
+      rustc
+      rust-analyzer
+      cargo
+      rustfmt
+      clippy
+    ]
+    ++ lib.optionals developmentHost [
+      # Go：沿用 ryan4yin 的工具组合。
+      gopls
+      gomodifytags
+      iferr
+      impl
+      gotools
+      delve
 
-    # misc
-    gitleaks
-  ];
+      # Gradle 8 的运行 JVM 最高支持 Java 24，默认使用 JDK 21 LTS。
+      maven
+      gradle_8
+    ];
+
+  # Nushell 不保证继承 Bash 的 PATH，补齐 go/cargo install 的用户命令目录。
+  programs.nushell.extraEnv = lib.mkIf developmentHost ''
+    $env.JAVA_HOME = "${config.programs.java.package.home}"
+    $env.PATH = ($env.PATH | append ["${config.home.homeDirectory}/go/bin" "${config.home.homeDirectory}/.cargo/bin"] | uniq)
+  '';
 
   # 写入可写的 config.toml：基础内容 + 保留现有文件中 herdr-radar 的托管块
   # （按 tab-bar、theme、sidebar 顺序追加，与插件自身写入的位置等价）。
@@ -115,6 +157,17 @@ in
   };
 
   programs = {
+    go = {
+      enable = developmentHost;
+      package = pkgs.go;
+      env.GOPATH = "${config.home.homeDirectory}/go";
+    };
+
+    java = {
+      enable = developmentHost;
+      package = pkgs.jdk21;
+    };
+
     direnv = {
       enable = true;
       nix-direnv.enable = true;
