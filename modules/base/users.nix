@@ -27,6 +27,10 @@
         "apollo"
         "athena"
         "artemis"
-      ]) myvars.lanSshAuthorizedKeys;
+      ]) myvars.lanSshAuthorizedKeys
+      ++ lib.optionals (lib.elem config.networking.hostName [
+        "apollo"
+        "artemis"
+      ]) [ myvars.j1900SshAuthorizedKey ];
   };
 }

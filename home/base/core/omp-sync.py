@@ -7,11 +7,10 @@ key 文件格式: 每行 `provider: sk-xxx`（provider 名连字符转下划线�
 import socket
 import sys
 
-# Magpie 网关地址按本机角色选择：网关所在的 Athena 用回环（Magpie 只对回环免 key，
-# 因此 auth: none 合法，也不会被 magpie sync 改回无 key 的 LAN 地址），
-# 其他客户端（Apollo、Artemis）用 Athena 的局域网地址并携带 @MAGPIE_KEY@。
+# Magpie 网关地址按本机角色选择：J1900 用回环（Magpie 只对回环免 key），
+# 其他客户端（包括原网关 Athena）用 J1900 的局域网地址并携带 @MAGPIE_KEY@。
 MAGPIE_LOOPBACK_URL = "http://127.0.0.1:3425/v1"
-MAGPIE_LAN_URL = "http://192.168.100.11:3425/v1"
+MAGPIE_LAN_URL = "http://192.168.100.3:3425/v1"
 
 REQUIRED_PLACEHOLDERS = (
     "@SCI_OPENAI_KEY@",
@@ -28,8 +27,8 @@ REQUIRED_PLACEHOLDERS = (
 
 
 def magpie_base_url(hostname):
-    """网关地址：hostname 为 athena（忽略域名后缀与大小写）时用回环，否则用局域网地址。"""
-    return MAGPIE_LOOPBACK_URL if hostname.split(".")[0].lower() == "athena" else MAGPIE_LAN_URL
+    """网关地址：hostname 为 j1900（忽略域名后缀与大小写）时用回环，否则用局域网地址。"""
+    return MAGPIE_LOOPBACK_URL if hostname.split(".")[0].lower() == "j1900" else MAGPIE_LAN_URL
 
 
 def read_keys(keys_file):

@@ -3,8 +3,6 @@ let
   mkSymlink = config.lib.file.mkOutOfStoreSymlink;
 in
 {
-  imports = [ ./magpie.nix ];
-
   programs.nushell.extraConfig = lib.mkBefore ''
     source /etc/agenix/alias-for-work.nushell
   '';

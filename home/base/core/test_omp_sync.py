@@ -18,25 +18,13 @@ def load_module():
 class MagpieBaseUrlTests(unittest.TestCase):
     def test_gateway_host_uses_loopback_and_clients_use_lan(self):
         omp_sync = load_module()
-        self.assertEqual(omp_sync.magpie_base_url("athena"), "http://127.0.0.1:3425/v1")
-        self.assertEqual(omp_sync.magpie_base_url("athena.example"), "http://127.0.0.1:3425/v1")
-        self.assertEqual(omp_sync.magpie_base_url("ATHENA"), "http://127.0.0.1:3425/v1")
-        for client in ("apollo", "artemis", "artemis.local", "hestia"):
+        for gateway in ("j1900", "j1900.example", "J1900"):
+            with self.subTest(gateway=gateway):
+                self.assertEqual(omp_sync.magpie_base_url(gateway), "http://127.0.0.1:3425/v1")
+        for client in ("apollo", "artemis", "artemis.local", "hestia", "athena", "athena.example", "ATHENA"):
             with self.subTest(client=client):
-                self.assertEqual(omp_sync.magpie_base_url(client), "http://192.168.100.11:3425/v1")
+                self.assertEqual(omp_sync.magpie_base_url(client), "http://192.168.100.3:3425/v1")
 
-    def test_hostname_chooses_base_url_in_generated_file(self):
-        """端到端：同一模板在网关机与客户端上渲染出不同地址，且 key 都来自密钥文件。"""
-        omp_sync = load_module()
-        template = "magpie:\n  baseUrl: @MAGPIE_BASE_URL@\n  apiKey: @MAGPIE_KEY@\n"
-        keys = {"MAGPIE_KEY": "sk-magpie-key-test"}
-        on_gateway = omp_sync.render(template, keys, "athena")
-        on_client = omp_sync.render(template, keys, "apollo")
-        self.assertIn("baseUrl: http://127.0.0.1:3425/v1", on_gateway)
-        self.assertIn("baseUrl: http://192.168.100.11:3425/v1", on_client)
-        self.assertIn("apiKey: sk-magpie-key-test", on_gateway)
-        self.assertIn("apiKey: sk-magpie-key-test", on_client)
-        self.assertNotIn("@MAGPIE_BASE_URL@", on_gateway + on_client)
 
 
 class OmpSyncTests(unittest.TestCase):

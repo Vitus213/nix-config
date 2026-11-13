@@ -69,6 +69,9 @@ rec {
         Host athena
           HostName 192.168.100.11
           Port 22
+        Host j1900
+          HostName 192.168.100.3
+          Port 22
       '';
 
     # this config will be written to /etc/ssh/ssh_known_hosts
@@ -105,6 +108,13 @@ rec {
               "192.168.100.5"
             ];
             publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPno/uSP9Aubo1zCQlZWDq2lif2MGHOTuY0fDnwv9AFY";
+          };
+          "j1900" = {
+            hostNames = [
+              "j1900"
+              "192.168.100.3"
+            ];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE9QWImV7ez61ubrDDzhyG9y4AlCl8KYXd2TOWX9iync";
           };
         };
   };

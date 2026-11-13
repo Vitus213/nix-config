@@ -2,24 +2,27 @@
 
 ## 当前配置
 
-全屋只维护一个 [yetone/magpie](https://github.com/yetone/magpie) 实例，跑在 **Athena**，版本固定
-`0.1.1846`，从源码构建 `nogui` 变体，保留 CLI、TUI 与浏览器管理界面，不链接 GTK /
-WebKit。Apollo、Artemis 的 OMP 只作为客户端连接它，不各自再跑一份。
+全屋只维护一个 [yetone/magpie](https://github.com/yetone/magpie) 实例，2026-11-08 从 Athena 迁到
+**J1900（Debian 13 amd64，`192.168.100.3`）**，版本固定 `0.1.1846`。使用官方
+`magpie-cli-linux-amd64` headless 产物，保留 CLI、TUI 和浏览器管理，不安装 GTK /
+WebKit。Apollo、Athena、Artemis 均为客户端；Artemis 当前离线，尚未部署新地址。
 
 配置入口：
 
-- `overlays/magpie/default.nix`：源码版本、源码 hash 与 Go 依赖 hash。
-- `hosts/olympians-athena/magpie.nix`：安装包、用户服务与网关地址。
-- `hosts/olympians-athena/home.nix`：导入用户模块。
-- `hosts/olympians-athena/default.nix`：`linger` 与防火墙放行 `3425`。
-- `home/base/core/omp-models.yml.in`：各客户端的 `magpie` provider。
+- J1900 `/usr/local/bin/magpie`：官方同版产物；SHA256
+  `e006a1101432a0f214a83343cdd3c34de36ace53a39247d4b1cbfa3b9442c005`。
+- J1900
+  `/home/vitus/.config/systemd/user/magpie.service`：用户服务、监听地址与启动环境；`linger=yes`。
+- J1900 `/home/vitus/.config/magpie`：唯一权威的上游、路由、调用方 key、订阅登录状态。
+- `home/base/core/omp-sync.py`、`omp-models.yml.in`：客户端地址选择与动态目录声明。
+- Athena 原 `magpie.nix` 导入和服务声明已删除；旧数据仅作回滚点，不得与新实例双活。
 
-| 项目     | 值                                                                                 |
-| -------- | ---------------------------------------------------------------------------------- |
-| 网关地址 | Athena 本机 `http://127.0.0.1:3425/v1`；其他客户端 `http://192.168.100.11:3425/v1` |
-| 管理页面 | `127.0.0.1:3430`（仅 Athena 本机，走 SSH 隧道）                                    |
-| 鉴权     | 局域网请求必须带 Magpie 网关 key；回环免 key                                       |
-| 状态目录 | `/home/vitus/.config/magpie`（Athena）                                             |
+| 项目     | 值                                                                               |
+| -------- | -------------------------------------------------------------------------------- |
+| 网关地址 | J1900 本机 `http://127.0.0.1:3425/v1`；其他客户端 `http://192.168.100.3:3425/v1` |
+| 管理页面 | `127.0.0.1:3430`（仅 J1900 本机，走 SSH 隧道）                                   |
+| 鉴权     | 局域网请求必须带 Magpie 网关 key；回环免 key                                     |
+| 状态目录 | `/home/vitus/.config/magpie`（J1900）                                            |
 
 服务以 `vitus` 用户级 systemd unit 运行，已 `enable` 且
 `linger=yes`，不依赖 SSH 或图形登录会话。`MAGPIE_ADDR=0.0.0.0:3425`
@@ -42,24 +45,22 @@ magpie:
     type: openai-models-list
 ```
 
-`@MAGPIE_BASE_URL@` 由 `omp-sync.py` 按本机 hostname 决定（忽略域名后缀与大小写）：`athena` 用
-`http://127.0.0.1:3425/v1`，其他主机用 `http://192.168.100.11:3425/v1`。网关 key 存在 agenix
-`omp-keys.age` 的 `magpie:` 行，占位符 `@MAGPIE_KEY@`，由 `omp-sync.py` 注入；模板与仓库都不含明文。
+`@MAGPIE_BASE_URL@` 由 `omp-sync.py` 按本机 hostname 决定（忽略域名后缀与大小写）：`j1900` 用
+`http://127.0.0.1:3425/v1`；包括 Athena 在内的其他主机用
+`http://192.168.100.3:3425/v1`。网关 key 仍来自 agenix `omp-keys.age` 的 `magpie:` 行，占位符
+`@MAGPIE_KEY@`，不在仓库留明文。
 
-**为什么 Athena 必须用回环**：Magpie 只对回环请求免 key， `0.0.0.0:3425`
-上的非回环来源一律要求 caller key。而 Magpie 自己的 agent sync（`internal/agent/omp.go` 的
-`ompProviderAt`）只在目标地址被判定为"另一台机器"时才写
-`apiKey`；Athena 自己的 LAN 地址不算，于是它会写 `auth: none`
-却保留 LAN 地址，生成的配置被自家网关 401 拒绝。让 Athena 用回环后 `auth: none`
-与地址一致，`magpie sync` 无论写 key 还是写回 `auth: none` 都能正常推理。
+网关所在机必须使用回环免 key，其他客户端必须携 key；不能把客户端自己的 `127.0.0.1`
+误当远端网关。0.1.1846 的 agent sync 会将网关自身 LAN 地址写成
+`auth: none`，与非回环鉴权冲突；原 Athena 的复现保留在本文末尾历史记录中。
 
 ```sh
 omp models refresh magpie           # 目录或路由变更后
-magpie models                       # Athena 上查看目录
-ssh -L 3430:127.0.0.1:3430 athena   # 本机再打开 magpie web 给出的链接
+ssh j1900 magpie models             # 在唯一网关上查看目录
+ssh -L 3430:127.0.0.1:3430 j1900    # 管理页只经 SSH 访问
 ```
 
-Athena 上的日常运维：
+J1900 上的日常运维：
 
 ```sh
 systemctl --user status magpie
@@ -116,10 +117,10 @@ Group 没有对应规则。这不是发现失败，也不需要开启特殊运�
 
 ### Apollo 与 Athena 共同跟随 Magpie 的开关
 
-`magpie` provider 的唯一目录来源是 Athena 网关的 `/v1/models`。两台 OMP 都使用动态
-`openai-models-list` 发现，不维护第二份固定型号清单；Apollo 的 `magpie/**`
-只是允许嵌套 ID 通过本机白名单，不会重新启用网关已经关闭的型号。统一模板让客户端连接同一个
-`192.168.100.11:3425` 网关并携带 agenix 注入的 key，不连接各自独立的 Magpie 实例。
+`magpie` provider 的唯一目录来源是 J1900 网关的 `/v1/models`。客户端使用动态 `openai-models-list`
+发现；`magpie/**`
+只是允许嵌套 ID 通过白名单，不会重新启用网关关闭的型号。统一模板让包括原网关 Athena 在内的客户端连接
+`192.168.100.3:3425` 并携带 key。
 
 在 Magpie 管理界面选择、开启或关闭 provider 型号、路由组后，需要让客户端刷新目录：
 
@@ -185,11 +186,10 @@ ID 可能与来源名不同（例如 `gemini` 显示为 `gemini-2`），以 `mag
 客户端各自保留原有 provider 定义，只是多了一个 `magpie`
 入口；OMP 自身的 OAuth（`openai-codex`、`anthropic`）没有被迁移。
 
-Codex CLI 的 `~/.codex/auth.json` 只有 API key，没有 ChatGPT OAuth；OMP 的 `openai-codex`
-登录在 OMP 自己的凭据库里，Magpie 发现不到。订阅需在 Athena 单独授权：
+OMP 自身的 OAuth 没有迁入客户端配置。需要新增订阅时，只在 J1900 网关授权：
 
 ```sh
-magpie accounts add codex
+ssh j1900 magpie accounts add codex
 omp models refresh magpie
 ```
 
@@ -197,29 +197,43 @@ omp models refresh magpie
 
 ## 多机器规则
 
-- 只维护 Athena 这一份上游、路由和订阅登录；其他机器只存网关 key。
+- 只维护 J1900 这一份上游、路由和订阅登录；其他机器只存网关 key。
 - 不要把同一份订阅 refresh token 复制给多台独立网关同时刷新。
 - 不要让 Magpie 的 Agents 页接管 OMP，否则它会把动态目录块改成静态清单。
-- 新增客户端：在 Athena 上 `magpie gateway-key add <name>`，把值写进该机密钥（`omp-keys.age` 的
-  `magpie:` 行由所有客户端共用同一把 key）。
+- 新增客户端时在 J1900 执行 `magpie gateway-key add <name>`；当前客户端共用 key 仍来自
+  `omp-keys.age` 的 `magpie:` 行，轮换时必须同步更新密钥包与客户端。
 
 ## 数据、安全与备份
 
-`~/.config/magpie`（Athena）是应用可写状态：
+`~/.config/magpie`（J1900）是应用可写状态：
 
 - `providers.json`：上游 API key（0600）。
 - `logins.json` 等：订阅凭据。
 - `usage.jsonl`、`routing/`：用量与路由记录。
 - `web.env`：管理页面 `MAGPIE_WEB_KEY`，只给本机 unit 读。
 
-该目录不提交 Git，备份按密钥材料处理。网关 key 在 agenix 密文里，轮换时在 Athena 执行
+该目录不提交 Git，备份按密钥材料处理。网关 key 轮换在 J1900 执行
 `magpie gateway-key rotate <id>`，再同步更新密钥包与各客户端。
 
 局域网请求强制校验 key，但**无 key 的回环请求仍放行**；不要把 3425 或 3430 暴露到公网。
 
 ## 更新、验证与回滚
 
-更新通过 Nix 改版本与两项 hash 重建，不使用 `magpie update` 替换只读 store 二进制。
+J1900 使用固定官方 headless 二进制，`noAutoUpdate=true`；不要直接追 latest。更新须先核对官方发布、CPU 兼容性、校验和及登录状态兼容性，再单独批准实施。Apollo 本地 CLI 的 Nix
+overlay 不控制 J1900 服务版本。
+
+### 2026-11-08 J1900 迁移验证
+
+- 冷复制 `.config/magpie`、必要 `.cache/magpie` 和 `.codex/auth.json`，252 文件逐个 SHA256 一致。
+- 保留 10 个上游、5 个路由组、2 份登录状态，全部 22 个对外模型 ID 集合一致。
+- LAN 无 key 为 401，原 key 为 200；管理页仅回环且无管理凭据为 401。
+- Auto DeepSeek 与 Codex 订阅真实推理均完成；Apollo 实际 OMP 调用返回 `J1900_OMP_OK`。
+- Claude 订阅在迁移前已经 lapsed，原样保留；没有重新授权或以其他上游冒充验证成功。
+- 私密冷备：Apollo `~/backups/20261108-j1900/magpie/` 及两端
+  `/root/migration-j1900-20261108/magpie/`。
+- 回滚先停 J1900；若新端 token 已刷新，先冷传最新凭据回源，不能直接启旧 token 备份。
+
+### 以下为 Athena 部署历史（2026-10）
 
 已验证：
 
@@ -240,8 +254,7 @@ key 可列出目录并完成真实推理；不带 key 返回 401。`omp models m
 的烟测超时；绕过 Magpie 直接连接 `sub.scitrace.cc`
 也发生 TLS 握手超时，因此未证明这两个中转的端到端可用性。未验证：复杂多轮工具调用、配额耗尽切换以及重启系统后的自启。
 
-回滚：从 `hosts/olympians-athena/home.nix` 移除该导入与 `linger`/防火墙声明，停用 Athena
-unit；确认备份后再删 `~/.config/magpie`。
+旧 Athena 数据保留用于回滚；若需恢复，先停 J1900，再按私密备份中的原 unit 与配置恢复，同步最新订阅凭据后才能启动。原 Nix 服务导入已移除，不能再按旧导入路径直接部署。
 
 ### 已知上游缺陷：agent sync 写出免鉴权地址却要求 key（0.1.1846）
 
@@ -260,6 +273,7 @@ unit；确认备份后再删 `~/.config/magpie`。
 `magpie sync`，4 秒内被改写为 `auth: none` 且保留 LAN 地址；仅把地址改为 `127.0.0.1` 后 `auth: none`
 才是有效组合，同副本推理成功。
 
-本项目规避方式：模板用 `@MAGPIE_BASE_URL@`，Athena 渲染回环地址，其他客户端渲染 LAN 地址（见
-[omp 模型配置](./omp-models.md#magpie-共享网关)）。上游修复前，若把 Athena 的 `magpie.baseUrl`
-改回自己的 LAN 地址，`magpie sync` 会在下次启动或 sync 时删掉 key，401 复发。
+本项目规避方式：模板用 `@MAGPIE_BASE_URL@`，J1900 渲染回环地址，其他客户端（包括 Athena）渲染 J1900
+LAN 地址（见
+[omp 模型配置](./omp-models.md#magpie-共享网关)）。上游修复前，网关本机若改用自己的 LAN 地址，`magpie sync`
+会在下次启动或 sync 时删掉 key，401 复发。上述 Athena 地址仅为迁移前的复现记录。

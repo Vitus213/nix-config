@@ -42,6 +42,13 @@ store；Athena 的 agenix identity 仍是其 `/etc/ssh/ssh_host_ed25519_key`，�
 三台均可直接运行
 `ssh apollo`、`ssh athena`、`ssh artemis`。这些别名用于家庭局域网；若 DHCP 地址或主机密钥改变，应在上述仓库入口和机器上同步更新。回滚时仅撤销三机 LAN 附加授权、对应别名和固定指纹，不删除原设备密钥及无关授权。
 
+2026-11-08 新增 J1900（`ssh j1900`，`192.168.100.3`，Debian 13，普通管理用户
+`vitus`）。其独立出站公钥 `vitus@j1900-lan` 的指纹为
+`SHA256:IhtbO1xsZMbPYxI6eFf25Y1fzgn2ZcuQ8dLz/nMXgew`，声明在 `vars/default.nix` 的
+`j1900SshAuthorizedKey`，仅授权 Apollo /
+Artemis 普通用户，不授权 root 或 Athena。Apollo 已部署并通过 J1900 独立设备密钥验证；Artemis 离线，待部署和验收。J1900 私钥不离开本机；其
+`vitus` 使用密码 sudo，不加入 docker 组。
+
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
 
 - `/home/vitus/.ssh/id_ed25519`: preservation NixOS 的 agenix identity，用来解密 secrets。

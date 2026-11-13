@@ -16,7 +16,7 @@ noctalia），需要时直接接显示器。
 入口：
 
 - `outputs/x86_64-linux/src/olympians-athena.nix`：与 apollo 相同的模块组合（`secrets/nixos.nix`、
-  `modules/nixos/desktop.nix`、`hardening/{nixpaks,bwraps}`、niri、`home/linux/gui.nix`）
+  `modules/nixos/desktop.nix`、`hardening/nixpaks`、niri、`home/linux/gui.nix`）；微信直接使用新版包，不再导入 bwrap 模块。
 - `hosts/olympians-athena/default.nix`：引导、网络、禁止睡眠、开发工具
 - `hosts/olympians-athena/hardware-configuration.nix`：`nixos-generate-config` 结果，按 UUID 挂载
 - `hosts/olympians-athena/services.nix`：家庭服务
@@ -135,18 +135,16 @@ PATH 验收。
 
 版本以当前 `flake.lock` 中的 nixpkgs（`55bfb4d7`，2026-10-14，NixOS 26.11）为准。
 
-| 服务        | 版本                         | 地址                                                                                             | 数据                                                                 |
-| ----------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| SSH         | OpenSSH                      | `:22`，root 只允许公钥                                                                           | —                                                                    |
-| Tailscale   | 1.104.1                      | 服务在运行，不登录、不加入 tailnet                                                               | —                                                                    |
-| Jellyfin    | 12.2                         | `http://athena:8096`                                                                             | `/var/lib/jellyfin`；媒体 `/srv/media/{movies,tv,music}`             |
-| Immich      | 3.3.1（含机器学习）          | `http://athena:2283`                                                                             | `/var/lib/immich`；PostgreSQL 18.6 + Redis 由模块管理                |
-| Uptime Kuma | 2.5.6                        | `http://athena:3001`                                                                             | `/var/lib/uptime-kuma`                                               |
-| qBittorrent | 5.2.4（`qbittorrent-nox`）   | WebUI `http://athena:8080`；BT 端口 6881                                                         | `/var/lib/qBittorrent`；下载到 `/srv/media/downloads/qbittorrent`    |
-| aria2       | 1.37.0                       | RPC `http://athena:6800/jsonrpc`；BT 端口 6888                                                   | `/var/lib/aria2`；下载到 `/srv/media/downloads/aria2`                |
-| AriaNg      | 1.3.15（nginx 静态页）       | `http://athena:6880`                                                                             | —                                                                    |
-| Vaultwarden | 1.37.4（web vault 2026.7.0） | `https://vault.vitus213.xyz`（Cloudflare Tunnel；`vault.vituss.me` 过渡）；本机 `127.0.0.1:8222` | `/var/lib/vaultwarden`；备份 `/var/backup/vaultwarden`（每日 23:00） |
-| cloudflared | 2026.10.0                    | 隧道 `athena`（`929d36f9-1bfd-4013-a762-2eb4e33c6583`），只出站                                  | 凭据 agenix `cloudflared-athena.json`                                |
+| 服务        | 版本                       | 地址                                           | 数据                                                              |
+| ----------- | -------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| SSH         | OpenSSH                    | `:22`，root 只允许公钥                         | —                                                                 |
+| Tailscale   | 1.104.1                    | 服务在运行，不登录、不加入 tailnet             | —                                                                 |
+| Jellyfin    | 12.2                       | `http://athena:8096`                           | `/var/lib/jellyfin`；媒体 `/srv/media/{movies,tv,music}`          |
+| Immich      | 3.3.1（含机器学习）        | `http://athena:2283`                           | `/var/lib/immich`；PostgreSQL 18.6 + Redis 由模块管理             |
+| Uptime Kuma | 2.5.6                      | `http://athena:3001`                           | `/var/lib/uptime-kuma`                                            |
+| qBittorrent | 5.2.4（`qbittorrent-nox`） | WebUI `http://athena:8080`；BT 端口 6881       | `/var/lib/qBittorrent`；下载到 `/srv/media/downloads/qbittorrent` |
+| aria2       | 1.37.0                     | RPC `http://athena:6800/jsonrpc`；BT 端口 6888 | `/var/lib/aria2`；下载到 `/srv/media/downloads/aria2`             |
+| AriaNg      | 1.3.15（nginx 静态页）     | `http://athena:6880`                           | —                                                                 |
 
 - qBittorrent：没有用模块的 `serverConfig`，因为它每次启动都会整份覆盖
   `qBittorrent.conf`，WebUI 里改的密码会丢。改为 `preStart`
@@ -156,26 +154,12 @@ PATH 验收。
   `/var/lib/aria2-secret/rpc-secret`（仅 root 可读），`aria2.service` 依赖它。
 - Immich 机器学习默认开启（人脸、智能搜索），内存不够时把 `services.immich.machine-learning.enable`
   改为 `false`。
-- Vaultwarden（Bitwarden 兼容服务端）：
-  - 只监听 `127.0.0.1:8222`，对外只走 Cloudflare Tunnel（本地管理型，ingress 写在
-    `services.nix`）。DNS `vault.vitus213.xyz`（主，`DOMAIN`）与
-    `vault.vituss.me`（过渡，域名 2026-11-02 到期）都是 CNAME
-    `<隧道 ID>.cfargotunnel.com`（已开代理）
-  - `SIGNUPS_ALLOWED = false`，账号只能由管理员邀请；未配 SMTP，被邀请邮箱直接在网页注册即可
-  - `/admin` 在隧道入口返回 404（模块每个 hostname 只能写一条 ingress，所以每个 hostname 那条专拦
-    `^/admin`，其余落到
-    `default`）。管理页经 SSH 转发：`ssh -L 8222:127.0.0.1:8222 root@192.168.100.11` 后开
-    `http://localhost:8222/admin`；管理口令明文在 my-secrets `vaultwarden-admin-password.age`
-    （只有 master_key 与 apollo `~/.ssh/id_ed25519`
-    能解），athena 上只有 Argon2 哈希（`vaultwarden-env.age`）
-  - `IP_HEADER = CF-Connecting-IP`：日志与登录限流按真实客户端 IP
-  - 隧道协议用默认
-    `auto`：cloudflared 预检 QUIC（7844/udp）通、HTTP/2（7844/tcp）握手超时。隧道出站经 Q30
-    OpenClash（`MATCH → 自动选择`），节点不稳时会反复重连、外网报 530（Cloudflare 1033）
-  - 异地备份：apollo 用户级 timer `vaultwarden-backup-pull`（每日 23:30，`Persistent`）拉到
-    `~/backups/vaultwarden/<日期>/`，保留 30 天（`hosts/olympians-apollo/home.nix`）
-  - 2026-10-27 起 `DOMAIN` 为 `https://vault.vitus213.xyz`；`vituss.me`
-    到期前删掉其 ingress 与 CNAME 即可。在最终域名上才注册通行密钥 / WebAuthn（绑定域名）
+- Vaultwarden、Cloudflare
+  Tunnel 和 Magpie 已迁至 J1900（`192.168.100.3`），Athena 不再声明这些服务、专用 agenix
+  secret 或网关端口。Magpie 的地址、认证和回滚边界见 [共享模型网关](./magpie.md)。
+- Apollo 的 `vaultwarden-backup-pull` 每日 23:30 从 `root@192.168.100.3:/var/backup/vaultwarden/`
+  拉取，保留 30 天；配置入口仍为
+  `hosts/olympians-apollo/home.nix`。旧 Athena 数据只作私密回滚点，不自动删除，也不得与 J1900 双活。
 
 ## 部署
 
@@ -222,7 +206,6 @@ nixos-rebuild switch --flake .#athena --target-host root@192.168.100.11
 1. qBittorrent 首次没有密码，临时密码在 `journalctl -u qbittorrent` 里；登录 WebUI 后改密码
 2. aria2 secret：`sudo cat /var/lib/aria2-secret/rpc-secret`，填到 AriaNg「AriaNg 设置 → RPC」
 3. Jellyfin、Immich、Uptime Kuma 在网页里完成初始化向导（创建管理员）
-4. Vaultwarden：管理页邀请账号后，在 `https://vault.vitus213.xyz` 注册，立即开启 TOTP 两步验证
 
 ## 从 j1900 迁移时注意
 
@@ -250,6 +233,12 @@ just remote-host athena boot     # 需密码，建议直接在 athena 上手动�
   免密（最小权限，其余 sudo 照旧要密码，模式同 artemis 的 `/etc/sudoers.d/nix-darwin`）。
 - worktree 位于目标机
   `/tmp/nixcfg-deploy`（指向 origin/main），由命令自动同步；注意 /tmp 重启清空，命令会自动重建。
+- Niri 和 Noctalia 的 out-of-store 链接固定指向
+  `~/nix-config`，临时 worktree 只决定构建输入。切换前须私密备份并核对主工作树的本地增量，再将这些运行配置同步至同一提交；仅更新
+  `/tmp/nixcfg-deploy` 不会更新桌面配置。
+- 从 Noctalia
+  v4 首次切换时，先停止旧 Shell 与 hypridle，备份解引用后的 config/cache、已有 state/data 和 TOTP 索引；保留旧番茄钟统计。Athena 不启用 preservation，无需套用 Apollo 的
+  `/persistent` 迁移步骤。详见 [Noctalia v5](./noctalia-v5.md)。
 
 首次引导（sudoers 规则生效前）仍需在 athena 本机手动跑一次
 `sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#athena`（athena 的 `~/nix-config`
@@ -262,8 +251,7 @@ just remote-host athena boot     # 需密码，建议直接在 athena 上手动�
   清理前也能选回
 - secrets：my-secrets 回退提交 `4a10da3`（新增 athena recipient 并 rekey），再
   `nix flake update mysecrets`
-- Vaultwarden：回滚系统后 `/var/lib/vaultwarden`、`/var/backup/vaultwarden`
-  保留，彻底清除需手动删；Cloudflare 侧删隧道 `athena` 与 CNAME
-  `vault.vitus213.xyz`、`vault.vituss.me`
+- 已迁走的 Vaultwarden /
+  Magpie：旧数据保留，但回滚系统不能直接恢复服务双活；先停 J1900，并将最新状态与订阅凭据安全回传，再按私密备份恢复。不要因回滚 Athena 删除当前在用的域名或隧道。
 - 仓库：删除 `hosts/olympians-athena/`、`outputs/x86_64-linux/src/olympians-athena.nix` 和测试里的
   `athena` 条目

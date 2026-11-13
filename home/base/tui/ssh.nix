@@ -50,6 +50,13 @@ in
           HostKeyAlias = "github.com";
         };
 
+        "eric-kvm-dev" = {
+          User = "vitus";
+          IdentityFile = "~/.ssh/id_ed25519";
+          IdentitiesOnly = true;
+          ProxyCommand = "${pkgs.google-cloud-sdk}/bin/gcloud compute start-iap-tunnel 10.99.0.2 22 --listen-on-stdin --project boxlite-dev-project --region us-east5 --network kvm-dev --dest-group eric-kvm-dev-ssh --account vitus.zhang@polygala.ai --verbosity=warning";
+        };
+
         "apollo" = {
           HostName = "192.168.100.4";
           User = "vitus";
@@ -65,6 +72,12 @@ in
         "athena" = {
           HostName = "192.168.100.11";
           User = "vitus";
+        };
+
+        "j1900" = {
+          HostName = "192.168.100.3";
+          User = "vitus";
+          ForwardAgent = false;
         };
 
         # 13t - Tailscale 网段（100.64/10）主机，SSH 端口 8022

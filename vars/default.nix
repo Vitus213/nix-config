@@ -39,6 +39,8 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII+RpWZKJxoaVGK7giHrAWI0Q4nlH8fszNJpTOlq+8qh vitus@athena-lan"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHRkwg9/gTY2pgbr4+7u0C0FIATd2L9tpoAtUiY4/ID/ zhzvitus@gmail.com"
   ];
+  # J1900 仅能登录 Apollo / Artemis 普通用户，不扩大 root 或 Athena 授权。
+  j1900SshAuthorizedKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIII2VsrFPRhvbfoKjDXHUVlfA9mo7eeRUHCZw05WKjLG vitus@j1900-lan";
   secondaryAuthorizedKeys = [
     # the backup ssh keys for disaster recovery
   ];
