@@ -9,8 +9,18 @@ Manager 激活成功，`noctalia.service` 与 hypridle 正常运行，活动 Nir
 首次持久化挂载遮挡插件链接的问题已恢复，两个目录的挂载依赖已加载。用户完成真实错误/正确密码验收，日志确认错误密码被拒绝，随后正确密码解锁。11:18 核对
 `/run/current-system` 与 `/nix/var/nix/profiles/system`，两者均指向同一修正版。
 
-本轮只部署 apollo。athena、generic 的共享服务和包声明已求值，不部署远端；实际求值中 preservation 只有 apollo 启用。主 nixpkgs、Niri
+Athena 现已完成原生 5.5.0
+`switch`；generic 仍仅求值。实际 preservation 只有 Apollo 启用；主 nixpkgs、Niri
 26.04 及原有 22 个 input 的依赖闭包未变。
+
+Athena 运行系统与开机 profile 均为
+`/nix/store/9w5afbznxzn659zds23jcmdrzpcdgr90-nixos-system-athena-26.11.20261014.55bfb4d`。Home
+Manager 成功，Noctalia、hypridle、Dux 均 active、`NRestarts=0`；完整配置校验通过，TOTP/load 与固定番茄钟已加载，launcher/番茄钟 IPC 均成功。切换前的主工作树、旧 Shell
+config/cache 和模型配置私密备份在 `/home/vitus/nixcfg-before-deploy.MsKo3z`。
+
+Athena 的 Niri 会话此前已锁定；停止旧 Shell 后合成器保留锁定底色，最初截图不能作桌面通过依据。新版执行
+`noctalia msg session lock` 后已接管锁屏，截图确认壁纸、时钟和密码输入框正常，IPC 返回
+`locked=true`，保持原有锁定边界。尚未在 Athena 输入错误/正确密码、验收解锁后桌面、重新登录或重启；Apollo 的验收不能代替这些检查。
 
 ## 固定版本与两个补丁
 

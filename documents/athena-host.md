@@ -161,6 +161,12 @@ PATH 验收。
   拉取，保留 30 天；配置入口仍为
   `hosts/olympians-apollo/home.nix`。旧 Athena 数据只作私密回滚点，不自动删除，也不得与 J1900 双活。
 
+2026-11-13 部署前复核：J1900 的 Vaultwarden `/alive` 与公网入口均返回 200，公网 `/admin`
+返回 404；Apollo 能用 root SSH 读取目标备份目录。目标 `backup-vaultwarden.service` 最近以 `203/EXEC`
+失败，缺少
+`/usr/local/sbin/backup-vaultwarden`，现存数据库备份时间为 2026-11-08；每日备份不能视为正常。此故障属于 J1900 本机任务，本次 Athena
+rebuild 不修改该任务。
+
 ## 部署
 
 athena 先用官方安装盘装了带 GNOME 的默认 NixOS，2026-10-27 从 apollo 切到本仓库配置（generation
@@ -240,9 +246,33 @@ just remote-host athena boot     # 需密码，建议直接在 athena 上手动�
   v4 首次切换时，先停止旧 Shell 与 hypridle，备份解引用后的 config/cache、已有 state/data 和 TOTP 索引；保留旧番茄钟统计。Athena 不启用 preservation，无需套用 Apollo 的
   `/persistent` 迁移步骤。详见 [Noctalia v5](./noctalia-v5.md)。
 
-首次引导（sudoers 规则生效前）仍需在 athena 本机手动跑一次
-`sudo nixos-rebuild switch --flake /tmp/nixcfg-deploy#athena`（athena 的 `~/nix-config`
-主工作树存在本地未提交改动，勿直接 pull，先人工核对处理）。
+首次引导（sudoers 规则生效前）仍需在 Athena 本机手动执行一次带密码的 rebuild。当前主工作树已同步，未来若有未提交增量，仍须先备份核对，勿直接覆盖。
+
+### 2026-11-13 部署记录
+
+配置按主题提交后同步至
+`97d7a22f`，Athena 主工作树原有 12 项增量逐项确认已纳入提交；旧 JSON 只有排版差异。完整主工作树、二进制 patch、旧 Shell 运行数据和 OMP 模型配置保存在
+`/home/vitus/nixcfg-before-deploy.MsKo3z`（私有目录）。部署期间使用独立构建 worktree；运行配置仍读取已同步的
+`~/nix-config`，验收后移除临时 worktree。
+
+本地完整构建并复制闭包后，以 root SSH 执行
+`nixos-rebuild switch --no-reexec --store-path /nix/store/9w5afbznxzn659zds23jcmdrzpcdgr90-nixos-system-athena-26.11.20261014.55bfb4d`。仅此次受控复制使用
+`--no-check-sigs`
+接收本机构建的包，没有放宽远端持久签名策略。运行系统与开机 profile 指向同一路径，Home Manager
+`Result=success`、`ExecMainStatus=0`。
+
+Noctalia、hypridle、Dux 均 active 且未重启，旧 `noctalia-shell`
+已移除；目录默认关联与 FileManager1 由 Dux 提供。Go/Rust/Java 程序、Python 常用库导入、跳过已有 Zellij 自启动后的 Nushell
+`JAVA_HOME` 与 PATH 检查通过。Jellyfin、Immich、AriaNg 返回 200，Uptime
+Kuma 返回正常 302；系统及用户 failed unit 均为空。
+
+已有 `models.yml`
+在 activation 中按设计跳过生成；此次先备份，再只更新 Magpie 地址、鉴权与动态目录，验证其他 provider 完全不变。刷新目录得到 25 项，禁用客户端 retry/fallback 的真实 OMP 调用返回
+`ATHENA_J1900_OK`；模板已回填，未修改密钥包或 OAuth 登录。`omp-sync-models`
+会重置本机手工增量，后续不要无差别重跑。
+
+旧 Niri 会话已锁定，新 Shell 已接管密码界面，保持锁定。Athena 的本人密码解锁、解锁后桌面和重启尚未验收，见
+[Noctalia v5](./noctalia-v5.md)。
 
 ## 回滚
 

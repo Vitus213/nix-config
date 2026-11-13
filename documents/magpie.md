@@ -233,6 +233,17 @@ overlay 不控制 J1900 服务版本。
   `/root/migration-j1900-20261108/magpie/`。
 - 回滚先停 J1900；若新端 token 已刷新，先冷传最新凭据回源，不能直接启旧 token 备份。
 
+### 2026-11-13 Athena 客户端部署复核
+
+系统 `switch` 后将 Athena 原有回环免鉴权和静态模型块切到 J1900 LAN
+key 与动态目录；其他 provider 内容、OAuth 登录和默认角色原样保留。现有 `models.yml` 由 Home
+Manager 跳过生成，运行文件先私密备份，再与模板按结构比较，只接受 Magpie 的预期差异。
+
+`omp models refresh magpie` 得到 25 项，临时关闭客户端 retry/modelFallback 后，实际调用
+`magpie/auto/deepseek-v4-pro` 返回 `ATHENA_J1900_OK`。普通新 TUI 不传 `--model` / `--models`，打开
+`/model` 可见 Magpie 和 openai-codex；本次未确认 anthropic
+OAuth 的可见性，不据此声称其授权可用。临时 smoke overlay 已删除，证据留在 Athena 的私有部署备份。
+
 ### 以下为 Athena 部署历史（2026-10）
 
 已验证：

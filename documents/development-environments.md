@@ -54,9 +54,10 @@ overlay use .venv/bin/activate.nu
 
 ## 部署、验证与回滚
 
-本轮只修改仓库并构建验证，未对 Apollo、Athena 执行系统切换。在目标机拉取配置后运行
-`just local`；重新打开终端，以加载 `JAVA_HOME` 和新 PATH。Athena 也可使用仓库已有的
-`just remote-host athena` 部署流程。
+Athena 已于 2026-11-13 完成系统 `switch`，Home
+Manager 激活成功，四种语言的实机程序均已运行。Apollo 本轮未为开发工具执行新的系统切换；后续在目标机运行
+`just local`，并重新打开终端加载 `JAVA_HOME` 和新 PATH。远程部署还须同步 out-of-store 配置源，见
+[Athena 部署说明](./athena-host.md#从-apollo-部署)。
 
 已完成的验证：
 
@@ -68,7 +69,9 @@ overlay use .venv/bin/activate.nu
 - 生成的 Nushell 环境确认 `JAVA_HOME` 和 Go/Cargo 用户命令路径；`just test` 返回
   `true`，两个修改过的 Nix 文件通过 `nixfmt --check`。
 
-Maven 验证不包含从中央仓库下载插件；未在 Athena 实机运行程序。
+Athena 实机执行 Go、Rust、Java 程序及 Python 常用库导入均通过；跳过已有 Zellij 自动启动后，Nushell 确认
+`JAVA_HOME` 有效，Go/Cargo 用户命令路径齐全。SSH 无 TTY 的 login
+Nushell 会触发 Zellij 的 raw-mode 错误，不是语言工具链失败。Maven 验证不包含从中央仓库下载插件。
 
 回滚时从 `dev-tools.nix`
 移除对应工具及环境设置，再重新部署。不要把语言包同时放回编辑器配置而保留开发工具文件中的重复安装。项目目录、虚拟环境和语言缓存不自动删除。

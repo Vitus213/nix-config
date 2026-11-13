@@ -4,6 +4,18 @@
 
 ## 2026-11-13
 
+### 整理全部变更并部署 Athena
+
+- 影响范围：按主机网关、开发工具、Wayland 桌面和文档主题提交并推送；Athena 完成系统
+  `switch`，主工作树已备份后同步，out-of-store 配置与构建来源一致。
+- 配置入口：沿用本日各专题入口；部署系统为
+  `9w5afbznxzn659zds23jcmdrzpcdgr90`，运行系统与开机 profile 一致，Home Manager 成功。
+- 验证：`just test`、OMP 现有测试、提交钩子及密钥扫描通过；Noctalia 5.5.0、Dux
+  2.1.2 与 hypridle 正常运行，目录 MIME/FileManager1、插件、面板 IPC、四种语言程序、Nushell 环境和家庭服务 API 均检查。OMP 动态目录 25 项，禁用重试/fallback 的真实调用返回
+  `ATHENA_J1900_OK`。
+- 限制：Athena 原会话已锁定，新 Shell 已接管锁屏，等待本人密码验收；未重启。J1900 的 Vaultwarden 每日备份缺少执行脚本，已在主机文档记录，属于独立故障。
+- 关联文档：[Athena](./athena-host.md)、[Noctalia v5](./noctalia-v5.md)、[开发环境](./development-environments.md)、[Magpie](./magpie.md)。
+
 ### 回填 J1900 服务迁移与客户端接入
 
 - 影响范围：Athena 移除已迁走的 Magpie、Vaultwarden、Cloudflare
@@ -35,7 +47,8 @@
 - 验证：Apollo Home
   Manager 包集合构建成功；两台主机完整求值、`just test`、Nix 格式检查通过；实际运行四种语言程序、Gradle 编译运行、Maven
   validate、Clippy 与 Python 虚拟环境。
-- 部署状态：本轮未执行系统切换；目标机运行 `just local` 后重新打开终端。
+- 部署状态：Athena 已 switch 并完成实机程序与环境检查；Apollo 后续运行 `just local`
+  部署工具变更后重新打开终端。
 - 关联文档：[语言开发环境](./development-environments.md)。
 
 ### 共享终端环境安装 Google Cloud CLI
@@ -50,7 +63,7 @@
 
 ### Noctalia 固定原生 5.5.0 并完成 apollo 迁移部署
 
-- 影响范围：apollo、athena、generic 的共享 Linux 桌面声明；本轮仅 apollo 已 switch，其他主机仅求值。
+- 影响范围：apollo、athena、generic 的共享 Linux 桌面声明；Apollo、Athena 已 switch，generic 仅求值。
 - 配置入口：`flake.nix` / `flake.lock`、`overlays/noctalia/`、
   `home/linux/gui/base/noctalia/`、活动 Niri
   KDL、hypridle、`hosts/_shared/preservation.nix`、PAM 断言。
