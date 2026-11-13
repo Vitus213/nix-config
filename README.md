@@ -127,26 +127,26 @@ secrets 没 rekey，第一次切换后很容易看到 `nix-config` 目录变空�
 
 ## 组件
 
-| 类别                       | 当前选择                                                                                       |
-| -------------------------- | ---------------------------------------------------------------------------------------------- |
-| 窗口管理器                 | [Niri][Niri]                                                                                   |
-| 终端                       | [Zellij][Zellij] + [foot][foot] / [Kitty][Kitty] / [Alacritty][Alacritty] / [Ghostty][Ghostty] |
-| 状态栏、通知、启动器、锁屏 | [noctalia-shell][noctalia-shell]                                                               |
-| 登录管理器                 | [tuigreet][tuigreet]                                                                           |
-| 配色                       | [catppuccin-nix][catppuccin-nix]                                                               |
-| 网络管理                   | [NetworkManager][NetworkManager]                                                               |
-| 输入法                     | [Fcitx5][Fcitx5] + [Rime][rime] + [雾凇拼音 Rime Ice][rime-ice]                                |
-| 系统监控                   | [Btop][Btop]                                                                                   |
-| 文件管理                   | [Yazi][Yazi] + [Dolphin][dolphin]                                                              |
-| Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                      |
-| 媒体播放器                 | [mpv][mpv]                                                                                     |
-| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed / Delta                                               |
-| 字体                       | [Nerd Fonts][Nerd fonts]                                                                       |
-| 图片查看                   | [imv][imv]                                                                                     |
-| 截图                       | Niri 内置截图                                                                                  |
-| 录屏                       | [OBS][OBS]                                                                                     |
-| 文件系统和加密             | tmpfs `/`、Btrfs 子卷、LUKS 加密、`/persistent` 持久化                                         |
-| Secure Boot                | 当前未启用（历史方案为 [lanzaboote][lanzaboote]，已随主机清理移除）                            |
+| 类别                       | 当前选择                                                                                             |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 窗口管理器                 | [Niri][Niri]                                                                                         |
+| 终端                       | Linux：[Kitty][Kitty]；macOS：[Ghostty][Ghostty] / [Alacritty][Alacritty]；按需使用 [Zellij][Zellij] |
+| 状态栏、通知、启动器、锁屏 | [Noctalia][noctalia] `5.5.0`                                                                         |
+| 登录管理器                 | [tuigreet][tuigreet]                                                                                 |
+| 配色                       | [catppuccin-nix][catppuccin-nix]                                                                     |
+| 网络管理                   | [NetworkManager][NetworkManager]                                                                     |
+| 输入法                     | [Fcitx5][Fcitx5] + [Rime][rime] + [雾凇拼音 Rime Ice][rime-ice]                                      |
+| 系统监控                   | [Btop][Btop]                                                                                         |
+| 文件管理                   | [Dux Files][dux-files]（图形默认）+ [Yazi][Yazi]（终端）                                             |
+| Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                            |
+| 媒体播放器                 | [mpv][mpv]                                                                                           |
+| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed / Delta                                                     |
+| 字体                       | [Nerd Fonts][Nerd fonts]                                                                             |
+| 图片查看                   | [imv][imv]                                                                                           |
+| 截图                       | Niri 内置截图                                                                                        |
+| 录屏                       | [OBS][OBS]                                                                                           |
+| 文件系统和加密             | tmpfs `/`、Btrfs 子卷、LUKS 加密、`/persistent` 持久化                                               |
+| Secure Boot                | 当前未启用（历史方案为 [lanzaboote][lanzaboote]，已随主机清理移除）                                  |
 
 ## 部署
 
@@ -201,7 +201,6 @@ just local debug
 
 [Niri]: https://github.com/YaLTeR/niri
 [Kitty]: https://github.com/kovidgoyal/kitty
-[foot]: https://codeberg.org/dnkl/foot
 [Alacritty]: https://github.com/alacritty/alacritty
 [Ghostty]: https://github.com/ghostty-org/ghostty
 [Nushell]: https://github.com/nushell/nushell
@@ -219,9 +218,9 @@ just local debug
 [catppuccin-nix]: https://github.com/catppuccin/nix
 [NetworkManager]: https://wiki.gnome.org/Projects/NetworkManager
 [tuigreet]: https://github.com/apognu/tuigreet
-[dolphin]: https://apps.kde.org/dolphin/
+[dux-files]: https://github.com/duxlabs-dev/dux-files
 [Yazi]: https://github.com/sxyazi/yazi
 [Btrfs]: https://btrfs.readthedocs.io
 [LUKS]: https://wiki.archlinux.org/title/Dm-crypt/Encrypting_an_entire_system
 [lanzaboote]: https://github.com/nix-community/lanzaboote
-[noctalia-shell]: https://github.com/noctalia-dev/noctalia-shell
+[noctalia]: https://github.com/noctalia-dev/noctalia

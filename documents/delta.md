@@ -36,7 +36,7 @@ environment for coding with agents"。它不是 Zed 编辑器里的功能，也�
   - `bin/delta-app`：GUI；
   - `share/applications/dev.zed.Delta.desktop`、hicolor 图标（`Icon=dev.zed.Delta`）。
 - `home/linux/gui/base/editors.nix`：把 `pkgs.delta-zed` 加入 `home.packages`。
-- `home/linux/gui/niri/conf/windowrules.kdl`：`app-id="dev.zed.Delta"` 的窗口去 `5code`
+- `home/linux/gui/niri/conf/windowrules.kdl`：`app-id="dev.zed.Delta"` 的窗口去 `1terminal`
   工作区并最大化。
 
 上游只支持 `x86_64-linux` / `aarch64-linux`；macOS 不在本仓库 Nix 管理范围内。

@@ -41,22 +41,27 @@
 
 ## Linux 桌面（Niri + Noctalia）
 
-| 文档                                                      | 内容                                           |
-| --------------------------------------------------------- | ---------------------------------------------- |
-| [Niri 工作区与窗口分配](./niri-workspaces.md)             | 工作区命名、快捷键、窗口规则                   |
-| [Niri 显示缩放](./niri-display-scaling.md)                | 多显示器缩放                                   |
-| [Noctalia IPC 与服务环境](./noctalia-ipc.md)              | 快捷键 IPC 失效排查、`QT_QPA_PLATFORM` 约束    |
-| [Noctalia 工作区红色角标](./noctalia-workspace-urgent.md) | urgent 状态不刷新的原因与 overlay 补丁         |
-| [Noctalia 系统监控磁盘路径](./noctalia-system-monitor.md) | `diskPath` 必须是挂载点                        |
-| [Wayland 屏幕共享](./wayland-screen-sharing.md)           | portal、PipeWire 与应用级屏幕共享              |
-| [Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)  | 输入法配置、验证与回滚                         |
-| [Esc 与 Caps Lock 键位](./keyboard-layout.md)             | NixOS 与 macOS 的键位行为                      |
-| [Linux 语音输入](./linux-voice-input.md)                  | Voiceless 语音输入方案                         |
-| [Linux 微信、QQ 与飞书](./linux-im-apps.md)               | 安装方式、沙箱边界与屏幕共享                   |
-| [Linux 腾讯会议](./tencent-meeting.md)                    | 启动、portal/DMA-BUF 共享、原生主题与录制边界  |
-| [浏览器与工作协作应用](./work-apps.md)                    | Zen + Chrome；Slack、Notion、Linear 及窗口分配 |
-| [Zen Browser](./zen-browser.md)                           | 浏览器安装与配置                               |
-| [Orca 桌面应用](./orca.md)                                | StablyAI Orca 的安装方式                       |
+| 文档                                                                  | 内容                                                   |
+| --------------------------------------------------------------------- | ------------------------------------------------------ |
+| [Noctalia v5 迁移](./noctalia-v5.md)                                  | 固定 5.5.0、TOML/插件所有权、备份、test 验收与完整回滚 |
+| [Niri 工作区与窗口分配](./niri-workspaces.md)                         | 工作区、快捷键、窗口规则、kitty 与 Dux Files           |
+| [Niri 显示缩放](./niri-display-scaling.md)                            | 多显示器缩放                                           |
+| [Linux 中文字体选型调研](./linux-font-selection-research.md)          | 文楷/等宽分工、社区样本与应用字体回退                  |
+| [Noctalia IPC 与服务环境](./noctalia-ipc.md)                          | v5 命令、notify 服务排序、应用隔离与覆盖层诊断         |
+| [Noctalia 工作区状态](./noctalia-workspace-urgent.md)                 | 主色聚焦、低强调占用、urgent 红点与 hover 描边         |
+| [工作区高亮官方逻辑调研](./workspace-highlight-official-research.md)  | 2026-11-10 v4 历史：状态链路、urgent 聚合与清除        |
+| [工作区高亮社区方案调研](./workspace-highlight-community-research.md) | 2026-11-10 v4/Waybar 与社区样本、呈现规则              |
+| [Noctalia 系统监控](./noctalia-system-monitor.md)                     | v5 六项监控、根路径 `/`、负载插件与阈值                |
+| [Wayland 屏幕共享](./wayland-screen-sharing.md)                       | portal、PipeWire 与应用级屏幕共享                      |
+| [Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)              | 输入法配置、验证与回滚                                 |
+| [Esc 与 Caps Lock 键位](./keyboard-layout.md)                         | NixOS 与 macOS 的键位行为                              |
+| [Linux 语音输入](./linux-voice-input.md)                              | Voiceless 语音输入方案                                 |
+| [Linux 微信、QQ 与飞书](./linux-im-apps.md)                           | 安装方式、沙箱边界与屏幕共享                           |
+| [微信截图剪贴板调研](./wechat-image-clipboard-research.md)            | Wayland/xcb 对照、版本证据与验收边界                   |
+| [Linux 腾讯会议](./tencent-meeting.md)                                | 启动、portal/DMA-BUF 共享、原生主题与录制边界          |
+| [浏览器与工作协作应用](./work-apps.md)                                | Zen + Chrome；Slack、Notion、Linear 及窗口分配         |
+| [Zen Browser](./zen-browser.md)                                       | 浏览器安装与配置                                       |
+| [Orca 移除说明](./orca.md)                                            | 移除范围、生效方式与数据保留                           |
 
 ## macOS
 
@@ -68,15 +73,17 @@
 
 | 文档                                                             | 内容                                                   |
 | ---------------------------------------------------------------- | ------------------------------------------------------ |
+| [Go、Rust、Java、Python 开发环境](./development-environments.md) | Apollo、Athena 的工具链、PATH、虚拟环境与部署          |
 | [Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)        | 启动关系与低风险排障方法                               |
 | [Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)       | Agent CLI 的安装与快捷命令                             |
 | [omp 模型配置管理](./omp-models.md)                              | `models.yml` 的生成、新增 provider 流程                |
 | [OMP provider 变更技能](../.agents/skills/omp-provider/SKILL.md) | 新增通道、my-secrets、增量同步、OAuth 保留与新会话验收 |
-| [Magpie 本地模型网关](./magpie.md)                               | Apollo 本地网关、Web/TUI、凭据持久化与 OMP 管理边界    |
+| [Magpie 共享模型网关](./magpie.md)                               | J1900 单实例、客户端接入、Web/TUI 与凭据边界           |
 | [Hindsight 记忆后端](./hindsight.md)                             | Agent 长期记忆服务的部署                               |
 | [Herdr Agent 终端运行时](./herdr.md)                             | Herdr 与 Zellij 的关系、radar 侧边栏、手机 SSH 接入    |
 | [bb Agent IDE](./bb.md)                                          | 安装来源、更新与回滚                                   |
 | [Delta agent 协作环境](./delta.md)                               | Zed 团队 Delta 的安装、命名冲突、更新与回滚            |
+| [Tern 同名项目与安装调查](./tern-research.md)                    | tern.build CLI 分发与 Stencil Tern 的区别              |
 | [AI Agent 用量统计与 WakaTime](./agent-usage.md)                 | profile 用量卡片、ccusage 口径、WakaTime key           |
 
 ## 历史与计划

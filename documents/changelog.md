@@ -2,6 +2,127 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-11-13
+
+### 回填 J1900 服务迁移与客户端接入
+
+- 影响范围：Athena 移除已迁走的 Magpie、Vaultwarden、Cloudflare
+  Tunnel 声明；Apollo 备份改从 J1900 拉取，Artemis 保留离线待部署状态。
+- 配置入口：`home/base/core/omp-sync.py`、`omp-models.yml.in`、`hosts/olympians-{apollo,athena}/`、`modules/base/users.nix`、`vars/`
+  和 `home/base/tui/ssh.nix`。
+- 客户端 Magpie 地址统一为 `192.168.100.3:3425`，仅 J1900 自身用回环；保留独立出站 SSH
+  key 的最小授权，不改密钥包或 OAuth 登录。
+- 验证：既有 OMP 行为测试通过，`just test` 返回
+  `true`，Athena 完整系统构建成功；J1900 迁移时的真实推理与备份证据见关联文档。
+- 关联文档：[Magpie 共享模型网关](./magpie.md)、[OMP 模型配置](./omp-models.md)、[SSH 设备密钥](./homelab-ssh-key-romantic.md)、[Athena 服务清单](./athena-host.md#服务)。
+
+### 持久配置 eric-kvm-dev 的 IAP SSH 别名
+
+- 影响范围：共享 Home Manager SSH 配置；本机同步恢复别名，立即可用。
+- 配置入口：`home/base/tui/ssh.nix`；将 IAP 隧道、账号及私钥路径写入源配置，避免部署覆盖手工配置。
+- 验证：实际通过 IAP 登录，远端用户 `vitus`、主机
+  `eric-kvm-dev.us-east5-a.c.boxlite-dev-project.internal`；SSH 配置求值、Nix 格式检查和 `just test`
+  均通过。
+- 关联文档：[eric-kvm-dev SSH 连接](./application-version-audit.md#eric-kvm-dev-ssh-连接)。
+
+### 集中配置 Go、Rust、Java、Python 开发环境
+
+- 影响范围：Apollo、Athena 提供四种语言环境；其他主机保留原有 Python、Rust 安装。
+- 配置入口：`home/base/tui/dev-tools.nix`、`home/base/tui/editors/packages.nix`。
+- 参考 ryan4yin 的 Nixpkgs 工具组合，语言包集中到现有开发工具文件；新增 Go、gopls、Delve 等工具，以及 JDK
+  21 LTS、Maven、Gradle 8，补齐 Nushell 的 `JAVA_HOME` 和 Go/Cargo 用户命令路径。
+- 保留现有 Python 3.13 常用库与 Rust 组件，uv 单独安装，移除编辑器文件中的重复语言包声明。
+- 验证：Apollo Home
+  Manager 包集合构建成功；两台主机完整求值、`just test`、Nix 格式检查通过；实际运行四种语言程序、Gradle 编译运行、Maven
+  validate、Clippy 与 Python 虚拟环境。
+- 部署状态：本轮未执行系统切换；目标机运行 `just local` 后重新打开终端。
+- 关联文档：[语言开发环境](./development-environments.md)。
+
+### 共享终端环境安装 Google Cloud CLI
+
+- 影响范围：加载共享 TUI Home Manager 配置的 Linux 与 macOS 主机。
+- 配置入口：`home/base/tui/dev-tools.nix`，加入 `pkgs.google-cloud-sdk`，提供 `gcloud`、`bq` 和
+  `gsutil`。
+- 当前本机已通过用户 Nix profile 安装 `583.0.0`；声明式配置在下次部署时生效。
+- 验证：`just test` 返回 `true`，Nix 格式检查通过；六个主机配置均包含
+  `583.0.0`，实际运行仓库声明的 CLI 版本命令成功。
+- 关联文档：[Google Cloud CLI 的版本来源、使用与移除](./application-version-audit.md#google-cloud-cli)。
+
+### Noctalia 固定原生 5.5.0 并完成 apollo 迁移部署
+
+- 影响范围：apollo、athena、generic 的共享 Linux 桌面声明；本轮仅 apollo 已 switch，其他主机仅求值。
+- 配置入口：`flake.nix` / `flake.lock`、`overlays/noctalia/`、
+  `home/linux/gui/base/noctalia/`、活动 Niri
+  KDL、hypridle、`hosts/_shared/preservation.nix`、PAM 断言。
+- 固定官方 5.5.0 与社区番茄钟输入，保留主 nixpkgs/Niri 和原有 input 闭包；只维护 PAM 与工作区状态两个 C++ 补丁。JSON 手动映射为 TOML，文件级链接与 GUI
+  override 分离，新增 TOTP/load 桥接插件和 v5 state/data 持久化，旧统计完整私有备份。
+- 离线验证：原生补丁包及 apollo 完整系统构建成功，`just test` 返回
+  `true`；三台服务、ffmpeg-full、持久化与挂载依赖求值、TOML 完整目录检查、插件 lint、Luau/TOTP 隔离冒烟和 Niri
+  validate 通过。
+- 桌面检查：启动器、Terminal=true、kitty 任务跨 Shell 重启、双窗 urgent、工作区交互、通知、加密文本/图片剪贴板恢复、TOTP 三点击、番茄钟状态和一分钟到时闹铃、网络/蓝牙/监控页面与托盘均已实际检查。
+- 部署状态：新 Shell 与 hypridle 正常运行，旧服务已移除；首次 data 挂载遮挡的本地插件链接已恢复。Home
+  Manager 增加 `RequiresMountsFor`
+  的修正版已完成 test 与 switch；11:18 核对运行系统和开机 profile 均指向同一修正版，挂载依赖与 Home
+  Manager 激活结果正常。
+- 锁屏验收：用户完成真实错误/正确密码检查，journal 确认 `noctalia-lock`
+  拒绝错误认证后成功解锁。多屏、物理快捷键、idle/suspend、重新登录和重启未实测。
+- 关联文档：[Noctalia v5 迁移、验证与回滚](./noctalia-v5.md)、[IPC](./noctalia-ipc.md)、
+  [工作区状态](./noctalia-workspace-urgent.md)、[监控](./noctalia-system-monitor.md)、
+  [PAM](./lockscreen-pam.md)、[Niri](./niri-workspaces.md)。
+
+### 图形文件管理器切换为 Dux Files
+
+- 影响范围：apollo、athena、generic 的 Linux 图形桌面；Dux Files `2.1.2`
+  替代 Dolphin、Thunar 和配套 Ark，保留终端 Yazi。
+- 配置入口：`flake.nix` / `flake.lock`、`modules/nixos/desktop/file-manager.nix`、
+  `modules/nixos/desktop/misc.nix`、`home/linux/gui/base/xdg/mime.nix`、Niri KDL。
+- 目录默认关联和 FileManager1 文件定位由 Dux 处理；`Mod+Shift+E` 打开，窗口进入
+  `9file`。启用原生 Wayland 后台服务，沿用 GVfs/UDisks2 与现有 GNOME/GTK 文件选择器。
+- 验证：软件包构建、`niri validate`、`just test` 返回 `true`；三台桌面迁移选项及 Apollo
+  toplevel 求值通过；实际启动 GUI，检查文件定位、中文路径复制/改名/移动/撤销及预览。
+- 部署：apollo 完整系统构建并切换成功，Home
+  Manager 激活成功；确认 Dolphin、Thunar、Ark 命令及桌面入口已移除，Dux 保持默认关联和 FileManager1 所有权；清理临时 profile、服务覆盖与 GC
+  root。
+- 关联文档：[文件管理器：Dux Files](./niri-workspaces.md#文件管理器dux-files)、
+  [应用版本审计](./application-version-audit.md)。
+
+### Linux 终端统一为 kitty
+
+- 影响范围：Linux GUI；移除 foot 配置、server 服务覆盖与 Alacritty 安装，macOS 不变。
+- 配置入口：`home/base/gui/terminal/`、`home/linux/gui/niri/conf/`、
+  `home/linux/gui/base/xdg/autostart.nix`、`modules/nixos/desktop/xdg.nix`、
+  `home/linux/gui/base/noctalia/config/settings.json`。
+- 三个终端快捷键、登录自启动、系统默认终端和 Noctalia 终端应用入口均改为 kitty；保持 Nushell、字体、剪贴板授权和 kitty 跳过 Zellij 自动启动的行为。
+- 验证：`niri validate`、`just test` 返回 `true`；实际启动 kitty 并检查 Nushell 提示符与 `1terminal`
+  落点， `kitty -e`
+  启动成功；apollo 配置评估确认 kitty 启用、foot/Alacritty 禁用且无 foot 服务。未执行系统切换；软件包、服务、系统默认终端和自启动项需
+  `just local` 部署。
+- 关联文档：[Niri 工作区与窗口分配](./niri-workspaces.md#linux-终端统一为-kitty)、
+  [终端说明](../home/base/gui/terminal/README.md)、[Herdr](./herdr.md)。
+
+### 微信升级到 4.1.13.26 并切换原生 Wayland
+
+- 影响范围：Linux GUI 主机的微信包、自启动所用的同一桌面入口和输入法接入；保留 Fcitx5/Rime。
+- 配置入口：`overlays/wechat/`、`home/linux/gui/base/misc.nix`、`home/linux/gui/base/xdg/autostart.nix`。
+- 局部回移新版官方 DEB 配方，依赖仍用主
+  `nixpkgs`；按用户选择移除微信专用 FHS/bubblewrap 和数据路径隔离，直接运行
+  `pkgs.wechat`，使用 Wayland/text-input-v3，并保留 WeChatAppEx 适配。
+- 部署与回滚：用户 rebuild 后重新启动微信；旧 `WeChat_Data`
+  不迁移、不删除，切换前备份旧目录与普通家目录已有的微信数据，Nix generation 回滚不恢复应用数据库。
+- 验证：`just test` 返回 `true`；新版包构建成功，三台 Linux
+  GUI 主机定向求值通过；临时 HOME 直接启动观察到原生 Wayland 二维码登录界面，未登录、未迁移数据、未执行系统切换。
+- 关联文档：[Linux 微信、QQ 与飞书](./linux-im-apps.md)、[应用版本审计](./application-version-audit.md)、
+  [Fcitx5 与 Rime 小鹤双拼](./fcitx5-rime-input-method.md)。
+
+## 2026-11-10
+
+### Delta 改为工作区 1
+
+- 影响范围：Linux Niri 桌面；Delta 新窗口默认进入 `1terminal`，保留最大化。
+- 配置入口：`home/linux/gui/niri/conf/windowrules.kdl`。
+- 验证：`niri validate`；通过 Niri IPC 移动当前 Delta 窗口并检查工作区。
+- 关联文档：[Delta](./delta.md)、[Niri 工作区与窗口分配](./niri-workspaces.md)。
+
 ## 2026-11-09
 
 ### 部署 Ubuntu WSL hermes 与用户 secrets
@@ -12,6 +133,19 @@
 - 为新 hermes 身份开放共享 secrets；保留现有接收者，禁用新主机的用量报告自动发布定时器。
 - 验证：activationPackage 完整构建、激活、agenix 解密、OMP 同步与配置检查。
 - 关联文档：[hermes Ubuntu WSL](./hermes-wsl.md)。
+
+## 2026-11-08
+
+### 移除 StablyAI Orca
+
+- 影响范围：全部 Linux GUI 主机，不再安装或在登录图形会话后自动启动 StablyAI Orca。
+- 配置入口：`home/linux/gui/base/misc.nix`、`home/linux/gui/base/xdg/autostart.nix`、
+  `home/linux/gui/niri/conf/windowrules.kdl`；删除 `overlays/stably-orca/`。
+- 变更内容：移除软件包、自启动项、专用窗口规则和 AppImage
+  overlay；同步桌面说明、overlay 索引与应用版本审计。不删除用户数据，不主动终止现有进程，不涉及 GNOME 屏幕阅读器。
+- 验证方式：`just test` 返回
+  `true`；Apollo、Athena 定向求值均确认专用包属性、安装项、自启动项及窗口规则已移除。未执行系统切换。
+- 关联文档：[Orca 移除说明](./orca.md)、[应用版本审计](./application-version-audit.md)。
 
 ## 2026-11-03
 
