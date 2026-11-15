@@ -80,6 +80,18 @@ in
           ForwardAgent = false;
         };
 
+        "lab" = {
+          HostName = "100.64.0.4";
+          Port = 2222;
+          User = "dragonos";
+          IdentityFile = "~/.ssh/id_ed25519";
+          IdentitiesOnly = true;
+          ForwardAgent = false;
+          HostKeyAlias = "dragonos-lab-openssh";
+          UserKnownHostsFile = "~/.ssh/known_hosts_lab";
+          StrictHostKeyChecking = true;
+        };
+
         # 13t - Tailscale 网段（100.64/10）主机，SSH 端口 8022
         "13t" = {
           HostName = "100.64.0.107";

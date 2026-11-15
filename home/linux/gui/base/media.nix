@@ -1,6 +1,5 @@
 {
   pkgs,
-  pkgs-x64,
   ...
 }:
 # media - control and enjoy audio/video
@@ -8,8 +7,6 @@
   home.packages = with pkgs; [
     # audio control
     pavucontrol
-    playerctl
-    pulsemixer
     imv # simple image viewer
     # Qt6 wayland + NVIDIA EGL 建上下文失败（EGL_BAD_MATCH 3009），窗口永不
     # commit；wrapper 强制 xcb 走 XWayland。名字保持 sioyek，desktop/xdg-open
@@ -29,7 +26,7 @@
     vulkan-tools
     mesa-demos
     nvitop
-    (pkgs-x64.zoom-us)
+    zoom-us
     # overlay 统一启动入口、portal/DMA-BUF 共享与原生界面配色。
     wemeet
   ];
@@ -38,9 +35,5 @@
     enable = true;
     defaultProfiles = [ "gpu-hq" ];
     scripts = [ pkgs.mpvScripts.mpris ];
-  };
-
-  services = {
-    playerctld.enable = true;
   };
 }

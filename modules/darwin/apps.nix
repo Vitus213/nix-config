@@ -32,19 +32,6 @@ let
     HOMEBREW_CORE_GIT_REMOTE = "https://mirror.nju.edu.cn/git/homebrew/homebrew-core.git";
     HOMEBREW_PIP_INDEX_URL = "https://mirror.nju.edu.cn/pypi/web/simple";
 
-    # tuna mirror（已失效，保留便于回滚）
-    # HOMEBREW_API_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/api";
-    # HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles";
-    # HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git";
-    # HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git";
-    # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
-
-    # bfsu mirror（已失效，保留便于回滚）
-    # HOMEBREW_API_DOMAIN = "https://mirrors.bfsu.edu.cn/homebrew-bottles/api";
-    # HOMEBREW_BOTTLE_DOMAIN = "https://mirrors.bfsu.edu.cn/homebrew-bottles";
-    # HOMEBREW_BREW_GIT_REMOTE = "https://mirrors.bfsu.edu.cn/git/homebrew/brew.git";
-    # HOMEBREW_CORE_GIT_REMOTE = "https://mirrors.bfsu.edu.cn/git/homebrew/homebrew-core.git";
-    # HOMEBREW_PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple";
   };
 
   homebrew_env_script = lib.attrsets.foldlAttrs (
@@ -53,28 +40,6 @@ let
   ) "" homebrew_mirror_env;
 in
 {
-  # Install packages from nix's official package repository.
-  #
-  # The packages installed here are available to all users, and are reproducible across machines, and are rollbackable.
-  # But on macOS, it's less stable than homebrew.
-  #
-  # Related Discussion: https://discourse.nixos.org/t/darwin-again/29331
-  environment.systemPackages = with pkgs; [
-    neovim
-    git
-    nushell # my custom shell
-    gnugrep # replacee macos's grep
-    gnutar # replacee macos's tar
-
-    # Docker runtime for local containers —— hindsight memory 后端用 colima 跑本地容器。
-    # 不从 brew 装：colima/lima/qemu 依赖链用 nix 管理，与 flake 同源可回滚。
-    docker # docker CLI（daemon 由 colima 提供）
-    colima # lightweight docker daemon runtime for macOS (Lima + QEMU)
-    docker-compose # compose 编排 hindsight 容器
-
-    # darwin only apps
-    # utm # virtual machine
-  ];
   environment.variables = {
     # Fix https://github.com/LnL7/nix-darwin/wiki/Terminfo-issues
     TERMINFO_DIRS = map (path: path + "/share/terminfo") config.environment.profiles ++ [

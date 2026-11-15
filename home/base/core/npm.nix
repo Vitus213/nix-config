@@ -14,18 +14,30 @@
   #
   # mainly used to install npm packages that updates frequently
   # such as gemini-cli, claude-code, etc.
-  home.activation.backupExistingNpmrc = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
-    target="${config.home.homeDirectory}/.npmrc"
-    if [ -e "$target" ] || [ -L "$target" ]; then
-      backup="$target.home-manager.backup"
-      if [ -e "$backup" ]; then
-        backup="$backup.$(date +%s)"
-      fi
-      mv "$target" "$backup"
-    fi
-  '';
+  home.activation.backupExistingNpmrc =
+    lib.hm.dag.entryBetween [ "linkGeneration" ] [ "writeBoundary" ]
+      ''
+        target="${config.home.homeDirectory}/.npmrc"
+        if [ -L "$target" ]; then
+          case "$(${pkgs.coreutils}/bin/readlink "$target")" in
+            /nix/store/*-home-manager-files/.npmrc) target="" ;;
+          esac
+        fi
+        if [ -n "$target" ] && { [ -e "$target" ] || [ -L "$target" ]; }; then
+          backup="$target.home-manager.backup"
+          if [ -e "$backup" ] || [ -L "$backup" ]; then
+            echo "Refusing to replace existing npm configuration backup: $backup" >&2
+            false
+          else
+            run ${pkgs.coreutils}/bin/mv -- "$target" "$backup"
+          fi
+        fi
+      '';
 
-  home.file.".npmrc".text = ''
-    prefix=${config.home.homeDirectory}/.npm
-  '';
+  home.file.".npmrc" = {
+    force = true;
+    text = ''
+      prefix=${config.home.homeDirectory}/.npm
+    '';
+  };
 }

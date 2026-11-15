@@ -35,10 +35,9 @@
 | `home/`      | 可复用的 home-manager **用户级**配置，分 `base`（共享）/ `linux` / `darwin`            |
 | `secrets/`   | agenix 模块定义；密文本体来自 private `mysecrets` flake input                          |
 | `vars/`      | 用户名、网络地址等跨模块变量（以 `myvars` 注入所有模块）                               |
-| `overlays/`  | 局部 package overlay，每个子目录自带 README 说明原因和移除条件                         |
-| `hardening/` | NixPak、bubblewrap、AppArmor 等沙箱和加固配置                                          |
+| `overlays/`  | 上游尚未覆盖的局部打包、补丁与命名适配                                                 |
+| `hardening/` | Telegram 的 NixPak / bubblewrap 沙箱                                                   |
 | `documents/` | **唯一的文档目录**：专题文档、排障记录、变更记录，入口是 [索引](./documents/README.md) |
-| `templates/` | `nix flake init` 开发模板                                                              |
 | `scripts/`   | 仓库自检脚本，例如禁止引入 stable/master nixpkgs 的策略检查                            |
 | `Justfile`   | 常用命令入口，例如 `just local`、`just test`、`just local-host ...`                    |
 | `AGENTS.md`  | 自动化代理（和人）在本仓库工作时的约定：验证方式、文档同步、changelog 规则             |
@@ -78,14 +77,14 @@ flake.nix
 
 当前主要输出:
 
-- NixOS 桌面: `apollo`、`generic`（模板）
+- NixOS 桌面: `apollo`、`athena`（兼家庭服务）、`generic`（模板）
 - NixOS-WSL 终端: `hestia`
 - macOS 桌面: `artemis`
 - 独立 home-manager: `hermes`
 
-`apollo` 是当前主力 NixOS 桌面。`generic`
+`apollo` 是当前主力 NixOS 桌面，`athena` 是开发机兼家庭服务主机。`generic`
 是不启用个人 secrets 和 preservation 的通用桌面模板。`hestia` 是 Windows
-WSL 里的无桌面 NixOS。`artemis` 是自用的 MacBook Air M1（nix-darwin）。`hermes`
+WSL 里的无桌面 NixOS。`artemis` 是 MacBook Pro M4 Pro（nix-darwin）。`hermes`
 是 Ubuntu 上的独立 home-manager 配置。
 
 当前关键输入和版本:
@@ -127,26 +126,26 @@ secrets 没 rekey，第一次切换后很容易看到 `nix-config` 目录变空�
 
 ## 组件
 
-| 类别                       | 当前选择                                                                                             |
-| -------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 窗口管理器                 | [Niri][Niri]                                                                                         |
-| 终端                       | Linux：[Kitty][Kitty]；macOS：[Ghostty][Ghostty] / [Alacritty][Alacritty]；按需使用 [Zellij][Zellij] |
-| 状态栏、通知、启动器、锁屏 | [Noctalia][noctalia] `5.5.0`                                                                         |
-| 登录管理器                 | [tuigreet][tuigreet]                                                                                 |
-| 配色                       | [catppuccin-nix][catppuccin-nix]                                                                     |
-| 网络管理                   | [NetworkManager][NetworkManager]                                                                     |
-| 输入法                     | [Fcitx5][Fcitx5] + [Rime][rime] + [雾凇拼音 Rime Ice][rime-ice]                                      |
-| 系统监控                   | [Btop][Btop]                                                                                         |
-| 文件管理                   | [Dux Files][dux-files]（图形默认）+ [Yazi][Yazi]（终端）                                             |
-| Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                            |
-| 媒体播放器                 | [mpv][mpv]                                                                                           |
-| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed / Delta                                                     |
-| 字体                       | [Nerd Fonts][Nerd fonts]                                                                             |
-| 图片查看                   | [imv][imv]                                                                                           |
-| 截图                       | Niri 内置截图                                                                                        |
-| 录屏                       | [OBS][OBS]                                                                                           |
-| 文件系统和加密             | tmpfs `/`、Btrfs 子卷、LUKS 加密、`/persistent` 持久化                                               |
-| Secure Boot                | 当前未启用（历史方案为 [lanzaboote][lanzaboote]，已随主机清理移除）                                  |
+| 类别                       | 当前选择                                                                                                        |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 窗口管理器                 | [Niri][Niri]                                                                                                    |
+| 终端                       | Linux：[Kitty][Kitty]；macOS：[Ghostty][Ghostty] / [Alacritty][Alacritty]；另安装 Tern，按需使用 Zellij / Herdr |
+| 状态栏、通知、启动器、锁屏 | [Noctalia][noctalia] `5.5.0`                                                                                    |
+| 登录管理器                 | [tuigreet][tuigreet]                                                                                            |
+| 配色                       | [catppuccin-nix][catppuccin-nix]                                                                                |
+| 网络管理                   | [NetworkManager][NetworkManager]                                                                                |
+| 输入法                     | [Fcitx5][Fcitx5] + [Rime][rime] + [雾凇拼音 Rime Ice][rime-ice]                                                 |
+| 系统监控                   | [Btop][Btop]                                                                                                    |
+| 文件管理                   | [Dux Files][dux-files]（图形默认）+ [Yazi][Yazi]（终端）                                                        |
+| Shell                      | [Nushell][Nushell] + [Starship][Starship]                                                                       |
+| 媒体播放器                 | [mpv][mpv]                                                                                                      |
+| 编辑器                     | [Neovim][Neovim] + VSCode / Cursor / Zed / Delta                                                                |
+| 字体                       | [Nerd Fonts][Nerd fonts]                                                                                        |
+| 图片查看                   | [imv][imv]                                                                                                      |
+| 截图                       | Niri 内置截图                                                                                                   |
+| 录屏                       | [OBS][OBS]                                                                                                      |
+| 文件系统和持久化           | 当前主机使用 ext4；Apollo 用 `/persistent` 映射选定路径，未启用清空根分区或 Btrfs 快照                          |
+| Secure Boot                | 当前未启用（历史方案为 [lanzaboote][lanzaboote]，已随主机清理移除）                                             |
 
 ## 部署
 

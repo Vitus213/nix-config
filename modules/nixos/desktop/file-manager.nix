@@ -1,11 +1,8 @@
 {
-  dux-files,
   myvars,
   ...
 }:
 {
-  imports = [ dux-files.nixosModules.dux-files ];
-
   programs.dux-files = {
     enable = true;
     systemd.enable = true;

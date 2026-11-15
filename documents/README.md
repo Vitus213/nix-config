@@ -14,21 +14,20 @@
 | [通用 NixOS 桌面 Host](./generic-nixos-host.md)                            | `generic`：不带个人 secrets / preservation 的桌面模板   |
 | [athena（开发机 + 家庭服务）](./athena-host.md)                            | 与 Windows 双系统的部署、secrets、服务清单与 j1900 迁移 |
 | [hestia（NixOS-WSL）](./hestia-wsl.md)                                     | WSL 终端主机的部署与使用                                |
-| [主机共享模块与仓库清理](./host-shared-modules.md)                         | `hosts/_shared/` 的设计与 2026-08 的主机层去重          |
+| [主机共享模块与仓库清理](./host-shared-modules.md)                         | 共享入口、死代码退役、应用收敛和维护验证边界            |
 | [LUKS + Btrfs 分区示例](./luks-btrfs-layout.md)                            | 需要整盘加密或 Btrfs 子卷时替换默认 ext4 分区步骤       |
 | [rEFInd 引导方案](./refind-boot.md)                                        | `apollo` 上 NixOS 与 Windows 双系统引导                 |
 | [NixOS 内核策略](./nixos-kernel.md)                                        | 内核版本选择方式                                        |
-
-| [hermes（Ubuntu WSL）](./hermes-wsl.md) | Ubuntu 24.04 独立 Home Manager、用户 secrets 与验证 |
+| [hermes（Ubuntu WSL）](./hermes-wsl.md)                                    | Ubuntu 24.04 独立 Home Manager、用户 secrets 与验证     |
 
 ## 系统维护
 
 | 文档                                                         | 内容                                      |
 | ------------------------------------------------------------ | ----------------------------------------- |
 | [nix 自动垃圾回收策略](./nix-gc.md)                          | NixOS / nix-darwin 两端一致的 gc 策略     |
-| [btrbk 配置状态](./btrbk.md)                                 | Btrfs 快照与备份                          |
-| [应用版本审计](./application-version-audit.md)               | 主要应用的版本来源与覆盖情况              |
-| [Croc build 修复](./croc-build-fix.md)                       | `overlays/croc` 的临时覆盖原因与移除条件  |
+| [btrbk 配置状态](./btrbk.md)                                 | 未启用 Btrfs 快照；当前无空模板模块       |
+| [应用版本审计](./application-version-audit.md)               | 当前安装边界、版本来源与清理后的维护方式  |
+| [Croc 上游包](./croc-build-fix.md)                           | 使用 nixpkgs，退役旧本地修补              |
 | [Homebrew TUNA 镜像排障](./homebrew-tuna-troubleshooting.md) | macOS 上 Homebrew 仍访问 `ghcr.io` 的排障 |
 
 ## 网络与安全
@@ -75,6 +74,7 @@
 | ---------------------------------------------------------------- | ------------------------------------------------------ |
 | [Go、Rust、Java、Python 开发环境](./development-environments.md) | Apollo、Athena 的工具链、PATH、虚拟环境与部署          |
 | [Nushell 与 Zellij 启动链路](./nushell-zellij-startup.md)        | 启动关系与低风险排障方法                               |
+| [Starship 提示符](./starship.md)                                 | 目录扫描超时、即时生效与回滚                           |
 | [Nushell AI Agent 快捷命令](./nushell-ai-agent-aliases.md)       | Agent CLI 的安装与快捷命令                             |
 | [omp 模型配置管理](./omp-models.md)                              | `models.yml` 的生成、新增 provider 流程                |
 | [OMP provider 变更技能](../.agents/skills/omp-provider/SKILL.md) | 新增通道、my-secrets、增量同步、OAuth 保留与新会话验收 |
@@ -88,10 +88,9 @@
 
 ## 历史与计划
 
-| 文档                                                                                   | 内容                               |
-| -------------------------------------------------------------------------------------- | ---------------------------------- |
-| [变更记录](./changelog.md)                                                             | 所有配置变更的主线索引，按时间倒序 |
-| [plans/2026-07-04 统一 nixpkgs unstable](./plans/2026-07-04-unify-nixpkgs-unstable.md) | 已执行的重构计划，留作背景参考     |
+| 文档                       | 内容                               |
+| -------------------------- | ---------------------------------- |
+| [变更记录](./changelog.md) | 所有配置变更的主线索引，按时间倒序 |
 
 ## 写文档的约定
 

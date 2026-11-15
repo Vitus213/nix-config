@@ -6,6 +6,12 @@
 2. Helix
 3. Zellij 作为稳定的终端工作区
 
+Helix 使用 nixpkgs 的原生包，不再设置 `HELIX_STEEL_CONFIG`
+或安装仅供旧扩展使用的 Steel。Neovim 保持当前 AstroNvim 主版本，Lua
+API 支持沿用上游 LazyDev；删除空的 polish/on_attach 与旧 Neodev/.neoconf 定制。Orgmode 仍读取
+`~/org/**/*` 和
+`~/org/refile.org`，Treesitter 只由集中配置管理，不再在 Orgmode 启动时执行全量 parser 安装。LSP 语言配置保留，工具继续由现有 Nix 包或项目环境提供；GDB 仅在 Linux 安装，Darwin 保留 LLDB。
+
 ## 使用原则
 
 1. 很多能力 Vim / Neovim 已经内置，新增插件前先查官方文档

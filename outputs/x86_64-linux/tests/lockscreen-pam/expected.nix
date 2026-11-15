@@ -1,7 +1,4 @@
-{
-  lib,
-  outputs,
-}:
+{ lib, ... }:
 let
   expected = {
     authLineCount = 2;
@@ -9,9 +6,11 @@ let
     hasNullokProbe = false;
   };
 
-  # 只覆盖带 noctalia-lock PAM 的桌面主机（终端主机如 hestia 不参与）
-  desktopHosts = lib.filterAttrs (
-    name: cfg: cfg.config.environment.etc ? "pam.d/noctalia-lock"
-  ) outputs.nixosConfigurations;
+  # 固定桌面主机集合；缺失 PAM 服务必须失败，而不是静默缩小测试范围。
+  desktopHosts = [
+    "apollo"
+    "athena"
+    "generic"
+  ];
 in
-lib.genAttrs (builtins.attrNames desktopHosts) (_: expected)
+lib.genAttrs desktopHosts (_: expected)

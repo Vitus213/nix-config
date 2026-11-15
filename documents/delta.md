@@ -30,7 +30,7 @@ environment for coding with agents"。它不是 Zed 编辑器里的功能，也�
 
 - `flake.nix`：`delta` input 指向
   `github:zed-industries/delta-nix`，`nixpkgs.follows = "nixpkgs"`，版本固定在 `flake.lock`（当前
-  `0.23.0`）。
+  `0.24.0`，input revision `5749237bd9c9da0661e5480bcc0301968fcf039d`）。
 - `overlays/delta/default.nix`：包装上游包，提供 `pkgs.delta-zed`，内含：
   - `bin/delta-zed`：上游 CLI；
   - `bin/delta-app`：GUI；
@@ -95,12 +95,15 @@ sudo nixos-rebuild switch --flake .#apollo
 Delta 是闭源二进制（`license = unfree`），上游通过 `delta-nix` flake 的 `releases.json`
 固定版本和hash；升级后先构建 `pkgs.delta-zed`，再运行 `delta-zed --version` 确认版本。
 
+2026-11-15 定向更新到上述固定提交；CLI 的 `delta-zed`
+命名适配、GUI 和桌面 URI 入口保留，未在本轮部署或进行登录/协作运行验收。先前的字体运行记录不作为新版验收结论。
+
 ## 验证
 
 ```bash
 nix build --impure --no-link --print-out-paths \
   --expr 'let f = builtins.getFlake (toString /home/vitus/nix-config); in f.nixosConfigurations.apollo.pkgs."delta-zed"'
-/nix/store/...-delta-zed-0.23.0/bin/delta-zed --version   # delta 0.23.0
+/nix/store/...-delta-zed-0.24.0/bin/delta-zed --version   # 期望 delta 0.24.0
 nix build --impure --no-link \
   --expr 'let f = builtins.getFlake (toString /home/vitus/nix-config); in f.nixosConfigurations.apollo.config.home-manager.users.vitus.home.path'
 niri msg --json windows   # 启动后应看到 app_id = dev.zed.Delta

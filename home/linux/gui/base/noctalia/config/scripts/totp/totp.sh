@@ -31,15 +31,18 @@ fi
 service_name=$(echo "$service_info" | cut -d':' -f1)
 secret_key=$(echo "$service_info" | cut -d':' -f2)
 
-totp_code=$(generate_totp_code "$secret_key" || true)
-status=$?
+if totp_code=$(generate_totp_code "$secret_key"); then
+  status=0
+else
+  status=$?
+fi
 if [[ "$status" -eq 2 ]]; then
   emit "缺少 oathtool" "lock" "请安装 oath-toolkit (oathtool)" "error"
   exit 0
 elif [[ "$status" -eq 3 ]]; then
   emit "密钥格式错误" "lock" "$service_name 的密钥不是有效 Base32" "error"
   exit 0
-elif [[ -z "$totp_code" ]]; then
+elif [[ "$status" -ne 0 || -z "$totp_code" ]]; then
   emit "TOTP 生成失败" "lock" "无法为 $service_name 生成验证码" "error"
   exit 0
 fi

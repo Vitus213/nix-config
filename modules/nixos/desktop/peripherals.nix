@@ -6,6 +6,7 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     pulseaudio # provides `pactl`, which is required by some apps(e.g. sonic-pi)
+    pipewire.jack # Provides pw-jack without changing every process's library path.
   ];
 
   # PipeWire is a new low-level multimedia framework.
@@ -18,8 +19,6 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    jack.enable = true;
     wireplumber.enable = true;
   };
   # rtkit is optional but recommended

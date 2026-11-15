@@ -1,6 +1,4 @@
 {
-  lib,
-  config,
   pkgs,
   voiceless,
   ...
@@ -27,8 +25,6 @@ in
     # 剪贴板兜底注入：把文本镜像到 X11 剪贴板，供微信等 XWayland 应用粘贴
     pkgs.xsel
     pkgs.xdotool
-    pkgs.wtype
-    pkgs.wl-clipboard
   ];
 
   # Fcitx5 桥接模块：voiceless 通过输入法直接提交文本、并把识别中的文字

@@ -16,9 +16,8 @@
 
 ## 配置入口
 
-- `modules/nixos/base/btrbk.nix`
-
-该文件现在只保留旧的 Btrfs 模板注释，不创建 `services.btrbk.instances.btrbk`。
+旧 `modules/nixos/base/btrbk.nix`
+只含注释模板，已删除。当前仓库不声明 btrbk 实例；需要恢复时，应在采用 Btrfs 的主机中新增真实配置，不再由所有桌面主机自动导入空模板。
 
 ## 什么时候需要启用
 
@@ -34,7 +33,6 @@
 仓库里仍保留几类 Btrfs 文字引用，但它们不是当前 `apollo` 的启用配置：
 
 - [LUKS + Btrfs 分区示例](./luks-btrfs-layout.md)：Btrfs 子卷布局参考。
-- `hosts/_shared/preservation.nix`：关于 Btrfs/ZFS rollback 的注释。
 - `documents/fresh-nixos-preservation-deploy.md`：说明可以选择 Btrfs subvolume 作为 `/persistent`。
 
 ## 验证
@@ -53,3 +51,6 @@ findmnt -R / -o TARGET,SOURCE,FSTYPE,OPTIONS
 ```
 
 当前不需要运行 `btrbk run`。没有 Btrfs subvolume 时运行它只会失败。
+
+本轮仅移除空配置文件及失效引用，未运行上述验证命令，也未删除任何快照、备份或 `/persistent`
+数据。回滚仅需恢复主机的 btrbk 声明；应先满足真实 Btrfs 布局条件。

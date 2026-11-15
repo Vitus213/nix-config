@@ -34,6 +34,5 @@ export alias gcstcp = gcloud storage cp
 export alias gcstrm = gcloud storage rm
  
 # General shortcuts
-export alias gcloud = gcloud
 export alias gcinfo = gcloud info
 export alias gcver = gcloud version

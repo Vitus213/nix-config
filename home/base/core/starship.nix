@@ -10,6 +10,7 @@
     settings = {
       # Get editor completions based on the config schema
       "$schema" = "https://starship.rs/config-schema.json";
+      scan_timeout = 100;
       character = {
         success_symbol = "[➜](bold green)";
         error_symbol = "[➜](bold red)";

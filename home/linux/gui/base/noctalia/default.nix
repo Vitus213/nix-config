@@ -14,15 +14,9 @@ let
   tomlFormat = pkgs.formats.toml { };
 in
 {
+  imports = [ ./notification-alerts.nix ];
 
-  home.packages = [
-    package
-    pkgs.qt6Packages.qt6ct # for icon theme
-    pkgs.app2unit # Launch Desktop Entries (or arbitrary commands) as Systemd user units
-  ]
-  ++ (lib.optionals pkgs.stdenv.hostPlatform.isx86_64 [
-    pkgs.gpu-screen-recorder # recoding screen
-  ]);
+  home.packages = [ package ];
 
   home.file."Pictures/Wallpapers".source = wallpapers + "/jpg";
   xdg.configFile = {
@@ -45,7 +39,6 @@ in
         ];
       };
     };
-    "qt6ct/qt6ct.conf".source = mkSymlink "${confPath}/qt6ct.conf";
     "totp/secrets.conf" = {
       source = mkSymlink "/etc/agenix/totp-secrets.conf";
       force = true;

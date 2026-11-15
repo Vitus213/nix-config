@@ -1,28 +1,37 @@
 # Noctalia 锁屏 PAM 与解锁延迟
 
-## 当前声明配置：原生 Noctalia 5.5.0（2026-11-13）
+## 当前声明配置：原生 Noctalia 5.5.0（2026-11-15）
 
-apollo 已部署包含挂载顺序修正的原生 Noctalia 5.5.0，并完成
-`switch`。用户已完成真实错误/正确密码解锁验收；日志确认专用 `noctalia-lock`
-拒绝错误密码，随后成功解锁。下文 2026-08-15 的延迟数据为历史证据，不能作为本轮原生实现的测量结果。
+Apollo 在 11 月 13 日已部署原生 Noctalia
+5.5.0 并完成真实错误/正确密码解锁验收；该记录对应升级前实现。11 月 15 日已将正式 PAM
+helper 部署到 Apollo，新 Noctalia 服务运行且 IPC 正常；尚未重新进行密码验收。下文 2026-08-15 的延迟数据为历史证据，不能作为本轮原生实现的测量结果。
 
-当前声明链路是 `hypridle` → `noctalia msg session lock` → 原生 Noctalia 锁屏 → PAM →
-Niri 解锁。`overlays/noctalia/dedicated-pam.patch` 将固定版本 `src/shell/lockscreen/lock_screen.cpp`
-的 `LockScreen::tryAuthenticate()` 中 PAM 服务名从 `login` 固定为
-`noctalia-lock`。这是包源码补丁，不使用 `NOCTALIA_PAM_SERVICE`
-环境变量；旧 Quickshell 环境变量已从新服务移除。
+当前声明链路是 `hypridle` → `noctalia msg session lock` → 原生 Noctalia 锁屏 → `noctalia-pam-helper`
+→ PAM → Niri 解锁。input 固定到 `6bcea5968d17b7750e27f19f1827dce1a31bbc98`，包含正式 helper 实现。
+`overlays/noctalia/default.nix` 通过 Meson `-Dpam_service=noctalia-lock` 绑定专用栈；不再修改
+`LockScreen::tryAuthenticate()`，旧 `dedicated-pam.patch` 已删除，也不使用运行时环境变量切换服务。
 
 `modules/nixos/desktop/security.nix` 保留专用 `security.pam.services.noctalia-lock`，以一次
-`pam_unix` 校验避免完整 login 栈的重复认证、空口令探测与 keyring 解密。原生认证调用
-`pam_authenticate`，成功后还调用 `pam_acct_mgmt`，不调用
-`pam_open_session`。固定上游实现允许非特权锁屏的 account 检查返回
-`PAM_AUTHINFO_UNAVAIL`；其他非成功 account 结果会使认证失败。因此不能沿用旧 Quickshell“只认证、不检查 account”的结论。
+`pam_unix`
+校验避免完整 login 栈的重复认证、空口令探测与 keyring 解密。helper 只认证调用用户，不接收参数，经有版本的 stdin/stdout 协议交换密码和结果；不为整个 shell 添加权限。它调用
+`pam_authenticate`、`pam_acct_mgmt` 和成功后的 `pam_setcred(PAM_REFRESH_CRED)`，不调用
+`pam_open_session`。非特权 account 检查的 `PAM_AUTHINFO_UNAVAIL`、`PAM_CRED_INSUFFICIENT`
+被允许，其他非成功结果拒绝解锁。源码依据：[正式 helper](https://github.com/noctalia-dev/noctalia/blob/6bcea5968d17b7750e27f19f1827dce1a31bbc98/src/auth/pam_helper_main.cpp)。
+
+Meson 将 `${prefix}/${libexecdir}/noctalia/noctalia-pam-helper`
+编译为绝对路径，并在该目录安装 helper。正常 Nix 包无需设置 `NOCTALIA_PAM_HELPER_PATH`
+或修改 PATH；shell 先查自身旁边的 helper，再查编译时安装路径。来源：[Meson 定义](https://github.com/noctalia-dev/noctalia/blob/6bcea5968d17b7750e27f19f1827dce1a31bbc98/meson.build#L310)、
+[定位逻辑](https://github.com/noctalia-dev/noctalia/blob/6bcea5968d17b7750e27f19f1827dce1a31bbc98/src/auth/pam_authenticator.cpp#L138-L173)。
+
+新包已构建，CLI 启动、helper 动态链接、错误参数/空输入/协议版本不匹配的拒绝分支已执行；二进制含
+`noctalia-lock`
+服务名。Apollo 已 switch，新 Noctalia 进程运行该包；未触发实际 PAM 密码校验或主动锁定。11 月 13 日的密码验收不能替代新 helper 的本人错误/正确密码复测。
 
 greetd 登录及 `greetd.enableGnomeKeyring` 保留，GNOME
 Keyring 仍由登录阶段解锁；锁屏不重新解锁 keyring，不修改默认集合或密钥保存策略。锁屏声明
 `grace_period_seconds=0`、`allow_empty_password=false`、`fingerprint=false`，立即生效；空闲策略继续由 hypridle 独占。
 
-### 本轮验收状态与阻断条件
+### 升级前验收记录与复测边界
 
 2026-11-13 11:12，用户在已激活的修正版 `test`
 系统亲自输入密码，自动化未读取或注入密码。结合用户完成确认、`noctalia.service`
@@ -123,7 +132,7 @@ rounds=11（`$7$`）换成 yescrypt 默认 rounds=8（`$y$`）：
 
 按 [Noctalia v5 迁移](./noctalia-v5.md) 的完整顺序恢复备份的旧系统、Home Manager
 generation、配置目录链接、旧 JSON/QML 和 Niri 调用，并恢复旧 `noctalia-shell`
-与 hypridle。仅撤销环境变量不能回滚原生包中的固定 PAM 服务补丁；仅恢复系统包也不足以恢复已迁移的配置和快捷键。
+与 hypridle。仅改变环境变量不能回滚构建时固定的 PAM 服务；仅恢复系统包也不足以恢复已迁移的配置和快捷键。
 
 历史哈希调整是独立变更，本轮不修改或回滚密码哈希。历史记录中的
 `just local`、旧服务 journal 和环境变量仅描述 2026-08-15 的操作，不作为本轮验收命令。

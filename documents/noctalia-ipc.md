@@ -13,11 +13,17 @@
 - `After=niri.service`、`Before=graphical-session.target`、`PartOf=graphical-session.target`，由
   `WantedBy=niri.service` 拉起；就绪通知用于在 Shell ready 后放行后续会话启动。
 - 服务只显式设置 `TERMINAL=kitty`，值不带 `-e`。v5 原生 Shell 不依赖旧 Quickshell 的 Qt display
-  connection 过滤，也不使用 `NOCTALIA_PAM_SERVICE`；专用 PAM 服务由本地包补丁绑定。
+  connection 过滤，也不使用 `NOCTALIA_PAM_SERVICE`；专用 PAM 服务由 Meson
+  `pam_service=noctalia-lock` 绑定正式 helper。
 
 `[shell] launch_apps_as_systemd_services=true` 让启动器打开的应用运行在独立 transient user
 service 中。已实际验证启动器启动的 kitty 心跳任务在 Shell 重启后继续运行，`Terminal=true`
-入口也由 kitty 正常执行。其他应用的全局 Qt 环境与 qt6ct 配置独立保留。
+入口也由 kitty 正常执行。Qt 应用继续使用 `QT_STYLE_OVERRIDE=kvantum`；qt6ct 包和配置已退役。
+
+`noctalia-notification-alerts.service` 旁路接收桌面通知，按现有工作区分工添加红点；由
+`noctalia.service`
+拉起并随它停止/重启，不替代通知服务。Apollo 已单独构建、链接并启用 Nix生成的用户单元。映射规则、实机验收、诊断及停用见
+[通知自动留红点](./noctalia-workspace-urgent.md#收到通知自动留红点2026-11-13)。
 
 ## 快捷键与 IPC
 

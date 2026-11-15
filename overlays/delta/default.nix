@@ -1,5 +1,5 @@
 { delta, ... }:
-final: prev:
+_: prev:
 let
   system = prev.stdenv.hostPlatform.system;
   supported = [

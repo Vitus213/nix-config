@@ -4,7 +4,7 @@
 
 ## 入口
 
-- `core.nix`: Linux 基础配置
+- `base/`: Linux 基础配置，由 `tui.nix` 导入
 - `tui.nix`: 终端环境配置
 - `gui.nix`: 完整图形桌面入口
 
@@ -12,6 +12,8 @@
 
 - `base/`: Linux 基础工具、shell、命令行工具
 - `gui/`: 桌面环境、Wayland、niri、Noctalia Shell 和 GUI 应用
+
+`virt-viewer`、`udiskie` 与图形浏览器环境变量仅在 GUI 层声明；TUI 保留 Linux 命令行工具。
 
 ## 使用建议
 

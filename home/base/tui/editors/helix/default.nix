@@ -1,16 +1,8 @@
 {
-  config,
   pkgs,
   ...
 }:
 {
-  # to make steel work, we need to git clone this repo to your home directory.
-  home.sessionVariables.HELIX_STEEL_CONFIG = "${config.home.homeDirectory}/nix-config/home/base/tui/editors/helix/steel";
-
-  home.packages = with pkgs; [
-    steel
-  ];
-
   programs.helix = {
     enable = true;
     # Use nixpkgs helix to avoid fetching broken upstream grammar sources.

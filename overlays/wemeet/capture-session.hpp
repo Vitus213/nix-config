@@ -51,17 +51,6 @@ public:
     return !stop_.load() && !finished_ && frame_.render(image);
   }
 
-  std::string error() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return error_;
-  }
-
-  uint64_t frame_count() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    return frames_;
-  }
-
-
 private:
   void fail(std::string message) {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -73,10 +62,10 @@ private:
 
   void connect_pipewire(int fd) {
     loop_ = pw_main_loop_new(nullptr);
-    if (!loop_) { if (fd >= 0) close(fd); fail("PipeWire loop creation failed"); return; }
+    if (!loop_) { close(fd); fail("PipeWire loop creation failed"); return; }
     context_ = pw_context_new(pw_main_loop_get_loop(loop_), nullptr, 0);
-    if (!context_) { if (fd >= 0) close(fd); fail("PipeWire context creation failed"); return; }
-    core_ = fd >= 0 ? pw_context_connect_fd(context_, fd, nullptr, 0) : pw_context_connect(context_, nullptr, 0);
+    if (!context_) { close(fd); fail("PipeWire context creation failed"); return; }
+    core_ = pw_context_connect_fd(context_, fd, nullptr, 0);
     if (!core_) { fail("PipeWire connection failed"); return; }
     static const pw_core_events core_events = [] {
       pw_core_events events{};

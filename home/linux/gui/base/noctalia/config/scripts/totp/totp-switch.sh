@@ -25,8 +25,11 @@ fi
 service_name=$(echo "$service_info" | cut -d':' -f1)
 secret_key=$(echo "$service_info" | cut -d':' -f2)
 
-totp_code=$(generate_totp_code "$secret_key" || true)
-status=$?
+if totp_code=$(generate_totp_code "$secret_key"); then
+  status=0
+else
+  status=$?
+fi
 case "$status" in
   0)
     remaining=$(get_totp_remaining_time)
@@ -34,13 +37,14 @@ case "$status" in
     ;;
   2)
     notify-send "TOTP" "缺少 oathtool，请安装 oath-toolkit" -u critical
-    exit 1
+    exit "$status"
     ;;
   3)
     notify-send "TOTP" "${service_name} 的密钥格式无效" -u critical
-    exit 1
+    exit "$status"
     ;;
   *)
-    notify-send "TOTP" "切换成功，但验证码生成失败：${service_name}" -u normal
+    notify-send "TOTP" "验证码生成失败：${service_name}" -u critical
+    exit "$status"
     ;;
 esac

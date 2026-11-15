@@ -18,35 +18,45 @@ in
   # Unified token path for gh auth generation.
   # On macOS this points to /run/agenix/github_token because the secret is provided by nix-darwin agenix.
   # HM-only hosts can override this in `secrets/home.nix`.
-  xdg.configFile = {
-    "agenix/github_token".source = lib.mkDefault (mkSymlink githubTokenPath);
+  xdg.configFile."agenix/github_token" = {
+    source = lib.mkDefault (mkSymlink githubTokenPath);
+    force = true;
   };
 
-  # `programs.git` will generate the config file: ~/.config/git/config
-  # to make git use this config file, `~/.gitconfig` should not exist!
-  #
-  #    https://git-scm.com/docs/git-config#Documentation/git-config.txt---global
-  home.activation.removeExistingGitconfig = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
-    rm -f ${config.home.homeDirectory}/.gitconfig
+  # Only retire the legacy Home Manager link; keep handwritten Git configuration.
+  home.activation.removeExistingGitconfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    target="${config.home.homeDirectory}/.gitconfig"
+    if [ -L "$target" ]; then
+      case "$(${pkgs.coreutils}/bin/readlink "$target")" in
+        /nix/store/*-home-manager-files/.gitconfig)
+          run ${pkgs.coreutils}/bin/rm -- "$target"
+          ;;
+      esac
+    fi
   '';
 
   # Migrate pre-existing github_token files or legacy symlinks into HM management.
-  home.activation.backupExistingGithubToken = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
-    target="${config.xdg.configHome}/agenix/github_token"
-    expected="${githubTokenPath}"
-
-    # 注意：home.activation 片段会被内联进激活脚本顶层，`exit` 会终止整个激活。
-    # 这里不能用 exit，必须用空命令跳过已就绪场景。
-    if [ -L "$target" ] && [ "$(${pkgs.coreutils}/bin/readlink "$target")" = "$expected" ]; then
-      : # 已是本模块管理的链接，无需备份
-    elif [ -e "$target" ] || [ -L "$target" ]; then
-      backup="$target.home-manager.backup"
-      if [ -e "$backup" ] || [ -L "$backup" ]; then
-        backup="$backup.$(${pkgs.coreutils}/bin/date +%s)"
-      fi
-      ${pkgs.coreutils}/bin/mv "$target" "$backup"
-    fi
-  '';
+  home.activation.backupExistingGithubToken =
+    lib.hm.dag.entryBetween [ "linkGeneration" ] [ "writeBoundary" ]
+      ''
+        target="${config.xdg.configHome}/agenix/github_token"
+        if [ -L "$target" ]; then
+          case "$(${pkgs.coreutils}/bin/readlink "$target")" in
+            /nix/store/*-home-manager-files/.config/agenix/github_token|/nix/store/*-hm_github_token|"${githubTokenPath}")
+              target=""
+              ;;
+          esac
+        fi
+        if [ -n "$target" ] && { [ -e "$target" ] || [ -L "$target" ]; }; then
+          backup="$target.home-manager.backup"
+          if [ -e "$backup" ] || [ -L "$backup" ]; then
+            echo "Refusing to replace existing GitHub token backup: $backup" >&2
+            false
+          else
+            run ${pkgs.coreutils}/bin/mv -- "$target" "$backup"
+          fi
+        fi
+      '';
 
   # GitHub CLI tool
   # https://cli.github.com/manual/
@@ -70,20 +80,22 @@ in
 
         if [ -r "$token_file" ]; then
           token="$(${pkgs.coreutils}/bin/head -n 1 "$token_file" | ${pkgs.gnused}/bin/sed 's/[[:space:]]*$//')"
-          if [ -z "$token" ]; then
-            exit 0
-          fi
-          ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$hosts_file")"
-          if [ -e "$hosts_file" ] || [ -L "$hosts_file" ]; then
-            ${pkgs.coreutils}/bin/rm -f "$hosts_file"
-          fi
-          cat > "$hosts_file" <<EOF
+          if [ -n "$token" ]; then
+            run ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$hosts_file")"
+            if [ -e "$hosts_file" ] || [ -L "$hosts_file" ]; then
+              run ${pkgs.coreutils}/bin/rm -f "$hosts_file"
+            fi
+            if [ ! -v DRY_RUN ]; then
+              (umask 077; cat > "$hosts_file" <<EOF
     github.com:
         user: ${ghUser}
         oauth_token: $token
         git_protocol: https
     EOF
-          ${pkgs.coreutils}/bin/chmod 0600 "$hosts_file"
+              )
+            fi
+          fi
+          unset token
         fi
   '';
 
@@ -186,6 +198,4 @@ in
   # Git terminal UI (written in go).
   programs.lazygit.enable = true;
 
-  # Yet another Git TUI (written in rust).
-  programs.gitui.enable = false;
 }

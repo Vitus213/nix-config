@@ -49,6 +49,15 @@ store；Athena 的 agenix identity 仍是其 `/etc/ssh/ssh_host_ed25519_key`，�
 Artemis 普通用户，不授权 root 或 Athena。Apollo 已部署并通过 J1900 独立设备密钥验证；Artemis 离线，待部署和验收。J1900 私钥不离开本机；其
 `vitus` 使用密码 sudo，不加入 docker 组。
 
+2026-11-15 新增 `ssh lab`：共享入口 `home/base/tui/ssh.nix` 指向
+`dragonos@100.64.0.4:2222`（headscale.samuka007.top 的 dragonos-lab）。使用各主机
+`~/.ssh/id_ed25519`、IdentitiesOnly，不转发 agent；通过 `HostKeyAlias dragonos-lab-openssh` 和
+`~/.ssh/known_hosts_lab` 固定已核实的 ED25519
+key，严格验证开启。Apollo、Athena、Artemis 当前配置已同步，并逐台用本机私钥验证 `ssh lab`
+返回 nixos/dragonos，Incus 6.0.6 可用。目标用户授权位于
+`/home/dragonos/.ssh/authorized_keys`，三把现用公钥已加入；普通 sshd 禁止 root，Tailscale
+SSH 入口与 2222 的普通公钥入口不同。三台部署时不执行 rebuild。以后替换目标主机应先核对指纹再更新 trust 文件；撤销别名时同时移除共享声明及当前配置。
+
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
 
 - `/home/vitus/.ssh/id_ed25519`: preservation NixOS 的 agenix identity，用来解密 secrets。
@@ -119,10 +128,10 @@ secrets/nixos.nix
 /etc/agenix/ssh-key-romantic
 ```
 
-目标权限:
+目标文件权限（`/etc/agenix/ssh-key-romantic` 是指向 agenix 运行时文件的链接）:
 
 ```text
-0600 vitus
+0400 vitus
 ```
 
 ## 更新流程
@@ -155,7 +164,7 @@ nix flake update mysecrets
 最后切换系统配置后，确认:
 
 ```bash
-stat -c '%U %G %a %n' /etc/agenix/ssh-key-romantic
+stat -Lc '%U %G %a %n' /etc/agenix/ssh-key-romantic
 ssh -G 192.168.100.1 | rg 'identityfile|identitiesonly|forwardagent'
 ```
 

@@ -131,6 +131,7 @@ public:
     GLint linked{};
     glGetProgramiv(program_, GL_LINK_STATUS, &linked);
     if (!linked) { error = "DMA-BUF readback shader link failed"; return false; }
+    source_uniform_ = glGetUniformLocation(program_, "source");
     glGenTextures(1, &input_);
     glGenTextures(1, &output_);
     glGenFramebuffers(1, &framebuffer_);
@@ -202,7 +203,7 @@ public:
     if (success) {
       if (!external_) glBindTexture(target, input_);
       glUseProgram(program_);
-      glUniform1i(glGetUniformLocation(program_, "source"), 0);
+      glUniform1i(source_uniform_, 0);
       glViewport(0, 0, width_, height_);
       glDrawArrays(GL_TRIANGLES, 0, 3);
       pixels.resize(static_cast<size_t>(width_) * height_ * 4);
@@ -237,6 +238,7 @@ private:
   PFNEGLDESTROYIMAGEKHRPROC destroy_image_{};
   PFNGLEGLIMAGETARGETTEXTURE2DOESPROC image_target_{};
   GLuint input_{}, output_{}, framebuffer_{}, program_{};
+  GLint source_uniform_{-1};
   uint32_t width_{}, height_{}, max_size_{};
   bool external_{};
   std::vector<GpuFormat> formats_;

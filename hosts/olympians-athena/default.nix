@@ -102,7 +102,7 @@ in
     hybrid-sleep.enable = false;
   };
 
-  # tailscaled 由 modules/nixos/desktop/networking/tailscale.nix 启用；athena 不登录、不加入 tailnet
+  # tailscaled 由 modules/nixos/desktop/networking/tailscale.nix 启用；已登录 scale.scutosc.cn，状态持久化于 /var/lib/tailscale
 
   # 首次安装（nixos-install）时的版本，之后不要改
   system.stateVersion = "26.05";

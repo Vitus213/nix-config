@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   ...
 }:
 {
@@ -38,7 +39,6 @@
           checkmake
           # c/c++ compiler, required by nvim-treesitter!
           gcc
-          gdb
           # c/c++ tools with clang-tools, the unwrapped version won't
           # add alias like `cc` and `c++`, so that it won't conflict with gcc
           # llvmPackages.clang-unwrapped
@@ -59,17 +59,6 @@
         # HTML/CSS/JSON/ESLint language servers extracted from vscode
         vscode-langservers-extracted
       ]
-      # -*- Lisp like Languages -*-#
-      # ++ [
-      #   guile
-      #   racket-minimal
-      #   fnlfmt # fennel
-      #   (
-      #     if pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.isx86
-      #     then akkuPackages.scheme-langserver
-      #     else pkgs.emptyDirectory
-      #   )
-      # ]
       ++ [
         #-- Optional Requirements:
         prettier # common code formatter
@@ -77,5 +66,6 @@
         gdu # disk usage analyzer, required by AstroNvim
         (ripgrep.override { withPCRE2 = true; }) # recursively searches directories for a regex pattern
       ]
-    );
+    )
+    ++ lib.optional pkgs.stdenv.hostPlatform.isLinux pkgs.gdb;
 }

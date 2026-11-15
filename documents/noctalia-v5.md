@@ -22,19 +22,22 @@ Athena 的 Niri 会话此前已锁定；停止旧 Shell 后合成器保留锁定
 `noctalia msg session lock` 后已接管锁屏，截图确认壁纸、时钟和密码输入框正常，IPC 返回
 `locked=true`，保持原有锁定边界。尚未在 Athena 输入错误/正确密码、验收解锁后桌面、重新登录或重启；Apollo 的验收不能代替这些检查。
 
-## 固定版本与两个补丁
+## 固定版本与本地覆盖
 
 - `flake.nix` 的 `noctalia` input 固定
-  `c2573248a89470383e41b8e1ac432424691cbc1f`（5.5.0），保留上游自己的 nixpkgs
-  `f9a75f41be3a74eab55d3a7679d34ad6cc0da977`，不 follows 主输入。
-- `noctalia-plugins` 是非 flake input，固定 community-plugins
-  `33d7ba696a6644016ae3c0706c0b5fcf066e42e8`。
-- `overlays/noctalia/default.nix` 从官方 `packages.<system>.default` 派生 `pkgs.noctalia`，只追加
-  `dedicated-pam.patch` 和
-  `workspace-states.patch`。仅支持 x86_64-linux/aarch64-linux，其他平台不求值此包。
-- PAM 补丁绑定
-  `noctalia-lock`；工作区补丁只改变 Regular 模式，采用主色焦点、占用低强调、独立 urgent 红点和 hover 描边。详见
-  [PAM](./lockscreen-pam.md)、[工作区状态](./noctalia-workspace-urgent.md)。
+  `6bcea5968d17b7750e27f19f1827dce1a31bbc98`（仍为 5.5.0），包含正式 PAM
+  helper，保留上游自己的 nixpkgs，不 follows 主输入。
+- `noctalia-plugins` 是非 flake input，继续固定 community-plugins
+  `33d7ba696a6644016ae3c0706c0b5fcf066e42e8`，本次不更新社区插件。
+- `overlays/noctalia/default.nix` 从官方 `packages.<system>.default` 派生 `pkgs.noctalia`，通过
+  `-Dpam_service=noctalia-lock` 选择专用 PAM 栈，删除旧 `dedicated-pam.patch`。
+- 唯一保留的 C++ 补丁是
+  `workspace-states.patch`，只改变 Regular 模式，保留主色焦点、占用低强调、独立 urgent 红点和 hover 描边。新旧固定提交之间工作区实现未变，不需要改写补丁。仅支持 x86_64-linux/aarch64-linux。
+- 2026-11-15 Apollo 已 switch 到
+  `96ns5xgjl1qwkv9nj9by3qln171m4dn1`，新 Noctalia 进程使用上述提交且 IPC 正常；本页先前密码验收属于 11 月 13 日旧提交，新 helper 尚待本人复测。2026-11-16 已确认当前内核与 NVIDIA 模块更新到位、CDI 服务执行成功，见
+  [部署记录](./host-shared-modules.md#维护与验证)。
+
+详见 [PAM](./lockscreen-pam.md)、[工作区状态](./noctalia-workspace-urgent.md)。
 
 旧 QML urgency 刷新 overlay 已移除；没有旧可执行命令、服务或插件 IPC 兼容别名。`noctalia-shell.kdl`
 文件名按原有 include 保留，其内容在切换时迁移。
@@ -80,7 +83,8 @@ Manager `Result=success`、`ExecMainStatus=0`。
 
 `noctalia.service` 使用
 `Type=notify`、`After=niri.service`、`Before=graphical-session.target`、`PartOf=graphical-session.target`、`WantedBy=niri.service`，前台运行。只显式设置
-`TERMINAL=kitty`，不能带 `-e`；全局 Qt / qt6ct 配置保留。`launch_apps_as_systemd_services=true`
+`TERMINAL=kitty`，不能带 `-e`；Qt 应用继续使用
+`QT_STYLE_OVERRIDE=kvantum`，qt6ct 已退役。`launch_apps_as_systemd_services=true`
 将启动器应用放入独立 transient user
 service。已实际启动 kitty 内的心跳任务，重启 Shell 后同一窗口与任务继续运行。
 

@@ -13,7 +13,6 @@ let
 in
 {
   imports = [
-    ../_shared/netdev-mount.nix
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     # 可选能力（默认关闭），按需解开注释：

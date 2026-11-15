@@ -33,7 +33,6 @@ let
 in
 {
   imports = [
-    ../_shared/netdev-mount.nix
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../_shared/nvidia.nix

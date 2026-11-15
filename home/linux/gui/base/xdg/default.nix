@@ -1,7 +1,4 @@
-# XDG stands for "Cross-Desktop Group", with X used to mean "cross".
-# It's a bunch of specifications from freedesktop.org intended to standardize desktops and
-# other GUI applications on various systems (primarily Unix-like) to be interoperable:
-#   https://www.freedesktop.org/wiki/Specifications/
+# XDG user directories and desktop integration.
 {
   mylib,
   config,

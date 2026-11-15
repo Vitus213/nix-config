@@ -16,6 +16,7 @@ let
 
   localBin = "${config.home.homeDirectory}/.local/bin";
   bunBin = "${config.home.homeDirectory}/.cache/.bun/bin";
+  bunDefaultBin = "${config.home.homeDirectory}/.bun/bin";
   goBin = "${config.home.homeDirectory}/go/bin";
   rustBin = "${config.home.homeDirectory}/.cargo/bin";
   npmBin = "${config.home.homeDirectory}/.npm/bin";
@@ -25,7 +26,7 @@ in
     enable = true;
     enableCompletion = true;
     bashrcExtra = ''
-      export PATH="$PATH:${localBin}:${bunBin}:${goBin}:${rustBin}:${npmBin}"
+      export PATH="$PATH:${localBin}:${bunBin}:${bunDefaultBin}:${goBin}:${rustBin}:${npmBin}"
     '';
   };
 
@@ -34,11 +35,12 @@ in
 
   programs.nushell = {
     enable = true;
+    # Session environment is inherited; PATH is maintained in config.nu.
+    loadSessionVariables = false;
     # Nushell follows XDG on this host, so keep the generated config where `nu`
     # actually resolves `$nu.config-path`.
     configDir = "${config.xdg.configHome}/nushell";
     configFile.source = ./config.nu;
-    envFile.text = "";
     inherit shellAliases;
   };
 }

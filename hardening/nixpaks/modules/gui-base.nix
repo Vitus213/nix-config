@@ -24,7 +24,6 @@ in
     gpu = {
       enable = lib.mkDefault true;
       provider = "nixos";
-      bundlePackage = pkgs.mesa.drivers; # for amd & intel
     };
     # https://github.com/nixpak/nixpak/blob/master/modules/gui/fonts.nix
     # it works not well, bind system's /etc/fonts directly instead

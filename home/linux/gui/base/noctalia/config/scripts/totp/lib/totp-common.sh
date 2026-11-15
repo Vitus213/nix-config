@@ -150,10 +150,11 @@ generate_totp_code() {
   fi
 
   local totp_code
-  totp_code=$(oathtool --totp -b "$secret_key" 2>/dev/null || true)
-  if [[ -n "$totp_code" ]]; then
-    echo "$totp_code"
-    return 0
+  if totp_code=$(oathtool --totp -b "$secret_key" 2>/dev/null); then
+    if [[ -n "$totp_code" ]]; then
+      echo "$totp_code"
+      return 0
+    fi
   fi
 
   return 1

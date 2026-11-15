@@ -177,7 +177,6 @@ in
         "org.freedesktop.portal.*" = [ "@/org/freedesktop/portal/*" ];
       };
       args = [
-        "--filter"
         "--sloppy-names"
         "--log"
       ];

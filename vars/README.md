@@ -26,12 +26,14 @@ vars/
 
 主要内容:
 
-- 网关和代理网关
-- IPv4 / IPv6 DNS
-- 主机清单
-- 每台机器的网络接口和地址
-- SSH alias、known hosts、远程 builder 信息
-- 物理机、虚拟机、Kubernetes 集群和 SBC 的网络拓扑
+- `hostsAddr.apollo.ipv4`：生成 Apollo 的 SSH alias 和 known-host 地址
+- `ssh.extraConfig`：Apollo、Artemis、Athena 与 j1900 的 SSH alias
+- `ssh.knownHosts`：GitHub 和现有主机公钥
+
+实际消费者是 `modules/base/users.nix` 的 `programs.ssh`。未消费的网关、DNS、IPv6、网卡和
+`hostsInterface` 生成器已经删除；主机真实网络配置仍在
+`hosts/*/default.nix`，本文件不接管地址或 DNS。重新添加网关等字段前应先有明确消费者；回滚只需恢复声明，不涉及网络或应用数据删除。
+[此处的公钥属于公开 SSH host key，并非 secret](../secrets/README.md)。
 
 ## 使用原则
 

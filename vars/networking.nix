@@ -1,46 +1,10 @@
 { lib }:
 rec {
-  mainGateway = "192.168.199.1"; # main router
-  mainGateway6 = "fe80::5"; # main router's link-local address
-  # use suzi as the default gateway
-  # it's a subrouter with a transparent proxy
-  proxyGateway = "192.168.5.178";
-  proxyGateway6 = "fe80::8";
-  nameservers = [
-    # IPv4
-    "100.100.100.100" # local DNS from current network
-    "223.5.5.5" # AliDNS
-    # IPv6
-    "2400:3200::1" # AliDNS
-    "2606:4700:4700::1111" # Cloudflare
-  ];
-  prefixLength = 24;
-
   hostsAddr = {
-    # ============================================
-    # Other VMs and Physical Machines
-    # ============================================
     apollo = {
-      # Desktop PC
-      iface = "enp5s0";
       ipv4 = "192.168.100.4";
-      ipv6 = "fe80::f4e2:837b:6eb0:9184"; # Link-local Address
-      gateway = "192.168.100.1";
-      gateway6 = "fe80::5";
     };
   };
-
-  hostsInterface = lib.attrsets.mapAttrs (key: val: {
-    interfaces."${val.iface}" = {
-      useDHCP = false;
-      ipv4.addresses = [
-        {
-          inherit prefixLength;
-          address = val.ipv4;
-        }
-      ];
-    };
-  }) hostsAddr;
 
   ssh = {
     # SSH host aliases for the machines in hostsAddr
@@ -76,12 +40,6 @@ rec {
 
     # this config will be written to /etc/ssh/ssh_known_hosts
     knownHosts =
-      # Update only the values of the given attribute set.
-      #
-      #   mapAttrs
-      #   (name: value: ("bar-" + value))
-      #   { x = "a"; y = "b"; }
-      #     => { x = "bar-a"; y = "bar-b"; }
       lib.attrsets.mapAttrs
         (host: value: {
           hostNames =

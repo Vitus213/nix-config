@@ -21,18 +21,19 @@ default:
 # Run eval tests
 [group('nix')]
 test:
-  nix eval .#evalTests --show-trace --print-build-logs --verbose
+  bash scripts/check-nixpkgs-policy.sh
+  nix eval .#evalTests --apply 'passed: assert passed; passed' --show-trace --print-build-logs --verbose
 
 # Update all the flake inputs
 [group('nix')]
 up:
-  nix flake update --commit-lock-file
+  nix flake update
 
 # Update specific input
 # Usage: just upp nixpkgs
 [group('nix')]
 upp input:
-  nix flake update {{input}} --commit-lock-file
+  nix flake update {{input}}
 
 # List all generations of the system profile
 [group('nix')]
@@ -66,7 +67,7 @@ gc:
 [linux]
 [group('nix')]
 shell:
-  nix shell nixpkgs#git nixpkgs#neovim nixpkgs#colmena
+  nix shell nixpkgs#git nixpkgs#neovim
 
 # Enter a shell session which has all the necessary tools for this flake
 [macos]
@@ -100,12 +101,12 @@ repair-store *paths:
 # Update all Nixpkgs inputs
 [group('nix')]
 up-nix:
-  nix flake update --commit-lock-file nixpkgs nixpkgs-darwin
+  nix flake update nixpkgs nixpkgs-darwin
 
 # override nixpkgs's commit hash
 [group('nix')]
 override-pkgs hash:
-  nix flake update --commit-lock-file nixpkgs --override-input nixpkgs github:NixOS/nixpkgs/{{hash}}
+  nix flake update nixpkgs --override-input nixpkgs github:NixOS/nixpkgs/{{hash}}
 
 ############################################################################
 #
@@ -213,10 +214,6 @@ ggc:
 game:
   git commit --amend -a --no-edit
 
-# Delete all failed pods
-[group('k8s')]
-del-failed:
-  kubectl delete pod --all-namespaces --field-selector="status.phase==Failed"
 
 [linux]
 [group('services')]

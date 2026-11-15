@@ -76,17 +76,6 @@ export def local-switch [
 }
 
 
-# ====================== Misc =============================
-
-export def make-editable [
-    path: string
-] {
-    print (repeat-str "=" 50)
-    let tmpdir = (mktemp -d)
-    rsync -avz --copy-links $"($path)/" $tmpdir
-    rsync -avz --copy-links --chmod=D2755,F744 $"($tmpdir)/" $path
-}
-
 
 # ================= macOS related =========================
 

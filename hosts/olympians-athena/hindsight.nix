@@ -31,7 +31,6 @@ in
   # 下次重启会重试提取。key 轮换后删除该文件重新 bootstrap。
   # 注意：oci-containers 生成的单元名是 podman-<name>，挂 here 才能与容器定义合并。
   systemd.services."podman-${containerName}" = {
-    after = [ "agenix.service" ];
     preStart = ''
       install -d -m 700 /var/lib/hindsight
       if [ ! -s ${envFile} ]; then
@@ -47,5 +46,8 @@ in
   };
 
   # 防火墙当前默认关闭；先声明端口，将来打开时无需补
-  networking.firewall.allowedTCPPorts = [ 8888 9999 ];
+  networking.firewall.allowedTCPPorts = [
+    8888
+    9999
+  ];
 }

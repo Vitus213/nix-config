@@ -40,8 +40,6 @@ btrfs subvolume create /mnt/@snapshots
 umount /mnt
 ```
 
-如果启用了 Guix（`modules/nixos/desktop/guix.nix`），再加一个 `@guix` 子卷挂到 `/gnu`。
-
 ## 挂载子卷
 
 ```bash

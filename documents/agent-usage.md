@@ -5,14 +5,14 @@ agent 用量卡片的数据来源，以及 WakaTime 在本仓库中的接入方�
 
 ## 组成
 
-| 位置                                       | 作用                                                                                          |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| `home/base/tui/agent-usage/agent_usage.py` | 采集、合并、渲染、推送（只用 Python 标准库）                                                  |
-| `home/base/tui/agent-usage/default.nix`    | `agent-usage-report` 命令、每小时定时任务（Linux systemd / macOS launchd）、WakaTime key 接入 |
-| `overlays/ccusage/`                        | 把 `pkgs.ccusage` 固定为官方 `20.0.39` 静态二进制                                             |
-| `my-secrets/wakatime-api-key.age`          | WakaTime API key（单行）                                                                      |
-| `secrets/nixos.nix` / `secrets/darwin.nix` | 解密 `wakatime-api-key`；NixOS 额外复制到 `/etc/agenix/wakatime-api-key`                      |
-| profile 仓库 `agent-usage` 分支            | `data/<host>.json` 历史、四张卡片 SVG、`summary.json`                                         |
+| 位置                                              | 作用                                                                                          |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `home/base/tui/agent-usage/agent_usage.py`        | 采集、合并、渲染、推送（只用 Python 标准库）                                                  |
+| `home/base/tui/agent-usage/default.nix`           | `agent-usage-report` 命令、每小时定时任务（Linux systemd / macOS launchd）、WakaTime key 接入 |
+| 主 `nixpkgs` / `nixpkgs-darwin` 的 `pkgs.ccusage` | 使用上游 `20.0.48`，不再维护静态二进制 overlay                                                |
+| `my-secrets/wakatime-api-key.age`                 | WakaTime API key（单行）                                                                      |
+| `secrets/nixos.nix` / `secrets/darwin.nix`        | 解密 `wakatime-api-key`；NixOS 的 `/etc/agenix/wakatime-api-key` 链接到 agenix 运行时文件     |
+| profile 仓库 `agent-usage` 分支                   | `data/<host>.json` 历史、四张卡片 SVG、`summary.json`                                         |
 
 ## 统计口径
 
@@ -29,8 +29,9 @@ agent 用量卡片的数据来源，以及 WakaTime 在本仓库中的接入方�
   配置（大多为 0，DeepSeek 为非 USD 单价），因此不用它，统一按 LiteLLM 重新计价。模型名先精确匹配，再去掉
   `-0813` 这类日期后缀，同名多 provider 时优先第一方条目。找不到单价的模型计入
   `unpriced_tokens`，卡片上的成本会带 `*`。
-- 不用 nixpkgs 的 ccusage 20.0.17：它早于 20.0.19（Codex 重放去重、reasoning 不重复计入）和 20.0.23
-  / 20.0.26（Claude 跨会话去重）的修复，实测同一天的 Codex token 多算约 6%。
+- ccusage 使用上游 `20.0.48`，包含 20.0.19 的 Codex 重放/reasoning 去重，以及 20.0.23 /
+  20.0.26 的 Claude 跨会话去重修复。旧 `20.0.17` 曾在实测中多算同日 Codex
+  token 约 6%，因此升级前使用临时 overlay；现已删除。
 - Claude Code 默认只保留 30 天会话（`cleanupPeriodDays`），本机 `~/.claude/settings.json` 已改为
   `3650`。即使会话被清理，历史也保存在 `data/<host>.json`
   里：新统计覆盖旧值，但超过 25 天的日期如果新值更小，就保留旧值。
@@ -93,4 +94,4 @@ agent 用量卡片的数据来源，以及 WakaTime 在本仓库中的接入方�
   `just local`；README 删掉卡片那一行即可，`agent-usage` 分支可以保留，也可以删除。
 - WakaTime：`claude plugin uninstall claude-code-wakatime@wakatime`；删除 `~/.wakatime.cfg` 里的
   `api_key_vault_cmd`。
-- ccusage 版本：删除 `overlays/ccusage/`，回到 nixpkgs 版本（会重新多算 Codex）。
+- ccusage 版本随对应平台的 nixpkgs lock 回滚；不要退回缺少去重修复的旧 `20.0.17`。

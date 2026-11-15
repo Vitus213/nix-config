@@ -1,50 +1,48 @@
 # 应用版本审计
 
-本文件记录仓库中用户会直接启动的主要应用版本来源、当前求值版本、是否局部固定、是否使用 NixPak。普通 CLI 工具和系统基础包通常跟随对应
-`nixpkgs` 输入统一更新，不在这里逐项列出。
+本文记录用户应用的实际安装边界与版本来源。常规包随 `flake.lock`
+更新，不再复制一份很快漂移的手工版本表；查询当前声明版本使用文末命令。求值版本不是运行中程序的版本，配置变更须部署后才生效。
 
-## 当前结论
+## 当前安装与维护边界
 
-- Zed 已通过 `home/linux/gui/base/editors.nix` 安装，使用主 `pkgs.zed-editor`，当前求值版本为
-  `1.6.3`。
-- 当前 NixPak 只封装 2 个应用：`nixpaks.telegram-desktop`、`nixpaks.qq`。
-- 明确局部固定、局部修补或不完全跟随主 `nixpkgs` 统一更新的用户可见应用/数据包括 Pi / Oh My
-  Pi、QQ、WeChat、飞书、Delta、Dux Files、Rime Ice、Catppuccin VSCode 扩展。
-- Linux 桌面常规应用默认跟随主 `nixpkgs` 输入，也就是
-  `github:nixos/nixpkgs/nixos-unstable`；仓库不再为常规软件额外维护 `nixpkgs-stable` 或
-  `nixpkgs-master` 包集合。
+| 应用或能力                       | 配置入口与来源                                                | 维护方式                                                            |
+| -------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------- |
+| VSCode、Cursor、Zed、LibreOffice | `home/linux/gui/base/editors.nix`，主 nixpkgs                 | 跟随主输入；VSCode 的 X11/libsecret 参数保留                        |
+| Delta                            | 官方 `delta-nix` input，`overlays/delta` 仅改名为 `delta-zed` | 更新官方 input；保留与 git-delta 的命名隔离                         |
+| Catppuccin VSCode 主题           | `catppuccin/nix` 上游配方                                     | 已包含 nodejs-slim 修复，不再复制扩展构建实现                       |
+| Zen / Chrome                     | 社区 Zen input / 主 nixpkgs                                   | Zen 是默认浏览器；Chrome 提供 Notion、Linear web app                |
+| Telegram                         | `nixpaks.telegram-desktop`                                    | 唯一保留的 NixPak 包装，版本随 nixpkgs                              |
+| 微信                             | 主 nixpkgs，`overlays/wechat` 保留启动差异                    | 不再维护整份回移配方；无 NixPak 沙箱                                |
+| 飞书                             | 主 nixpkgs，安装点加 portal/PipeWire 参数                     | 保留 XWayland 与屏幕共享适配                                        |
+| 腾讯会议                         | 主 nixpkgs + `overlays/wemeet`                                | 保留采集、Mesa/XWayland 与固定二进制主题适配                        |
+| Zoom、Sioyek、mpv、imv、Foliate  | 主 nixpkgs，`media.nix` / `misc.nix`                          | Sioyek 保留 xcb 包装；Zoom 不再单独构造包集                         |
+| Noctalia                         | 官方固定源码 input，独立 nixpkgs                              | 正式 PAM helper + `pam_service=noctalia-lock`；仅保留工作区样式补丁 |
+| Dux Files                        | nixpkgs 包及原生 NixOS 模块                                   | 目录默认应用；不再额外导入项目 flake，ScreenCast portal 保留        |
+| Rime Ice                         | nixpkgs `rime-ice`                                            | Linux/Darwin 复用数据包，并显式引入建议 defaults                    |
+| Voiceless                        | 独立固定 input 与其验证过的 nixpkgs                           | 保留当前 CUDA 包、daemon、Fcitx 桥和浮层；私有配置不进入 store      |
+| Tern                             | `overlays/tern` 的受限官方安装包                              | 用户下载真实产物后更新双平台 hash；保留自启动与工作区规则           |
+| FlClash                          | `modules/nixos/desktop/networking/flclash.nix`                | 本地固定 AppImage；不能换成已移除的 nixpkgs alias                   |
+| Croc、ccusage                    | nixpkgs 上游配方                                              | 已退役本地 vendor 补丁和四平台二进制表                              |
+| OMP、OpenCode、bb、Herdr         | 用户级 Bun/npm/官方安装                                       | 与系统运行时分离；OMP 模型模板与同步行为保持不变                    |
 
-## 应用清单
+## 已移除的默认安装和无效配置
 
-| 应用                   | 当前版本                    | 配置入口                                                                                    | 版本来源                                                                                                                   | 固定/修补        | NixPak | 处理建议                                                                                                                                                                                                   |
-| ---------------------- | --------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Zed                    | `1.6.3`                     | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.zed-editor`                                                                                          | 否               | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
-| Delta                  | `0.23.0`                    | `flake.nix`、`overlays/delta/default.nix`、`home/linux/gui/base/editors.nix`                | 官方 `zed-industries/delta-nix` flake input，固定于 `flake.lock`                                                           | 是               | 否     | `nix flake update delta` 更新；CLI 改名 `delta-zed` 避免与 git-delta 冲突；详见 [Delta](./delta.md)                                                                                                        |
-| Cursor                 | `3.7.19`                    | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.code-cursor`                                                                                         | 否               | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
-| VSCode                 | `1.125.0`                   | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.vscode`                                                                                              | 否               | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
-| Catppuccin VSCode 扩展 | `3.19.0`                    | `home/base/core/theme.nix`                                                                  | `catppuccin/nix` 的 VSCode port，本仓库修正 pnpm `nodejs-slim` 参数                                                        | 是               | 否     | 等上游改用 `nodejs-slim` 后移除本地包覆盖                                                                                                                                                                  |
-| LibreOffice            | `26.8.0.3`                  | `home/linux/gui/base/editors.nix`                                                           | 主 `nixpkgs` 的 `pkgs.libreoffice`（上游取消 fresh/still 双线，`libreoffice-fresh` 已改为告警别名）                        | 否               | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
-| Zen Browser            | `1.23.4b`                   | `flake.nix`、`home/linux/gui/base/browsers.nix`                                             | 社区 flake `youwen5/zen-browser-flake`（每日自动跟随上游），固定于 `flake.lock`                                            | 是               | 否     | `nix flake lock --update-input zen-browser` 更新；详见 [Zen Browser](./zen-browser.md)                                                                                                                     |
-| Telegram Desktop       | `6.8.2`                     | `home/linux/gui/base/misc.nix`、`hardening/nixpaks/telegram-desktop.nix`                    | 主 `nixpkgs` 的 `pkgs.telegram-desktop`                                                                                    | 否               | 是     | 保留 NixPak 沙箱，版本跟随主 `nixpkgs`                                                                                                                                                                     |
-| QQ                     | `3.2.29-2026-05-28`         | `home/linux/gui/base/misc.nix`、`hardening/nixpaks/default.nix`、`hardening/nixpaks/qq.nix` | 局部固定官方 QQ deb                                                                                                        | 是               | 是     | 后续更新需改 URL/hash 并同步 `linux-im-apps.md`                                                                                                                                                            |
-| WeChat                 | `4.1.13.26`                 | `home/linux/gui/base/misc.nix`、`overlays/wechat/`                                          | 固定官方 Linux DEB；局部回移上游配方，依赖仍用主 `nixpkgs`                                                                 | 是               | 否     | 直接运行，无沙箱/路径隔离；原生 Wayland + text-input-v3，详见 `linux-im-apps.md`                                                                                                                           |
-| 飞书                   | `7.66.10`                   | `home/linux/gui/base/misc.nix`                                                              | 主 `nixpkgs` 的 `pkgs.feishu`                                                                                              | 是（捕获参数）   | 否     | 保持 XWayland；`WebRTCPipeWireCapturer` 强制屏幕共享走 portal/PipeWire                                                                                                                                     |
-| Rime Ice               | `2026-06-21-3ec476e`        | `overlays/fcitx5/default.nix`                                                               | 固定 GitHub rev                                                                                                            | 是               | 否     | 更新词库时改 rev/hash 并同步 Fcitx5 文档                                                                                                                                                                   |
-| OpenCode               | 用户级 npm                  | `home/base/core/npm.nix`、`home/base/tui/shell/default.nix`                                 | `npm install -g opencode-ai@latest`                                                                                        | 否               | 否     | 跟随 npm 更新，不通过 Nix 固定                                                                                                                                                                             |
-| Pi / Oh My Pi          | 用户级 bun                  | `~/.bun/bin` 或 `~/.cache/.bun/bin`（PATH 见 `home/base/core/shells/`）、`~/.omp/agent/`    | `bun install -g @oh-my-pi/pi-coding-agent`                                                                                 | 否               | 否     | `bun update -g @oh-my-pi/pi-coding-agent` 更新，不通过 Nix 固定；运行时 `bun` 由 `home/base/core/npm.nix` 安装；`config.yml` 用户级，`models.yml` 由 nix-config 模板生成（软链，key 经 my-secrets/agenix） |
-| bb                     | 用户级 npm                  | `documents/bb.md`                                                                           | `npm install -g bb-app@latest`                                                                                             | 否               | 否     | 跟随 npm 更新，不通过 Nix 固定                                                                                                                                                                             |
-| FlClash                | `0.8.96`                    | `modules/nixos/desktop/networking/flclash.nix`                                              | 官方 GitHub release AppImage（本地打包；macOS 手动 dmg）                                                                   | 是               | 否     | 更新需改 `flclash.nix` 中 URL/hash；详见 [应用版本审计](./application-version-audit.md)                                                                                                                    |
-| Guix                   | `1.5.0`                     | `modules/nixos/desktop/guix.nix`                                                            | 主 `nixpkgs` 的 `pkgs.guix`                                                                                                | 否               | 否     | 跟随主 `nixpkgs` 更新                                                                                                                                                                                      |
-| Noctalia Shell         | `5.5.0`（apollo 已 switch） | `flake.nix`、`overlays/noctalia/`、`home/linux/gui/base/noctalia/`                          | 官方独立 input 固定 `c2573248…`，保留上游自己的 nixpkgs                                                                    | 是（PAM/工作区） | 否     | 仅维护两个 C++ 补丁；部署与验收边界见 [Noctalia v5](./noctalia-v5.md)                                                                                                                                      |
-| Dux Files              | `2.1.2`                     | `flake.nix`、`modules/nixos/desktop/file-manager.nix`、`home/linux/gui/base/xdg/mime.nix`   | 官方 `duxlabs-dev/dux-files` 的 `v2.1.2`；依赖跟随主 `nixpkgs`                                                             | 是               | 否     | 替代 Dolphin/Thunar/Ark，目录默认用 Dux，终端 Yazi 保留；详见 [文件管理器](./niri-workspaces.md#文件管理器dux-files)                                                                                       |
-| Voiceless              | `0.1.0`                     | `flake.nix`、`home/linux/gui/base/voice-input.nix`                                          | `github:Vitus213/voiceless` flake input 的 CPU 版（云端 ASR，本地推理未启用）                                              | 是               | 否     | `nix flake lock --update-input voiceless` 更新；详见 [Linux 语音输入](./linux-voice-input.md)                                                                                                              |
-| Sioyek                 | `2.0.0-unstable`            | `home/linux/gui/base/media.nix`、`home/linux/gui/base/xdg/mime.nix`                         | 主 `nixpkgs` 的 `pkgs.sioyek` 经同名 wrapper 强制 `QT_QPA_PLATFORM=xcb`（Qt6 wayland + NVIDIA EGL 不兼容），PDF 默认查看器 | 否               | 否     | 跟随主 `nixpkgs` 更新；Qt 修好 wayland EGL 后可移除 wrapper                                                                                                                                                |
+- 删除误装的 **Notion 窗口管理器**；Notion 笔记仍由 Chrome web app 提供。
+- 删除暂停安装的 QQ 沙箱导出、Guix、Flatpak、旧 davfs 与无人消费的 Magpie 本地包；不删除历史数据。
+- 删除未激活的 qt6ct、旧 swaybg/wlogout/app2unit/playerctld；壁纸、会话、启动与媒体控制由 Noctalia 提供。
+- 截图/标注统一到 Niri/Noctalia，录屏保留 OBS；删除额外录屏器和默认高级 OBS 插件，只保留 PipeWire 音频捕获插件。
+- 删除未在受管 profile 中启用的 Mozc/Hangul、重复 FreeRDP CLI 和旧 Insiders 默认关联。
+- 保留编辑器、聊天、会议、笔记、Tern、四语言开发与家庭服务。移除 OBS 插件不删除场景文件；旧场景需要的高级源/滤镜须先重新声明对应插件。
+- Darwin 旧 Hindsight/Colima 自动启动已退役，服务端保持在 Athena；旧卷及备份保留。
+- GTK2 已淘汰，GTK3/4 继续管理；JACK 应用改用 `pw-jack <应用>`，不再通过全局库路径加载兼容层。
+
+需要恢复某项能力时，在原安装组重新声明对应包/插件并部署；不要从备份直接恢复整套已经退役的覆盖或默认配置。
 
 ## Google Cloud CLI
 
 共享 TUI 配置 `home/base/tui/dev-tools.nix` 通过 `home.packages` 安装 `pkgs.google-cloud-sdk`，提供
 `gcloud`、`bq` 和 `gsutil`。Linux 跟随主 `nixpkgs`，macOS 跟随
-`nixpkgs-darwin`；Linux 当前求值版本为 `583.0.0`，不单独固定版本或启用额外组件。
+`nixpkgs-darwin`；不单独固定版本或启用额外组件。
 
 部署后运行 `gcloud version` 检查安装；需要访问云资源时再执行
 `gcloud auth login`。安装不自动登录，凭据留在用户配置目录，不写入 Nix 仓库。更新走对应 nixpkgs
@@ -71,13 +69,12 @@ ssh eric-kvm-dev
 当前使用 NixPak 的应用:
 
 - `nixpaks.telegram-desktop`
-- `nixpaks.qq`
 
 当前未使用 NixPak 的主要图形应用:
 
-- Zed、Cursor、VSCode、LibreOffice Fresh、Delta、飞书
-- Zen Browser
-- WeChat，它使用局部固定的 Linux DEB 配方直接运行，不使用 NixPak、bubblewrap 或 FHS 沙箱
+- Zed、Cursor、VSCode、LibreOffice、Delta、飞书
+- Zen Browser、Chrome
+- WeChat：直接运行上游包及小型启动适配，不使用 NixPak、bubblewrap 或 FHS 沙箱
 - FlClash、Noctalia Shell、Voiceless
 
 NixPak 适合继续用于闭源 IM 这类需要限制家目录读写面的应用；编辑器、浏览器、输入法数据、桌面 shell 和系统服务类应用不默认套 NixPak，避免破坏插件、LSP、桌面集成或系统服务行为。
@@ -85,9 +82,16 @@ NixPak 适合继续用于闭源 IM 这类需要限制家目录读写面的应用
 ## 检查命令
 
 ```bash
-nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getVersion pkgs.zed-editor' --impure
-nix eval --raw --expr 'let flake = builtins.getFlake (toString /home/vitus/nix-config); pkgs = flake.nixosConfigurations.apollo.pkgs; in pkgs.lib.getVersion pkgs.nixpaks.qq' --impure
+# 配置所声明的版本，不等于当前运行进程版本
+nix eval --raw .#nixosConfigurations.apollo.pkgs.zed-editor.version
+nix eval --raw .#nixosConfigurations.apollo.pkgs.nixpaks.telegram-desktop.name
+nix eval --raw .#nixosConfigurations.apollo.pkgs.ccusage.version
+nix eval --raw .#darwinConfigurations.artemis.pkgs.croc.version
 ```
+
+`just test` 同时运行包源策略检查与求值断言。更新 input 的
+`just up`、`just upp <input>`、`just up-nix`
+不自动提交；检查变更后再自行提交。升级主输入前，先检查 Noctalia、语音模型、腾讯会议等独立固定能力的兼容边界。
 
 ## 参考
 

@@ -15,7 +15,6 @@
 - Wayland 桌面工具
 - Voiceless 语音输入
 - 媒体、创作、笔记和开发工具
-- 游戏相关工具
 
 ## 为什么桌面配置主要放 Home Manager
 

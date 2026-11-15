@@ -54,14 +54,14 @@ font_family = "Maple Mono NF CN"
 show_cpu_cores = false
 
 [widget.cpu.actions]
-right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+right = "panel-toggle control-center system"
 
 [widget.load]
 type = "vitus/desktop:load"
 
 [widget.load.actions]
 left = "panel-toggle control-center system"
-right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+right = "panel-toggle control-center system"
 
 [widget.ram]
 type = "sysmon"
@@ -75,7 +75,7 @@ peek = false
 font_family = "Maple Mono NF CN"
 
 [widget.ram.actions]
-right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+right = "panel-toggle control-center system"
 
 [widget.net_rx]
 type = "sysmon"
@@ -91,7 +91,7 @@ network_speed_unit = "auto"
 network_speed_compact = false
 
 [widget.net_rx.actions]
-right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+right = "panel-toggle control-center system"
 
 [widget.net_tx]
 type = "sysmon"
@@ -107,7 +107,7 @@ network_speed_unit = "auto"
 network_speed_compact = false
 
 [widget.net_tx.actions]
-right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+right = "panel-toggle control-center system"
 
 [widget.disk]
 type = "sysmon"
@@ -122,7 +122,7 @@ peek = false
 font_family = "Maple Mono NF CN"
 
 [widget.disk.actions]
-right = "exec resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
+right = "panel-toggle control-center system"
 
 [widget.active_window]
 display = "icon_and_text"

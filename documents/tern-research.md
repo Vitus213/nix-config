@@ -60,7 +60,7 @@ flake 忽略未跟踪文件。后续正常 Home Manager 部署会从同一声明
 ## 当前部署状态
 
 2026-11-15 已通过 Nix 用户 profile 安装，相关包定义及共享 Home Manager 模块已同步到三台各自的
-`~/nix-config`；未执行整机 NixOS/nix-darwin switch，也未提交或推送。
+`~/nix-config`。安装配置已提交并推送；后续增加的登录自启动和工作区规则另行记录在下方。
 
 | 主机    | 安装与启动                                                   | 验证                                               |
 | ------- | ------------------------------------------------------------ | -------------------------------------------------- |
@@ -86,6 +86,18 @@ tern --version
 macOS 也可直接从 `~/Applications/Tern.app`
 打开。窗口关闭后 daemon 可以继续保留 shell；不要为更新验证运行会终止 session 的 daemon stop。
 [官方架构](https://docs.stencil.so/tern/concepts/architecture.md)。
+
+### 登录自启动与工作区 1
+
+- Apollo、Athena：通过 `home/linux/gui/base/xdg/autostart.nix` 登录自启动 Tern；
+  `home/linux/gui/niri/conf/windowrules.kdl` 将 `so.stencil.tern` 窗口放入 `1terminal`
+  并最大化。两台当前用户的 XDG autostart 条目已安装，无需等待整机 switch。
+- Artemis：AeroSpace 已设置登录启动，`after-startup-command` 打开 `~/Applications/Tern.app`；
+  `on-window-detected` 将 Tern 平铺到
+  `1Terminal`。配置已同步并 reload。实测配置校验及启动命令成功；Tern 进程运行，但本次远程查询中 AeroSpace 未枚举出其窗口，因而 macOS 实际窗口位置尚未验收。未重启或重新登录验证完整登录流程。
+- 启动对象是桌面窗口；不新增网络监听，也不重启 Athena 既有 remote service。
+- 撤销时移除对应 autostart 项、AeroSpace 启动命令和窗口规则，并清除两台 Linux 的
+  `~/.config/autostart/so.stencil.tern.desktop`。
 
 默认 agent 命令为 `omp`，使用已有 OMP 的配置及登录。Tern 另有 Managed
 OMP 功能，会自行下载 OMP 并优先放入 pane

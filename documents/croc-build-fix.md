@@ -1,35 +1,24 @@
-# Croc build 修复
+# Croc 上游包维护
 
 ## 当前行为
 
-`modules/base/packages.nix` 仍安装 `pkgs.croc`，但仓库通过 `overlays/croc/default.nix` 临时覆盖
-`pkgs.croc.src`。
+`modules/base/packages.nix` 安装主 nixpkgs 的 `pkgs.croc`，当前为 `11.5.5`。 `overlays/croc/`
+已删除，不再覆盖源码或删除 vendor 目录。
 
-当前覆盖内容:
+锁定来源为 nixpkgs
+`d5cc6833999746cffdfe0598f7bc801a57b887a9`；源码固定和 Go 依赖由上游配方维护。本次只清理声明，未部署系统。
 
-- `version`: 仍跟随主 `nixpkgs` 的 `10.4.5`
-- `rev`: 固定到当前 `v10.4.5` tag 指向的 commit `57e5fd7cef0466e3dbe086e18d00fc9e40e4dffa`
-- `hash`: `sha256-u262LwHUL6+rPE7nzIda7W5dAXaikQ/cKwtUEIbcbH0=`
+## 已退役的覆盖
 
-## 背景
-
-`apollo` toplevel build 在 `croc-10.4.5-go-modules` 处失败，错误为 fixed-output derivation hash
-mismatch:
-
-- nixpkgs 指定：`sha256-EbOjLR9xQMY2D+roK/Fv1so5FZwZ2RmNetLxq0WIw2g=`
-- 当前下载：`sha256-u262LwHUL6+rPE7nzIda7W5dAXaikQ/cKwtUEIbcbH0=`
-
-`nix-prefetch-url --unpack` 对当前 `v10.4.5` tag 和 commit
-`57e5fd7cef0466e3dbe086e18d00fc9e40e4dffa` 的结果一致。临时 overlay 只修正 `src` 后， `pkgs.croc`
-可以完成 Go module vendor、编译和 version check。
+历史上曾针对 `10.4.5` 的源码 hash 变化和 `11.5.4` 的 vendor 问题维护本地 overlay。当前包升级到
+`11.5.5`
+后直接使用上游配方，不再保留旧 hash 或构建补丁。历史失败记录不适用于当前包，也不能作为重新添加旧覆盖的依据。
 
 ## 回滚
 
-当主 `nixpkgs` 更新到包含 croc 修复的 revision 后，删除 `overlays/croc/` 即可。删除后需要重新执行:
-
-```bash
-nix build .#nixosConfigurations.apollo.config.system.build.toplevel --no-link --show-trace
-```
+需要回滚时恢复升级前的 nixpkgs lock 及当时配套 overlay，不能把 `10.4.5`
+的 hash 覆盖应用到新版。曾针对 `11.5.4` 删除过期 vendor 的临时处理也不再保留；上游 `11.5.5`
+已更换源码。
 
 ## 验证
 

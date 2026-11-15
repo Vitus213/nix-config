@@ -35,8 +35,9 @@
 `TERMINAL=kitty`，启动的应用由独立 systemd transient service 承载。
 
 原生 Shell 提供状态栏、通知、启动器、剪贴板、锁屏、夜间色温和会话菜单。锁屏命令是
-`noctalia msg session lock`；软件包补丁固定使用专用 `/etc/pam.d/noctalia-lock`，GNOME
-Keyring 继续由 greetd 登录阶段解锁。详见 [PAM 说明](../../../../documents/lockscreen-pam.md)。
+`noctalia msg session lock`；构建选项 `pam_service=noctalia-lock` 为正式 PAM
+helper 选择专用栈，GNOME Keyring 继续由 greetd 登录阶段解锁。详见
+[PAM 说明](../../../../documents/lockscreen-pam.md)。
 
 壁纸目录为 `/home/vitus/Pictures/Wallpapers`，Home Manager 链接到固定 wallpapers input 的 `jpg/`
 子目录。当前基础壁纸为 `dome.jpg`，递归浏览开启，自动换图关闭，Shell 从壁纸生成配色。使用
@@ -44,6 +45,20 @@ Keyring 继续由 greetd 登录阶段解锁。详见 [PAM 说明](../../../../do
 
 本地 `vitus/desktop` 插件桥接现有 TOTP 脚本与系统负载；番茄钟使用固定社区插件
 `thepunkoff/pomodoro`。TOTP 密钥仍由 agenix 提供，旧番茄钟统计仅保存在本机私有备份中。
+
+TOTP 四个脚本仍由本地 Luau 插件调用，菜单使用 fuzzel，验证码依赖 oath-toolkit。命令生成失败会区分缺少 oathtool、无效密钥和其他错误，复制动作不会在生成失败时写入空值；剪贴板写入失败也不会提示“已复制”。菜单缺少程序返回 127，取消菜单保持正常退出。展示脚本仍用退出 0 的 error
+JSON 报告预期配置/生成错误，供 Luau 显示具体原因。
+
+## 桌面工具边界
+
+`virt-viewer` 与 `udiskie` 仅在 GUI 层安装/启用，TUI 不再声明图形浏览器
+`BROWSER=zen`。Noctalia 负责壁纸、会话菜单与媒体控制，不再安装 swaybg、wlogout、app2unit、qt6ct 或 playerctl/playerctld。保留桌面 wl-clipboard、颜色选择、亮度与网络编辑工具，以及 pavucontrol；音频终端混音器不再额外安装 pulsemixer。
+
+截图统一为 Niri/Noctalia 桌面入口，录屏统一为 OBS。OBS 仅保留 PipeWire 音频采集插件；高级插件移除不删除用户场景数据，已有依赖场景需按需重新加入插件，见
+[屏幕共享与 OBS](../../../../documents/wayland-screen-sharing.md#obs)。
+
+GTK 配置仅维护 GTK 3/4。当前 nixpkgs 已标记 GTK 2 为 broken，Home Manager 更新到已跳过 GTK
+2 输入法缓存的上游修复，不开启全局 `allowBroken` 或自行回移缓存模块。
 
 ## 空闲策略
 

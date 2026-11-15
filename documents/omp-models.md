@@ -42,6 +42,18 @@ my-secrets/omp-keys.age ──agenix──▶ /run/agenix/omp-keys（本机解�
 
 手动改完 `models.yml` / `config.yml` 而没走回填流程时，以本节为对照清单。
 
+### BoxLite 新功能默认源码调研
+
+`~/.omp/agent/RULES.md` 要求新增 BoxLite 能力在设计、实现前读取
+`skill://boxlite-feature-research`，即使用户没有明确说“调研”。纯格式、错别字和不改变能力的维护不自动触发；用户可明确跳过或缩小调研。技能发现未刷新时按绝对路径读取源文件。
+
+个人真源为 `~/agent-assets/skills/self/good/boxlite-feature-research/`，通过
+`~/.agents/skills/boxlite-feature-research`
+链接供 OMP 发现。技能包含21项沙箱运行时、Agent 平台、VMM、函数沙箱、VM 工具及虚拟化绑定库的项目目录；逐项报告支持状态、固定版本源码证据与检索边界，按不同底层机制给简约 Mermaid 图，再说明 BoxLite 适配。SDK 声明不代替后端证据，未搜索到不等于不支持，历史公开源码与当前私有后端分开。
+
+使用示例：“给 BoxLite 增加 VM 快照和恢复”会先触发调研；也可显式说“用 boxlite-feature-research 调研宿主目录共享”。新会话加载新增技能；已有会话可直接读源路径。本地规则与个人技能均需随换机恢复：从 agent-assets 恢复真源和链接，并把本节的调用规则补回
+`~/.omp/agent/RULES.md`；这段行为没有通过 Nix 自动部署。
+
 ### 本机 REA 逆向 MCP
 
 Apollo 的 `~/.omp/agent/mcp.json` 增加 `rea` stdio 服务，运行

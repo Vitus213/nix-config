@@ -14,6 +14,20 @@
 Fcitx5 的 Default 输入法组只保留 `rime`。`en` 是 Fcitx5 的键盘输入法，不是 Rime 的西文状态；Rime 的
 `Ａ` 是小鹤双拼方案内部的 `ascii_mode`。
 
+只安装当前使用的 Rime、GTK 集成与 Fcitx5 配置工具，不再安装 Mozc/Hangul
+addon 或声明 Mozc 配置链接。旧用户数据不由本轮清理删除。Rime 数据使用 Nixpkgs 的
+`rime-ice`，用户补丁通过 `__include: rime_ice_suggestion:/`
+继承该包的建议配置，再覆盖小鹤双拼与快捷键。
+
+macOS Squirrel 入口为 `home/darwin/rime-squirrel.nix`，同样使用上游数据与小鹤双拼补丁。
+`Library/Rime` 数据目录及独立 `default.custom.yaml` 均不设置
+`force`，避免父目录的强制覆盖使子文件跳过碰撞检查。现有文件使用 Home Manager 的
+`home-manager.backup`
+备份扩展名；若同名备份已经存在，激活停止，需先手工整理并保留用户自定义与备份再部署。
+
+2026-11-16 使用锁定 Home Manager `b787c48` 的实际碰撞检查脚本在临时目录验证：旧父目录 `force`
+会跳过冲突，新配置拒绝已有补丁与备份同时存在的激活，两个文件内容均保留；无旧备份时允许标准备份流程。此为 Linux 上的脚本冒烟，未执行 macOS 激活或输入法交互。
+
 ## 为什么不用 Shift 切换
 
 Fcitx5 和 Rime 都可能处理 Shift：
@@ -30,6 +44,8 @@ Fcitx5 和 Rime 都可能处理 Shift：
 - `home/linux/gui/base/fcitx5/profile`：Fcitx5 输入法组。
 - `home/linux/gui/base/fcitx5/default.custom.yaml`：Rime 用户补丁。
 - `home/linux/gui/base/fcitx5/default.nix`：Home Manager 链接入口。
+- 数据使用 nixpkgs 的 `pkgs.rime-ice`（2026.06.30）；overlay 仅为 Fcitx 设置
+  `rimeDataPkgs`，不改全局 `rime-data`。
 
 关键配置如下：
 
@@ -49,6 +65,7 @@ DeactivateKeys=
 
 ```yaml
 patch:
+  __include: rime_ice_suggestion:/
   schema_list:
     - schema: double_pinyin_flypy
   ascii_composer/switch_key/Caps_Lock: noop

@@ -6,13 +6,5 @@
     libnotify
     oath-toolkit # provides oathtool for TOTP generation
     wireguard-tools # manage wireguard vpn manually, via wg-quick
-
-    virt-viewer # vnc connect to VM, used by kubevirt
   ];
-
-  # auto mount usb drives
-  services = {
-    udiskie.enable = true;
-    # syncthing.enable = true;
-  };
 }

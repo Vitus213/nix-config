@@ -20,25 +20,34 @@ fi
 service_name=$(echo "$service_info" | cut -d':' -f1)
 secret_key=$(echo "$service_info" | cut -d':' -f2)
 
-totp_code=$(generate_totp_code "$secret_key" || true)
-status=$?
+if totp_code=$(generate_totp_code "$secret_key"); then
+  status=0
+else
+  status=$?
+fi
 case "$status" in
   0)
     ;;
   2)
     notify-send "TOTP" "缺少 oathtool，请安装 oath-toolkit" -u critical
-    exit 1
+    exit "$status"
     ;;
   3)
     notify-send "TOTP" "${service_name} 的密钥格式无效" -u critical
-    exit 1
+    exit "$status"
     ;;
   *)
     notify-send "TOTP" "生成验证码失败：${service_name}" -u critical
-    exit 1
+    exit "$status"
     ;;
 esac
 
-echo -n "$totp_code" | wl-copy
+if printf '%s' "$totp_code" | wl-copy; then
+  :
+else
+  status=$?
+  notify-send "TOTP" "复制验证码失败：${service_name}" -u critical
+  exit "$status"
+fi
 remaining=$(get_totp_remaining_time)
 notify-send "TOTP" "${service_name}: ${totp_code}\\n剩余: ${remaining}s\\n已复制到剪贴板" -t 3500

@@ -14,25 +14,11 @@ in
 
   preservation.enable = true;
   modules.secrets.preservation.enable = true;
-  # pverservation required initrd using systemd.
-  boot.initrd.systemd.enable = true;
 
   environment.systemPackages = [
     # `sudo ncdu -x /`
     pkgs.ncdu
   ];
-
-  # There are two ways to clear the root filesystem on every boot:
-  ##  1. use tmpfs for /
-  ##  2. (btrfs/zfs only)take a blank snapshot of the root filesystem and revert to it on every boot via:
-  ##     boot.initrd.postDeviceCommands = ''
-  ##       mkdir -p /run/mymount
-  ##       mount -o subvol=/ /dev/disk/by-uuid/UUID /run/mymount
-  ##       btrfs subvolume delete /run/mymount
-  ##       btrfs subvolume snapshot / /run/mymount
-  ##     '';
-  #
-  #  See also https://grahamc.com/blog/erase-your-darlings/
 
   # NOTE: preservation only mounts the directory/file list below to /persistent
   # If the directory/file already exists in the root filesystem you should
@@ -41,9 +27,6 @@ in
     directories = [
       "/etc/NetworkManager/system-connections"
       "/etc/nix/inputs"
-      "/etc/secureboot" # lanzaboote - secure boot
-      # my secrets
-      "/etc/agenix/"
 
       "/var/log"
 
@@ -56,19 +39,8 @@ in
       }
 
       # containers
-      # "/var/lib/docker"
       "/var/lib/cni"
       "/var/lib/containers"
-
-      # other data
-      "/var/lib/flatpak"
-
-      # virtualisation
-      "/var/lib/libvirt"
-      "/var/lib/lxc"
-      "/var/lib/lxd"
-      "/var/lib/qemu"
-      # "/var/lib/waydroid"
 
       # network
       "/var/lib/tailscale"
@@ -139,8 +111,6 @@ in
         # vscode
         ".vscode"
         ".config/Code"
-        ".vscode-insiders"
-        ".config/Code - Insiders"
 
         # cursor ai editor
         ".cursor"
@@ -150,10 +120,6 @@ in
         ".config/zed"
         ".local/share/zed"
 
-        # google ai editor (antigravity)
-        ".config/Antigravity"
-        ".antigravity"
-
         # ai agents
         ".claude"
         ".gemini"
@@ -162,20 +128,9 @@ in
         ".local/share/nvim"
         ".local/state/nvim"
 
-        # helix & steel
-        ".local/share/steel"
-
-        # doom-emacs
-        # "org" # org files
-        # ".config/emacs"
-        # ".local/share/doom"
-        # ".local/share/emacs"
-
         # Joplin
         ".config/joplin" # tui client
         ".config/Joplin" # joplin-desktop
-
-        # ".local/share/jupyter"
 
         # ======================================
         # Cloud Native
@@ -289,8 +244,7 @@ in
         # Containers
         # ======================================
         ".local/share/containers"
-        ".local/share/flatpak"
-        # flatpak/nixpak app's data
+        # Nixpak Telegram app data (does not require the Flatpak service).
         ".var"
 
         # ======================================
@@ -306,9 +260,6 @@ in
 
         # Digital Painting
         ".local/share/krita"
-
-        # Japanese IME
-        ".config/mozc" # used by fcitx5-mozc
 
         ".config/nushell"
 
@@ -391,15 +342,4 @@ in
   # see the firstboot example below for an alternative approach
   systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 
-  # let the service commit the transient ID to the persistent volume
-  systemd.services.systemd-machine-id-commit = {
-    unitConfig.ConditionPathIsMountPoint = [
-      ""
-      "/persistent/etc/machine-id"
-    ];
-    serviceConfig.ExecStart = [
-      ""
-      "systemd-machine-id-setup --commit --root /persistent"
-    ];
-  };
 }

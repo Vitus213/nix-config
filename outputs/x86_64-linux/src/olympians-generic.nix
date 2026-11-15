@@ -20,8 +20,6 @@ let
         "modules/nixos/desktop.nix"
         # host specific
         "hosts/olympians-${name}"
-        # nixos hardening
-        # "hardening/profiles/default.nix"
         "hardening/nixpaks"
       ])
       ++ [
@@ -43,7 +41,13 @@ let
 
   modules-niri = {
     nixos-modules = [
-      { programs.niri.enable = true; }
+      {
+        programs.niri.enable = true;
+        image.modules.iso.isoImage = {
+          makeEfiBootable = true;
+          makeUsbBootable = true;
+        };
+      }
     ]
     ++ base-modules.nixos-modules;
     home-modules = [
@@ -59,6 +63,6 @@ in
 
   # generate iso image for hosts with desktop environment
   packages = {
-    "${name}" = inputs.self.nixosConfigurations."${name}".config.formats.iso;
+    "${name}" = inputs.self.nixosConfigurations."${name}".config.system.build.images.iso;
   };
 }

@@ -17,6 +17,52 @@ secrets 仓库里，并作为 flake input 传入本仓库。
 
 不要在 Nix 配置里写 `~/.ssh/id_ed25519`。`~` 是 shell 展开规则，Nix 模块里不会自动展开。
 
+## NixOS 运行时文件与旧持久化迁移
+
+`secrets/nixos.nix` 将用户可读数据统一声明为 `owner = vitus`、`mode = "0400"`，不授予执行权限。六个
+`/etc/agenix/*` 兼容入口仅指定 `source`，使用 NixOS 默认的 `mode = "symlink"`，不再复制明文到
+`/etc`。消费者路径保持不变；`omp-keys` 继续直接使用 `/run/agenix/omp-keys`。
+
+链路为 `/etc/agenix/<name>` → `/etc/static/agenix/<name>` → `/run/agenix/<name>` →
+`/run/agenix.d/<generation>/<name>`。Nix store 中只记录链接目标，不包含解密后的内容。agenix 在
+`/run/agenix.d` 的 ramfs 创建文件，父目录和 generation 目录权限为
+`0751`，其他用户可遍历但不能列目录；文件归属 `vitus`，由文件的 `0400` 限制读取。不要用 `/etc`
+链接本身的权限判断目标可读性。
+
+旧配置将 `/etc/agenix` bind mount 到 `/persistent/etc/agenix`，该 preservation 声明已经移除。仅在
+`modules.secrets.preservation.enable` 开启时，`retirePersistedAgenix` activation 会在 `agenix`
+完成后运行，`etc` activation 显式依赖它。若 `/etc/agenix`
+仍是挂载点，先用 inode/device 同一性确认它确实来自 `/persistent/etc/agenix`，再普通
+`umount`。未知来源或卸载失败会终止激活；没有 force/lazy 卸载，也不会复制、覆盖或删除
+`/persistent/etc/agenix` 中的历史明文。当次 `/etc` 激活因此能创建运行时链接，不会被旧 bind
+mount 遮住。
+
+历史副本仍可能存在于
+`/persistent/etc/agenix`，本次清理不会自动擦除。它们不再作为当前 secret 的来源，日后如需归档或清理，应单独确认；本仓库没有增加删除运行数据的 activation。新生成文件的
+`0400` 不会追溯收紧历史副本的权限；旧文件若曾为 `0644`，本次仍保留原状。
+
+仅检查元数据的部署后确认方式（不读取 secret 内容）：
+
+```bash
+mountpoint /etc/agenix
+readlink -f /etc/agenix/nix-access-tokens
+namei -l /etc/agenix/nix-access-tokens
+stat -Lc '%U %G %a %n' /etc/agenix/nix-access-tokens
+sudo -u vitus test -r /etc/agenix/nix-access-tokens
+```
+
+预期 `mountpoint` 返回非挂载点，最终路径位于 `/run/agenix.d`，目标 owner 为 `vitus`、mode 为
+`400`，用户可读。2026-11-15 Apollo 已 switch 并核对：挂载已移除，入口解析到
+`/run/agenix.d/3`，六个目标均为 `vitus:users 0400` 且可读；历史持久化副本保留。回滚迁移应一起恢复
+`/etc`
+的复制声明和 preservation 映射，再按正常部署流程切换；不要只恢复旧映射，否则运行时链接会再次落到持久化目录。历史数据保留，回滚不需要删除它。
+
+依据：[锁定 agenix 模块](https://github.com/ryantm/agenix/blob/4835b1dc898959d8547a871ef484930675cb47f1/modules/age.nix)、
+[锁定 NixOS etc 模块](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/nixos/modules/system/etc/etc.nix)。
+
+Darwin 的用户可读 secret 同样使用 `0400`，消费者直接读取 `/run/agenix`；旧 `/etc`
+alias 过渡及 postActivation chown 已移除。Darwin 不执行上述 NixOS preservation mount 迁移。
+
 ## Private secrets 仓库
 
 本机 private secrets 仓库位于:

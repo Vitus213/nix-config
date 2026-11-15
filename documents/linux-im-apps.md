@@ -6,8 +6,7 @@
 
 - 微信使用官方 Linux WeChat DEB `4.1.13.26`，直接运行
   `pkgs.wechat`，默认原生 Wayland；不使用沙箱或隔离数据路径。
-- QQ 当前暂停安装，不从 Home
-  Manager 用户包列表引入；对应 Nixpak 包装源码暂保留，避免影响后续重新启用。
+- QQ 当前暂停安装，已移除未使用的 Nixpak 包装与窗口分配规则；重新启用时需要恢复包装声明和用户包入口。
 - 微信进入 `home/linux/gui/base/misc.nix` 的 Home Manager 用户包列表。
 - Linux GUI 会话默认自启动微信，不再默认自启动 Telegram；两者仍保留在用户包中。
 - 不把 Flatpak 作为主方案；Flatpak 只作为临时排障或对照方案。
@@ -23,17 +22,15 @@
   autostart，并移除 Telegram 自启动条目。
 - `home/linux/gui/base/fcitx5/default.nix`: 禁用系统 Fcitx5 XDG autostart，只保留 Home
   Manager 服务。
-- `overlays/wechat/default.nix`、`overlays/wechat/package.nix`: 局部回移的 Linux
-  DEB 配方、固定下载源与 hash、应用局部的 Wayland/输入法环境，不更新主 `nixpkgs`。
-- `hardening/nixpaks/qq.nix`、`hardening/nixpaks/default.nix`: 保留 QQ 包装实现，但当前不接入用户包列表。
+- `overlays/wechat/default.nix`: 基于主 `nixpkgs`
+  的最小启动器覆盖，只固定应用局部 Wayland/输入法环境；不再复制 DEB 配方、下载来源、hash、依赖和 WMPF 修复。
 
 ## 当前行为
 
 微信:
 
-- 版本固定为 `4.1.13.26`；不是自动追踪腾讯滚动下载地址。
-- Linux DEB 配方回移自 Nixpkgs 提交
-  `ea41ebe3e788f3f374e04885f4f60aca20efefed`，依赖仍来自本仓库锁定的主 `nixpkgs`。
+- 版本由主 `nixpkgs` 固定为 `4.1.13.26`，不是自动追踪腾讯滚动下载地址。
+- 二进制来源、依赖和 WMPF GL/EGL/FFmpeg ABI 修补均由锁定的上游配方维护。
 - 官方下载对象身份匹配时优先下载官方源，否则使用固定归档，最终都校验 SHA-256。
 - 使用真实家目录和应用默认数据路径（如
   `~/.xwechat`、`~/xwechat_files`），不改写 HOME/XDG 变量，不挂载隔离路径。
@@ -52,10 +49,7 @@
 
 QQ:
 
-- 版本固定为 `3.2.29-2026-05-28`。
-- 通过 Nixpak 运行，不直接裸跑 `pkgs.qq`。
-- 可读写 Documents、Downloads、Music、Videos、Pictures 这些常用用户目录。
-- 使用 Wayland 和 PipeWire socket，不启用 X11 socket。
+- 当前未安装；重新启用时应重新选择上游包与沙箱策略，不保留失效的固定下载源和包装实现。
 
 飞书:
 
@@ -67,13 +61,9 @@ QQ:
 
 ## 为什么这样选
 
-- 新版官方 Linux 微信支持原生 Wayland；局部回移已维护的 DEB 配方，避免为更新单个应用升级整个系统或另引一套 Nixpkgs 包集合。
-- 当前 QQ 固定到
-  `3.2.29-2026-05-28`，来源是腾讯 QQNT 官方 deb；固定 URL 和 hash 是为了避免上游下载地址变动导致旧 Nixpkgs 版本的
-  `pkgs.qq` 失效。
-- Flathub 的 QQ manifest 也采用 `QQ_3.2.29_260528`，并显式配置 Wayland 输入法相关参数。
+- 新版官方 Linux 微信支持原生 Wayland；直接复用更新后主 nixpkgs 的完整配方，只保留本桌面强制 Wayland 的差异。
 - 当前 Flathub 微信清单也使用 Wayland；本仓库按用户选择直接运行 Nix 安装的微信，不启用 Flatpak 或额外沙箱。
-- 直接运行意味着微信可读取当前用户有权访问的文件；QQ 等其他应用的 Nixpak 配置保持不变。
+- 直接运行意味着微信可读取当前用户有权访问的文件；Telegram 的 Nixpak 包装仍保留。
 - 飞书原生 Wayland 仍有上游崩溃风险，因此显示后端保持 XWayland；仅把捕获后端切到 portal/PipeWire，避免 X11
   desktop capturer 无法看到 Wayland 桌面。
 - 原生 Wayland 使用
@@ -86,8 +76,8 @@ QQ:
 
 - Nixpkgs WeChat:
   <https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/we/wechat/package.nix>
-- 固定回移来源：
-  <https://github.com/NixOS/nixpkgs/tree/ea41ebe3e788f3f374e04885f4f60aca20efefed/pkgs/by-name/we/wechat>
+- 当前 Linux 配方：
+  <https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/we/wechat/linux.nix>
 - Fcitx Wayland 接入： <https://fcitx-im.org/wiki/Using_Fcitx_5_on_Wayland>
 - Nixpkgs QQ: <https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/by-name/qq/qq/sources.nix>
 - Flathub WeChat:
@@ -163,7 +153,7 @@ generation 回滚不恢复应用数据；需要降级时，恢复旧包及升级
 如果微信或 QQ 在当前版本不可用，先回滚安装入口:
 
 - 在 `home/linux/gui/base/misc.nix` 注释掉 `wechat`，并移除其 autostart 条目。
-- 在 `home/linux/gui/base/misc.nix` 注释掉 `nixpaks.qq`。
+- QQ 当前没有安装入口；如需恢复，应重新加入沙箱包装及用户包声明，再校准窗口 app-id 与数据路径。
 - 如需回滚飞书 PipeWire 捕获参数，将 `home/linux/gui/base/misc.nix` 中的 `feishu.override`
   恢复为普通 `feishu`。
 - 如需回滚 Fcitx5 启动去重，移除 `home/linux/gui/base/fcitx5/default.nix` 中的用户级 `Hidden=true`

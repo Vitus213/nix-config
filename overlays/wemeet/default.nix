@@ -4,6 +4,9 @@ let
   legacyHook = builtins.head (
     builtins.match ".*LD_PRELOAD : [^:]*:([^ ]*/lib/wemeet/libhook.so).*" prev.wemeet.preFixup
   );
+  xwaylandWrapper = builtins.head (
+    builtins.match ".*(makeWrapper \\$out/app/wemeet/bin/wemeetapp \\$out/bin/wemeet-xwayland.*)" prev.wemeet.preFixup
+  );
 in
 {
   wemeet = prev.wemeet.overrideAttrs (old: {
@@ -16,7 +19,7 @@ in
       '';
     preFixup =
       builtins.replaceStrings
-        [ legacyHook "--set XDG_SESSION_TYPE x11" ]
+        [ legacyHook "--set XDG_SESSION_TYPE x11" "$out/bin/wemeet-xwayland" ]
         [
           "${capture}/lib/libwemeet-capture.so"
           # NVIDIA EGL 在 XWayland 视频窗口上 eglCreateWindowSurface 返回
@@ -31,12 +34,9 @@ in
                           export __EGL_VENDOR_LIBRARY_FILENAMES=$vendor __GLX_VENDOR_LIBRARY_NAME=mesa
                         fi
                       fi' --set XDG_SESSION_TYPE x11''
+          "$out/bin/wemeet"
         ]
-        old.preFixup
-      + ''
-        rm "$out/bin/wemeet"
-        ln -s wemeet-xwayland "$out/bin/wemeet"
-      '';
+        xwaylandWrapper;
     passthru = (old.passthru or { }) // {
       desktopCapture = capture;
     };

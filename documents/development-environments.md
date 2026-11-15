@@ -22,9 +22,11 @@ Python 保留已有的 NumPy、pandas、requests、pyquery、PyYAML、boto3 和 
 ## 路径与使用
 
 Go 使用 `programs.go` 安装，`GOPATH` 固定为 `~/go`；Home Manager 生成
-`~/.config/go/env`。新增 Go 设置写回 `programs.go.env`，避免对该只读文件执行 `go env -w`。Bash 已有
-`~/go/bin` 和 `~/.cargo/bin`，Apollo、Athena 的 Nushell 也补齐这两个目录，
-`go install`、`cargo install` 安装的用户命令可以直接调用。
+`~/.config/go/env`。新增 Go 设置写回 `programs.go.env`，避免对该只读文件执行
+`go env -w`。Bash 与 Nushell 统一追加
+`~/.local/bin`、`~/.cache/.bun/bin`、`~/.bun/bin`、`~/go/bin`、
+`~/.cargo/bin`、`~/.npm/bin`，保留原 PATH；`go install`、`cargo install`
+及用户 npm/Bun 命令可直接调用。
 
 Rust 使用 Nixpkgs 配套组件；`rust-analyzer` 包的 wrapper 已提供标准库源码。不需要执行
 `rustup component add`。需要 nightly、额外 target 或项目指定编译器时，在项目的 `devShell`
@@ -69,9 +71,10 @@ Manager 激活成功，四种语言的实机程序均已运行。Apollo 本轮�
 - 生成的 Nushell 环境确认 `JAVA_HOME` 和 Go/Cargo 用户命令路径；`just test` 返回
   `true`，两个修改过的 Nix 文件通过 `nixfmt --check`。
 
-Athena 实机执行 Go、Rust、Java 程序及 Python 常用库导入均通过；跳过已有 Zellij 自动启动后，Nushell 确认
-`JAVA_HOME` 有效，Go/Cargo 用户命令路径齐全。SSH 无 TTY 的 login
-Nushell 会触发 Zellij 的 raw-mode 错误，不是语言工具链失败。Maven 验证不包含从中央仓库下载插件。
+Athena 实机执行 Go、Rust、Java 程序及 Python 常用库导入均通过；当时跳过 Zellij 自动启动后，Nushell 确认
+`JAVA_HOME` 有效，Go/Cargo 用户命令路径齐全。无 TTY 的 SSH login 曾触发 Zellij
+raw-mode 错误；当前已加入交互及 stdin/stdout
+TTY 条件，完整生成配置启动与控制 PTY/非 TTY 分支验证通过，Athena 尚未部署新条件。Maven 验证不包含从中央仓库下载插件。
 
 回滚时从 `dev-tools.nix`
 移除对应工具及环境设置，再重新部署。不要把语言包同时放回编辑器配置而保留开发工具文件中的重复安装。项目目录、虚拟环境和语言缓存不自动删除。

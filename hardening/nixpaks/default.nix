@@ -9,10 +9,6 @@ let
       inherit (pkgs) lib;
       inherit pkgs;
     };
-    safeBind = sloth: realdir: mapdir: [
-      (sloth.mkdir (sloth.concat' sloth.appDataDir realdir))
-      (sloth.concat' sloth.homeDir mapdir)
-    ];
   };
   wrapper = _pkgs: path: (_pkgs.callPackage path callArgs);
 in
@@ -21,7 +17,6 @@ in
   nixpkgs.overlays = [
     (_: super: {
       nixpaks = {
-        qq = pkgs.callPackage ./qq.nix (callArgs // { qq = pkgs.qq; });
         telegram-desktop = wrapper super ./telegram-desktop.nix;
       };
     })

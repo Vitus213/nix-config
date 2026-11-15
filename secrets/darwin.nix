@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   agenix,
   mysecrets,
@@ -30,7 +29,7 @@
   age.secrets =
     let
       user_readable = {
-        mode = "0500";
+        mode = "0400";
         owner = myvars.username;
       };
     in
@@ -65,25 +64,4 @@
       // user_readable;
     };
 
-  # place secrets in /etc/
-  # NOTE: this will fail for the first time. cause it's running before "activate-agenix"
-  environment.etc = {
-    # nix-access-tokens is consumed directly by modules/darwin/nix-core.nix via
-    # `config.age.secrets.nix-access-tokens.path`, so it does not need an /etc mount.
-
-    # The following secrets are used by home-manager modules
-    # But nix-darwin doesn't support environment.etc.<name>.mode
-    # So we need to change its mode manually
-    "agenix/alias-for-work.nushell" = {
-      source = config.age.secrets."alias-for-work.nushell".path;
-    };
-  };
-
-  # activationScripts are executed every time you run `nixos-rebuild` / `darwin-rebuild` or boot your system
-  system.activationScripts.postActivation.text = ''
-    alias_path="/etc/agenix/alias-for-work.nushell"
-    if [ -e "$alias_path" ] || [ -L "$alias_path" ]; then
-      /usr/sbin/chown ${myvars.username} "$alias_path" || true
-    fi
-  '';
 }

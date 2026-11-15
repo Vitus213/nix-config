@@ -59,6 +59,9 @@ secrets，最后才正式切换系统。
 
 ## 2. 在 ISO 里准备环境
 
+本仓库也提供 `nix build .#apollo`、`nix build .#generic` 两份桌面 ISO，使用 NixOS 原生
+`system.build.images.iso`，显式启用 EFI 与 USB 混合引导。构建结果不等于已通过实机启动；首次部署优先使用官方安装 ISO，主机专用镜像还包含该主机配置和对应访问前提。
+
 从官方 NixOS ISO 启动后，先进一个带常用工具的 shell:
 
 ```bash
@@ -183,8 +186,10 @@ imports = [
 ```nix
 preservation.enable = true;
 modules.secrets.preservation.enable = true;
-boot.initrd.systemd.enable = true;
 ```
+
+当前 NixOS 已移除 scripted initrd，默认只有 systemd initrd；不再设置旧
+`boot.initrd.systemd.enable`。
 
 `modules.secrets.preservation.enable = true` 很关键。它会让 `secrets/nixos.nix` 里的 agenix 使用:
 
@@ -201,7 +206,6 @@ boot.initrd.systemd.enable = true;
 - `/etc/machine-id`
 - `/etc/ssh/ssh_host_ed25519_key`
 - `/etc/ssh/ssh_host_rsa_key`
-- `/etc/agenix/`
 - `/var/lib/nixos`
 - `/var/lib/systemd`
 - `/home/vitus/.ssh`
@@ -211,6 +215,15 @@ boot.initrd.systemd.enable = true;
 注意: preservation 只负责把这些路径映射到
 `/persistent`。它不会自动把 root 文件系统里已有的内容复制过去。如果 `/home/vitus/nix-config`
 已经存在，但 `/persistent/home/vitus/nix-config` 是空的，正式切换后看到的会是空目录。
+
+Apollo 当前使用普通 ext4 根分区，`/persistent`
+是其中的目录；当前没有清空根目录或回滚快照的启动逻辑。保留 preservation 是为了继续维护已声明的路径映射，并不表示 root 是临时文件系统。
+
+`/etc/agenix/*` 只保留指向 `/run/agenix/*`
+的链接，不再持久化解密后的文件。升级旧配置时，activation 在 agenix 完成后、`/etc` 激活前，确认
+`/etc/agenix` 与 `/persistent/etc/agenix` 是同一个目录后卸载旧 bind
+mount；未知来源或卸载失败会终止激活。旧 `/persistent/etc/agenix` 内容保留，不自动删除；详见
+[Secrets 管理](../secrets/README.md)。
 
 ## 6. 安装系统
 
@@ -421,8 +434,11 @@ could not create target /etc/agenix/nix-access-tokens
 could not create target /etc/agenix/totp-secrets.conf
 ```
 
-如果前面同时有 agenix 解密失败，先修 rekey。`/etc/agenix/*` 是从 `/run/agenix.d/<generation>/*`
-链接过去的，源文件不存在时 `/etc` 阶段自然会失败。
+如果前面同时有 agenix 解密失败，先修 rekey。`/etc/agenix/*` 现在通过 `/etc/static/agenix/*` 链接到
+`/run/agenix/*`，再由 agenix 指向
+`/run/agenix.d/<generation>/*`；文件权限由 age 声明控制。若日志出现
+`Refusing to unmount unknown /etc/agenix source` 或 `umount`
+失败，应检查挂载来源和占用，不要通过重新复制 secret 到 `/persistent` 绕过迁移。
 
 ### 忘了把文件搬到 `/persistent`
 

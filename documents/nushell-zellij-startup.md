@@ -9,9 +9,9 @@
 | 组件    | 版本      | 来源                           |
 | ------- | --------- | ------------------------------ |
 | Nushell | `0.116.1` | 主 `nixpkgs` 的 `pkgs.nushell` |
-| Zellij  | `0.45.1`  | 主 `nixpkgs` 的 `pkgs.zellij`  |
-| fzf     | `0.74.5`  | 主 `nixpkgs` 的 `pkgs.fzf`     |
-| Atuin   | `18.23.0` | 主 `nixpkgs` 的 `pkgs.atuin`   |
+| Zellij  | `0.46.0`  | 主 `nixpkgs` 的 `pkgs.zellij`  |
+| fzf     | `0.75.0`  | 主 `nixpkgs` 的 `pkgs.fzf`     |
+| Atuin   | `18.24.6` | 主 `nixpkgs` 的 `pkgs.atuin`   |
 
 这些组件默认跟随主 `nixpkgs` 输入更新，不在仓库内单独固定版本。artemis 走 `nixpkgs-darwin`
 输入（nixpkgs-unstable），当前为 Nushell `0.115.1`，与 apollo 的更新节奏不同。
@@ -30,7 +30,7 @@ Home Manager（master，2026-10-20 起）的 fzf Nushell 集成直接 `source` f
   widget 被显式关闭，Ctrl-R 归 Atuin history 集成使用。
 - `home/base/tui/shell/default.nix`：加载 `nu_scripts` 中的别名、Kubernetes 辅助模块和 AI
   Agent 快捷命令。
-- `home/base/tui/zellij/default.nix`：启用 Zellij，并在 Nushell 启动后自动进入 Zellij。
+- `home/base/tui/zellij/default.nix`：启用 Zellij；仅交互式 Nushell 且 stdin/stdout 均为 TTY 时自动进入，继续排除 Emacs、已有 Zellij、Herdr 和 Kitty。退出 Zellij 后保留 shell。
 
 ## 启动顺序
 
@@ -39,6 +39,19 @@ Home Manager（master，2026-10-20 起）的 fzf Nushell 集成直接 `source` f
 
 Zellij 自动启动依赖 Nushell 配置先成功解析。如果 Nushell 在解析 `config.nu` 或被 `source`
 的脚本时失败，Zellij 不会进入，终端也会失去 Nushell 中定义的快捷命令。
+
+Bash 与 Nushell 统一保留已有 PATH，并追加 `~/.local/bin`、`~/.cache/.bun/bin`、
+`~/.bun/bin`、`~/go/bin`、`~/.cargo/bin`、`~/.npm/bin`。Nushell 去重，Go/Cargo 路径不再只在四语言开发主机单独追加。
+
+`programs.nushell.loadSessionVariables = false` 明确保留既有会话继承方式；此次不启用 Home Manager
+26.11 新增的启动时 POSIX 环境转换，避免在清理中改变登录环境的加载顺序。
+
+Home Manager 激活脚本中的空 GitHub
+token 只跳过 auth 生成，继续后续激活；token 仍只在运行时读取，不进入 Nix store。`.gitconfig`
+仅自动移除确认是旧 Home Manager generation 的链接，手写文件保留；它若覆盖 XDG
+Git 设置，应由用户合并后再移除。`.npmrc` 和 GitHub token 的非受管文件在 `writeBoundary`
+后、HM 链接前通过 `run`
+备份一次，受管链接不重复备份；已有备份时终止迁移，避免覆盖。dry-run 不移动文件或写入 gh auth。
 
 ## nu_scripts 导入约束
 
@@ -96,7 +109,10 @@ env ZELLIJ=1 INSIDE_EMACS=1 nu -c 'print "nushell config ok"'
 nu -c '"kubectl get pods" | argx parse | to nuon'
 ```
 
-这里设置 `ZELLIJ=1` 和 `INSIDE_EMACS=1` 是为了跳过自动进入 Zellij，避免验证命令启动交互式会话。
+这些环境变量可额外显式跳过 Zellij；非交互 `nu -c` 和无 TTY 的 SSH 也会被自动启动条件排除。
+
+2026-11-15 已启动本轮实际生成的完整
+`config.nu`，退出码为 0、stderr 为空；临时配置与假 Zellij 在控制 PTY 中验证自动启动、`attach -c`、返回后保留 shell，以及 Emacs/Zellij/Herdr/Kitty 四种排除。非交互与无 TTY 分支均未启动假 Zellij；未替换当前终端配置或现有会话。
 
 ## 回滚
 
@@ -122,6 +138,9 @@ Manager 激活，文件链接等后续步骤全部跳过——系统闭包里的
 `$HOME`。Nushell 仍读取旧 generation 的
 `config.nu`，其 atuin 集成由旧版 atuin（18.12.1）生成，包含 Nushell 0.113.1 不支持的
 `job spawn -t atuin`。已改为空命令跳过已就绪场景，不再终止激活。
+
+同类问题也适用于 auth 生成阶段的空 token；当前 `configureGhAuth` 使用局部条件跳过，不执行顶层
+`exit`。
 
 判定文件是否真的部署：查看 `~/.config/nushell/config.nu`
 的修改时间。若停留在上一次成功激活的日期，说明 Home Manager 文件阶段未执行（可对比

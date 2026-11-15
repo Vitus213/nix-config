@@ -15,7 +15,6 @@
       # https://github.com/utdemir/nix-tree
       nix-tree # A TUI to visualize the dependency graph of a nix derivation
 
-      gnupg
       caddy # A webserver with automatic HTTPS via Let's Encrypt(replacement of nginx)
     ])
     ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) (
@@ -62,7 +61,6 @@
       };
       updates = {
         auto_update = false;
-        auto_update_interval_hours = 720;
       };
     };
   };

@@ -16,6 +16,8 @@ WebKit。Apollo、Athena、Artemis 均为客户端；Artemis 当前离线，尚�
 - J1900 `/home/vitus/.config/magpie`：唯一权威的上游、路由、调用方 key、订阅登录状态。
 - `home/base/core/omp-sync.py`、`omp-models.yml.in`：客户端地址选择与动态目录声明。
 - Athena 原 `magpie.nix` 导入和服务声明已删除；旧数据仅作回滚点，不得与新实例双活。
+- 本仓库未被消费的 `overlays/magpie/` 已删除；不会卸载或修改 J1900 的官方产物、服务、状态或 OMP
+  provider。
 
 | 项目     | 值                                                                               |
 | -------- | -------------------------------------------------------------------------------- |

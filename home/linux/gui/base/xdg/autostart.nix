@@ -11,6 +11,7 @@
   xdg.autostart.entries = [
     # 登录只开一个 kitty 窗口。
     "${pkgs.kitty}/share/applications/kitty.desktop"
+    "${pkgs.tern-stencil}/share/applications/so.stencil.tern.desktop"
 
     # FlClash 不随登录自启动（应用内管理），需要时手动启动。
     # 旧 clash-verge-rev 条目已随移除删除。

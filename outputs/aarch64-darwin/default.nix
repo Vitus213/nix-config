@@ -25,11 +25,6 @@ outputs
 // {
   inherit data; # for debugging purposes
 
-  # NixOS's unit tests.
-  evalTests = haumea.lib.loadEvalTests {
-    src = ./tests;
-    inputs = args // {
-      inherit outputs;
-    };
-  };
+  # 保留统一输出接口；Darwin 没有独立的行为断言。
+  evalTests = { };
 }

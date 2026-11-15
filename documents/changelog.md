@@ -2,7 +2,84 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-11-16
+
+### 整理累计配置与同步当前验收状态
+
+- 汇总共享配置清理、上游模块迁移、通知与终端启动、SSH 及 Starship 改动，保留各专题的配置入口、回滚和既有验收边界。
+- 修正 Darwin Rime 父目录 `force` 连带绕过用户补丁备份冲突保护的问题；锁定 Home
+  Manager 脚本冒烟覆盖修复前绕过、修复后拒绝及无旧备份放行情形，临时文件已清理。
+- 补回 Apollo/Generic 原生 ISO 的 EFI 与 USB 混合引导参数；两份镜像最终配置和 builder 参数均为
+  `true`，EFI 镜像路径为 `boot/efi.img`，derivation 求值成功；未构建完整 ISO 或进行启动测试。
+- 更新 Apollo 当前运行状态：内核 `6.18.63`、NVIDIA 模块 `595.112.07`，CDI
+  generator 执行成功，解除此前待重启说明。
+- 本轮验证：`just test` 返回
+  `true`，变更的 Nix 文件格式检查、安装后的 Niri 配置校验通过；清理 Niri 源配置末尾多余空行。
+- 本轮未升级依赖或切换系统；新 PAM helper 本人密码复测和 Artemis 完整求值仍按原记录保留待验收边界。
+- 关联文档：[清理与部署记录](./host-shared-modules.md#维护与验证)、[内核策略](./nixos-kernel.md)、[Noctalia](./noctalia-v5.md)、[Starship](./starship.md)、[Rime 文件保护](./fcitx5-rime-input-method.md)。
+
+### Starship 目录扫描超时调整
+
+- 共享入口 `home/base/core/starship.nix` 设置 `scan_timeout = 100`
+  毫秒，缓解目录扫描超过默认 30 毫秒的警告。
+- 本机 `~/.config/starship.toml` 已同步并保留 Nix
+  store 符号链接；未执行整机切换，其他主机随正常部署生效。
+- 验证：Starship 1.27.0 实际读取值与 Nix 模块求值均为
+  `100`；主目录及仓库提示符渲染成功，无扫描超时警告。
+- 关联文档：[Starship 提示符](./starship.md)。
+
 ## 2026-11-15
+
+### DragonOS Lab SSH 别名
+
+- 新增共享 `ssh lab` 配置：dragonos@100.64.0.4:2222，使用本机设备私钥及独立固定 host
+  key 文件，禁止 agent 转发。
+- Apollo、Athena、Artemis 当前 SSH 配置已同步；三台实际登录并读取 Incus
+  6.0.6/profile 成功，未创建实例或重建系统。
+- 关联文档：[SSH 管理](./homelab-ssh-key-romantic.md)。
+
+### Apollo 完整构建并切换清理后配置
+
+- 本机完整系统和 Home Manager 已构建；运行系统与开机 profile 均为
+  `96ns5xgjl1qwkv9nj9by3qln171m4dn1`，generation 85，Home Manager 激活成功。
+- Noctalia、Dux、音频、portal 服务及桌面 IPC 正常；secret 运行时链接迁移完成，目标
+  `vitus:users 0400` 且可读；历史副本保留。
+- `switch` 返回 4：唯一失败服务为 NVIDIA CDI generator，旧已加载模块 `595.104.02` 与新用户态
+  `595.112.07` 不匹配，需重启加载新内核 `6.18.63`；未自动重启，未进行密码解锁复测。
+- 下载问题使用本次命令 HTTP/1、fallback 和同 hash Go
+  vendor 镜像解决，未修改配置版本；其他主机未部署。
+- 关联文档：[部署与验证记录](./host-shared-modules.md#维护与验证)、[Secrets](../secrets/README.md)、[锁屏 PAM](./lockscreen-pam.md)。
+
+### 全仓清理死代码、迁移残留与上游覆盖
+
+- 影响范围：六个主机输出、Linux/Darwin、共享终端、编辑器、应用沙箱、持久化与维护入口；保留已有 Tern 自启动、工作区通知红点、四语言开发及家庭服务。
+- 退役：nuenv/nixos-generators/Dux 独立 input，空模块、未启用 hardening、QQ 包装、Guix/Flatpak/davfs、Helix
+  Steel、旧 Darwin Hindsight 与无消费者 Magpie 打包；不删除应用数据、容器卷或历史 secret 副本。
+- 上游迁移：NixOS 原生镜像和 Dux 模块；nixpkgs 提供微信基础配方、Croc、ccusage、Rime
+  Ice；Catppuccin 使用已修复配方；Noctalia 使用正式 PAM helper，保留工作区样式和 Niri
+  SHM 必要补丁；Home Manager 采用正式 GTK2 缓存淘汰修复，停用 GTK2 配置。
+- 行为修正：TOTP 真实错误码和复制失败处理、空 GitHub
+  token 不再终止激活、受管文件迁移只备份一次、Zellij 仅交互 TTY 自动进入；secret 保留 `/etc`
+  入口，改为运行时链接与 `0400`。
+- 桌面收敛：删除误装 Notion
+  WM、旧外部桌面工具及重复安装；截图统一 Niri/Noctalia，录屏保留 OBS 和 PipeWire 音频插件，高级场景需重加对应插件。
+- 维护：更新不再自动 commit，包源 policy 接入
+  `just test`/CI，内核与固定桌面 PAM 断言替代浅接线检查；删除未导出模板、执行完的旧计划和 Python 缓存产物；Preservation 采用正式 initrd 兼容修复；Avahi 迁移原生键，JACK 改用
+  `pw-jack`。
+- 验证与部署：`just test`、四个 NixOS/Hermes 和两份 ISO
+  derivation 求值、Noctalia/capture 构建与定向运行检查通过；Apollo 全应用构建及 Artemis 完整求值受下载断流阻塞，详见关联记录；未执行系统切换、服务重启或真实 secret 迁移。
+- 关联文档：[清理范围与回滚](./host-shared-modules.md)、[应用维护边界](./application-version-audit.md)、[Secrets](../secrets/README.md)、[Noctalia](./noctalia-v5.md)、[启动链路](./nushell-zellij-startup.md)、[屏幕共享与 OBS](./wayland-screen-sharing.md)。
+
+### Tern 登录自启动并进入工作区 1
+
+- 影响范围：Apollo、Athena 的 Niri 桌面及 Artemis 的 AeroSpace；保留现有终端快捷键。
+- 配置入口：`home/linux/gui/base/xdg/autostart.nix`、`home/linux/gui/niri/conf/windowrules.kdl`、
+  `home/darwin/aerospace/aerospace.toml`。
+- 行为：Linux 登录启动 Tern 并最大化到 `1terminal`；macOS 随 AeroSpace 启动并平铺到 `1Terminal`。
+- 部署：两台 Linux 用户自启动条目已安装，窗口规则已同步；macOS 配置已同步并 reload。
+- 验证：Niri 配置校验、Linux 两台运行窗口位于 `1terminal`、AeroSpace reload 通过；macOS
+  Tern 进程已运行，AeroSpace 未枚举其窗口，位置尚未实测；未重启机器。
+- 关联文档：[Tern 登录自启动](./tern-research.md#登录自启动与工作区-1)、[AeroSpace](./aerospace-usage.md)。
 
 ### 通过 Nix 安装 Stencil Tern 0.9.21
 
@@ -17,6 +94,28 @@
 - 关联文档：[Stencil Tern 安装与配置](./tern-research.md)。
 
 ## 2026-11-13
+
+### BoxLite 新功能前默认调研同类源码
+
+- 影响范围：本机 OMP 个人规则；新增 BoxLite 能力默认先调研用户指定的21项沙箱、平台、VMM与绑定库，普通错别字和格式维护不自动触发。
+- 入口：`~/.omp/agent/RULES.md` 与
+  `~/agent-assets/skills/self/good/boxlite-feature-research/`；后者链接到
+  `~/.agents/skills/boxlite-feature-research`。另安装 Anthropic 官方 `skill-creator`
+  供创建、评估和迭代技能。
+- 证据契约：区分已实现、部分实现、未找到、不适用与证据不足；肯定结论追到固定版本执行源码，机制用简约 Mermaid 图及逐边引用说明。
+- 验证：OMP 新进程可解析技能，结构校验与临时打包完整性检查通过；21项原名单核对及触发/不确定证据场景通过。另将范围显式缩到 Firecracker 快照，完成固定提交源码与9边时序图试跑，并据此澄清缩小范围及追到原语的停止边界；未运行 Firecracker 或渲染图，也未执行21项目全量功能调研。
+- 持久性：仅本机规则及个人资产文件已修改，未提交、推送或随 Nix 部署；换机需要恢复资产与调用规则。
+- 关联文档：[BoxLite 默认源码调研](./omp-models.md#boxlite-新功能默认源码调研)。
+
+### 桌面通知自动触发工作区红点
+
+- 影响范围：共享 Noctalia 桌面模块；OMP/Herdr 通知提醒 `1terminal`，Slack/微信等聊天通知提醒
+  `6chat`；进入对应工作区清点，当前工作区跳过，弹窗超时保留。
+- 配置入口：`home/linux/gui/base/noctalia/notification-alerts.nix`、`notification-alerts.py`，由
+  `default.nix` 导入；一个用户服务旁路监听 D-Bus Notify，沿用 Noctalia 原生 workspace alert。
+- 部署：Apollo 已构建并启用生成的用户单元，未整机 switch；其他加载模块的主机随下次部署生效。
+- 验证：`just test`、Nix 格式检查、包和用户单元构建通过；本地通知实测出点、超时保留、进入清除、当前工作区忽略、Herdr 通知和服务重启后的微信来源/替换通知；截图确认红点出现及消失。
+- 关联文档：[工作区通知红点](./noctalia-workspace-urgent.md#收到通知自动留红点2026-11-13)、[服务与 IPC](./noctalia-ipc.md)。
 
 ### 整理全部变更并部署 Athena
 

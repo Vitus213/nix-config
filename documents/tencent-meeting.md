@@ -81,8 +81,9 @@
 wemeet
 ```
 
-当前 Nixpkgs 包从腾讯官方 CDN 获取 `3.26.10.401` deb。仓库的 `wemeet` 命令实际调用原包的
-`wemeet-xwayland`；原桌面条目 `Exec=wemeet %u` 和会议 URI handler 因此自动使用同一路径。
+当前 Nixpkgs 包从腾讯官方 CDN 获取 `3.26.10.401` deb。overlay 只提取上游 XWayland
+wrapper 的生成命令，直接生成统一的 `wemeet` 入口，不再先生成普通入口再删除并链接；桌面条目和会议 URI
+handler 继续使用同一路径。
 
 2026-10-29 在 Apollo 上以临时 `HOME` 做相同环境对照：原包 `wemeet` 继承 `QT_QPA_PLATFORM=wayland`
 后运行 90 秒仍未创建可见窗口；`wemeet-xwayland` 创建了 `app-id="wemeetapp"`
@@ -133,6 +134,10 @@ fd 连接精确节点，优先提供实际 EGL 支持的 RGB DMA-BUF
 modifier，并提供 SHM 格式。GPU 读回在独立 worker 上完成，处理裁剪、变换、通道、stride 和保持比例的缩放，再写入客户端请求的 XImage。最多约 30
 FPS；间隔内最后一帧保留到下次 worker
 tick，避免桌面停止变化后画面停在旧内容。停止、portal 取消、节点消失和格式切换均释放相应缓冲和会话。
+
+GPU shader 的 `source` uniform location 仅在链接后查询一次，不在每帧查找。未被消费的
+`Capture::error()` / `frame_count()`
+已移除；内部帧计数、失败记录及停止日志继续保留。PipeWire 只通过 portal 返回的有效 fd 连接，不再保留不可达的默认服务器回退；OpenCV 依赖、SHM/DMA-BUF 及采集主题功能未删。
 
 腾讯会议的 `linux_qt::ShadeLine`、`linux_qt::TrackerWidget`
 在 xwayland-satellite 下曾变成八张绿色大窗口。新库仅在 Wayland 模式抑制这两个边框类；共享状态条是另一类窗口，保留可见。
@@ -213,9 +218,9 @@ REA/Ghidra 对这份厂商构建的反汇编确认：`wemeet_common::utils::reco
 ## 版本与来源
 
 - 腾讯会议官网：<https://meeting.tencent.com/>
-- 当前主 Nixpkgs 修订：`55bfb4d7437bd4e09ab7cba58a43bd68eb310044`
+- 当前主 Nixpkgs 修订：`d5cc6833999746cffdfe0598f7bc801a57b887a9`
 - 对应 Nixpkgs 包定义：
-  <https://github.com/NixOS/nixpkgs/blob/55bfb4d7437bd4e09ab7cba58a43bd68eb310044/pkgs/by-name/we/wemeet/package.nix>
+  <https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/we/wemeet/package.nix>
 - Niri 官方共享要求：<https://github.com/niri-wm/niri/blob/v26.04/docs/wiki/Screencasting.md>
 - SHM 上游修复：<https://github.com/niri-wm/niri/pull/1791>
 - 社区 SHM 回移实例：<https://github.com/jetjinser/flake/blob/main/troisModules/nixos/config.nix>
@@ -224,6 +229,9 @@ REA/Ghidra 对这份厂商构建的反汇编确认：`wemeet_common::utils::reco
 - 旧 hook 归档说明：<https://github.com/xuwd1/wemeet-wayland-screenshare#--deprecation-notice-->
 
 `wemeet` 是闭源、`unfree` 软件。仓库已有允许所需非自由软件的 Nixpkgs 策略，本次不新增许可证例外。
+
+主题依赖 `3.26.10.401`
+的固定二进制布局，不能独立升级腾讯会议版本；升级前必须重新分析主题字节布局和全部兼容补丁。2026-11-15 清理只改变构建接线与无用接口，未部署或重新进行会议验收。
 
 ## 验证
 

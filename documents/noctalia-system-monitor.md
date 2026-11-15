@@ -27,9 +27,8 @@
 `sampledAtMs` 和三项数值，否则显示 `—`
 与“系统负载暂无样本”。负载是运行队列相关的平均值，不是 CPU 百分比。
 
-原生项左键使用默认系统页入口，本地 load 明确设置 `panel-toggle control-center system`，对应命令为
-`noctalia msg panel-toggle control-center system`。六项右键共用外部监控程序回退链：优先 Resources，然后 Mission
-Center，再依次尝试已配置的其他桌面系统监控器；完整 argv 以各项 `.actions.right` 为准。
+六项右键统一使用 Shell 内建系统页 `panel-toggle control-center system`，对应命令为
+`noctalia msg panel-toggle control-center system`。原生项左键使用默认系统页入口，本地 load 也显式设置相同左键动作。不再尝试未安装的十一种外部系统监控器。
 
 ## 采样与阈值
 

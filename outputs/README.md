@@ -53,18 +53,33 @@ outputs/
 
 新增主机时优先复制相近主机文件，再改 `name`、模块列表和必要的主机差异。
 
+Apollo 和 Generic 的 ISO 包直接使用 NixOS 原生 `config.system.build.images.iso`，不再注入
+`nixos-generators`
+的所有格式模块。共享参数只透传 inputs、mylib 和 myvars，媒体包使用主机同一包集。两份主机输出在
+`image.modules.iso.isoImage` 显式设置 `makeEfiBootable = true` 与
+`makeUsbBootable = true`，保留原生成器的 UEFI 和 USB 混合引导能力；这些参数只影响 ISO 变体。
+
 ## 测试
 
 当前主要使用 eval tests。它不会构建完整机器，但能快速确认关键属性是否符合预期。
 
+保留的断言覆盖内核主次版本必须为 `6.18`、固定桌面集合 Apollo/Athena/Generic 的专用 PAM 栈，以及 Home
+Manager 的 SSH
+secret 主机边界。PAM 服务缺失会直接失败，不通过过滤配置缩小被测集合。仅比较主机名、固定家目录或重复接线属性的测试已删除。haumea 导入器仍保留各平台测试输出结构。
+
 运行所有 eval tests:
 
 ```bash
-nix eval .#evalTests --show-trace --print-build-logs --verbose
+just test
+# 或显式把 false 转为失败退出状态：
+nix eval .#evalTests --apply 'passed: assert passed; passed' --show-trace
 ```
 
 NixOS VM tests 暂未作为主路径使用。原因是完整主机依赖私有 agenix
 secrets 和主机专属 key，直接跑整机测试成本较高。
+
+纯求值不能替代 Home Manager activation
+smoke、Linux 采集/PAM 构建或 Darwin 平台求值；特别是 activation 才触发的 PATH 冲突和平台包可用性，需单独验收。测试不执行系统切换。
 
 ## 参考
 

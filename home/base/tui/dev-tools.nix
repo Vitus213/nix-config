@@ -59,7 +59,6 @@ in
     with pkgs;
     [
       just
-      colmena # nixos's remote deployment tool
       google-cloud-sdk
       # herdr 使用官方用户级安装，配置由下方 activation 管理。
       tokei
@@ -107,10 +106,9 @@ in
       gradle_8
     ];
 
-  # Nushell 不保证继承 Bash 的 PATH，补齐 go/cargo install 的用户命令目录。
+  # Java's home is host-specific; user command paths are shared in core/shells.
   programs.nushell.extraEnv = lib.mkIf developmentHost ''
     $env.JAVA_HOME = "${config.programs.java.package.home}"
-    $env.PATH = ($env.PATH | append ["${config.home.homeDirectory}/go/bin" "${config.home.homeDirectory}/.cargo/bin"] | uniq)
   '';
 
   # 写入可写的 config.toml：基础内容 + 保留现有文件中 herdr-radar 的托管块

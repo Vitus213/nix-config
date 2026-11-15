@@ -1,13 +1,7 @@
 {
   xdg.configFile."mimeapps.list".force = true;
 
-  # manage $XDG_CONFIG_HOME/mimeapps.list
-  # xdg search all desktop entries from $XDG_DATA_DIRS, check it by command:
-  #  echo $XDG_DATA_DIRS
-  # the system-level desktop entries can be list by command:
-  #   ls -l /run/current-system/sw/share/applications/
-  # the user-level desktop entries can be list by command:
-  #  ls /etc/profiles/per-user/$USER/share/applications/
+  # Default handlers for xdg-open and application URL schemes.
   xdg.mimeApps = {
     enable = true;
     # let `xdg-open` to open the url with the correct application.
@@ -20,7 +14,6 @@
           "nvim.desktop"
           "Helix.desktop"
           "code.desktop"
-          "code-insiders.desktop"
         ];
       in
       {
@@ -49,11 +42,7 @@
         "x-scheme-handler/https" = browser;
         # https://github.com/microsoft/vscode/issues/146408
         "x-scheme-handler/vscode" = [ "code-url-handler.desktop" ]; # open `vscode://` url with `code-url-handler.desktop`
-        "x-scheme-handler/vscode-insiders" = [ "code-insiders-url-handler.desktop" ]; # open `vscode-insiders://` url with `code-insiders-url-handler.desktop`
         "x-scheme-handler/zoommtg" = [ "Zoom.desktop" ];
-
-        # all other unknown schemes will be opened by this default application.
-        # "x-scheme-handler/unknown" = editor;
 
         "x-scheme-handler/tg" = [ "org.telegram.desktop.desktop" ];
 
@@ -67,9 +56,5 @@
 
         "inode/directory" = [ "dev.duxlabs.files.desktop" ];
       };
-
-    associations.removed = {
-      # ......
-    };
   };
 }

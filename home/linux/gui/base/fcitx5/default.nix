@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 let
   ximRecovery = pkgs.writeShellApplication {
     name = "fcitx5-xim-recover";
@@ -38,8 +38,6 @@ in
       Name=Fcitx 5
       Hidden=true
     '';
-    "mozc/config1.db".source =
-      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nix-config/home/linux/gui/base/fcitx5/mozc-config1.db";
   };
   xdg.dataFile."fcitx5/rime/default.custom.yaml" = {
     source = ./default.custom.yaml;
@@ -82,17 +80,7 @@ in
       qt6Packages.fcitx5-configtool # GUI for fcitx5
       fcitx5-gtk # gtk im module
 
-      # Chinese
-      fcitx5-rime # for Rime Ice chinese input method
-      # fcitx5-chinese-addons # we use rime instead
-
-      # Japanese
-      # ctrl-i / F7 - convert to takakana
-      # ctrl-u / F6 - convert to hiragana
-      fcitx5-mozc-ut # Moze with UT dictionary
-
-      # Korean
-      fcitx5-hangul
+      fcitx5-rime # Rime Ice with the double_pinyin_flypy schema
     ];
   };
 }

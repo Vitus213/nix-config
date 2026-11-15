@@ -9,3 +9,5 @@ core*
 !core/
 !core.nix
 !coredns*
+__pycache__/
+*.py[cod]

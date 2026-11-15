@@ -9,21 +9,8 @@ let
   mylib = import ../lib { inherit lib; };
   myvars = import ../vars { inherit lib; };
 
-  # Add my custom lib, vars, nixpkgs instance, and all the inputs to specialArgs,
-  # so that I can use them in all my nixos/home-manager/darwin modules.
-  genSpecialArgs =
-    system:
-    inputs
-    // {
-      inherit mylib myvars;
-
-      pkgs-x64 = import nixpkgs {
-        system = "x86_64-linux";
-
-        # To use chrome, we need to allow the installation of non-free software
-        config.allowUnfree = true;
-      };
-    };
+  # Make shared variables and flake inputs available to all module constructors.
+  genSpecialArgs = _system: inputs // { inherit mylib myvars; };
 
   # This is the args for all the haumea modules in this folder.
   args = {

@@ -5,8 +5,8 @@
 ## 当前方案
 
 - 主 `nixpkgs` 输入跟踪 `nixos-unstable`，具体锁定版本以 `flake.lock` 为准。
-- `apollo` 和 `generic` 显式固定到 **6.18 LTS**：`pkgs.linuxPackages_6_18`。2026-10-19 求值版本为
-  `6.18.56`，NVIDIA 驱动 `595.104.02`。
+- `apollo` 和 `generic` 显式固定到 **6.18 LTS**：`pkgs.linuxPackages_6_18`。2026-11-16
+  Apollo 实际运行版本为 `6.18.63`，NVIDIA 模块为 `595.112.07`。
 - rEFInd 当前只保留最新 1 个 NixOS generation；内核升级测试前应临时调高（见下文“验证方式”）。
 - `nixos-unstable` 更新移除了旧的 `services.kmscon.fonts` 和 `services.kmscon.extraConfig`
   选项；当前仓库已迁移到 `services.kmscon.config.font-name`、`font-size` 和 `hwaccel`。
@@ -41,6 +41,9 @@ boot.kernelPackages = pkgs.linuxPackages_6_18;
 
 NixOS 的 `boot.kernelPackages` 会同时切换内核以及依赖当前内核构建的包。`hosts/_shared/nvidia.nix`
 里的 NVIDIA 驱动保持跟随 `config.boot.kernelPackages`，不单独指定驱动包。
+
+`outputs/x86_64-linux/tests/kernel` 断言每台 NixOS 主机实际内核的 `majorMinor` 为 `6.18`，不再把
+`kernel.system = x86_64-linux` 当作内核版本回归检查。补丁版本继续随 nixpkgs 的 LTS 安全更新。
 
 ## 升级流程
 

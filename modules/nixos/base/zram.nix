@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, ... }:
 {
   # Enable in-memory compressed devices and swap space provided by the zram kernel module.
   # By enable this, we can store more data in memory instead of fallback to disk-based swap devices directly,
@@ -21,7 +21,7 @@
   };
 
   # Optimizing swap on zram
-  boot.kernel.sysctl = {
+  boot.kernel.sysctl = lib.mkIf config.zramSwap.enable {
     # vm.swappiness - Controls kernel preference for swapping (range: 0-200, default: 60)
     # For in-memory swap devices like zram/zswap, values above 100 are recommended.
     "vm.swappiness" = 180;

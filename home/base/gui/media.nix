@@ -1,6 +1,5 @@
 {
   pkgs,
-  config,
   ...
 }:
 # processing audio/video

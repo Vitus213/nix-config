@@ -1,10 +1,6 @@
-{ myvars, ... }:
+{ ... }:
 let
-  username = myvars.username;
-  mk = sshHasHomelabBlock: {
-    homeDirectory = "/home/${username}";
-    inherit sshHasHomelabBlock;
-  };
+  mk = sshHasHomelabBlock: { inherit sshHasHomelabBlock; };
 in
 {
   apollo = mk true;

@@ -12,7 +12,7 @@ let
   cfg = config.modules.secrets;
 
   user_readable = {
-    mode = "0500";
+    mode = "0400";
     owner = myvars.username;
   };
 in
@@ -82,43 +82,49 @@ in
       // user_readable;
     };
 
-    # place secrets in /etc/
+    system.activationScripts = mkIf cfg.preservation.enable {
+      retirePersistedAgenix = {
+        deps = [ "agenix" ];
+        text = ''
+          if ${pkgs.util-linux}/bin/mountpoint -q /etc/agenix; then
+            if [ ! /etc/agenix -ef /persistent/etc/agenix ]; then
+              echo "Refusing to unmount unknown /etc/agenix source" >&2
+              exit 1
+            fi
+            # Retain historical copies at /persistent/etc/agenix; never remove data.
+            ${pkgs.util-linux}/bin/umount /etc/agenix || exit 1
+          fi
+        '';
+      };
+      etc.deps = [ "retirePersistedAgenix" ];
+    };
+
+    # Keep consumer paths stable; plaintext lives only in agenix's runtime filesystem.
     environment.etc = {
       "agenix/nix-access-tokens" = {
         source = config.age.secrets."nix-access-tokens".path;
-        mode = "0400";
-        user = myvars.username;
       };
 
       "agenix/github_token" = {
         source = config.age.secrets."github_token".path;
-        mode = "0400";
-        user = myvars.username;
       };
 
       "agenix/ssh-key-romantic" = {
         source = config.age.secrets."ssh-key-romantic".path;
-        mode = "0600";
-        user = myvars.username;
       };
 
-      # Used by home-manager modules, so both the file and the symlink must be readable by the user.
+      # Home Manager consumers retain the same /etc entry points.
       "agenix/alias-for-work.nushell" = {
         source = config.age.secrets."alias-for-work.nushell".path;
-        mode = "0644";
       };
 
       # Used by noctalia TOTP scripts via ~/.config/totp/secrets.conf symlink.
       "agenix/totp-secrets.conf" = {
         source = config.age.secrets."totp-secrets.conf".path;
-        mode = "0400";
-        user = myvars.username;
       };
 
       "agenix/wakatime-api-key" = {
         source = config.age.secrets."wakatime-api-key".path;
-        mode = "0400";
-        user = myvars.username;
       };
     };
   };

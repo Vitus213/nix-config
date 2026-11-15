@@ -10,8 +10,8 @@ in
 prev.lib.optionalAttrs (builtins.elem system supported) {
   noctalia = noctalia.packages.${system}.default.overrideAttrs (oldAttrs: {
     patches = (oldAttrs.patches or [ ]) ++ [
-      ./dedicated-pam.patch
       ./workspace-states.patch
     ];
+    mesonFlags = (oldAttrs.mesonFlags or [ ]) ++ [ "-Dpam_service=noctalia-lock" ];
   });
 }

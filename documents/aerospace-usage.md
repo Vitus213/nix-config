@@ -32,7 +32,8 @@
 
 ## 2. 启动、确认它是否在工作
 
-当前配置启用了开机自启，所以正常情况下登录 macOS 后 AeroSpace 会自动启动。
+当前配置启用了开机自启，所以正常情况下登录 macOS 后 AeroSpace 会自动启动。Tern 随 AeroSpace 启动打开，窗口以平铺方式进入
+`1Terminal`；启动目标是 `~/Applications/Tern.app`。
 
 如果你怀疑它没有起来，可以手动启动:
 
@@ -388,6 +389,7 @@ Option + Shift + Tab
 - 启动快捷键打开的是 `Ghostty`
 - `Ghostty` 和 `Kitty` 都会自动进入 `1Terminal`
 - `Ghostty` 还会显式使用平铺布局
+- `Tern` 随登录启动，也会平铺进入 `1Terminal`
 
 所以现在按 `Option + Enter`，终端会直接进入终端工作区并参与平铺。
 

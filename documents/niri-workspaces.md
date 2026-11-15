@@ -6,14 +6,14 @@
 
 | 工作区      | 语义         | 自动进入的应用                                |
 | ----------- | ------------ | --------------------------------------------- |
-| `1terminal` | 终端 / Agent | `kitty`、`Delta`                              |
+| `1terminal` | 终端 / Agent | `kitty`、`Delta`、`Tern`                      |
 | `2browser`  | 浏览器       | `Zen`、`Chrome`                               |
-| `3docs`     | 文档笔记     | `Obsidian`、`Apostrophe`、Notion、Linear      |
+| `3docs`     | 文档笔记     | `Obsidian`、Notion、Linear                    |
 | `4codex`    | Codex GUI    | `ChatGPT`、`Codex`、`Claude` 等 AI 图形客户端 |
 | `5code`     | 代码编辑器   | `VSCode`、`Cursor`、`Zed`                     |
-| `6chat`     | 聊天沟通     | `Slack`、`Telegram`、飞书、微信、QQ           |
+| `6chat`     | 聊天沟通     | `Slack`、`Telegram`、飞书、微信               |
 | `7misc`     | 空白暂存     | 无固定分配，临时窗口随手放                    |
-| `8music`    | 音乐         | QQ 音乐、网易云音乐                           |
+| `8music`    | 音乐         | 手动放置音乐窗口，保留工作区与快捷键          |
 | `9file`     | 文件/阅读    | `Foliate`、`Dux Files`、`Sioyek`              |
 | `0other`    | 其他工具     | `FlClash`、`Zoom`、腾讯会议                   |
 
@@ -93,9 +93,10 @@ Linux 图形文件管理器使用 Dux Files `2.1.2`，命令为
 | 新窗口                 | app-id `dev.duxlabs.files`，进入 `9file`   |
 | 打开终端               | 自动识别已安装的 kitty                     |
 
-配置入口：`flake.nix` 的 `dux-files` input 固定 `v2.1.2`，依赖跟随主 `nixpkgs`；
-`modules/nixos/desktop/file-manager.nix` 导入官方 NixOS 模块，安装 Dux 与 Quickshell，启用图形会话的
-`dfiles.service` 并强制原生 Wayland。服务 PATH 包含系统和用户应用，避免“打开终端”和 Open
+配置入口：`modules/nixos/desktop/file-manager.nix` 使用 nixpkgs 内置的 `programs.dux-files`
+模块，包版本随主 `nixpkgs`（此次为
+`2.1.2`），不再引入项目独立 flake。包的 wrapper 提供 Quickshell，启用图形会话的 `dfiles.service`
+并强制原生 Wayland。服务 PATH 包含系统和用户应用，避免“打开终端”和 Open
 With 在后台启动时找不到程序。目录 MIME 默认关联在
 `home/linux/gui/base/xdg/mime.nix`，快捷键和窗口规则仍在本专题列出的 KDL 文件。
 
@@ -156,6 +157,10 @@ Mod + 0    0other
 ```
 
 使用 `Mod + Ctrl + 数字` 把当前 column 移动到对应工作区。
+
+截图使用 Niri 内建快捷键：`Print` 选区、`Ctrl+Print` 整屏、`Alt+Print` 当前窗口；截图保存到
+`~/Pictures/Screenshots/`，Noctalia 继续提供桌面剪贴板。不再额外安装 grim、slurp、satty。录屏统一使用 OBS，见
+[屏幕共享与 OBS](./wayland-screen-sharing.md#obs)。媒体键通过 Noctalia 控制 MPRIS；mpv 的 MPRIS 插件保留，不再运行 playerctld 或依赖 playerctl。
 
 使用 `Mod + Shift + 0` 重新整理当前 Niri 运行时工作区顺序:
 
@@ -227,8 +232,9 @@ niri msg windows
 niri msg workspaces
 ```
 
-期望聊天应用进入 `6chat`，代码编辑器进入 `5code`，音乐进入
-`8music`，Clash、Zoom 和腾讯会议等工具进入 `0other`。
+期望聊天应用进入 `6chat`，代码编辑器进入 `5code`，Clash、Zoom 和腾讯会议等工具进入
+`0other`。QQ、QQ 音乐、网易云音乐 GUI 的旧规则已移除；终端播放器 `go-musicfox`
+保留，但不再为已卸载的音乐 GUI 声明落点。Notion 是 Chrome 网页 App，不安装同名的 Notion 窗口管理器包。
 
 如果某个窗口已经在旧工作区，重新加载配置不会自动迁移它；窗口规则主要影响新创建的窗口。可以手动移动当前窗口:
 

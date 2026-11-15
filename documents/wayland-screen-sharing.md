@@ -47,6 +47,9 @@
 - `home/linux/gui/base/media.nix`：腾讯会议包。
 - `overlays/niri/default.nix`：ScreenCast 的 SHM 回退补丁。
 
+系统 JACK 音频兼容通过 `pw-jack <应用>` 按需启用，PipeWire 不再向整个会话注入
+`LD_LIBRARY_PATH`；portal、PulseAudio 和 ALSA 捕获路径保持原配置。
+
 当前 portal 路径是：
 
 ```text
@@ -121,6 +124,13 @@ Niri）无法建立共享流：
 
 ## OBS
 
+录屏统一使用 OBS，不再额外安装 wf-recorder 或 gpu-screen-recorder；当前没有声明 Noctalia 录屏插件消费者。OBS 本体保留，只额外安装
+`obs-pipewire-audio-capture`，屏幕采集继续使用 OBS 内建的 PipeWire
+source。其余高级插件已从声明列表移除，并非功能等价替代。
+
+本轮不删除或重写用户 OBS 场景、配置及录制文件。打开依赖已移除插件的旧场景时，可能出现缺失 source/filter 提示；请先保存场景备份，再按需将对应插件重新加入
+`home/linux/gui/base/creative.nix` 并部署，不要用缺插件的场景覆盖原场景。
+
 在 Sources 面板新增：
 
 ```text
@@ -139,8 +149,8 @@ OBS 预览同时显示实时递归桌面画面，证明当前 OBS `32.1.2` 在�
 
 ## 腾讯会议
 
-当前 Nixpkgs 包为 `wemeet 3.26.10.401`。`overlays/wemeet/` 统一 `wemeet` 与 `wemeet-xwayland`
-入口，应用菜单和会议 URI handler 均使用同一路径：
+当前 Nixpkgs 包为 `wemeet 3.26.10.401`。`overlays/wemeet/` 将上游 XWayland 启动配置直接生成为统一的
+`wemeet` 入口，应用菜单和会议 URI handler 均使用它：
 
 ```bash
 wemeet
@@ -148,9 +158,11 @@ wemeet
 
 2026-10-29 在当前 Niri/NVIDIA 环境做相同临时 `HOME` 对照：原包 `wemeet`
 以原生 Wayland 运行但未创建可见窗口；X11/xcb 入口正常显示登录页，窗口 app-id 仍为
-`wemeetapp`。此入口保留音频/文件传输适配，用本地 `libwemeet-capture.so` 替换旧SHM-only
-`libhook.so`，可直接导入 NVIDIA DMA-BUF，也提供 SHM。不加载原生 Wayland 专用的 focus/camera
-fix，也不强制 Mesa EGL。
+`wemeetapp`。此入口保留音频/文件传输适配，用本地 `libwemeet-capture.so` 替换旧 SHM-only
+`libhook.so`，可直接导入 DMA-BUF，也提供 SHM。不加载原生 Wayland 专用的 focus/camera
+fix。Wayland 会话中客户端视频层选择系统可用的 Mesa EGL
+vendor，避免 NVIDIA 的 XWayland 视频窗口黑屏；这时采集库可回退 SHM，详见
+[腾讯会议接收画面黑屏](./tencent-meeting.md)。
 
 Niri 侧另有独立的缓冲协商约束：原版 `26.04` 只提供 DMA-BUF，只接受 SHM 的消费者在选屏后报
 `no more input formats`。当前 overlay 回移

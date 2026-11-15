@@ -1,8 +1,8 @@
 # Hindsight Agent 记忆后端
 
 本文记录 Hindsight（agent 长期记忆服务）的部署方式、LLM 配置，以及它作为 omp memory
-backend 的接入与使用。2026-10 起服务端常驻 **athena**（NixOS 容器服务），此前跑在
-artemis（macOS colima）。
+backend 的接入与使用。2026-10 起服务端常驻 **athena**（NixOS 容器服务），此前跑在 artemis（macOS
+colima）。
 
 ## 概述
 
@@ -28,25 +28,25 @@ artemis（macOS colima）。
 
 - 服务定义：`hosts/olympians-athena/hindsight.nix`（`hosts/olympians-athena/default.nix`
   导入）；容器后端 podman 由 `modules/nixos/desktop/virtualisation.nix` 统一提供。
-- 端口：8888（API）、9999（UI）已在 `networking.firewall.allowedTCPPorts` 声明（防火墙
-  当前默认关闭，先声明将来打开不用补）。
-- 数据持久化：podman 卷 `hindsight-data` 挂载容器内 `/home/hindsight/.pg0`。注意 athena
-  的 podman `autoPrune --all` 每周清理未被引用的资源——**卷被容器引用即安全**；导入数据
-  前先确保容器已创建并停机（见迁移一节）。
+- 端口：8888（API）、9999（UI）已在 `networking.firewall.allowedTCPPorts`
+  声明（防火墙当前默认关闭，先声明将来打开不用补）。
+- 数据持久化：podman 卷 `hindsight-data` 挂载容器内 `/home/hindsight/.pg0`。注意 athena 的 podman
+  `autoPrune --all`
+  每周清理未被引用的资源——**卷被容器引用即安全**；导入数据前先确保容器已创建并停机（见迁移一节）。
 
 ## LLM 与 Embedding 配置
 
-| 项                           | 值                                     | 说明                                                                                                          |
-| ---------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `HINDSIGHT_API_LLM_PROVIDER` | `openai`                               | OpenAI 兼容协议                                                                                               |
-| `HINDSIGHT_API_LLM_BASE_URL` | `https://newapi.samuka007.top/v1`      | 自建 newapi 中转（baseUrl 必须带 /v1；scitrace gpt 系 503 时切来）                                            |
-| `HINDSIGHT_API_LLM_MODEL`    | `deepseek-v4.1-flash`                  | 与 omp `~/.omp/agent/models.yml` 的 newapi provider 同款                                                       |
-| `HINDSIGHT_API_LLM_API_KEY`  | `/var/lib/hindsight/hindsight.env`     | 0600 文件；由服务 `preStart` 从 `/run/agenix/omp-keys` 的 `newapi:` 行自动 bootstrap，不进 Nix store           |
-| Embeddings                   | 默认 `local`                           | 镜像内建 ONNX 本地模型（BAAI/bge-small-en-v1.5），无外部 embedding API 依赖                                   |
+| 项                           | 值                                 | 说明                                                                                                 |
+| ---------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `HINDSIGHT_API_LLM_PROVIDER` | `openai`                           | OpenAI 兼容协议                                                                                      |
+| `HINDSIGHT_API_LLM_BASE_URL` | `https://newapi.samuka007.top/v1`  | 自建 newapi 中转（baseUrl 必须带 /v1；scitrace gpt 系 503 时切来）                                   |
+| `HINDSIGHT_API_LLM_MODEL`    | `deepseek-v4.1-flash`              | 与 omp `~/.omp/agent/models.yml` 的 newapi provider 同款                                             |
+| `HINDSIGHT_API_LLM_API_KEY`  | `/var/lib/hindsight/hindsight.env` | 0600 文件；由服务 `preStart` 从 `/run/agenix/omp-keys` 的 `newapi:` 行自动 bootstrap，不进 Nix store |
+| Embeddings                   | 默认 `local`                       | 镜像内建 ONNX 本地模型（BAAI/bge-small-en-v1.5），无外部 embedding API 依赖                          |
 
 key bootstrap 逻辑：文件不存在或为空时，`preStart` 提取 omp-keys 的 `gemini:` 行写入
-`HINDSIGHT_API_LLM_API_KEY=...`；omp-keys 缺 gemini 行则写空文件让容器照常启动（LLM 操作
-降级，下次重启重试）。**gemini key 轮换后需删除该文件并重启服务**重新提取。
+`HINDSIGHT_API_LLM_API_KEY=...`；omp-keys 缺 gemini 行则写空文件让容器照常启动（LLM 操作降级，下次重启重试）。**gemini
+key 轮换后需删除该文件并重启服务**重新提取。
 
 ## 启动、停止与自启
 
@@ -97,10 +97,12 @@ UI（`http://athena:9999`）或 API。
 
 ## 从 artemis 迁移数据（已定流程，供复查/回退）
 
-artemis（macOS colima）上的旧实例数据在 docker 卷 `hindsight-data`。迁移顺序：
+artemis 的旧 Darwin
+launchd 模块、Compose 文件及仅为它安装的 Docker/Colima/Compose 声明已退役。旧实例的 Docker 卷、Colima 磁盘、容器及用户凭据均未删除；配置清理本身不停止现有运行实例。以下保留数据迁移步骤，需先手动提供容器工具。旧数据卷名应以
+`docker volume ls` 的实际结果为准：Compose 的项目名前缀可能使其名为 `hindsight_hindsight-data`。
 
-1. **停 artemis 侧写入**：卸载 launchd 的 `hindsight-compose` agent（其 300s 兜底会重新
-   `docker-compose up -d`），再 `cd modules/darwin && docker-compose -p hindsight -f hindsight-compose.yml stop`。
+1. **停 artemis 侧写入**：如果旧 launchd agent 仍加载，先卸载 `hindsight-compose` 和
+   `hindsight-colima`，避免定时重新启动；再以 `docker stop hindsight` 停容器。不删除卷。
 2. **导出卷**（容器停机后 tar，避免 PG 数据不一致）：
    ```bash
    docker run --rm -v hindsight-data:/data -v /tmp:/backup alpine \
@@ -115,8 +117,7 @@ artemis（macOS colima）上的旧实例数据在 docker 卷 `hindsight-data`。
    ```
 5. **切换客户端**：apollo / artemis 的 `~/.omp/agent/config.yml` 把 `hindsight.apiUrl` 改为
    `http://athena:8888`，重开 omp 会话。
-6. **artemis 退役**：删除/注释 `modules/darwin/hindsight.nix` 与 `apps.nix` 的容器工具链后
-   `just local`；旧容器与 `hindsight-data` 卷保留观察一段时间后再清理。
+6. **artemis 退役声明**已完成；下一次 Darwin 激活移除旧 launchd 声明。旧卷与容器数据继续保留，任何数据删除都应作为单独的人工操作，不能由配置清理顺带执行。
 
 ## 验证
 
@@ -141,16 +142,16 @@ omp 每会话首轮自动召回（`hindsight.autoRecall`），每 3 轮用户消
 - 中转模型拒绝 `response_format` 时，可在 `hindsight.nix` 的 environment 加
   `HINDSIGHT_API_LLM_STRUCTURED_OUTPUT_FORCED_TOOL = "true";`（强制工具调用式结构化输出）。
 - 拉镜像慢/失败：athena 经软路由透明代理直连 ghcr.io 即可（历史 FlClash / 镜像站方案均已废弃）。
-- 卷被误清（`podman volume ls` 无 hindsight-data）：autoPrune 只清未引用资源，容器存在即不会
-  发生；若被手动删除，按上文迁移一节从 artemis 备份重新导入。
+- 卷被误清（`podman volume ls`
+  无 hindsight-data）：autoPrune 只清未引用资源，容器存在即不会发生；若被手动删除，按上文迁移一节从 artemis 备份重新导入。
 
 ## 回滚
 
 1. athena 侧：`sudo systemctl stop hindsight`（数据卷保留；彻底清除
    `sudo podman volume rm hindsight-data`）。
 2. 从 nix 移除：删除 `hosts/olympians-athena/hindsight.nix` 及 `default.nix` 的 import 后 rebuild。
-3. artemis 回退：重新启用 `modules/darwin/hindsight.nix` 并 `just local`，omp `apiUrl` 改回
-   `http://localhost:8888`（旧卷未删时数据仍在）。
+3. artemis 回退：从版本历史恢复旧 Darwin Hindsight 模块、Compose 文件和工具声明后再部署；omp
+   `apiUrl` 改回 `http://localhost:8888`（旧卷未删时数据仍在）。
 4. omp 配置回滚：编辑用户级 `~/.omp/agent/config.yml`，删除 `memory`/`hindsight` 段（或
    `memory.backend` 改回 `off`）即恢复无记忆状态。
 
@@ -159,4 +160,3 @@ omp 每会话首轮自动召回（`hindsight.autoRecall`），每 3 轮用户消
 - `hosts/olympians-athena/hindsight.nix`：容器服务 + key bootstrap + 端口声明
 - `hosts/olympians-athena/default.nix`：import 上者
 - `modules/nixos/desktop/virtualisation.nix`：podman 后端（全桌面主机共用）
-- `modules/darwin/hindsight.nix`：artemis 旧部署（待退役后删除）

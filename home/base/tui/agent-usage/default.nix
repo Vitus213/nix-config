@@ -6,7 +6,7 @@
   ...
 }:
 let
-  # agenix 解密位置：NixOS 复制到 /etc/agenix（/run/agenix 对用户不可遍历），darwin 直接读 /run/agenix
+  # NixOS 保留 /etc/agenix 运行时链接；Darwin 消费 /run/agenix，HM-only 使用用户运行时路径。
   secretPaths =
     name:
     lib.optional (config.modules.secrets.home.enable or false) config.age.secrets.${name}.path
