@@ -1,60 +1,116 @@
-# Tern 同名项目辨析与安装调查
+# Stencil Tern 安装与配置
 
-调查日期：2026-11-13。本次仅研究，未修改配置或安装软件。
+本仓库安装的是 [Stencil Tern](https://stencil.so/tern)，下载入口为
+<https://build.stencil.so/tern>。版本固定为 **0.9.21 (bde0861)**。 `tern.build` 的同名 coding agent
+IDE 是另一个产品；nixpkgs 的 `pkgs.tern` 则是 PostgreSQL 迁移工具，都不用于本配置。
 
-## 更正：用户指定的是 tern.build
+## 打包来源与入口
 
-此前调查对象误选为 Stencil
-Tern。下方 Stencil 的封闭测试限制、社区 Nix 配方及 OMP 原生集成结论，不适用于用户实际提供的
-https://tern.build/download 。
+- `overlays/tern/default.nix`：暴露 `pkgs.tern-stencil`，按平台选择包；命令名为 `tern`。
+- `overlays/tern/linux.nix`：基于官方 glibc x86_64 tarball，参考
+  [pelikanade/flake](https://github.com/pelikanade/flake/blob/main/modules/packages/tern/default.nix)
+  的 `requireFile + autoPatchelfHook + desktopItems`，补齐 ELF interpreter、C++ 运行库、GPU driver
+  runpath；动态加载库参考
+  [plumj-am/nixos](https://github.com/plumj-am/nixos/blob/master/packages/tern/tern.nix)，包含 Wayland/X11、Vulkan/EGL、WebKitGTK、PipeWire/PulseAudio。包装器提供 git、zenity、gdbus、GIO
+  TLS 后端、GSettings schema 与基础 GStreamer 插件。
+- `overlays/tern/darwin.nix`：ARM64 DMG，沿用 nixpkgs
+  [Raycast](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/ra/raycast/package.nix) 的
+  `stdenvNoCC + undmg + dontFixup`，完整保留签名 App、动态库和 daemon helper；App 外另提供 CLI
+  wrapper。
+- `home/base/gui/tern.nix`：共享图形环境安装包；只合并
+  `auto_update = false`，设置保留为可写普通文件，其他 GUI 偏好保持不变。Linux 与 Darwin CLI
+  wrapper 用 Bash 捕获登录环境。
 
-- 用户指定的 Tern 是 coding agent IDE；Mac
-  app 与 CLI/TUI 共用 daemon。桌面端仅 macOS，CLI 支持 macOS、Linux x86-64/ARM64 和 FreeBSD
-  x86-64。[下载页](https://tern.build/download)
-- 下载页当前版本为 0.7.10，公开提供二进制与 checksums.txt，无需 Stencil 测试资格。[公开发布](https://github.com/Shubham-1994/homebrew-tern/releases/tag/v0.7.10)
-- 官网列出 16 种预置 agent，未列 OMP；支持在 tab 中运行其他 CLI
-  agent，但这不证明 OMP 有专用协议集成。[官网](https://tern.build/)
-- Nix 应基于此项目的公开发布资产打包，而非使用下述 Stencil 社区配方。尚未进行该产品的安装或运行验证。
+只支持已取得并验证安装包的 `x86_64-linux`、`aarch64-darwin`。不复制旧社区配方的 Nushell
+shim：0.9.21 已内置 Nushell 集成。目前不改变用户登录 shell、默认终端、快捷键或 OMP provider。
 
-## 以下为另一个产品：Stencil Tern
+## 受限安装包导入
 
-## 产品关系
+构建服务需要账号权限；由用户登录官网下载，Nix 只接收本地文件，不在表达式中写 cookie、token 或带认证的下载链接。
+`requireFile` 的哈希必须匹配下面的文件。原始包不提交到 Git。
 
-- OMP 是 coding
-  agent；Tern 是同属 Stencil 的原生终端工作区，不是 OMP 的 CLI 子命令。Tern 也能运行普通 shell 和其他程序。[Stencil](https://stencil.so/)、[Tern 产品页](https://stencil.so/tern)
-- OMP 可以通过 Tern Surface
-  Protocol（TSP）发送语义 UI 树，由 Tern 负责原生布局和绘制；不支持 TSP 的终端则使用 ANSI 渲染。TSP 可以经 SSH 和会话 daemon 传输。[协议文档](https://docs.stencil.so/tern/protocol/index.md)
-- 本机 OMP 18.13.1 的 `src/cli/update-cli.ts` 中，`managedInstallName` 明确识别 Tern 的
-  `manager.json`：Tern 管理的 OMP 由 Tern 更新，`omp update`
-  不接管它。这不代表现有 bun 全局安装会自动被替换。[上游源文件](https://github.com/can1357/oh-my-pi/blob/main/packages/coding-agent/src/cli/update-cli.ts)
+| 平台         | 文件                              | SHA-256                                                            |
+| ------------ | --------------------------------- | ------------------------------------------------------------------ |
+| Linux x86_64 | `Tern-0.9.21-linux-x86_64.tar.gz` | `655cf7fac7ad1aac3153e4d0d9fe4772c147b5bf925d5a0fd10bb9beeb133adf` |
+| macOS ARM64  | `Tern-0.9.21-macos-arm64.dmg`     | `9ecc90f95857af7c3f58bf2724ade7e9737c14791bc6fecee39542539df4f594` |
 
-## 获取与平台
+Linux 导入与 GC root：
 
-- 官网仍标注 CLOSED
-  BETA，需要 Stencil 账号加入候补名单并取得访问资格。[产品页](https://stencil.so/tern)、[构建下载页](https://build.stencil.so/tern)
-- 官方支持矩阵列出 macOS、Linux、Windows 桌面端、iOS 与 Web 客户端；不能因 WKWebView 集成就推断 Tern 只支持 macOS。[支持矩阵](https://docs.stencil.so/tern/concepts/support-matrix.md)
-- 匿名构建 API 未提供当前可下载版本与资产；本次未取得可验证的安装包、校验值或完整主程序许可。[产品 API](https://build.stencil.so/api/products)、[构建 API](https://build.stencil.so/api/products/tern/builds)
-- 公开 `tern-sdk`
-  是协议 SDK 与插件示例，不是终端主程序。[SDK](https://github.com/stencil-hq/tern-sdk)
+```sh
+source_path=$(nix-store --add-fixed sha256 "$HOME/Downloads/Tern-0.9.21-linux-x86_64.tar.gz")
+nix-store --realise "$source_path" --add-root "$HOME/.local/state/tern-nix-source-linux"
+```
 
-## Nix 安装可行性
+macOS 将文件名换为 ARM64 DMG，root 名换为 `tern-nix-source-macos`。Artemis 的 SSH 环境可用
+`/nix/var/nix/profiles/default/bin/nix-store` 与同目录的 `nix`。必须保留原始包或这个 GC
+root；安装输出本身不一定保留原始固定哈希输入。
 
-本次未找到 Stencil Tern 的 nixpkgs 正式包。`pkgs.tern`
-是 PostgreSQL 数据库迁移工具，不可用它代替本产品。[nixpkgs 包定义](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/te/tern/package.nix)
+导入后可单独构建并安装，无需整机 switch：
 
-已有社区打包实践，尚未在本机验证：
+```sh
+nix build --impure --expr 'let f = builtins.getFlake "path:/home/vitus/nix-config"; in f.nixosConfigurations.apollo.pkgs.tern-stencil'
+nix profile add ./result
+```
 
-- [plumj-am/nixos](https://github.com/plumj-am/nixos/blob/master/packages/tern/tern.nix)：x86_64-linux，使用用户预先下载的官方文件并适配运行库。
-- [pelikanade/flake](https://github.com/pelikanade/flake/blob/main/modules/packages/tern/default.nix)：以
-  `requireFile` 要求用户提供官方文件并适配 NixOS。
+Athena 将 `apollo` 换为 `athena`。Artemis 使用
+`path:/Users/vitus/nix-config`、`darwinConfigurations.artemis.pkgs.tern-stencil`，其 Lix
+2.93.0 对应命令是 `nix profile install ./result`。新文件尚未提交时使用 `path:`，避免 Git
+flake 忽略未跟踪文件。后续正常 Home Manager 部署会从同一声明安装。
 
-建议路径：先获得官方测试资格并下载相应架构的 Linux 包，再根据实际二进制依赖编写本地 Nix 包，通过 Home
-Manager 安装。获取受限文件可采用 `requireFile`
-模式；不能把认证 token 放入 Nix 表达式或 store。是否需要 autoPatchelf、图形库或其他包装，必须检查实际资产后决定。
+## 当前部署状态
 
-Nix
-store 不可写，与普通 Linux 分发的自更新机制存在冲突；打包时需核实并处理更新行为。当前不提供未经运行验证的安装表达式，也不假造版本、下载地址或 hash。
+2026-11-15 已通过 Nix 用户 profile 安装，相关包定义及共享 Home Manager 模块已同步到三台各自的
+`~/nix-config`；未执行整机 NixOS/nix-darwin switch，也未提交或推送。
+
+| 主机    | 安装与启动                                                   | 验证                                               |
+| ------- | ------------------------------------------------------------ | -------------------------------------------------- |
+| Apollo  | 用户 profile 的 `bin/tern`；应用菜单显示 Tern                | 版本、真实窗口、终端命令输出、OMP 路径及截图       |
+| Athena  | 用户 profile 的 `bin/tern`                                   | 版本、真实窗口首帧呈现并接收输入后正常退出         |
+| Artemis | 用户 profile；`~/Applications/Tern.app`，`~/.local/bin/tern` | 版本、完整签名校验、真实 AppKit 窗口首帧及输入就绪 |
+
+Athena 安装前已有 0.9.21 的用户级 Tern 和 `tern-remote.service`。现有远程服务仍使用
+`~/.local/share/tern/build/tern`，原 daemon/shell 会话保留；本次没有重启服务或迁移正在运行的会话。新登录的
+`tern` 已优先解析到 Nix profile。远程服务的独立更新生命周期不由本次 GUI 包声明接管。
+
+Artemis 已注册 LaunchServices，Finder 可打开 `~/Applications/Tern.app`。签名身份为 Can Boluk
+(VTLHGQC72S)，上游 DMG 带 notarization ticket。
+
+## 使用与设置
+
+```sh
+tern                  # 打开终端工作区
+tern ~/nix-config     # 在指定目录打开
+tern --version
+```
+
+macOS 也可直接从 `~/Applications/Tern.app`
+打开。窗口关闭后 daemon 可以继续保留 shell；不要为更新验证运行会终止 session 的 daemon stop。
+[官方架构](https://docs.stencil.so/tern/concepts/architecture.md)。
+
+默认 agent 命令为 `omp`，使用已有 OMP 的配置及登录。Tern 另有 Managed
+OMP 功能，会自行下载 OMP 并优先放入 pane
+PATH；这是独立管理机制，不等于系统已有的 bun 安装。要使用现有 OMP，在 Settings →
+Agents 的 OMP 管理项选择 **Stop Managing**，再在 shell 中检查
+`command -v omp`。Apollo 本次已执行 Stop Managing；初次隔离试跑遇到的 managed
+OMP 下载 EOF 不影响 Nix Tern 包和现有 OMP。未验证真实模型推理或 TSP 会话。
+
+设置目录见[官方目录说明](https://docs.stencil.so/tern/concepts/packages.md#directories)：
+
+- Linux：`~/.config/tern/settings.json`。
+- macOS：`~/Library/Application Support/Tern/settings.json`。
+- 本次三台均写入 `auto_update: false`。更新交给 Nix；不要在只读 store 上应用内自更新。
+
+## 更新与回滚
+
+登录官网下载新版本，核验包、版本与依赖后更新两个 derivation 的版本/hash，重新导入并构建。不要复用其他版本的哈希，也不要将账号信息写入 store。关闭旧窗口不会自动迁移所有运行中的 daemon；先保存工作，再根据上游的
+`tern restart` 使用说明安排切换。
+
+仅回滚本次定向安装：从用户 profile 移除
+`tern-stencil`；Artemis 另移除本次创建的两个用户链接。若要永久移除，在共享模块中取消包声明后正常部署；保留用户配置和会话数据，除非明确要清空。
 
 ## 验证范围
 
-已读取官方产品页、TSP 文档、本机 OMP 版本和更新管理实现，以及 nixpkgs 同名包定义；研究代理补充官方支持矩阵、下载访问限制与社区包调查。未安装 Tern，未测试 GUI、Nix 构建或现有 OMP 配置兼容性。
+Linux、macOS 实际构建成功；三台 `tern --version` 均为
+`0.9.21 (bde0861)`。三台真实窗口首帧检查成功，Apollo 通过控制端点运行终端命令、读取成功标记并截图。
+`nix eval path:/home/vitus/nix-config#evalTests --show-trace` 返回
+`true`；Nix 格式检查通过。未验证浏览器媒体、屏幕共享、远程配对、模型请求或全部内置 pane 功能。

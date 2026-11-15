@@ -2,6 +2,20 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-11-15
+
+### 通过 Nix 安装 Stencil Tern 0.9.21
+
+- 影响范围：Apollo、Athena、Artemis；产品为 `build.stencil.so/tern` 的 Stencil Tern。
+- 配置入口：`overlays/tern/{default,linux,darwin}.nix`、`home/base/gui/tern.nix`；属性为
+  `tern-stencil`，命令为 `tern`，避免与 nixpkgs 数据库工具重名。
+- 方案：参考 pelikanade/flake、plumj-am/nixos 及 nixpkgs Darwin App 配方，以 `requireFile`
+  固定用户下载的官方包；Linux 适配动态库和桌面入口，macOS 保留 App 签名；设置可写并关闭应用内自更新。
+- 部署：三台 Nix 用户 profile 已安装，包定义与共享模块已同步；Artemis 创建用户 Applications 入口。未整机 switch，Athena 原有远程服务和会话保持运行。
+- 验证：Linux/macOS 构建、三台版本与真实窗口首帧通过；Apollo 实际终端命令及截图、macOS 完整签名校验通过；仓库
+  `evalTests` 返回 `true`，Nix 格式检查通过。
+- 关联文档：[Stencil Tern 安装与配置](./tern-research.md)。
+
 ## 2026-11-13
 
 ### 整理全部变更并部署 Athena

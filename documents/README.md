@@ -83,7 +83,7 @@
 | [Herdr Agent 终端运行时](./herdr.md)                             | Herdr 与 Zellij 的关系、radar 侧边栏、手机 SSH 接入    |
 | [bb Agent IDE](./bb.md)                                          | 安装来源、更新与回滚                                   |
 | [Delta agent 协作环境](./delta.md)                               | Zed 团队 Delta 的安装、命名冲突、更新与回滚            |
-| [Tern 同名项目与安装调查](./tern-research.md)                    | tern.build CLI 分发与 Stencil Tern 的区别              |
+| [Stencil Tern 安装与配置](./tern-research.md)                    | 三机 Nix 打包、受限安装包导入、更新与回滚              |
 | [AI Agent 用量统计与 WakaTime](./agent-usage.md)                 | profile 用量卡片、ccusage 口径、WakaTime key           |
 
 ## 历史与计划
