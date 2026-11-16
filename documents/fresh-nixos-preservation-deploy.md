@@ -9,14 +9,15 @@
 - desktop 主机配置参考 `hosts/olympians-apollo/`
 - preservation 共享配置在 `hosts/_shared/preservation.nix`，由启用它的主机 `default.nix` 导入
 - agenix 的 NixOS 配置在 `secrets/nixos.nix`
-- preservation 开启时，agenix 解密 identity 使用 `/home/vitus/.ssh/id_ed25519`
+- preservation 开启时，agenix 解密 identity 直接使用
+  `/persistent/home/vitus/.ssh/id_ed25519`，与挂载后的用户 key 相同
 - `/home/vitus/.ssh` 已经在 preservation 用户目录列表里，重启后应该保留
 
 当前版本依据:
 
 - 当前配置的 `system.stateVersion` 是 `25.11`
 - 当前 `flake.lock` 锁定 `preservation` 为 `nix-community/preservation` 的
-  `93416f4614ad2dfed5b0dcf12f27e57d27a5ab11`
+  `717cdb87ac3df05ca6865e1b31ee902e2e2d7952`
 - 当前 `flake.lock` 锁定 `agenix` 为 `ryantm/agenix` 的 `4835b1dc898959d8547a871ef484930675cb47f1`
 - 分区、格式化、`nixos-generate-config --root /mnt` 和 `nixos-install` 顺序参考 NixOS 官方安装手册
 - agenix identity 配置参考 agenix README；preservation 行为参考 preservation README 和本仓库
@@ -86,7 +87,10 @@ lsblk
 目录。这个目录会跟随 root 文件系统保留，不是单独分区；优点是最快，缺点是以后想清空 root 时要格外小心。
 
 如果使用 btrfs，建议单独建 `@persistent` subvolume 并挂载到
-`/mnt/persistent`。如果使用单独分区或 LUKS，也必须保证最终系统里有一个路径挂载到 `/persistent`。
+`/mnt/persistent`。如果使用单独分区或 LUKS，也必须保证最终系统里有一个路径挂载到 `/persistent`，对应
+`fileSystems` 设置 `neededForBoot = true`；agenix 在 initrd
+activation 中直接读取持久化 identity，不能等用户 `.ssh` 的后续 bind mount。见
+[Secrets 启动解密](../secrets/README.md#启动解密与用户目录挂载)。
 
 示例，创建 ESP 和 root 分区:
 

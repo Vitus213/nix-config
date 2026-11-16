@@ -60,7 +60,8 @@ SSH 入口与 2222 的普通公钥入口不同。三台部署时不执行 rebuil
 
 这把 key 和 `/home/vitus/.ssh/id_ed25519` 不是同一个角色:
 
-- `/home/vitus/.ssh/id_ed25519`: preservation NixOS 的 agenix identity，用来解密 secrets。
+- `/persistent/home/vitus/.ssh/id_ed25519`: preservation NixOS 的 agenix identity；与挂载后的
+  `~/.ssh/id_ed25519` 相同，直接读持久化路径以供 initrd activation 解密。
 - `/etc/agenix/ssh-key-romantic`: homelab SSH 登录私钥，用来登录内网机器。
 
 当前 `ssh-key-romantic` 的 public key 是:
@@ -139,7 +140,7 @@ secrets/nixos.nix
 在能解密现有 secrets 的机器上执行。当前 `apollo` 使用 preservation，因此 agenix identity 是:
 
 ```text
-/home/vitus/.ssh/id_ed25519
+/persistent/home/vitus/.ssh/id_ed25519
 ```
 
 生成或更新 `ssh-key-romantic.age` 时，不要在非交互 stdin 下执行 `agenix -r`。当前 `agenix 0.15.0`

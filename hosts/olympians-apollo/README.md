@@ -18,4 +18,5 @@
 - `/boot`: `/dev/disk/by-uuid/C799-4063`，vfat
 - `/home/vitus/nix-config`: 从 `/persistent/home/vitus/nix-config` bind mount
 - SSH host keys 以单个文件形式持久化到 `/persistent/etc/ssh`，没有整体挂载 `/etc/ssh`
-- agenix 在 preservation 场景下使用 `/home/vitus/.ssh/id_ed25519`
+- agenix 直接读取 `/persistent/home/vitus/.ssh/id_ed25519`，避免 initrd activation 早于用户 `.ssh`
+  挂载；详见 [Secrets 启动解密](../../secrets/README.md#启动解密与用户目录挂载)

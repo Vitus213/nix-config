@@ -166,6 +166,29 @@ nixos-rebuild switch --no-reexec --sudo --store-path /nix/store/nm4gfibf5dis6zkx
 `nixos-config` 时失败。使用 `--no-reexec` 后已成功完成本轮 `test`
 激活，后续切换和回滚同样保留该参数。
 
+## 蓝牙扫描列表仅显示地址
+
+2026-11-16 在 Apollo（Noctalia 5.5.0 `6bcea59`、BlueZ 5.87）执行 30 秒短扫，每 5 秒读取 BlueZ
+D-Bus。两个发现的设备均为随机地址，始终没有 `Name`，`Alias`
+为地址，未配对、未连接。扫描正常开始与结束，结束时
+`Discovering=false`；CLI 与普通服务日志未记录扫描或名称解析失败。用户确认问题发生在扫描列表中的陌生设备，没有指定已配对目标外设。
+
+BlueZ 无远端名称时以地址作为 `Alias`；Noctalia 优先显示
+`Alias`，并监听属性更新。因此本次地址显示来自 BlueZ 的原始数据，没有证据表明界面丢弃了已有名称。陌生设备未提供名称时可以只显示地址，不据此修改配置或清除配对记录。依据：[BlueZ 回退](https://github.com/bluez/bluez/blob/5.87/src/device.c#L1019-L1058)、
+[Noctalia 名称映射](https://github.com/noctalia-dev/noctalia/blob/6bcea5968d17b7750e27f19f1827dce1a31bbc98/src/dbus/bluetooth/bluetooth_service.cpp#L178-L237)、
+[属性更新](https://github.com/noctalia-dev/noctalia/blob/6bcea5968d17b7750e27f19f1827dce1a31bbc98/src/dbus/bluetooth/bluetooth_service.cpp#L385-L400)。
+
+未发现与近期优化的确定关联：`/var/lib/bluetooth`
+在启动后约 6.920 秒挂载，bluetoothd 约 9.547 秒启动，服务具有挂载依赖；新旧 nixpkgs 均为 BlueZ
+5.87，最近两个 Noctalia 固定提交间没有蓝牙源码变更。v4 打开面板后持续扫描，v5 点击刷新扫描 10 秒；本次延长到 30 秒仍无名称，不能把此交互差异判为根因。依据：[旧 BlueZ](https://github.com/NixOS/nixpkgs/blob/55bfb4d7437bd4e09ab7cba58a43bd68eb310044/pkgs/by-name/bl/bluez-headers/package.nix#L12-L21)、
+[当前 BlueZ](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/pkgs/by-name/bl/bluez-headers/package.nix#L12-L21)、
+[Noctalia 比较](https://github.com/noctalia-dev/noctalia/compare/c2573248a89470383e41b8e1ac432424691cbc1f...6bcea5968d17b7750e27f19f1827dce1a31bbc98)、
+[v4 扫描](https://github.com/noctalia-dev/noctalia/blob/3abfa1fc09b62dc4cdeeb7b787886f075696f0b7/Modules/Panels/Settings/Tabs/Connections/BluetoothSubTab.qml#L104-L133)、
+[v5 扫描窗口](https://github.com/noctalia-dev/noctalia/blob/6bcea5968d17b7750e27f19f1827dce1a31bbc98/src/shell/control_center/tabs/bluetooth_tab.cpp#L27-L29)。
+
+若指定耳机、鼠标等外设也无名称，应让该设备进入可发现／配对模式后，比较其 BlueZ `Name`、 `Alias`
+与面板显示；本次没有连接或配对目标设备，不能据此验收连接功能。
+
 ## 已执行验证与尚未实测
 
 已完成：

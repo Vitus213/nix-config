@@ -9,7 +9,8 @@ secrets 仓库里，并作为 flake input 传入本仓库。
 ## 当前约定
 
 - 普通 NixOS 主机和 Darwin 主机使用 `/etc/ssh/ssh_host_ed25519_key` 作为 agenix identity
-- 启用 preservation 的 NixOS 主机使用 `/home/vitus/.ssh/id_ed25519`
+- 启用 preservation 的 NixOS 主机直接使用 `/persistent/home/vitus/.ssh/id_ed25519`；它与挂载后的
+  `~/.ssh/id_ed25519` 是同一把钥匙
 - NixOS 配置入口是 `secrets/nixos.nix`
 - Darwin 配置入口是 `secrets/darwin.nix`
 - 独立 home-manager 配置入口是 `secrets/home.nix`
@@ -62,6 +63,36 @@ sudo -u vitus test -r /etc/agenix/nix-access-tokens
 
 Darwin 的用户可读 secret 同样使用 `0400`，消费者直接读取 `/run/agenix`；旧 `/etc`
 alias 过渡及 postActivation chown 已移除。Darwin 不执行上述 NixOS preservation mount 迁移。
+
+### 启动解密与用户目录挂载
+
+锁定的 NixOS `d5cc683` 在 initrd 中通过 chroot 执行系统 activation；preservation 的用户 `.ssh`
+默认在切换根目录后才 bind mount。agenix 因此直接读取
+`/persistent/home/vitus/.ssh/id_ed25519`，避免启动时读到尚未被挂载覆盖的旧 identity。若
+`/persistent` 使用独立分区或 subvolume，必须将对应 `fileSystems` 声明设为
+`neededForBoot = true`，保证 activation 前可访问。Apollo 当前 `/persistent` 位于 ext4 根分区中。
+
+2026-11-16 排查确认：启动约 5.1 秒时七个 secret 均因 `no identity matched any of the recipients`
+解密失败；用户 `.ssh` 到约 6.9 秒才挂载。当前正确 identity 能解密全部原密文，TOTP 密钥并未丢失。最近
+`/etc/agenix` 从持久化明文改为运行时链接后，这次解密失败直接表现为 TOTP 不可用、Nushell `source`
+文件缺失。不要通过删除 `source` 或恢复持久化明文来隐藏故障。
+
+验证已覆盖最终 Apollo/Athena identity 求值、全部密文解密、真实 TOTP 展示脚本生成六位码，以及 Nushell
+0.116.1 加载完整配置与解密后的 source；只输出验证结果，不输出密钥和验证码。 `just test`
+与 Nix 格式检查通过，修复后的 activation 脚本已构建且 Bash 语法检查通过。本会话无免密 root，尚未恢复系统
+`/run/agenix`，未切换系统或重启；开机行为仍需部署后重启验收。当前启动可在用户终端执行已构建的最小恢复入口：
+
+```bash
+sudo /nix/store/f2slczrpdkyd418jyi7frmf7v7vyjzww-apollo-restore-agenix
+```
+
+该入口由修复后的 agenix
+activation 片段生成，只解密七个 secret、切换运行时链接并设置权限；不切换系统 generation。普通用户隔离冒烟已覆盖真实七个密文、链接与
+`0400`，未执行 root ramfs 挂载与 chown。长期修复需要正常部署本仓库；上述 Nix
+store 路径仅用于本次 Apollo 恢复，不能替代声明式部署。
+
+依据：[NixOS initrd activation](https://github.com/NixOS/nixpkgs/blob/d5cc6833999746cffdfe0598f7bc801a57b887a9/nixos/modules/system/boot/systemd/initrd.nix#L763-L795)、
+[preservation 挂载阶段](https://github.com/nix-community/preservation/blob/717cdb87ac3df05ca6865e1b31ee902e2e2d7952/module.nix)。
 
 ## Private secrets 仓库
 
@@ -206,7 +237,7 @@ NixOS 模块示例:
 当前仓库的 preservation 分支会改用:
 
 ```nix
-"/home/${myvars.username}/.ssh/id_ed25519"
+"/persistent/home/${myvars.username}/.ssh/id_ed25519"
 ```
 
 ## 新主机 rekey 流程

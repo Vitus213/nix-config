@@ -4,6 +4,18 @@
 
 ## 2026-11-16
 
+### 修复 Apollo 启动后 TOTP 与 Nushell secret 缺失
+
+- `secrets/nixos.nix` 的 preservation identity 改为
+  `/persistent/home/vitus/.ssh/id_ed25519`，避免 initrd activation 早于用户 `.ssh` bind
+  mount 时读取错误身份；保持原密钥、密文和消费者路径。
+- 启动日志确认七个 secret 解密失败；正确持久化 identity 能解密全部原密文，真实 TOTP 脚本与完整 Nushell
+  0.116.1 配置隔离冒烟通过，`just test` 和 Nix 格式检查通过。
+- 运行时恢复需要用户终端 root 权限；本会话未切换系统或重启，开机修复仍需部署后验收。
+- 蓝牙短扫时 BlueZ 5.87 本身未提供两个随机地址设备的 Name，Noctalia
+  5.5 按 Alias 显示 MAC；未改配对或蓝牙配置。
+- 关联文档：[Secrets 启动解密](../secrets/README.md#启动解密与用户目录挂载)、[全新部署](./fresh-nixos-preservation-deploy.md)、[Noctalia 蓝牙](./noctalia-v5.md)。
+
 ### 整理累计配置与同步当前验收状态
 
 - 汇总共享配置清理、上游模块迁移、通知与终端启动、SSH 及 Starship 改动，保留各专题的配置入口、回滚和既有验收边界。

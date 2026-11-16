@@ -36,7 +36,7 @@ in
     age.identityPaths =
       if cfg.preservation.enable then
         [
-          "/home/${myvars.username}/.ssh/id_ed25519"
+          "/persistent/home/${myvars.username}/.ssh/id_ed25519"
         ]
       else
         [
