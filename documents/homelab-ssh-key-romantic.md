@@ -34,6 +34,8 @@ Host 192.168.*
 `0600`、`.ssh` 目录 `0700`，用于无人值守的用户间 SSH。私钥不复制、不进入 Git 或 Nix
 store；Athena 的 agenix identity 仍是其 `/etc/ssh/ssh_host_ed25519_key`，不与新设备密钥混用。
 
+2026-11-24 起，Artemis 当前默认钥匙（注释 `zhzvitus@gmail.com`）移入 `mainSshAuthorizedKeys`，随主清单授权到各主机的 `vitus` 与 `root`；`lanSshAuthorizedKeys` 只保留 apollo 与 `vitus@athena-lan`。三台之间的普通用户互信不变。
+
 2026-10-29 已分别验证 Apollo → Athena、Apollo → Artemis、Athena → Apollo、Athena → Artemis、Artemis
 → Apollo、Artemis → Athena。六次均使用 `BatchMode=yes`、
 `ControlPath=none`、`IdentityAgent=none`、`ForwardAgent=no`，执行 `hostname`

@@ -22,12 +22,12 @@
   # 2. Or just use hardware security keys like Yubikey/CanoKey.
   mainSshAuthorizedKeys = [
     # The main ssh keys for daily usage
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFq9nvgrkiT+OQeyxeIgEOBHEE0y3OS4yxbV6OsdYlR5 vitus@5600"
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDaKzP+PbGAhundgHlKsJ75420SAfXCGQdEUA8XWBU7mUV+aoXYSiYy8eAf0thrNF61hojw6WZ4agIRIM4bF2gH75Kjc2v4jwPNsVtC9VAQM6WXoikmpSFWDRL7R0T//Y7eQRP/sfPH4jGedakeHqucp3DKn1Vw6KnsgpLWfgY6MEQDgplj33JyiR3gYpiGVT082nGMOHSWqIf5cpkHFNa9zF0Nae3U3MNwoFyYtNjWxj/lGnn4AU6gdSW40UiBs6e2T2Lhb0tT2EANRab8p3r2X5EIMTeGCIr2yyhmBbILhGnkYI80sXMq53sXHrnteWnxnhpXTZ4UpHBUp+Ab2yk7ZmZU7671YiIe50UzbH3GR1JFLclvOJvxiOvTfCA3o15VSNGFKehwVBR0EoOiLY3nmBzrZNZ0tRDR/CeBePLU3HsPWPPeZmmGEUj1fO8CsHTHL9JdqFhV94IY5+yfycR7EHNEFh66SprV0n0YoHOUogyBjrUclUTcGef4yfe0XR0= VitusWsl"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPno/uSP9Aubo1zCQlZWDq2lif2MGHOTuY0fDnwv9AFY root@VitusMac"
-    # v2 macbook (macOS, artemis) — 2026-08-28 confirmed key, distributed to all servers
-    # NOTE: root@VitusMac above is an OLD different key; vitusartemis uses the line below
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHsJsNMjCqrCdB1dItRvB6pbDjbLwnPYlTmunAqcJX18 vitusartemis"
+    # NOTE: root@VitusMac above is an OLD different key
+    # artemis (v2 macbook, macOS) ~/.ssh/id_ed25519, comment zhzvitus@gmail.com: the current default key,
+    # moved here from lanSshAuthorizedKeys on 2026-11-24; replaces the retired vitusartemis key
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHRkwg9/gTY2pgbr4+7u0C0FIATd2L9tpoAtUiY4/ID/ zhzvitus@gmail.com"
     # OnePlus 13T (PKX110), Termux, daily carry phone
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBXiRk7RVa7uV+v1PQKcpETytESuz8nH7lQbq/GpCJFT oneplus-a0288f4a-to-computers"
     # apollo (NixOS workstation) ~/.ssh/id_ed25519, generated 2026-06-21
@@ -37,7 +37,6 @@
   lanSshAuthorizedKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOUqUa+dbnW9E7TUJcZTDTcFOM4ZjIcH8NGhaMRp1wFA apollo"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII+RpWZKJxoaVGK7giHrAWI0Q4nlH8fszNJpTOlq+8qh vitus@athena-lan"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHRkwg9/gTY2pgbr4+7u0C0FIATd2L9tpoAtUiY4/ID/ zhzvitus@gmail.com"
   ];
   # J1900 仅能登录 Apollo / Artemis 普通用户，不扩大 root 或 Athena 授权。
   j1900SshAuthorizedKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIII2VsrFPRhvbfoKjDXHUVlfA9mo7eeRUHCZw05WKjLG vitus@j1900-lan";
