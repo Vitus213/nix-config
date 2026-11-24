@@ -11,6 +11,12 @@
 - Artemis、Athena 和 Apollo 共用同一份 J1900 订阅密文。见
   [FlClash 订阅](../secrets/README.md#flclash-订阅)。
 
+### Athena 和 Apollo 配置 FlClash 应急 TUN
+
+- 用 Nix 打包官方 0.9.4 amd64 DEB。`flclash-helper` 由 systemd 管理，仅接受 `vitus` 的连接。
+- 应急时打开 FlClash，在仪表盘启动代理。用完停止并退出。两条 J1900 订阅的解密路径见
+  [FlClash 订阅](../secrets/README.md#flclash-订阅)。
+
 ## 2026-11-24
 
 ### Artemis 安装 FlClash 并复用 J1900 订阅

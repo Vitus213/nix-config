@@ -21,7 +21,7 @@
 | Rime Ice                         | nixpkgs `rime-ice`                                            | Linux/Darwin 复用数据包，并显式引入建议 defaults                    |
 | Voiceless                        | 独立固定 input 与其验证过的 nixpkgs                           | 保留当前 CUDA 包、daemon、Fcitx 桥和浮层；私有配置不进入 store      |
 | Tern                             | `overlays/tern` 的受限官方安装包                              | 用户下载真实产物后更新双平台 hash；保留自启动与工作区规则           |
-| FlClash                          | `modules/nixos/desktop/networking/flclash.nix`                | 本地固定 AppImage；不能换成已移除的 nixpkgs alias                   |
+| FlClash                          | `modules/nixos/desktop/networking/flclash.nix`                | Athena、Apollo 固定官方 DEB 并启用 TUN helper；其他桌面用 AppImage  |
 | Croc、ccusage                    | nixpkgs 上游配方                                              | 已退役本地 vendor 补丁和四平台二进制表                              |
 | OMP、OpenCode、bb、Herdr         | 用户级 Bun/npm/官方安装                                       | 与系统运行时分离；OMP 模型模板与同步行为保持不变                    |
 

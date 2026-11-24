@@ -75,6 +75,8 @@ in
   ];
   programs.nix-ld.enable = true;
 
+  modules.desktop.flclash.tun.enable = true;
+
   # 从 apollo `just remote-host athena` 免密远程部署（ssh 同步 worktree + 目标机本地切换）：
   # - 放行 nixos-rebuild switch（每代 store 路径哈希变化，用通配；其余 sudo 照旧要密码）
   # - 保留 switch-to-configuration 免密，供只激活不更新 profile 的场景
