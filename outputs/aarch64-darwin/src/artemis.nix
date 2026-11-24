@@ -25,6 +25,7 @@ let
       ++ [
         {
           modules.desktop.fonts.enable = true;
+          system.configurationRevision = inputs.self.rev or null;
         }
       ];
     home-modules = map mylib.relativeToRoot [

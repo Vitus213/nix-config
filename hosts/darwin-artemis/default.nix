@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   pkgs,
   ...
@@ -11,7 +10,6 @@ in
   networking.hostName = hostname;
   networking.computerName = hostname;
   system.defaults.smb.NetBIOSName = hostname;
-  system.configurationRevision = inputs.self.rev or null;
 
   homebrew.onActivation = {
     autoUpdate = lib.mkForce false;
