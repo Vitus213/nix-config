@@ -9,6 +9,8 @@
 - 固定 FlClash 0.9.4 Apple Silicon 官方发布包。沿用 J1900 的 `新增订阅` 和
   `SELOM`，通过 agenix 下发给 Artemis。
 - 安装入口、重新导入及回退见 [Artemis 的 FlClash](../modules/darwin/README.md#artemis-的-flclash)。
+- AeroSpace 将 FlClash 窗口固定到 `0Other`，用 `⌥0` 切换。见
+  [工作区说明](./aerospace-usage.md#5-当前配置的工作区设计)。
 
 ### 统一 Artemis 的 Git 同步和系统部署
 
