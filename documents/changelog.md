@@ -4,6 +4,12 @@
 
 ## 2026-11-24
 
+### Artemis 安装 FlClash 并复用 J1900 订阅
+
+- 固定 FlClash 0.9.4 Apple Silicon 官方发布包。沿用 J1900 的 `新增订阅` 和
+  `SELOM`，通过 agenix 下发给 Artemis。
+- 安装入口、重新导入及回退见 [Artemis 的 FlClash](../modules/darwin/README.md#artemis-的-flclash)。
+
 ### 统一 Artemis 的 Git 同步和系统部署
 
 - `just remote-host artemis` 在 Artemis 的独立 worktree 同步 `origin/main`，按提交构建和激活。

@@ -1,5 +1,7 @@
 {
   lib,
+  mysecrets,
+  myvars,
   pkgs,
   ...
 }:
@@ -19,7 +21,14 @@ in
   environment.systemPackages = with pkgs; [
     colima
     docker
+    (callPackage ./flclash.nix { })
   ];
+
+  age.secrets.flclash-subscriptions = {
+    file = "${mysecrets}/flclash-artemis-subscriptions.json.age";
+    mode = "0400";
+    owner = myvars.username;
+  };
 
   # Start the existing Colima profile on login for its persistent Redis container.
   launchd.user.agents.colima.serviceConfig = {

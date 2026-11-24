@@ -23,5 +23,21 @@ Artemis 由主机模块在登录时启动现有 Colima profile，承载
 `mks-redis`。Hindsight 服务由 Athena 提供。Artemis 的 Homebrew 仍应用声明的软件清单，部署时关闭自动更新和升级。`cleanup = "none"`
 保留手工安装的应用。
 
+## Artemis 的 FlClash
+
+FlClash 0.9.4 使用上游 Apple Silicon DMG，安装到 `/Applications/Nix Apps/FlClash.app`。J1900 的
+`新增订阅` 和 `SELOM` 地址由 agenix 解密到 `/run/agenix/flclash-subscriptions`，供 `vitus` 读取。
+
+需要重新导入时，在 Artemis 运行以下命令，再在 FlClash 的「配置 → 添加 → 链接」切到批量模式并粘贴。
+
+```bash
+jq -er '.["新增订阅"], .SELOM' /run/agenix/flclash-subscriptions | /usr/bin/pbcopy
+```
+
+两份配置各自从原订阅地址更新。在 FlClash 中按需开启系统代理。系统回退用
+`sudo -H /run/current-system/sw/bin/darwin-rebuild --rollback`，应用内已导入的配置可在「配置」页删除。
+
+[FlClash 官方发布](https://github.com/chen08209/FlClash/releases/tag/v0.9.4)
+
 更完整的 nix-darwin 说明见官方 [nix-darwin](https://github.com/nix-darwin/nix-darwin) 仓库和
 [选项手册](https://nix-darwin.github.io/nix-darwin/manual/)。
