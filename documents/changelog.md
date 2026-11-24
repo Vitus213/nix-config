@@ -7,11 +7,14 @@
 ### 清理退役 SSH 授权钥匙，Artemis 当前钥匙进入主授权清单
 
 - `vars/default.nix` 的 `mainSshAuthorizedKeys` 移除 `vitus@5600`（2026-03 入表，此后无使用记录）和
-  `vitusartemis`（Artemis 旧钥匙），加入 Artemis 当前默认钥匙 `~/.ssh/id_ed25519`（注释 `zhzvitus@gmail.com`）；
-  该钥匙同时从 `lanSshAuthorizedKeys` 移除，避免三台局域网机器上重复授权。
-- 影响范围：所有使用主清单的 `vitus` 与 `root` 授权，包括 hestia 等只有主清单的主机；各主机下次 rebuild 后生效。
-  本次只改声明并推送，未部署任何主机，其他设备上手工写入的 `authorized_keys` 副本未改动。
-- 验证：`nix eval` 直接求值 `vars/default.nix`，主清单 5 把、局域网清单 2 把，两把退役钥匙不再出现；`nixfmt --check` 与 pre-commit 检查通过。
+  `vitusartemis`（Artemis 旧钥匙），加入 Artemis 当前默认钥匙 `~/.ssh/id_ed25519`（注释
+  `zhzvitus@gmail.com`）；该钥匙同时从 `lanSshAuthorizedKeys` 移除，避免三台局域网机器上重复授权。
+- 影响范围：所有使用主清单的 `vitus` 与 `root`
+  授权，包括 hestia 等只有主清单的主机；各主机下次 rebuild 后生效。本次只改声明并推送，未部署任何主机，其他设备上手工写入的
+  `authorized_keys` 副本未改动。
+- 验证：`nix eval` 直接求值
+  `vars/default.nix`，主清单 5 把、局域网清单 2 把，两把退役钥匙不再出现；`nixfmt --check`
+  与 pre-commit 检查通过。
 - 回滚：revert 本提交。
 - 关联文档：[Homelab SSH Key](./homelab-ssh-key-romantic.md#当前设计)。
 
