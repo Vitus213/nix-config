@@ -36,6 +36,7 @@ in
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../_shared/nvidia.nix
+    ../../secrets/flclash.nix
 
     ../_shared/preservation.nix
   ];

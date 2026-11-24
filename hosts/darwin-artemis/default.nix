@@ -1,7 +1,5 @@
 {
   lib,
-  mysecrets,
-  myvars,
   pkgs,
   ...
 }:
@@ -9,9 +7,19 @@ let
   hostname = "artemis";
 in
 {
+  imports = [ ../../secrets/flclash.nix ];
+
   networking.hostName = hostname;
   networking.computerName = hostname;
   system.defaults.smb.NetBIOSName = hostname;
+
+  homebrew.taps = [ "chen08209/tap" ];
+  homebrew.casks = [
+    {
+      name = "chen08209/tap/flclash";
+      trusted = true;
+    }
+  ];
 
   homebrew.onActivation = {
     autoUpdate = lib.mkForce false;
@@ -21,14 +29,7 @@ in
   environment.systemPackages = with pkgs; [
     colima
     docker
-    (callPackage ./flclash.nix { })
   ];
-
-  age.secrets.flclash-subscriptions = {
-    file = "${mysecrets}/flclash-artemis-subscriptions.json.age";
-    mode = "0400";
-    owner = myvars.username;
-  };
 
   # Start the existing Colima profile on login for its persistent Redis container.
   launchd.user.agents.colima.serviceConfig = {

@@ -18,6 +18,7 @@ in
   imports = [
     ./hardware-configuration.nix
     ../_shared/nvidia.nix
+    ../../secrets/flclash.nix
     ./services.nix
     ./hindsight.nix
   ];

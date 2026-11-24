@@ -18,6 +18,12 @@ secrets 仓库里，并作为 flake input 传入本仓库。
 
 不要在 Nix 配置里写 `~/.ssh/id_ed25519`。`~` 是 shell 展开规则，Nix 模块里不会自动展开。
 
+## FlClash 订阅
+
+`secrets/flclash.nix` 为 Artemis、Athena 和 Apollo 声明
+`/run/agenix/flclash-subscriptions`。密文包含 J1900 的 `新增订阅` 和 `SELOM`
+两条地址。三台的现役 agenix identity 可解密，运行时文件归 `vitus`，权限为 `0400`。
+
 ## NixOS 运行时文件与旧持久化迁移
 
 `secrets/nixos.nix` 将用户可读数据统一声明为 `owner = vitus`、`mode = "0400"`，不授予执行权限。六个

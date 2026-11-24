@@ -2,6 +2,15 @@
 
 本文件作为仓库配置变更的主线索引，按时间倒序记录。具体背景、当前行为、使用方式、验证和回滚步骤应写入关联专题文档。
 
+## 2026-11-25
+
+### Artemis 切换到 FlClash 官方 Homebrew cask
+
+- 通过 `chen08209/tap/flclash` 安装，沿用已有订阅。首次 TUN 授权和回退见
+  [Artemis 的 FlClash](../modules/darwin/README.md#artemis-的-flclash)。
+- Artemis、Athena 和 Apollo 共用同一份 J1900 订阅密文。见
+  [FlClash 订阅](../secrets/README.md#flclash-订阅)。
+
 ## 2026-11-24
 
 ### Artemis 安装 FlClash 并复用 J1900 订阅
