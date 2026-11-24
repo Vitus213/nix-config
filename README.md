@@ -173,21 +173,25 @@ just local debug
 - [NixOS 内核策略](./documents/nixos-kernel.md)
 - [rEFInd 启动配置](./documents/refind-boot.md)
 
-macOS:
+### Artemis（macOS）
 
 ```bash
-# 首次部署前需要手动安装 Nix 和 Homebrew
-nix-shell -p just nushell
+# 在 Athena 执行。Artemis 已安装 Lix 和 Homebrew，并保持联网。
+just remote-host artemis sync
+just remote-host artemis build
+just remote-host artemis
 
-# 按当前 hostname 部署默认 darwinConfiguration
+# 在 Artemis 本机可使用同一套流程
 just local
 
-# 显式部署 Darwin 主机
-just local-host artemis
-
-# 带详细输出
-just local debug
+# 查看当前运行系统的配置提交，或切回上一代
+darwin-version --configuration-revision
+just darwin-rollback
 ```
+
+部署命令将 `origin/main` 固定到一个提交，在 `~/nix-config-deploy`
+构建并激活同一个产物。`~/nix-config` 供编辑使用。`sync` 只更新部署检出，`build`
+保留构建结果供检查。正式激活需要 Artemis 的 sudo 认证。
 
 ## 参考文档
 

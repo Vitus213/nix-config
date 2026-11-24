@@ -4,6 +4,14 @@
 
 ## 2026-11-24
 
+### 统一 Artemis 的 Git 同步和系统部署
+
+- `just remote-host artemis` 在 Artemis 的独立 worktree 同步 `origin/main`，按提交构建和激活。
+- 纳入现役 Delta 和 Colima 声明，Colima 负责启动 Redis 所用的原 profile。关闭部署时的 Homebrew 自动更新和升级。
+- 删除重复执行构建的 Darwin 辅助命令及废弃的应用清单示例。用
+  `darwin-version --configuration-revision` 检查部署提交。
+- 回滚用 `just darwin-rollback`。同步与构建入口见 [Artemis 部署](../README.md#artemismacos)。
+
 ### 清理退役 SSH 授权钥匙，Artemis 当前钥匙进入主授权清单
 
 - `vars/default.nix` 的 `mainSshAuthorizedKeys` 移除 `vitus@5600`（2026-03 入表，此后无使用记录）和

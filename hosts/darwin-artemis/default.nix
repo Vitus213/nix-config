@@ -1,9 +1,9 @@
-_:
-#############################################################
-#
-#  Artemis - MacBook Pro 2024 14-inch M4 Pro 48G, mainly for business.
-#
-#############################################################
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 let
   hostname = "artemis";
 in
@@ -11,4 +11,27 @@ in
   networking.hostName = hostname;
   networking.computerName = hostname;
   system.defaults.smb.NetBIOSName = hostname;
+  system.configurationRevision = inputs.self.rev or null;
+
+  homebrew.onActivation = {
+    autoUpdate = lib.mkForce false;
+    upgrade = lib.mkForce false;
+  };
+
+  environment.systemPackages = with pkgs; [
+    colima
+    docker
+  ];
+
+  # Start the existing Colima profile on login for its persistent Redis container.
+  launchd.user.agents.colima.serviceConfig = {
+    ProgramArguments = [
+      "${pkgs.colima}/bin/colima"
+      "start"
+    ];
+    RunAtLoad = true;
+    ProcessType = "Background";
+    StandardOutPath = "/tmp/colima.log";
+    StandardErrorPath = "/tmp/colima.log";
+  };
 }

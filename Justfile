@@ -122,7 +122,7 @@ local mode="default":
   use {{utils_nu}} *;
   local-switch (current-local-host) {{mode}}
 
-# Deploy to a remote NixOS host: sync a worktree on the target, rebuild there.
+# Sync a deployment worktree on the target and rebuild there.
 # 前提（目标机，见 hosts/olympians-athena/default.nix）：vitus 对
 # /nix/store/*/bin/nixos-rebuild switch 免密。首次需手动跑一次带密码的
 # sudo nixos-rebuild switch 装上该规则。
@@ -131,6 +131,26 @@ local mode="default":
 remote-host host mode="switch":
     #!/usr/bin/env bash
     set -euo pipefail
+    if [[ {{quote(host)}} == artemis ]]; then
+      mode={{quote(mode)}}
+      case "$mode" in
+        sync|build) terminal=(-T) ;;
+        switch|debug) terminal=(-t) ;;
+        *) echo 'Artemis mode must be sync, build, switch, or debug' >&2; exit 1 ;;
+      esac
+      exec ssh "${terminal[@]}" -o BatchMode=yes artemis '
+        set -eu
+        umask 077
+        repo=$HOME/nix-config
+        main=refs/remotes/origin/main
+        /usr/bin/git -C "$repo" fetch --quiet origin "refs/heads/main:$main"
+        revision=$(/usr/bin/git -C "$repo" rev-parse --verify "$main^{commit}")
+        driver=$(/usr/bin/mktemp /tmp/deploy-artemis.XXXXXXXX)
+        trap "rm -f \"\$driver\"" EXIT
+        /usr/bin/git -C "$repo" show "$revision:scripts/deploy-artemis.sh" >"$driver"
+        /usr/bin/caffeinate -is /bin/sh "$driver" '"$mode"' "$revision"
+      '
+    fi
     remote="vitus@{{host}}"
     ssh -o BatchMode=yes "$remote" '
       set -e
@@ -154,27 +174,24 @@ remote-host host mode="switch":
 [macos]
 [group('desktop')]
 darwin-rollback:
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  darwin-rollback
+  sudo -H /run/current-system/sw/bin/darwin-rebuild --rollback
 
-# Deploy the darwinConfiguration by hostname match
+# Deploy Artemis from origin/main.
 [macos]
 [group('desktop')]
-local mode="default": 
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  darwin-build (hostname) {{mode}};
-  darwin-switch (hostname) {{mode}}
+local mode="default":
+  /usr/bin/caffeinate -is /bin/sh scripts/deploy-artemis.sh {{quote(mode)}}
 
-# Deploy a specific darwinConfiguration explicitly
+# Deploy Artemis when the host is provided explicitly.
 [macos]
 [group('desktop')]
 local-host host mode="default":
-  #!/usr/bin/env nu
-  use {{utils_nu}} *;
-  darwin-build {{host}} {{mode}};
-  darwin-switch {{host}} {{mode}}
+  #!/bin/sh
+  if [ {{quote(host)}} != artemis ]; then
+    printf 'The Darwin configuration is artemis\n' >&2
+    exit 1
+  fi
+  exec /usr/bin/caffeinate -is /bin/sh scripts/deploy-artemis.sh {{quote(mode)}}
 
 
 # Reset launchpad to force it to reindex Applications

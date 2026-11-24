@@ -11,15 +11,6 @@
 #  NOTE: Your can find all available options in:
 #    https://daiderd.com/nix-darwin/manual/index.html
 #
-#  NOTE：To remove the uninstalled APPs icon from Launchpad:
-#    1. `sudo nix store gc --debug` & `sudo nix-collect-garbage --delete-old`
-#    2. click on the uninstalled APP's icon in Launchpad, it will show a question mark
-#    3. if the app starts normally:
-#        1. right click on the running app's icon in Dock, select "Options" -> "Show in Finder" and delete it
-#    4. hold down the Option key, a `x` button will appear on the icon, click it to remove the icon
-#
-# TODO Fell free to modify this file to fit your needs.
-#
 ##########################################################################
 let
   # Homebrew Mirror
@@ -66,7 +57,7 @@ in
   # homebrew need to be installed manually, see https://brew.sh
   # https://github.com/LnL7/nix-darwin/blob/master/modules/homebrew.nix
   homebrew = {
-    enable = true; # disable homebrew for fast deploy
+    enable = true;
 
     onActivation = {
       autoUpdate = true; # Fetch the newest stable branch of Homebrew's git repo
@@ -76,51 +67,29 @@ in
       cleanup = "none";
     };
 
-    # Applications to install from Mac App Store using mas.
-    # You need to install all these Apps manually first so that your apple account have records for them.
-    # otherwise Apple Store will refuse to install them.
-    # For details, see https://github.com/mas-cli/mas
-    masApps = {
-      # Xcode = 497799835;
-      # NOTE(vitus): MAS installs are fragile during darwin activation and currently fail on low disk space.
-      # Install manually when needed.
-      # Wechat = 836500024;
-    };
-
     taps = [
       "nikitabobko/tap" # aerospace - an i3-like tiling window manager for macOS
-      # "netbirdio/tap" # netbird gui app
     ];
 
     brews = [
-      # `brew install`
       "wget" # download tool
       "curl" # no not install curl via nixpkgs, it's not working well on macOS!
       "aria2" # download tool
-      # Usage:
-      #  https://github.com/tailscale/tailscale/wiki/Tailscaled-on-macOS#run-the-tailscaled-daemon
-      # 1. `sudo tailscaled install-system-daemon`
-      # 2. `tailscale up --accept-routes`
-      # "tailscale" # tailscale cli version
-
       # https://github.com/rgcr/m-cli
       "m-cli" #  Swiss Army Knife for macOS
       # commands like `gsed` `gtar` are required by some tools
       "gnu-sed"
       "gnu-tar"
-
     ];
 
     # `brew install --cask`
     casks = [
       "squirrel-app" # input method for Chinese, rime-squirrel
       "zen" # browser - Zen Browser (Gecko based)
-      # "google-chrome"
 
       # code editor
       "visual-studio-code"
       "zed"
-      # "cursor" # cursor ai editor
       "nikitabobko/tap/aerospace" # an i3-like tiling window manager for macOS
       "ghostty" # terminal emulator
 
@@ -128,52 +97,15 @@ in
       "joplin" # note taking app
 
       "tailscale-app" # tailscale macos app (with gui)
-      # "netbirdio/tap/netbird-ui" # netbird gui app
 
-      # AI
       "cc-switch" # configuration manager for AI coding agents
-      # "lm-studio"
 
       # IM & audio & remote desktop & meeting
       "telegram"
-      # NOTE(vitus): Upstream QQ DMG downloads are flaky and often break darwin activation.
-      # Install manually when needed.
-      # "qq"
-      # NOTE(vitus): Upstream QQMusic DMG downloads are flaky and often break darwin activation.
-      # Install manually when needed.
-      # "qqmusic"
-      # "discord" # update too frequently, use the web version instead
-      # "moonlight" # remote desktop client
-      # "rustdesk" # meeting
-      # "tencent-meeting"
       "zoom" # meeting
 
-      # Misc
-      # "shadowsocksx-ng" # proxy tool
-      # "iina" # video player
-      # "raycast" # (HotKey: alt/option + space)search, calculate and run scripts(with many plugins)
       "stats" # beautiful system status monitor in menu bar
       "jordanbaird-ice" # Powerful menu bar manager for macOS
-
-      # "reaper"  # audio editor
-      # "sonic-pi" # music programming
-      # "tencent-lemon" # macOS cleaner
-      # NOTE(vitus): Upstream NetEase Cloud Music DMG downloads are flaky and often break darwin activation.
-      # Install manually when needed.
-      # "neteasemusic" # music
-      # FlClash（clash GUI，替代 clash-verge-rev）暂无 Homebrew cask，
-      # 已手动安装官方 dmg（0.8.98 arm64，/Applications/FlClash.app，
-      # 见 2026-09-15 changelog 条目）。若需重装：
-      #   1. brew uninstall --cask clash-verge-rev（旧客户端）
-      #   2. 从 https://github.com/chen08209/FlClash/releases 下载 macOS arm64 dmg
-      # "flclash"
-
-      # "insomnia" # REST client
-      # NOTE(vitus): Homebrew cask install is currently failing when it tries to run the bundled pkg installers.
-      # Install manually when needed.
-      # "wireshark-app" # network analyzer
-      # "jdk-mission-control" # Java Mission Control
-      # "google-cloud-sdk" # Google Cloud SDK
 
     ];
   };

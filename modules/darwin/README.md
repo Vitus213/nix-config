@@ -19,9 +19,9 @@
 `nix.extraOptions` 已移除，每周自定义 launchd
 GC 保留。访问 token 的 daemon 配置需要由外部安装管理，仓库不再宣称 nix-darwin 会写入它。
 
-Hindsight 的旧 Darwin launchd /
-Compose 定义和专用 Docker、Colima 工具声明已退役；当前服务在 athena。此次配置清理不停止运行中的旧容器，也不删除 Colima、Docker 卷或用户凭据。Homebrew
-`cleanup = "none"` 保留手工安装应用。
+Artemis 由主机模块在登录时启动现有 Colima profile，承载
+`mks-redis`。Hindsight 服务由 Athena 提供。Artemis 的 Homebrew 仍应用声明的软件清单，部署时关闭自动更新和升级。`cleanup = "none"`
+保留手工安装的应用。
 
 更完整的 nix-darwin 说明见官方 [nix-darwin](https://github.com/nix-darwin/nix-darwin) 仓库和
 [选项手册](https://nix-darwin.github.io/nix-darwin/manual/)。
