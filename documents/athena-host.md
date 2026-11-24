@@ -274,6 +274,16 @@ Kuma 返回正常 302；系统及用户 failed unit 均为空。
 旧 Niri 会话已锁定，新 Shell 已接管密码界面，保持锁定。Athena 的本人密码解锁、解锁后桌面和重启尚未验收，见
 [Noctalia v5](./noctalia-v5.md)。
 
+### 2026-11-24 授权钥匙部署记录
+
+15:54 以免密的 `nixos-rebuild switch --no-reexec --store-path` 切到 system-26（`6qwbqvhr…`），只带上
+`ca0740bf` 的授权钥匙变更。来源是本机 `~/nix-config` 工作区当时的快照，加上远端的
+`vars/default.nix`。切换前用 `nix path-info -r` 比过闭包：与 system-25 只差 `vitus`、`root`
+的授权文件、`etc` 和系统入口四个路径。切换后两把退役钥匙从 athena 的 `vitus`、`root`
+生效清单消失，system 与 user 的 failed unit 均为空，没有服务被重启。
+
+`~/nix-config` 工作区的 `vars/default.nix` 仍是旧清单，从它部署会把退役钥匙带回，需先同步远端。
+
 ## 回滚
 
 - 系统层：systemd-boot 菜单选上一代，或

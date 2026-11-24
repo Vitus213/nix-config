@@ -15,6 +15,8 @@
 - 验证：`nix eval` 直接求值
   `vars/default.nix`，主清单 5 把、局域网清单 2 把，两把退役钥匙不再出现；`nixfmt --check`
   与 pre-commit 检查通过。
+- 部署：athena 已于 2026-11-24 15:54 切到只含这份变更的 system-26，做法与验证见
+  [Athena 部署记录](./athena-host.md#2026-11-24-授权钥匙部署记录)；其余主机未部署。
 - 回滚：revert 本提交。
 - 关联文档：[Homelab SSH Key](./homelab-ssh-key-romantic.md#当前设计)。
 
