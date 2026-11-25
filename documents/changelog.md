@@ -4,6 +4,10 @@
 
 ## 2026-11-25
 
+### Athena 增加 32 GiB 磁盘交换空间
+
+- [Athena 硬件配置](../hosts/olympians-athena/hardware-configuration.nix) 在 NVMe 根分区创建 `/swapfile`。第 28 代实测 zram 优先级为 100，磁盘 swap 为 -2，总交换空间约 47.6 GiB。
+
 ### Artemis 切换到 FlClash 官方 Homebrew cask
 
 - 通过 `chen08209/tap/flclash` 安装，沿用已有订阅。首次 TUN 授权和回退见

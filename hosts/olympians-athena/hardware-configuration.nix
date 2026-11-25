@@ -36,7 +36,14 @@
     ];
   };
 
-  swapDevices = [ ];
+  # 磁盘 swapfile：不设 priority，内核会给负值，低于 zram 的 100，zram 用满后才落盘。
+  # size 单位是 MiB；文件由 NixOS 激活时用 dd 创建，根分区要留够空间。
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 32 * 1024;
+    }
+  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   # Intel CNVi WiFi / 蓝牙（iwlwifi、btintel）需要 linux-firmware
